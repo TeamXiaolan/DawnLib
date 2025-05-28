@@ -1,0 +1,71 @@
+[*.cs]
+
+# CS8618: Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+dotnet_diagnostic.cs8618.severity = silent
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[*]
+
+# Microsoft .NET properties
+csharp_indent_braces = false
+csharp_new_line_before_catch = true
+csharp_new_line_before_else = true
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_open_brace = all
+csharp_preferred_modifier_order = public, private, protected, override, file, virtual, abstract, internal, new, sealed, static, readonly, extern, unsafe, volatile, async, required:suggestion
+csharp_preserve_single_line_blocks = true
+dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:none
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:none
+dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:none
+
+# ReSharper properties
+resharper_align_multiline_binary_expressions_chain = false
+resharper_align_multiline_parameter = true
+resharper_align_multiline_statement_conditions = false
+resharper_arguments_skip_single = true
+resharper_blank_lines_after_block_statements = 0
+resharper_blank_lines_after_file_scoped_namespace_directive = 0
+resharper_blank_lines_around_property = 0
+resharper_blank_lines_around_single_line_property = 1
+resharper_braces_for_for = required_for_multiline
+resharper_braces_for_ifelse = not_required
+resharper_braces_redundant = false
+resharper_csharp_blank_lines_around_field = 0
+resharper_csharp_blank_lines_around_invocable = 0
+resharper_csharp_blank_lines_around_region = 0
+resharper_csharp_blank_lines_inside_region = 0
+resharper_csharp_case_block_braces = next_line_shifted_2
+resharper_csharp_indent_statement_pars = outside
+resharper_csharp_keep_blank_lines_in_code = 100
+resharper_csharp_keep_existing_enum_arrangement = false
+resharper_csharp_max_line_length = 470
+resharper_csharp_remove_blank_lines_near_braces_in_code = false
+resharper_csharp_remove_blank_lines_near_braces_in_declarations = false
+resharper_csharp_wrap_arguments_style = chop_if_long
+resharper_csharp_wrap_before_binary_opsign = true
+resharper_default_private_modifier = explicit
+resharper_for_other_types = use_var
+resharper_indent_preprocessor_other = usual_indent
+resharper_instance_members_qualify_declared_in = 
+resharper_keep_existing_attribute_arrangement = true
+resharper_keep_existing_embedded_block_arrangement = false
+resharper_object_creation_when_type_evident = target_typed
+resharper_outdent_statement_labels = true
+resharper_parentheses_redundancy_style = remove
+resharper_parentheses_same_type_operations = true
+resharper_place_expr_accessor_on_single_line = true
+resharper_place_expr_method_on_single_line = false
+resharper_place_expr_property_on_single_line = true
+resharper_place_simple_embedded_statement_on_same_line = true
+resharper_place_simple_initializer_on_single_line = false
+resharper_space_before_catch_parentheses = true
+resharper_space_before_foreach_parentheses = true
+resharper_space_before_for_parentheses = true
+resharper_space_before_if_parentheses = true
+resharper_space_before_switch_parentheses = true
+resharper_space_before_while_parentheses = true
+resharper_trailing_comma_in_multiline_lists = true
+resharper_wrap_list_pattern = chop_if_long
+resharper_wrap_object_and_collection_initializer_style = chop_always
