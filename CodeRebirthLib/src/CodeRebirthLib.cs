@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.Extensions;
+using UnityEngine;
 
 namespace CodeRebirthLib;
 public static class CodeRebirthLib
 {
-    public static void RegisterContentHandlers(Assembly assembly)
+    public static AssetBundle LoadBundle(Assembly assembly, string filePath)
     {
-        IEnumerable<Type> contentHandlers = assembly.GetLoadableTypes().Where(x =>
-            x.BaseType != null
-            && x.BaseType.IsGenericType
-            && x.BaseType.GetGenericTypeDefinition() == typeof(ContentHandler<>)
-        );
-
-        foreach (Type type in contentHandlers)
-        {
-            type.GetConstructor([]).Invoke([]);
-        }
+        return AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location)!, "Assets", filePath));
+    }
+    
+    public static CRMod RegisterMod(BaseUnityPlugin plugin, AssetBundle mainBundle)
+    {
+        return new CRMod(plugin.GetType().Assembly, plugin, mainBundle);
     }
 }

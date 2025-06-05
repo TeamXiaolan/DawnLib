@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using BepInEx;
+using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ContentManagement;
+using CodeRebirthLib.ContentManagement.Weathers;
+using CodeRebirthLib.Exceptions;
+using CodeRebirthLib.Extensions;
+using UnityEngine;
+
+namespace CodeRebirthLib;
+public class CRMod
+{
+    public ConfigManager ConfigManager { get; }
+    public ContentContainer Content { get; private set; }
+    
+    public Assembly Assembly { get; }
+
+    public CRRegistry<CRWeatherDefinition, WeatherData> Weathers = new CRRegistry<CRWeatherDefinition, WeatherData>();
+    
+    internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle)
+    {
+        ConfigManager = new ConfigManager(plugin.Config);
+        Assembly = assembly;
+
+        ContentContainer[] containers = mainBundle.LoadAllAssets<ContentContainer>();
+        if (containers.Length == 0)
+        {
+            throw new NoContentDefinitionInBundle(mainBundle);
+        } 
+        if (containers.Length >= 2)
+        {
+            throw new MultipleContentDefinitionsInBundle(mainBundle);
+        }
+        
+        Content = containers[0];
+    }
+    
+    public void RegisterContentHandlers()
+    {
+        IEnumerable<Type> contentHandlers = Assembly.GetLoadableTypes().Where(x =>
+            x.BaseType != null
+            && x.BaseType.IsGenericType
+            && x.BaseType.GetGenericTypeDefinition() == typeof(ContentHandler<>)
+        );
+
+        foreach (Type type in contentHandlers)
+        {
+            type.GetConstructor([typeof(CRMod)]).Invoke([this]);
+        }
+    }
+}

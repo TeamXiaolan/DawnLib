@@ -5,7 +5,7 @@
         <AssemblyName>com.github.xuuxiaolan.coderebirthlib</AssemblyName>
         <Product>CodeRebirthLib</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>1.0.0</Version>
+        <Version>0.0.4</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
@@ -19,6 +19,15 @@
     <!-- Enable Nullable for better IDE null-checking -->
     <PropertyGroup>
         <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <!-- NuGet Packaging -->
+    <PropertyGroup>
+        <PackageId>XuXiaolan.CodeRebirthLib</PackageId>
+        <Description>A library to simplify making large LethalCompany mods.</Description>
+        
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <!-- Set NuGet Sources -->
@@ -60,7 +69,8 @@
     </ItemGroup>
 
     <!-- Netcode Patcher Post-Build Event -->
-    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-        <Exec Command="dotnet netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
-    </Target>
+    <Sdk Name="Evaisa.NetcodePatcher.MSBuild" Version="4.3.0" />
+    <ItemGroup>
+        <NetcodePatch Include="$(TargetPath)" />
+    </ItemGroup>
 </Project>

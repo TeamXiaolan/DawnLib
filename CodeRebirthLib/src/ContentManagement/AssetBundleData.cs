@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.ContentManagement.Items;
+using CodeRebirthLib.ContentManagement.MapObjects;
+using CodeRebirthLib.ContentManagement.Unlockables;
+using CodeRebirthLib.ContentManagement.Weathers;
+
+namespace CodeRebirthLib.ContentManagement;
+[Serializable]
+public class AssetBundleData
+{
+    public string assetBundleName;
+    public string configName;
+    public List<WeatherData> weathers;
+    public List<EnemyData> enemies;
+    public List<ItemData> items;
+    public List<MapObjectData> mapObjects;
+    public List<UnlockableData> unlockables;
+}
