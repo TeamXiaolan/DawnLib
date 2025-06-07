@@ -42,6 +42,8 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights.Value);
             LethalLib.Modules.Items.RegisterScrap(Item, spawnRateByLevelType, spawnRateByCustomLevelType);
         }
+        
+        mod.Items.Register(this);
     }
     
     public static ItemConfig CreateItemConfig(CRMod mod, ItemData data, string itemName)

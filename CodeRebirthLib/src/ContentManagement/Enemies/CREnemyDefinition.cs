@@ -54,6 +54,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
         enemy.PowerLevel = Config.PowerLevel.Value;
         (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights.Value);
         LethalLib.Modules.Enemies.RegisterEnemy(enemy, spawnRateByLevelType, spawnRateByCustomLevelType, TerminalNode, TerminalKeyword);
+        mod.Enemies.Register(this);
     }
 
     public static EnemyConfig CreateEnemyConfig(CRMod mod, EnemyData data, string enemyName)

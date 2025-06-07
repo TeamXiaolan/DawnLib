@@ -5,6 +5,8 @@ using System.Reflection;
 using BepInEx;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
+using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.Weathers;
 using CodeRebirthLib.Exceptions;
 using CodeRebirthLib.Extensions;
@@ -19,6 +21,8 @@ public class CRMod
     public Assembly Assembly { get; }
 
     public CRRegistry<CRWeatherDefinition, WeatherData> Weathers = new CRRegistry<CRWeatherDefinition, WeatherData>();
+    public CRRegistry<CREnemyDefinition, EnemyData> Enemies = new CRRegistry<CREnemyDefinition, EnemyData>();
+    public CRRegistry<CRItemDefinition, ItemData> Items = new CRRegistry<CRItemDefinition, ItemData>();
     
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle)
     {

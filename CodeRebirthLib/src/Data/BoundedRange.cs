@@ -1,4 +1,8 @@
-﻿namespace CodeRebirthLib.Data;
+﻿using System;
+
+namespace CodeRebirthLib.Data;
+
+[Serializable]
 public class BoundedRange
 {
     public int Min { get; }
