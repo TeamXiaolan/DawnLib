@@ -33,21 +33,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin {
             LethalConfigPatch.Patch();
         }
         
-        TomlTypeConverter.AddConverter(typeof(BoundedRange),
-            new TypeConverter()
-            {
-                ConvertToString = (obj, type) =>
-                {
-                    BoundedRange range = (BoundedRange)obj;
-                    return $"{range.Min},{range.Max}";
-                },
-                ConvertToObject = (str, type) =>
-                {
-                    string[] parts = str.Split(",");
-                    return new BoundedRange(int.Parse(parts[0]), int.Parse(parts[1]));
-                }
-            }
-        );
+        ExtendedTOML.Init();
         
 		Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
 	}
