@@ -55,6 +55,7 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
         };
 
         WeatherManager.RegisterWeather(weather);
+        mod.Weathers.Register(this);
     }
     public override List<WeatherData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.weathers).ToList(); // probably should be cached but i dont care anymore.
 }
