@@ -25,8 +25,8 @@ class CodeRebirthLibPlugin : BaseUnityPlugin {
         CodeRebirthLibConfig.Bind(ConfigManager);
         
 		NetcodePatcher();
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
-
+        RoundManagerPatch.Patch();
+        
         if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
         {
             // try patches.

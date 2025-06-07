@@ -81,5 +81,8 @@
       <Reference Include="MMHOOK_ainavt.lc.lethalconfig">
         <HintPath>deps\MMHOOK_ainavt.lc.lethalconfig.dll</HintPath>
       </Reference>
+      <Reference Include="MMHOOK_Assembly-CSharp">
+        <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>
