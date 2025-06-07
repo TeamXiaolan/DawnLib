@@ -9,6 +9,7 @@ using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
+using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Weathers;
 using CodeRebirthLib.Exceptions;
 using CodeRebirthLib.Extensions;
@@ -27,6 +28,7 @@ public class CRMod
     public CRRegistry<CREnemyDefinition, EnemyData> Enemies = new CRRegistry<CREnemyDefinition, EnemyData>();
     public CRRegistry<CRItemDefinition, ItemData> Items = new CRRegistry<CRItemDefinition, ItemData>();
     public CRRegistry<CRMapObjectDefinition, MapObjectData> MapObjects = new CRRegistry<CRMapObjectDefinition, MapObjectData>();
+    public CRRegistry<CRUnlockableDefinition, UnlockableData> Unlockables = new CRRegistry<CRUnlockableDefinition, UnlockableData>();
     
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle)
     {
