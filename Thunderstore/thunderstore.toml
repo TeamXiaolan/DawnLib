@@ -1,0 +1,28 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "XuXiaolan"
+name = "CodeRebirthLib"
+description = "Library for managing large Lethal Company mods."
+websiteUrl = "https://github.com/LoafOrc/CodeRebirthLib"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2100"
+Hamunii-AutoHookGenPatcher = "1.0.6"
+Evaisa-FixPluginTypesSerialization = "1.1.2"
+
+[build]
+icon = "./icon.png"
+readme = "../README.md"
+outdir = "../Packages"
+
+[[build.copy]]
+source = "../CodeRebirthLib/bin/Release/netstandard2.1/com.github.xuuxiaolan.coderebirthlib.dll"
+target = "BepInEx/plugins/CodeRebirthLib/"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = [ "lethal-company", ]
+[publish.categories]
+lethal-company = [ "mods", "tools", "libraries", "clientside", "serverside" ]

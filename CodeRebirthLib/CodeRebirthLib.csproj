@@ -85,4 +85,8 @@
         <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
     </ItemGroup>
+
+    <Target Name="PackThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
+        <Exec Command="dotnet tcli build --config-path &quot;$(SolutionDir)Thunderstore/config.toml&quot; --package-version $(Version)"  />
+    </Target>
 </Project>

@@ -2,6 +2,7 @@
 using System.Linq;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ContentManagement.Weathers;
 using LethalLib.Extras;
 using LethalLib.Modules;
 using UnityEngine;
@@ -40,6 +41,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
         }
         
         mod.Unlockables.Register(this);
+
+        mod.Weathers.TryGetFromWeatherName("Meteor Shower", out CRWeatherDefinition? definition);
     }
 
     public static UnlockableConfig CreateUnlockableConfig(CRMod mod, UnlockableData data, string unlockableName)
