@@ -24,7 +24,7 @@ public class ConfigManager(ConfigFile file)
 
     public ConfigContext CreateConfigSectionForBundleData(AssetBundleData data)
     {
-        return CreateConfigSection(data + " Options");
+        return CreateConfigSection(data.configName + " Options");
     }
     
     public static (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) ParseMoonsWithRarity(string? configMoonRarity)

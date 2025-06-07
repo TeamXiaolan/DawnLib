@@ -56,4 +56,13 @@ public abstract class ContentHandler<T> where T : ContentHandler<T>
             definition.Register(_mod);
         }
     }
+
+    protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset) where TAsset : AssetBundleLoader<TAsset>
+    {
+        if(TryLoadContentBundle(bundleName, out asset)) {
+            LoadAllContent(asset!);
+            return true;
+        }
+        return false;
+    }
 }
