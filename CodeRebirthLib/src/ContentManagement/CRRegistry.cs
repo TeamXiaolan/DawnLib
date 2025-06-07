@@ -12,7 +12,7 @@ using CodeRebirthLib.ContentManagement.Weathers;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement;
-public class CRRegistry<TDefinition, TData> : IEnumerable<TDefinition> where TData : EntityData where TDefinition : CRContentDefinition<TData>
+public class CRRegistry<TDefinition> : IEnumerable<TDefinition> where TDefinition : CRContentDefinition
 {
     [SerializeField]
     private List<TDefinition> _items = new();
@@ -46,27 +46,27 @@ public class CRRegistry<TDefinition, TData> : IEnumerable<TDefinition> where TDa
 
 public static class CRRegistryExtensions
 {
-    public static bool TryGetFromEnemyName<T>(this CRRegistry<T, EnemyData> registry, string enemyName, [NotNullWhen(true)] out T? value) where T : CREnemyDefinition
+    public static bool TryGetFromEnemyName<T>(this CRRegistry<T> registry, string enemyName, [NotNullWhen(true)] out T? value) where T : CREnemyDefinition
     {
         return registry.TryGetFirstBySomeName(it => it.EnemyType.enemyName, enemyName, out value);
     }
     
-    public static bool TryGetFromItemName<T>(this CRRegistry<T, ItemData> registry, string itemName, [NotNullWhen(true)] out T? value) where T : CRItemDefinition
+    public static bool TryGetFromItemName<T>(this CRRegistry<T> registry, string itemName, [NotNullWhen(true)] out T? value) where T : CRItemDefinition
     {
         return registry.TryGetFirstBySomeName(it => it.Item.itemName, itemName, out value);
     }
     
-    public static bool TryGetFromMapObjectName<T>(this CRRegistry<T, MapObjectData> registry, string objectName, [NotNullWhen(true)] out T? value) where T : CRMapObjectDefinition
+    public static bool TryGetFromMapObjectName<T>(this CRRegistry<T> registry, string objectName, [NotNullWhen(true)] out T? value) where T : CRMapObjectDefinition
     {
         return registry.TryGetFirstBySomeName(it => it.ObjectName, objectName, out value);
     }
     
-    public static bool TryGetFromUnlockableName<T>(this CRRegistry<T, UnlockableData> registry, string unlockableName, [NotNullWhen(true)] out T? value) where T : CRUnlockableDefinition
+    public static bool TryGetFromUnlockableName<T>(this CRRegistry<T> registry, string unlockableName, [NotNullWhen(true)] out T? value) where T : CRUnlockableDefinition
     {
         return registry.TryGetFirstBySomeName(it => it.UnlockableItemDef.unlockable.unlockableName, unlockableName, out value);
     }
 
-    public static bool TryGetFromWeatherName<T>(this CRRegistry<T, WeatherData> registry, string weatherName, [NotNullWhen(true)] out T? value) where T : CRWeatherDefinition
+    public static bool TryGetFromWeatherName<T>(this CRRegistry<T> registry, string weatherName, [NotNullWhen(true)] out T? value) where T : CRWeatherDefinition
     {
         return registry.TryGetFirstBySomeName(it => it.Weather.Name, weatherName, out value);
     }

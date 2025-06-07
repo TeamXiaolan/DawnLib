@@ -24,11 +24,11 @@ public class CRMod
     public Assembly Assembly { get; }
     public ManualLogSource? Logger { get; set; }
 
-    public CRRegistry<CRWeatherDefinition, WeatherData> Weathers = new CRRegistry<CRWeatherDefinition, WeatherData>();
-    public CRRegistry<CREnemyDefinition, EnemyData> Enemies = new CRRegistry<CREnemyDefinition, EnemyData>();
-    public CRRegistry<CRItemDefinition, ItemData> Items = new CRRegistry<CRItemDefinition, ItemData>();
-    public CRRegistry<CRMapObjectDefinition, MapObjectData> MapObjects = new CRRegistry<CRMapObjectDefinition, MapObjectData>();
-    public CRRegistry<CRUnlockableDefinition, UnlockableData> Unlockables = new CRRegistry<CRUnlockableDefinition, UnlockableData>();
+    public CRRegistry<CRWeatherDefinition> Weathers = new CRRegistry<CRWeatherDefinition>();
+    public CRRegistry<CREnemyDefinition> Enemies = new CRRegistry<CREnemyDefinition>();
+    public CRRegistry<CRItemDefinition> Items = new CRRegistry<CRItemDefinition>();
+    public CRRegistry<CRMapObjectDefinition> MapObjects = new CRRegistry<CRMapObjectDefinition>();
+    public CRRegistry<CRUnlockableDefinition> Unlockables = new CRRegistry<CRUnlockableDefinition>();
     
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle)
     {
