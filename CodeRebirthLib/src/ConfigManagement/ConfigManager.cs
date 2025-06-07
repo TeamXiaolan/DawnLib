@@ -32,6 +32,26 @@ public class ConfigManager(ConfigFile file)
         return CreateConfigSection(data.configName + " Options");
     }
     
+    public ConfigEntry<T> CreateGeneralConfig<T>(
+        string header,
+        string name,
+        T DynamicConfigType,
+        string Description)
+    {
+        return file.Bind(header, name, DynamicConfigType, Description);
+    }
+
+    public ConfigEntryBase CreateDynamicConfig(CRDynamicConfig configDefinition, string configName)
+    {
+        return configDefinition.DynamicConfigType switch
+        {
+            CRDynamicConfigType.String => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultString, configDefinition.Description),
+            CRDynamicConfigType.Int => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultInt, configDefinition.Description),
+            CRDynamicConfigType.Bool => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultBool, configDefinition.Description),
+            CRDynamicConfigType.Float => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultFloat, configDefinition.Description)
+        };
+    }
+    
     public static (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) ParseMoonsWithRarity(string? configMoonRarity)
     {
         Dictionary<Levels.LevelTypes, int> spawnRateByLevelType = new();

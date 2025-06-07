@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
 using UnityEngine;
@@ -17,11 +18,15 @@ public abstract class CRContentDefinition : ScriptableObject
     [field: SerializeField]
     public string EntityNameReference { get; private set; }
 
+    internal AssetBundleData AssetBundleData;
+
+    public Dictionary<string, ConfigEntryBase> GeneralConfigs { get; private set; } = new();
+    
     public virtual void Register(CRMod mod)
     {
         foreach (CRDynamicConfig configDefinition in ConfigEntries)
         {
-            // todo
+            GeneralConfigs[configDefinition.settingName] = mod.ConfigManager.CreateDynamicConfig(configDefinition, AssetBundleData.configName);
         }
     }
 }

@@ -53,6 +53,7 @@ public abstract class ContentHandler<T> where T : ContentHandler<T>
         CRContentDefinition[] definitions = bundle.Content;
         foreach (CRContentDefinition definition in definitions)
         {
+            definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(_mod);
         }
     }
