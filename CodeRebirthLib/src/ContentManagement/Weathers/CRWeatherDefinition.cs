@@ -14,8 +14,6 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 
     public override void Register(CRMod mod, WeatherData data)
     {
-        mod.Weathers.Register(this);
-        
         GameObject? effectObject = null;
         if (Weather.Effect.EffectObject != null)
         {
@@ -55,7 +53,15 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
         };
 
         WeatherManager.RegisterWeather(weather);
-        mod.Weathers.Register(this);
+        mod.WeatherRegistry().Register(this);
     }
+    
+    public const string REGISTRY_ID = "weathers";
+
+    public static void RegisterTo(CRMod mod)
+    {
+        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRWeatherDefinition>());
+    }
+    
     public override List<WeatherData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.weathers).ToList(); // probably should be cached but i dont care anymore.
 }

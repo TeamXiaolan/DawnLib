@@ -54,7 +54,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
         enemy.PowerLevel = Config.PowerLevel.Value;
         (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights.Value);
         LethalLib.Modules.Enemies.RegisterEnemy(enemy, spawnRateByLevelType, spawnRateByCustomLevelType, TerminalNode, TerminalKeyword);
-        mod.Enemies.Register(this);
+        mod.EnemyRegistry().Register(this);
     }
 
     public static EnemyConfig CreateEnemyConfig(CRMod mod, EnemyData data, string enemyName)
@@ -69,6 +69,13 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
                 MaxSpawnCount = section.Bind("Max Spaw nCount", $"Max spawn count for {enemyName}.", data.maxSpawnCount)
             };
         }
+    }
+
+    public const string REGISTRY_ID = "enemies";
+
+    public static void RegisterTo(CRMod mod)
+    {
+        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CREnemyDefinition>());
     }
     
     public override List<EnemyData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.enemies).ToList(); // probably should be cached but i dont care anymore.

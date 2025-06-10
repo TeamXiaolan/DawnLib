@@ -40,9 +40,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
             // todo
         }
         
-        mod.Unlockables.Register(this);
-
-        mod.Weathers.TryGetFromWeatherName("Meteor Shower", out CRWeatherDefinition? definition);
+        mod.UnlockableRegistry().Register(this);
     }
 
     public static UnlockableConfig CreateUnlockableConfig(CRMod mod, UnlockableData data, string unlockableName)
@@ -57,6 +55,13 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
                 Cost = context.Bind("Cost", $"Csot for {unlockableName} in the shop.", data.cost)
             };
         }
+    }
+    
+    public const string REGISTRY_ID = "unlockables";
+
+    public static void RegisterTo(CRMod mod)
+    {
+        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRUnlockableDefinition>());
     }
     
     public override List<UnlockableData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.unlockables).ToList();

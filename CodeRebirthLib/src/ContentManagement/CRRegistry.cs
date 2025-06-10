@@ -12,7 +12,11 @@ using CodeRebirthLib.ContentManagement.Weathers;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement;
-public class CRRegistry<TDefinition> : IEnumerable<TDefinition> where TDefinition : CRContentDefinition
+public abstract class CRRegistry
+{
+}
+
+public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> where TDefinition : CRContentDefinition
 {
     [SerializeField]
     private List<TDefinition> _items = new();

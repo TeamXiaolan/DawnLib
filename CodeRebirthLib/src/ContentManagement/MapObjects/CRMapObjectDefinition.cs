@@ -96,7 +96,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             RoundManagerPatch.registeredMapObjects.Add(registeredCRMapObject);
         }
         
-        mod.MapObjects.Register(this);
+        mod.MapObjectRegistry().Register(this);
     }
 
     public static MapObjectConfig CreateMapObjectConfig(CRMod mod, MapObjectData data, string objectName)
@@ -113,6 +113,13 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
                 OutsideCurveSpawnWeights = section.Bind("Outside Spawn Weights", $"Curve weights for {objectName} when spawning outside.", data.defaultOutsideCurveSpawnWeights)
             };
         }
+    }
+    
+    public const string REGISTRY_ID = "map_objects";
+
+    public static void RegisterTo(CRMod mod)
+    {
+        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRMapObjectDefinition>());
     }
     
     public override List<MapObjectData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.mapObjects).ToList();

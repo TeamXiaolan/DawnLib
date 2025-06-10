@@ -43,7 +43,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             LethalLib.Modules.Items.RegisterScrap(Item, spawnRateByLevelType, spawnRateByCustomLevelType);
         }
         
-        mod.Items.Register(this);
+        mod.ItemRegistry().Register(this);
     }
     
     public static ItemConfig CreateItemConfig(CRMod mod, ItemData data, string itemName)
@@ -62,6 +62,13 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
                 Cost = isShopItem.Value? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null
             };
         }
+    }
+    
+    public const string REGISTRY_ID = "items";
+
+    public static void RegisterTo(CRMod mod)
+    {
+        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRItemDefinition>());
     }
     
     public override List<ItemData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.items).ToList();
