@@ -1,12 +1,15 @@
 ﻿using System;
+using UnityEngine;
 
 namespace CodeRebirthLib.Data;
 
 [Serializable]
 public class BoundedRange
 {
-    public int Min { get; }
-    public int Max { get; }
+    [field: SerializeField]
+    public int Min { get; private set; }
+    [field: SerializeField]
+    public int Max { get; private set; }
 
     public BoundedRange(int min, int max)
     {
