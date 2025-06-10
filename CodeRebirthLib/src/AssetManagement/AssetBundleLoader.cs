@@ -16,10 +16,10 @@ public class AssetBundleLoader<T> where T : AssetBundleLoader<T>
     protected AssetBundleLoader(CRMod mod, string filePath) : this(mod.Assembly, filePath)
     { }
 
-    protected AssetBundleLoader(Assembly assembly, string filePath) : this(CodeRebirthLib.LoadBundle(assembly, filePath))
+    internal AssetBundleLoader(Assembly assembly, string filePath) : this(CodeRebirthLib.LoadBundle(assembly, filePath))
     { }
 
-    protected AssetBundleLoader(AssetBundle bundle)
+    internal AssetBundleLoader(AssetBundle bundle)
     {
         Type type = typeof(T);
         foreach (PropertyInfo property in type.GetProperties())
