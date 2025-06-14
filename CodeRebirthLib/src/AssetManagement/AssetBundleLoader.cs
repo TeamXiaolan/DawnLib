@@ -18,7 +18,7 @@ public class AssetBundleLoader<T> where T : AssetBundleLoader<T>
     protected AssetBundleLoader(CRMod mod, string filePath) : this(mod.Assembly, filePath)
     { }
 
-    internal AssetBundleLoader(Assembly assembly, string filePath) : this(CodeRebirthLib.LoadBundle(assembly, filePath))
+    internal AssetBundleLoader(Assembly assembly, string filePath) : this(CRLib.LoadBundle(assembly, filePath))
     { }
 
     internal AssetBundleLoader(AssetBundle bundle)

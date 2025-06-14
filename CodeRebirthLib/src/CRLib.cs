@@ -9,7 +9,7 @@ using CodeRebirthLib.Extensions;
 using UnityEngine;
 
 namespace CodeRebirthLib;
-public static class CodeRebirthLib
+public static class CRLib
 {
     public static AssetBundle LoadBundle(Assembly assembly, string filePath)
     {
