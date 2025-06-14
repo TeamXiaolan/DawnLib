@@ -5,7 +5,7 @@
         <AssemblyName>com.github.xuuxiaolan.coderebirthlib</AssemblyName>
         <Product>CodeRebirthLib</Product>
         <!-- Change to whatever version you're currently on. -->
-        <Version>0.0.6</Version>
+        <Version>0.0.7</Version>
     </PropertyGroup>
 
     <!-- Project Properties -->
