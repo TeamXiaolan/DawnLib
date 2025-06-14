@@ -5,12 +5,17 @@ using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Weathers;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement;
 [Serializable]
 public class AssetBundleData
 {
     public string assetBundleName;
+    [field: SerializeField, FormerlySerializedAs("keepLoaded")]
+    public bool AlwaysKeepLoaded { get; private set; }
+    
     public string configName;
     public List<WeatherData> weathers;
     public List<EnemyData> enemies;

@@ -44,7 +44,8 @@ public abstract class ContentHandler<T> where T : ContentHandler<T>
         ConstructorInfo constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
         asset = (TAsset) constructorInfo.Invoke([_mod, assetBundleName]);
         asset.AssetBundleData = assetBundleData;
-
+        
+        asset.TryUnload();
         return true;
     }
 

@@ -12,6 +12,8 @@ public class AssetBundleLoader<T> where T : AssetBundleLoader<T>
 {
     public AssetBundleData? AssetBundleData { get; set; } = null;
     public CRContentDefinition[] Content { get; private set; }
+
+    private AssetBundle? _bundle;
     
     protected AssetBundleLoader(CRMod mod, string filePath) : this(mod.Assembly, filePath)
     { }
@@ -21,6 +23,7 @@ public class AssetBundleLoader<T> where T : AssetBundleLoader<T>
 
     internal AssetBundleLoader(AssetBundle bundle)
     {
+        _bundle = bundle;
         Type type = typeof(T);
         foreach (PropertyInfo property in type.GetProperties())
         {
@@ -42,6 +45,12 @@ public class AssetBundleLoader<T> where T : AssetBundleLoader<T>
         }
 
         Content = bundle.LoadAllAssets<CRContentDefinition>();
+    }
+    
+    internal void TryUnload() {
+        if(AssetBundleData?.AlwaysKeepLoaded ?? true) return;
+        _bundle.Unload(false);
+        _bundle = null;
     }
     
     private UnityEngine.Object LoadAsset(AssetBundle bundle, string path)
