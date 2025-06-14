@@ -16,7 +16,7 @@ namespace CodeRebirthLib.ConfigManagement;
 public class ConfigManager(ConfigFile file)
 {
     private static readonly Regex ConfigCleanerRegex = new Regex(@"[\n\t""`\[\]']");
-    static string CleanStringForConfig(string input)
+    internal static string CleanStringForConfig(string input)
     {
         // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
         return ConfigCleanerRegex.Replace(input, string.Empty);
@@ -38,7 +38,7 @@ public class ConfigManager(ConfigFile file)
         T DynamicConfigType,
         string Description)
     {
-        return file.Bind(header, name, DynamicConfigType, Description);
+        return file.Bind(CleanStringForConfig(header), CleanStringForConfig(name), DynamicConfigType, Description);
     }
 
     public ConfigEntryBase CreateDynamicConfig(CRDynamicConfig configDefinition, string configName)

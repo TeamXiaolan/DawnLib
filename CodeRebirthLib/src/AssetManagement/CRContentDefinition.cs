@@ -26,7 +26,7 @@ public abstract class CRContentDefinition : ScriptableObject
     {
         foreach (CRDynamicConfig configDefinition in ConfigEntries)
         {
-            GeneralConfigs[configDefinition.settingName] = mod.ConfigManager.CreateDynamicConfig(configDefinition, AssetBundleData.configName);
+            GeneralConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, AssetBundleData.configName);
         }
     }
 }
