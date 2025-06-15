@@ -18,9 +18,26 @@
       <Reference Include="UnityEditor">
         <HintPath>deps\UnityEditor.dll</HintPath>
       </Reference>
+      <Reference Include="UnityEditor.CoreModule">
+        <HintPath>deps\UnityEditor.CoreModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.IMGUIModule">
+        <HintPath>deps\UnityEngine.IMGUIModule.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule">
+        <HintPath>deps\UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
+      <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all"/>
     </ItemGroup>
 
-
+    <!-- Set NuGet Sources -->
+    <PropertyGroup>
+        <RestoreAdditionalProjectSources>
+            https://api.nuget.org/v3/index.json;
+            https://nuget.bepinex.dev/v3/index.json
+        </RestoreAdditionalProjectSources>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\CodeRebirthLib\CodeRebirthLib.csproj" />
     </ItemGroup>
