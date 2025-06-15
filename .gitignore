@@ -1,3 +1,5 @@
 bin/
 obj/
 Packages/
+CodeRebirthLib.Editor/deps/UnityEditor.dll
+*.user

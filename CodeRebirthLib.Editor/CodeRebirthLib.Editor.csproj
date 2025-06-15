@@ -12,4 +12,11 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+
+    <ItemGroup>
+      <Reference Include="UnityEditor">
+        <HintPath>deps\UnityEditor.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>
