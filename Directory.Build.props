@@ -1,0 +1,26 @@
+﻿<Project>
+    <PropertyGroup>
+        <Version>0.0.8</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>XuXiaolan,loaforc</Authors>
+        <LangVersion>latest</LangVersion>
+        <IsPackable>false</IsPackable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <!--
+        Trim the project path to prevent players from potentially
+        viewing Private Information in stack traces.
+        -->
+        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+</Project>
