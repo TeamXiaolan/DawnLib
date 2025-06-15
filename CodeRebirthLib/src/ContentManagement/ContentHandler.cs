@@ -7,42 +7,36 @@ using CodeRebirthLib.ConfigManagement;
 
 namespace CodeRebirthLib.ContentManagement;
 
-public abstract class ContentHandler<T> where T : ContentHandler<T>
+public abstract class ContentHandler(CRMod mod)
 {
-    public static T Instance { get; private set; } = null!;
-
-    private CRMod _mod;
-    
-    public ContentHandler(CRMod mod)
+    protected bool IsContentEnabled(AssetBundleData assetBundleData)
     {
-        Instance = (T)this;
-        _mod = mod;
-    }
+        string configName = assetBundleData.configName;
 
+        using(ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
+        {
+            bool isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true).Value;
+            return isEnabled;
+        }
+    }
+    
     protected bool TryLoadContentBundle<TAsset>(string assetBundleName, out TAsset? asset) where TAsset : AssetBundleLoader<TAsset>
     {
         asset = null;
         
-        AssetBundleData? assetBundleData = _mod.Content.assetBundles.FirstOrDefault(it => it.assetBundleName == assetBundleName);
+        AssetBundleData? assetBundleData = mod.Content.assetBundles.FirstOrDefault(it => it.assetBundleName == assetBundleName);
         
         if (assetBundleData == null)
         {
             CodeRebirthLibPlugin.ExtendedLogging($"Plugin with assetbundle name: {assetBundleName} is not implemented yet!");
             return false;
         }
-        string configName = assetBundleData.configName;
 
-        using(ConfigContext section = _mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
-        {
-            bool isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true).Value;
-            if (!isEnabled)
-            {
-                return false;
-            }
-        }
+        if (!IsContentEnabled(assetBundleData))
+            return false;
 
         ConstructorInfo constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
-        asset = (TAsset) constructorInfo.Invoke([_mod, assetBundleName]);
+        asset = (TAsset) constructorInfo.Invoke([mod, assetBundleName]);
         asset.AssetBundleData = assetBundleData;
         
         asset.TryUnload();
@@ -55,7 +49,7 @@ public abstract class ContentHandler<T> where T : ContentHandler<T>
         foreach (CRContentDefinition definition in definitions)
         {
             definition.AssetBundleData = bundle.AssetBundleData;
-            definition.Register(_mod);
+            definition.Register(mod);
         }
     }
 
@@ -66,5 +60,15 @@ public abstract class ContentHandler<T> where T : ContentHandler<T>
             return true;
         }
         return false;
+    }
+}
+
+public abstract class ContentHandler<T> : ContentHandler where T : ContentHandler<T>
+{
+    public static T Instance { get; private set; } = null!;
+    
+    public ContentHandler(CRMod mod) : base(mod)
+    {
+        Instance = (T)this;
     }
 }
