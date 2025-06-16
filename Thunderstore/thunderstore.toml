@@ -11,7 +11,7 @@ containsNsfwContent = false
 BepInEx-BepInExPack = "5.4.2100"
 Hamunii-AutoHookGenPatcher = "1.0.6"
 Evaisa-FixPluginTypesSerialization = "1.1.2"
-Evaisa-LethalLib = "1.1.0"
+Evaisa-LethalLib = "1.1.1"
 
 [build]
 icon = "./icon.png"
@@ -21,6 +21,10 @@ outdir = "../Packages"
 [[build.copy]]
 source = "../CodeRebirthLib/bin/Release/netstandard2.1/com.github.xuuxiaolan.coderebirthlib.dll"
 target = "BepInEx/plugins/CodeRebirthLib/"
+
+[[build.copy]]
+source = "./CHANGELOG.md"
+target = "/"
 
 [publish]
 repository = "https://thunderstore.io"
