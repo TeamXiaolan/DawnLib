@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "XuXiaolan"
 name = "CodeRebirthLib"
 description = "Library for managing large Lethal Company mods."
-websiteUrl = "https://github.com/LoafOrc/CodeRebirthLib"
+websiteUrl = "https://github.com/TeamXiaolan/CodeRebirthLib"
 containsNsfwContent = false
 [package.dependencies]
 BepInEx-BepInExPack = "5.4.2100"
