@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using CodeRebirthLib.Exceptions;
 using UnityEngine;
 
@@ -9,7 +10,13 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)
     {
-        throw new System.NotImplementedException();
+        string[] pairs = new string[value.keys.Length];
+        for(int i = 0; i < value.keys.Length; i++)
+        {
+            Keyframe keyframe = value.keys[i];
+            pairs[i] = $"{keyframe.time},{keyframe.value}";
+        }
+        return string.Join(';', pairs);
     }
     
     protected override AnimationCurve ConvertToObject(string keyValuePairs)
