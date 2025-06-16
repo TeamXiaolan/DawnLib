@@ -66,8 +66,9 @@ public class FindPathThroughTeleportsOperation : PathfindingOperation
         }
     }
 
-    public bool TryGetShortestPath(out bool foundPath, out EntranceTeleport? entranceTeleport)
+    public bool TryGetShortestPath(out bool foundPath, out float totalDistance, out EntranceTeleport? entranceTeleport)
     {
+        totalDistance = -1;
         float bestDistance = float.MaxValue;
         foundPath = false;
         entranceTeleport = null;
@@ -125,6 +126,7 @@ public class FindPathThroughTeleportsOperation : PathfindingOperation
             }
         }
         Dispose();
+        totalDistance = bestDistance;
         // CodeRebirthLibPlugin.ExtendedLogging($"Found closest entrance teleport: {entranceTeleport} and is entrance outside: {entranceTeleport?.isEntranceToBuilding}");
         return true;
     }
