@@ -14,7 +14,7 @@ using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.MapObjects;
 
-[CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Map Definition")]
+[CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Definition")]
 public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 {
     [field: FormerlySerializedAs("gameObject"), SerializeField]

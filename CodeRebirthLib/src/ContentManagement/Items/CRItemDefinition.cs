@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.Items;
 
-[CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Item Definition")]
+[CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Definitions/Item Definition")]
 public class CRItemDefinition : CRContentDefinition<ItemData>
 {
     [field: FormerlySerializedAs("item"), SerializeField]

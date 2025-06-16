@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.Enemies;
 
-[CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Enemy Definition")]
+[CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Definitions/Enemy Definition")]
 public class CREnemyDefinition : CRContentDefinition<EnemyData>
 {
     [field: FormerlySerializedAs("enemyType"), SerializeField]
