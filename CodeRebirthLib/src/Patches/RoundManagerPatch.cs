@@ -13,10 +13,11 @@ static class RoundManagerPatch
     {
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
     }
+
     private static void SpawnOutsideMapObjects(On.RoundManager.orig_SpawnOutsideHazards orig, RoundManager self)
     {
         orig(self);
-        
+
         System.Random random = new(StartOfRound.Instance.randomMapSeed + 69);
         foreach (RegisteredCRMapObject registeredMapObject in registeredMapObjects)
         {

@@ -6,6 +6,7 @@ using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Patches;
 using UnityEngine;
 using CodeRebirthLib.Extensions;
+using CodeRebirthLib.Util;
 
 namespace CodeRebirthLib;
 
@@ -35,7 +36,8 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         }
         
         ExtendedTOML.Init();
-        
+        MoreLayerMasks.Init();
+
 		Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
 	}
     

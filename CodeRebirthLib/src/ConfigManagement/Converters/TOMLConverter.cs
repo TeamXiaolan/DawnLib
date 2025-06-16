@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace CodeRebirthLib.ConfigManagement.Converters;
-
 public abstract class TOMLConverter
 {
     public abstract Type ConvertingType { get; }
