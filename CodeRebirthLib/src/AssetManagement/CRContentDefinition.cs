@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
@@ -12,22 +13,36 @@ public abstract class CRContentDefinition : ScriptableObject
 {
     [FormerlySerializedAs("ConfigEntries")]
     public List<CRDynamicConfig> _configEntries;
-
-    public IReadOnlyList<CRDynamicConfig> ConfigEntries => _configEntries;
     
     [field: SerializeField]
     public string EntityNameReference { get; private set; }
 
     internal AssetBundleData AssetBundleData;
 
-    public Dictionary<string, ConfigEntryBase> GeneralConfigs { get; private set; } = new();
+    Dictionary<string, ConfigEntryBase> _generalConfigs = new();
     
     public virtual void Register(CRMod mod)
     {
-        foreach (CRDynamicConfig configDefinition in ConfigEntries)
+        foreach (CRDynamicConfig configDefinition in _configEntries)
         {
-            GeneralConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, AssetBundleData.configName);
+            _generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, AssetBundleData.configName);
         }
+    }
+
+    public ConfigEntry<T> GetGeneralConfig<T>(string configName)
+    {
+        return (ConfigEntry<T>)_generalConfigs[configName];
+    }
+
+    public bool TryGetGeneralConfig<T>(string configName, [NotNullWhen(true)] out ConfigEntry<T>? entry)
+    {
+        if (_generalConfigs.TryGetValue(configName, out ConfigEntryBase configBase))
+        {
+            entry = (ConfigEntry<T>)configBase;
+            return true;
+        }
+        entry = null;
+        return false;
     }
 }
 
