@@ -1,4 +1,5 @@
-﻿using CodeRebirthLib.Util;
+﻿using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.Util;
 
 namespace CodeRebirthLib.Patches;
 static class GameNetworkManagerPatch

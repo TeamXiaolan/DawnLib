@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Unity.Netcode;
 
-namespace CodeRebirthLib.Util;
+namespace CodeRebirthLib.ContentManagement.Enemies;
 [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "All these variables are named to match the scriptable object name")]
 public static class VanillaEnemies
 {
