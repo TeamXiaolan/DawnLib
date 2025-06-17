@@ -3,54 +3,54 @@ using UnityEngine;
 namespace CodeRebirthLib.Util;
 public static class MoreLayerMasks
 {
-    internal static int collidersAndRoomAndDefaultAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask = 0;
-    internal static int collidersAndRoomAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask = 0;
-    internal static int collidersAndRoomAndInteractableAndRailingAndTerrainAndHazardAndVehicleMask = 0;
-    internal static int collidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleAndDefaultMask = 0;
-    internal static int collidersAndRoomAndRailingAndTerrainAndHazardAndVehicleAndDefaultMask = 0;
-    internal static int collidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask = 0;
-    internal static int collidersAndRoomAndRailingAndInteractableMask = 0;
-    internal static int collidersAndRoomAndPlayersAndInteractableMask = 0;
-    internal static int playersAndInteractableAndEnemiesAndPropsHazardMask = 0;
-    internal static int collidersAndRoomMaskAndDefaultAndEnemies = 0;
-    internal static int playersAndEnemiesAndHazardMask = 0;
-    internal static int playersAndRagdollMask = 0;
-    internal static int propsAndHazardMask = 0;
-    internal static int terrainAndFoliageMask = 0;
-    internal static int playersAndEnemiesMask = 0;
-    internal static int defaultMask = 0;
-    internal static int propsMask = 0;
-    internal static int hazardMask = 0;
-    internal static int enemiesMask = 0;
-    internal static int interactableMask = 0;
-    internal static int railingMask = 0;
-    internal static int terrainMask = 0;
-    internal static int vehicleMask = 0;
+    public static int CollidersAndRoomAndDefaultAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask { get; private set; }
+    public static int CollidersAndRoomAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask { get; private set; }
+    public static int CollidersAndRoomAndInteractableAndRailingAndTerrainAndHazardAndVehicleMask { get; private set; }
+    public static int CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleAndDefaultMask { get; private set; }
+    public static int CollidersAndRoomAndRailingAndTerrainAndHazardAndVehicleAndDefaultMask { get; private set; }
+    public static int CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask { get; private set; }
+    public static int CollidersAndRoomAndRailingAndInteractableMask { get; private set; }
+    public static int CollidersAndRoomAndPlayersAndInteractableMask { get; private set; }
+    public static int ClayersAndInteractableAndEnemiesAndPropsHazardMask { get; private set; }
+    public static int CollidersAndRoomMaskAndDefaultAndEnemies { get; private set; }
+    public static int PlayersAndEnemiesAndHazardMask { get; private set; }
+    public static int PlayersAndRagdollMask { get; private set; }
+    public static int PropsAndHazardMask { get; private set; }
+    public static int TerrainAndFoliageMask { get; private set; }
+    public static int PlayersAndEnemiesMask { get; private set; }
+    public static int DefaultMask { get; private set; }
+    public static int PropsMask { get; private set; }
+    public static int HazardMask { get; private set; }
+    public static int EnemiesMask { get; private set; }
+    public static int InteractableMask { get; private set; }
+    public static int RailingMask { get; private set; }
+    public static int TerrainMask { get; private set; }
+    public static int VehicleMask { get; private set; }
 
     public static void Init()
     {
-        defaultMask = LayerMask.GetMask("Default");
-        propsMask = LayerMask.GetMask("Props");
-        hazardMask = LayerMask.GetMask("MapHazards");
-        enemiesMask = LayerMask.GetMask("Enemies");
-        interactableMask = LayerMask.GetMask("InteractableObject");
-        railingMask = LayerMask.GetMask("Railing");
-        terrainMask = LayerMask.GetMask("Terrain");
-        vehicleMask = LayerMask.GetMask("Vehicle");
-        playersAndRagdollMask = StartOfRound.Instance.playersMask | LayerMask.GetMask("PlayerRagdoll");
-        propsAndHazardMask = propsMask | hazardMask;
-        terrainAndFoliageMask = terrainMask | LayerMask.GetMask("Foliage");
-        playersAndEnemiesMask = StartOfRound.Instance.playersMask | enemiesMask;
-        playersAndEnemiesAndHazardMask = playersAndEnemiesMask | hazardMask;
-        collidersAndRoomMaskAndDefaultAndEnemies = StartOfRound.Instance.collidersAndRoomMaskAndDefault | enemiesMask;
-        collidersAndRoomAndRailingAndInteractableMask = StartOfRound.Instance.collidersAndRoomMask | interactableMask | railingMask;
-        collidersAndRoomAndPlayersAndInteractableMask = StartOfRound.Instance.collidersAndRoomMaskAndPlayers | interactableMask;
-        playersAndInteractableAndEnemiesAndPropsHazardMask = playersAndEnemiesAndHazardMask | interactableMask | propsMask;
-        collidersAndRoomAndRailingAndTerrainAndHazardAndVehicleAndDefaultMask = StartOfRound.Instance.collidersAndRoomMask | hazardMask | railingMask | terrainMask | vehicleMask | defaultMask;
-        collidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask = StartOfRound.Instance.collidersAndRoomMaskAndPlayers | enemiesMask | terrainMask | vehicleMask;
-        collidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleAndDefaultMask = collidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask | defaultMask;
-        collidersAndRoomAndInteractableAndRailingAndTerrainAndHazardAndVehicleMask = collidersAndRoomAndRailingAndInteractableMask | hazardMask | terrainMask | vehicleMask;
-        collidersAndRoomAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask = collidersAndRoomAndInteractableAndRailingAndTerrainAndHazardAndVehicleMask | enemiesMask;
-        collidersAndRoomAndDefaultAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask = collidersAndRoomAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask | defaultMask;
+        DefaultMask = LayerMask.GetMask("Default");
+        PropsMask = LayerMask.GetMask("Props");
+        HazardMask = LayerMask.GetMask("MapHazards");
+        EnemiesMask = LayerMask.GetMask("Enemies");
+        InteractableMask = LayerMask.GetMask("InteractableObject");
+        RailingMask = LayerMask.GetMask("Railing");
+        TerrainMask = LayerMask.GetMask("Terrain");
+        VehicleMask = LayerMask.GetMask("Vehicle");
+        PlayersAndRagdollMask = StartOfRound.Instance.playersMask | LayerMask.GetMask("PlayerRagdoll");
+        PropsAndHazardMask = PropsMask | HazardMask;
+        TerrainAndFoliageMask = TerrainMask | LayerMask.GetMask("Foliage");
+        PlayersAndEnemiesMask = StartOfRound.Instance.playersMask | EnemiesMask;
+        PlayersAndEnemiesAndHazardMask = PlayersAndEnemiesMask | HazardMask;
+        CollidersAndRoomMaskAndDefaultAndEnemies = StartOfRound.Instance.collidersAndRoomMaskAndDefault | EnemiesMask;
+        CollidersAndRoomAndRailingAndInteractableMask = StartOfRound.Instance.collidersAndRoomMask | InteractableMask | RailingMask;
+        CollidersAndRoomAndPlayersAndInteractableMask = StartOfRound.Instance.collidersAndRoomMaskAndPlayers | InteractableMask;
+        ClayersAndInteractableAndEnemiesAndPropsHazardMask = PlayersAndEnemiesAndHazardMask | InteractableMask | PropsMask;
+        CollidersAndRoomAndRailingAndTerrainAndHazardAndVehicleAndDefaultMask = StartOfRound.Instance.collidersAndRoomMask | HazardMask | RailingMask | TerrainMask | VehicleMask | DefaultMask;
+        CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask = StartOfRound.Instance.collidersAndRoomMaskAndPlayers | EnemiesMask | TerrainMask | VehicleMask;
+        CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleAndDefaultMask = CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask | DefaultMask;
+        CollidersAndRoomAndInteractableAndRailingAndTerrainAndHazardAndVehicleMask = CollidersAndRoomAndRailingAndInteractableMask | HazardMask | TerrainMask | VehicleMask;
+        CollidersAndRoomAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask = CollidersAndRoomAndInteractableAndRailingAndTerrainAndHazardAndVehicleMask | EnemiesMask;
+        CollidersAndRoomAndDefaultAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask = CollidersAndRoomAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask | DefaultMask;
     }
 }

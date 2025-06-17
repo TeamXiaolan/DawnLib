@@ -11,8 +11,8 @@ using UnityEngine.Serialization;
 namespace CodeRebirthLib.AssetManagement;
 public abstract class CRContentDefinition : ScriptableObject
 {
-    [FormerlySerializedAs("ConfigEntries")]
-    public List<CRDynamicConfig> _configEntries;
+    [FormerlySerializedAs("ConfigEntries"), SerializeField]
+    List<CRDynamicConfig> _configEntries;
     
     [field: SerializeField]
     public string EntityNameReference { get; private set; }
