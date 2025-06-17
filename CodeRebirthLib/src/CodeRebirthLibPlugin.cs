@@ -34,6 +34,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         GameNetworkManagerPatch.Init();
         EnemyAIPatch.Init();
         StartOfRoundPatch.Init();
+        TerminalPatch.Init();
         
         if (LethalConfigCompatibility.Enabled)
         {
