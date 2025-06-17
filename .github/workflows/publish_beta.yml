@@ -26,9 +26,9 @@ jobs:
           dotnet restore
           dotnet tool restore
 
-      - name: Build CodeRebirthLib project
+      - name: Build solution
         run: |
-          dotnet build ./CodeRebirthLib/CodeRebirthLib.csproj -c Release
+          dotnet build -c Release
 
       - name: Upload Thunderstore artifact
         uses: actions/upload-artifact@v4

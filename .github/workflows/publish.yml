@@ -56,32 +56,32 @@ jobs:
       - name: Upload artifacts to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*.zip nupkg-build/*.nupkg
+        run: gh release upload ${{ github.event.release.tag_name }} thunderstore-build/*.zip nupkg-build/*/bin/Release/*.nupkg
 
-#  deploy-thunderstore:
-#    name: Deploy to Thunderstore
-#    needs: build
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Fetch Sources
-#        uses: actions/checkout@v4
-#
-#      - name: Download Thunderstore artifact
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: thunderstore-build
+  deploy-thunderstore:
+    name: Deploy to Thunderstore
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v4
 
-#      - name: Setup .NET environment
-#        uses: actions/setup-dotnet@v3
-#        with:
-#          dotnet-version: "8.0.100"
+      - name: Download Thunderstore artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: thunderstore-build
 
-#      - name: Restore dotnet tools
-#        run: |
-#          dotnet tool restore
+      - name: Setup .NET environment
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.100"
 
-#      - name: Publish to Thunderstore
-#        env:
-#          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
-#        run: |
-#          dotnet build -target:PublishThunderstore
+      - name: Restore dotnet tools
+        run: |
+          dotnet tool restore
+
+      - name: Publish to Thunderstore
+        env:
+          TCLI_AUTH_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
+        run: |
+          dotnet build -target:PublishThunderstore
