@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -24,10 +25,19 @@ public class CRMod
     public ConfigManager ConfigManager { get; }
     public ContentContainer Content { get; private set; }
     
-    public Assembly Assembly { get; }
+    public Assembly? Assembly { get; }
     public ManualLogSource? Logger { get; set; }
 
+    public BepInPlugin Plugin { get; }
+    
     private Dictionary<string, CRRegistry> _registries = new();
+
+    private string _basePath;
+    
+    public string GetRelativePath(params string[] path)
+    {
+        return Path.Combine(_basePath, Path.Combine(path));
+    }
 
     public void CreateRegistry<T>(string name, CRRegistry<T> registry) where T : CRContentDefinition
     {
@@ -60,11 +70,18 @@ public class CRMod
         return GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
     }
     
-    internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle)
+    // todo: i dont like how many arguments are here lmao
+    internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)
     {
-        ConfigManager = new ConfigManager(plugin.Config);
         Assembly = assembly;
+    }
 
+    internal CRMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager)
+    {
+        ConfigManager = configManager;
+        _basePath = basePath;
+        Plugin = plugin;
+        
         ContentContainer[] containers = mainBundle.LoadAllAssets<ContentContainer>();
         if (containers.Length == 0)
         {
@@ -100,6 +117,12 @@ public class CRMod
     
     public void RegisterContentHandlers()
     {
+        if (Assembly == null)
+        {
+            CodeRebirthLibPlugin.Logger.LogWarning($"Tried to Register Content Handlers for {Plugin.Name} but it is a no-code CRMod!");
+            return;
+        }
+        
         IEnumerable<Type> contentHandlers = Assembly.GetLoadableTypes().Where(x =>
             x.BaseType != null
             && x.BaseType.IsGenericType

@@ -1,3 +1,4 @@
+using System.IO;
 using BepInEx;
 using BepInEx.Logging;
 using System.Reflection;
@@ -21,12 +22,12 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
     
 	private void Awake()
 	{
-		Logger = base.Logger;
+		    Logger = base.Logger;
         ConfigManager = new ConfigManager(Config);
 
         CodeRebirthLibConfig.Bind(ConfigManager);
         
-		NetcodePatcher();
+		    NetcodePatcher();
         RoundManagerPatch.Patch();
         
         if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
@@ -38,7 +39,20 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         ExtendedTOML.Init();
         MoreLayerMasks.Init();
 
-		Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+        foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))  
+        {
+            AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
+            CRModVersion modInformation = mainBundle.LoadAsset<CRModVersion>("Mod Information.asset");
+            if (modInformation == null)
+            {
+                Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' does not have a 'Mod Information' file. Make sure you include one with that specific name!");
+                continue;
+            }
+
+            CRLib.RegisterNoCodeMod(modInformation.CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
+        }
+      
+		    Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
 	}
     
 	private void NetcodePatcher()

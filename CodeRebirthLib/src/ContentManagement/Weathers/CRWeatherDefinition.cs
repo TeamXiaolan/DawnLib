@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 using WeatherRegistry;
 
 namespace CodeRebirthLib.ContentManagement.Weathers;
-[CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Weather Definition")]
+[CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Definitions/Weather Definition")]
 public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 {
     [field: FormerlySerializedAs("Weather"), SerializeField]

@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.Unlockables;
 
-[CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Unlockable Definition")]
+[CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
 public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 {
     [field: FormerlySerializedAs("unlockableItemDef"), SerializeField]

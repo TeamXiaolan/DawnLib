@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>com.github.xuuxiaolan.coderebirthlib.editor</AssemblyName>
+        <Product>CodeRebirthLib.Editor</Product>
+    </PropertyGroup>
+
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>CodeRebirthLib.Editor</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <Reference Include="UnityEditor">
+        <HintPath>$(UnityEditorPath)Editor\Data\Managed\UnityEngine\UnityEditor.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEditor.CoreModule">
+        <HintPath>$(UnityEditorPath)Editor\Data\Managed\UnityEngine\UnityEditor.CoreModule.dll</HintPath>
+      </Reference>
+      <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\CodeRebirthLib\CodeRebirthLib.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="deps\" />
+    </ItemGroup>
+</Project>
