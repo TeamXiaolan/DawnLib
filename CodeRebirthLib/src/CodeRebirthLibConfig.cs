@@ -12,7 +12,7 @@ static class CodeRebirthLibConfig
     {
         using(ConfigContext context = manager.CreateConfigSection("Compatibility"))
         {
-            LethalConfigCompatibility = context.Bind("Extend LethalConfig Support", $"Patches LethalConfig to enable raw editing of strings for unknown types.\nCurrent Targeted Version: {LethalConfigPatch.VERSION}", CompatibilityBool.IfVersionMatches).Value;
+            LethalConfigCompatibility = context.Bind("Extend LethalConfig Support", $"Patches LethalConfig to enable raw editing of strings for unknown types.\nCurrent Targeted Version: {ModCompats.LethalConfigCompatibility.VERSION}", CompatibilityBool.IfVersionMatches).Value;
         }
 
         using(ConfigContext context = manager.CreateConfigSection("Debugging"))

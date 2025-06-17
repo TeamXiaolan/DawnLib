@@ -4,7 +4,7 @@ using CodeRebirthLib.ContentManagement.Enemies;
 namespace CodeRebirthLib.ModCompats;
 static class WeatherRegistryCompatibility
 {
-    public static bool Enabled { get { return BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(WeatherRegistry.PluginInfo.PLUGIN_GUID); } }
+    public static bool Enabled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(WeatherRegistry.PluginInfo.PLUGIN_GUID);
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -7,34 +6,28 @@ using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using CodeRebirthLib.Data;
 using LethalConfig.ConfigItems;
+using On.LethalConfig.AutoConfig;
 using UnityEngine;
-using AutoConfigGenerator = On.LethalConfig.AutoConfig.AutoConfigGenerator;
 
-namespace CodeRebirthLib.Patches;
-/*
- * LethalConfig is a little dumb idiot and doesn't default to a string text input if it encouters a type it doesn't know.
- * I would make a pull request to it, but i am not setting up thunderkit (not to mention it looks abandoned)
- */
-static class LethalConfigPatch
+namespace CodeRebirthLib.ModCompats;
+static class LethalConfigCompatibility
 {
     internal const string VERSION = "1.4.6";
+    public static bool Enabled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(LethalConfig.PluginInfo.Guid) && CodeRebirthLibConfig.LethalConfigCompatibility.ShouldRunCompatibility(VERSION, Chainloader.PluginInfos[LethalConfig.PluginInfo.Guid].Metadata.Version);
     
     private static ConfigFile _dummyConfig;
-
     private static FieldInfo _typedValueField = typeof(ConfigEntry<>).GetField("_typedValue", BindingFlags.Instance | BindingFlags.NonPublic);
+
     
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    internal static void Patch()
+    public static void Init()
     {
-        if(!CodeRebirthLibConfig.LethalConfigCompatibility.ShouldRunCompatibility(VERSION, Chainloader.PluginInfos["ainavt.lc.lethalconfig"].Metadata.Version))
-            return;
-        
         _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "coderebirthlib.dummy.youshouldneverseethis.cfg"), false);
         _dummyConfig.SaveOnConfigSet = false;
         
         On.LethalConfig.AutoConfig.AutoConfigGenerator.GenerateConfigForEntry += ExtendGenerateConfigForEntry;
     }
-
+    
     private static BaseConfigItem ExtendGenerateConfigForEntry(AutoConfigGenerator.orig_GenerateConfigForEntry orig, ConfigEntryBase configEntryBase)
     {
         try

@@ -33,10 +33,9 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         EnemyAIPatch.Init();
         StartOfRoundPatch.Init();
         
-        if (Chainloader.PluginInfos.ContainsKey(LethalConfig.PluginInfo.Guid))
+        if (LethalConfigCompatibility.Enabled)
         {
-            // try patches.
-            LethalConfigPatch.Patch();
+            LethalConfigCompatibility.Init();
         }
 
         if (WeatherRegistryCompatibility.Enabled)

@@ -17,6 +17,7 @@ using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Weathers;
 using CodeRebirthLib.Exceptions;
 using CodeRebirthLib.Extensions;
+using CodeRebirthLib.ModCompats;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -91,7 +92,7 @@ public class CRMod
         Content = containers[0];
         
         AddDefaultRegistries();
-        if (Chainloader.PluginInfos.ContainsKey(WeatherRegistry.PluginInfo.PLUGIN_GUID))
+        if (WeatherRegistryCompatibility.Enabled)
         {
             AddWeatherRegistry();
         }
