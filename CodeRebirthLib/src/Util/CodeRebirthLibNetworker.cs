@@ -8,7 +8,6 @@ public class CodeRebirthLibNetworker : NetworkBehaviour
 {
     internal static EntranceTeleport[] entrancePoints = [];
     internal ES3Settings SaveSettings;
-    internal static Dictionary<EnemyAI, ExtraEnemyData> ExtraEnemyDataDict = new();
     internal System.Random CRLibRandom = new();
     internal static CodeRebirthLibNetworker Instance { get; private set; } = null!;
 
