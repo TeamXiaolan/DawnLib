@@ -41,13 +41,21 @@ public abstract class ContentHandler(CRMod mod)
         return true;
     }
 
-    protected void LoadAllContent<TAsset>(TAsset bundle) where TAsset : AssetBundleLoader<TAsset>
+    protected void LoadAllContent(IAssetBundleLoader bundle)
     {
         CRContentDefinition[] definitions = bundle.Content;
         foreach (CRContentDefinition definition in definitions)
         {
             definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(mod);
+        }
+    }
+
+    protected void LoadAllContent(params IAssetBundleLoader[] bundles)
+    {
+        foreach (IAssetBundleLoader bundle in bundles)
+        {
+            LoadAllContent(bundle);
         }
     }
 

@@ -8,10 +8,11 @@ using UnityEngine;
 using NetworkPrefabs = LethalLib.Modules.NetworkPrefabs;
 
 namespace CodeRebirthLib.AssetManagement;
-public class AssetBundleLoader<T> where T : AssetBundleLoader<T>
+public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetBundleLoader<T>
 {
     public AssetBundleData? AssetBundleData { get; set; } = null;
-    public CRContentDefinition[] Content { get; private set; }
+    public CRContentDefinition[] Content { get; private set;  }
+
 
     private AssetBundle? _bundle;
     
