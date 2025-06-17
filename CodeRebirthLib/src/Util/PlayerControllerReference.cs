@@ -6,6 +6,7 @@ namespace CodeRebirthLib.Util;
 public class PlayerControllerReference : INetworkSerializable
 {
     private int _playerID;
+    private PlayerControllerReference() { }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
@@ -20,7 +21,9 @@ public class PlayerControllerReference : INetworkSerializable
 
     public override bool Equals(object? obj)
     {
-        return obj is PlayerControllerReference other && other._playerID == _playerID;
+        if (obj is PlayerControllerReference otherReference) return otherReference._playerID == _playerID;
+        if (obj is PlayerControllerB player) return Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player) == _playerID;
+        return false;
     }
 
     public override int GetHashCode()
