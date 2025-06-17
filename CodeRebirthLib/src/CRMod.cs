@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -66,6 +67,12 @@ public class CRMod
     public CRRegistry<CRUnlockableDefinition> UnlockableRegistry() => GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
     public static IEnumerable<CRUnlockableDefinition> AllUnlockables() => AllMods.SelectMany(mod => mod.UnlockableRegistry());
 
+    
+    public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
+    {
+        data = Content.assetBundles.FirstOrDefault(it => it.assetBundleName == bundleName);
+        return data != null;
+    }
     
     // todo: i dont like how many arguments are here lmao
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)

@@ -2,11 +2,21 @@
 using System.Reflection;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using On.LethalConfig.Mods;
 
 namespace CodeRebirthLib.ContentManagement;
 
 public abstract class ContentHandler(CRMod mod)
 {
+    protected bool IsContentEnabled(string bundleName)
+    {
+        if (!mod.TryGetBundleDataFromName(bundleName, out AssetBundleData? data))
+        {
+            return false;
+        }
+        return IsContentEnabled(data);
+    }
+    
     protected bool IsContentEnabled(AssetBundleData assetBundleData)
     {
         string configName = assetBundleData.configName;
@@ -22,11 +32,9 @@ public abstract class ContentHandler(CRMod mod)
     {
         asset = null;
         
-        AssetBundleData? assetBundleData = mod.Content.assetBundles.FirstOrDefault(it => it.assetBundleName == assetBundleName);
-        
-        if (assetBundleData == null)
+        if (!mod.TryGetBundleDataFromName(assetBundleName, out AssetBundleData? assetBundleData))
         {
-            CodeRebirthLibPlugin.ExtendedLogging($"Plugin with assetbundle name: {assetBundleName} is not implemented yet!");
+            mod.Logger?.LogWarning($"Assetbundle name: {assetBundleName} is not implemented yet!");
             return false;
         }
 
