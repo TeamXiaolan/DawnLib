@@ -9,12 +9,14 @@ using UnityEngine;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.ModCompats;
+using Unity.Netcode;
 
 namespace CodeRebirthLib;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(LethalLib.Plugin.ModGUID)]
 [BepInDependency(WeatherRegistry.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(PathfindingLib.PathfindingLibPlugin.PluginGUID)]
 class CodeRebirthLibPlugin : BaseUnityPlugin
 {
 	internal new static ManualLogSource Logger { get; private set; } = null!;
@@ -67,6 +69,10 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 		var types = Assembly.GetExecutingAssembly().GetLoadableTypes();
 		foreach (var type in types)
 		{
+            if (type.IsNested || !typeof(NetworkBehaviour).IsAssignableFrom(type))
+            {
+                continue; // we do not care about fixing it, if it is not a network behaviour
+            }
 			var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
 			foreach (var method in methods)
 			{
