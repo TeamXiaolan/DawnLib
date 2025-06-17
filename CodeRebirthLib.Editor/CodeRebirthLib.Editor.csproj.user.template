@@ -1,5 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <UnityEditorPath>C:\Program Files\Unity\Hub\Editor\2022.3.9f1\</UnityEditorPath>
-    </PropertyGroup>
-</Project>

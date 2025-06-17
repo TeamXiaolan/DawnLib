@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib", "CodeRebirthLib\CodeRebirthLib.csproj", "{C4F54072-A24E-46EB-A2DA-B44FC777F84F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib.Editor", "CodeRebirthLib.Editor\CodeRebirthLib.Editor.csproj", "{9C816178-B06F-4301-98F1-9873694FA816}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,9 +12,5 @@ Global
 		{C4F54072-A24E-46EB-A2DA-B44FC777F84F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4F54072-A24E-46EB-A2DA-B44FC777F84F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4F54072-A24E-46EB-A2DA-B44FC777F84F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C816178-B06F-4301-98F1-9873694FA816}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C816178-B06F-4301-98F1-9873694FA816}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C816178-B06F-4301-98F1-9873694FA816}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C816178-B06F-4301-98F1-9873694FA816}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
