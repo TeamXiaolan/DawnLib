@@ -2,6 +2,7 @@
 using System.Linq;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.ContentManagement.Weathers;
 using LethalLib.Extras;
 using LethalLib.Modules;
@@ -17,9 +18,11 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
     public UnlockableItemDef UnlockableItemDef { get; private set; }
 
     [field: FormerlySerializedAs("DenyPurchaseNode"), SerializeField]
-    public TerminalNode? DenyPurchaseNode { get; private set; }
+    public TerminalNode? ProgressiveDenyNode { get; private set; }
 
     public UnlockableConfig Config { get; private set; }
+
+    public ProgressiveUnlockData? ProgressiveData { get; private set; }
     
     public override void Register(CRMod mod, UnlockableData data)
     {
@@ -37,7 +40,9 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 
         if (Config.IsProgressive?.Value ?? data.isProgressive)
         {
-            // todo
+            if (!ProgressiveDenyNode) ProgressiveDenyNode = CreateDefaultProgressiveDenyNode();
+            
+            
         }
         
         mod.UnlockableRegistry().Register(this);
@@ -55,6 +60,13 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
                 Cost = context.Bind("Cost", $"Csot for {unlockableName} in the shop.", data.cost)
             };
         }
+    }
+
+    static TerminalNode CreateDefaultProgressiveDenyNode()
+    {
+        TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
+        node.displayText = "Ship Upgrade or Decor is not unlocked";
+        return node;
     }
     
     public const string REGISTRY_ID = "unlockables";
