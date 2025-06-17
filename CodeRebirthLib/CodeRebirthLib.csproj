@@ -73,6 +73,6 @@
     </ItemGroup>
 
     <Target Name="PackThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
-        <Exec Command="dotnet tcli build --config-path &quot;$(SolutionDir)Thunderstore/thunderstore.toml&quot; --package-version $(Version)"  />
+        <Exec Command="dotnet tcli build --config-path &quot;$(ProjectDir)../Thunderstore/thunderstore.toml&quot; --package-version $(Version)"  />
     </Target>
 </Project>
