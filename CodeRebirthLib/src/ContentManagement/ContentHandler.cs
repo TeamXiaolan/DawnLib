@@ -28,7 +28,7 @@ public abstract class ContentHandler(CRMod mod)
         }
     }
     
-    protected bool TryLoadContentBundle<TAsset>(string assetBundleName, out TAsset? asset) where TAsset : AssetBundleLoader<TAsset>
+    protected bool TryLoadContentBundle<TAsset>(string assetBundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
     {
         asset = null;
         
@@ -38,7 +38,7 @@ public abstract class ContentHandler(CRMod mod)
             return false;
         }
 
-        if (!IsContentEnabled(assetBundleData))
+        if (!forceEnabled && !IsContentEnabled(assetBundleData))
             return false;
 
         ConstructorInfo constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
@@ -67,9 +67,9 @@ public abstract class ContentHandler(CRMod mod)
         }
     }
 
-    protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset) where TAsset : AssetBundleLoader<TAsset>
+    protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
     {
-        if (TryLoadContentBundle(bundleName, out asset))
+        if (TryLoadContentBundle(bundleName, out asset, forceEnabled))
         {
             LoadAllContent(asset!);
             return true;
