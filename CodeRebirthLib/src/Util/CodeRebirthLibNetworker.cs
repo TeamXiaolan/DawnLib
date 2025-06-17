@@ -4,16 +4,14 @@ using UnityEngine;
 
 namespace CodeRebirthLib.Util;
 
-public class CodeRebirthLibNetworker : NetworkBehaviour
+public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
     internal static EntranceTeleport[] entrancePoints = [];
     internal ES3Settings SaveSettings;
     internal System.Random CRLibRandom = new();
-    internal static CodeRebirthLibNetworker Instance { get; private set; } = null!;
 
     private void Awake()
     {
-        Instance = this;
         CRLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
         SaveSettings = new($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
