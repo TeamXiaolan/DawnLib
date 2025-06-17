@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using BepInEx.Configuration;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 
@@ -55,7 +53,8 @@ public abstract class ContentHandler(CRMod mod)
 
     protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset) where TAsset : AssetBundleLoader<TAsset>
     {
-        if(TryLoadContentBundle(bundleName, out asset)) {
+        if (TryLoadContentBundle(bundleName, out asset))
+        {
             LoadAllContent(asset!);
             return true;
         }

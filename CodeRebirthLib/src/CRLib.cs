@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -15,7 +12,7 @@ public static class CRLib
 {
     public static AssetBundle LoadBundle(Assembly assembly, string filePath)
     {
-        return AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location)!, "Assets", filePath));
+        return AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location), "Assets", filePath));
     }
     
     public static CRMod RegisterMod(BaseUnityPlugin plugin, AssetBundle mainBundle)

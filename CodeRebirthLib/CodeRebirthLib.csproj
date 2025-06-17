@@ -66,6 +66,9 @@
       <Reference Include="MMHOOK_Assembly-CSharp">
         <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
+      <Reference Include="PathfindingLib">
+        <HintPath>deps\PathfindingLib.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <Target Name="PackThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
