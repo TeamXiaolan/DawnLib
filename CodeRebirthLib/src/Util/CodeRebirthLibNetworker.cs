@@ -6,7 +6,6 @@ namespace CodeRebirthLib.Util;
 
 public class CodeRebirthLibNetworker : NetworkBehaviour
 {
-    internal static List<EnemyType> EnemyTypes = new();
     internal static EntranceTeleport[] entrancePoints = [];
     internal ES3Settings SaveSettings;
     internal static Dictionary<EnemyAI, ExtraEnemyData> ExtraEnemyDataDict = new();

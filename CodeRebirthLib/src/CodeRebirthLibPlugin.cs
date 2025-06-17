@@ -22,13 +22,15 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
     
 	private void Awake()
 	{
-		    Logger = base.Logger;
+        Logger = base.Logger;
         ConfigManager = new ConfigManager(Config);
 
         CodeRebirthLibConfig.Bind(ConfigManager);
         
-		    NetcodePatcher();
+        NetcodePatcher();
         RoundManagerPatch.Patch();
+        GameNetworkManagerPatch.Init();
+        EnemyAIPatch.Init();
         
         if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
         {
@@ -38,6 +40,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         
         ExtendedTOML.Init();
         MoreLayerMasks.Init();
+        
 
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))  
         {
@@ -52,7 +55,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
             CRLib.RegisterNoCodeMod(modInformation.CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
         }
       
-		    Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+		Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
 	}
     
 	private void NetcodePatcher()
