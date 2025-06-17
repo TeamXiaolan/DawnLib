@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
+using CodeRebirthLib.Extensions;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -29,5 +30,17 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
                 CodeRebirthLibPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation is installed)");
             }
         }
+    }
+
+    [ServerRpc]
+    internal void BroadcastDisplayTipServerRPC(HUDDisplayTip displayTip)
+    {
+        BroadcastDisplayTipClientRPC(displayTip);
+    }
+
+    [ClientRpc]
+    void BroadcastDisplayTipClientRPC(HUDDisplayTip displayTip)
+    {
+        HUDManager.Instance.DisplayTip(displayTip);
     }
 }

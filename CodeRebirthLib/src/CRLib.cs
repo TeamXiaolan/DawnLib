@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.Extensions;
+using CodeRebirthLib.Util;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -21,6 +22,11 @@ public static class CRLib
         return new CRMod(plugin.GetType().Assembly, plugin, mainBundle, Path.GetDirectoryName(plugin.GetType().Assembly.Location)!, configManager);
     }
 
+    public static void BroadcastTip(HUDDisplayTip displayTip)
+    {
+        CodeRebirthLibNetworker.Instance.BroadcastDisplayTipServerRPC(displayTip);
+    }
+    
     internal static CRMod RegisterNoCodeMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath)
     {
         ConfigManager configManager = new ConfigManager(GenerateConfigFile(plugin));
