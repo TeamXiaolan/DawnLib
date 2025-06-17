@@ -8,13 +8,13 @@ using CodeRebirthLib.Patches;
 using UnityEngine;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
+using CodeRebirthLib.ModCompats;
 
 namespace CodeRebirthLib;
-
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(LethalLib.Plugin.ModGUID, BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency(WeatherRegistry.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency("ainavt.lc.lethalconfig", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
 class CodeRebirthLibPlugin : BaseUnityPlugin
 {
 	internal new static ManualLogSource Logger { get; private set; } = null!;
@@ -32,16 +32,20 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         GameNetworkManagerPatch.Init();
         EnemyAIPatch.Init();
         
-        if (Chainloader.PluginInfos.ContainsKey("ainavt.lc.lethalconfig"))
+        if (Chainloader.PluginInfos.ContainsKey(LethalConfig.PluginInfo.Guid))
         {
             // try patches.
             LethalConfigPatch.Patch();
+        }
+
+        if (WeatherRegistryCompatibility.Enabled)
+        {
+            WeatherRegistryCompatibility.Init();
         }
         
         ExtendedTOML.Init();
         MoreLayerMasks.Init();
         
-
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))  
         {
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);

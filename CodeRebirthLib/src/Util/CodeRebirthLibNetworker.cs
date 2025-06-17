@@ -32,7 +32,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         }
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     internal void BroadcastDisplayTipServerRPC(HUDDisplayTip displayTip)
     {
         BroadcastDisplayTipClientRPC(displayTip);
