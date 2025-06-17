@@ -12,7 +12,7 @@ using CodeRebirthLib.ModCompats;
 
 namespace CodeRebirthLib;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-[BepInDependency(LethalLib.Plugin.ModGUID, BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency(LethalLib.Plugin.ModGUID)]
 [BepInDependency(WeatherRegistry.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
 class CodeRebirthLibPlugin : BaseUnityPlugin
@@ -31,6 +31,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         RoundManagerPatch.Patch();
         GameNetworkManagerPatch.Init();
         EnemyAIPatch.Init();
+        StartOfRoundPatch.Init();
         
         if (Chainloader.PluginInfos.ContainsKey(LethalConfig.PluginInfo.Guid))
         {

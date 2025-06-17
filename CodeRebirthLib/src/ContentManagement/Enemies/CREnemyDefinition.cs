@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.Util.Attributes;
 using LethalLib.Modules;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -25,6 +26,8 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     public Dictionary<string, float> WeatherMultipliers = new();
     
     public EnemyConfig Config { get; private set; }
+
+    private Dictionary<SelectableLevel, AttributeStack<int>> _moonWeights;
     
     public override void Register(CRMod mod, EnemyData data)
     {
@@ -57,6 +60,45 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
         mod.EnemyRegistry().Register(this);
     }
 
+    // todo: i dont like how nested this is lmao
+    internal static void CreateMoonAttributeStacks()
+    {
+        foreach (SelectableLevel moon in StartOfRound.Instance.levels)
+        {
+            foreach (SpawnableEnemyWithRarity enemyWithRarity in moon.Enemies)
+            {
+                EnemyType enemy = enemyWithRarity.enemyType;
+                if (enemy.TryGetDefinition(out CREnemyDefinition? definition) && !definition._moonWeights.ContainsKey(moon))
+                {
+                    AttributeStack<int> stack = new AttributeStack<int>(enemyWithRarity.rarity);
+                    stack.Add(input => { // Handle Weather Multipliers, note that this keeps the reference of 'definition' and 'moon' from the foreach loops
+                        string weatherName = moon.currentWeather.ToString();
+                        if (!definition.WeatherMultipliers.TryGetValue(weatherName, out float multiplier))
+                            return input;
+                        
+                        return Mathf.FloorToInt(multiplier * input);
+                    });
+                    definition._moonWeights[moon] = stack;
+                }
+            }
+        }
+    }
+
+    internal static void UpdateAllWeights()
+    {
+        foreach (SelectableLevel moon in StartOfRound.Instance.levels)
+        {
+            foreach (SpawnableEnemyWithRarity enemyWithRarity in moon.Enemies)
+            {
+                EnemyType enemy = enemyWithRarity.enemyType;
+                if (enemy.TryGetDefinition(out CREnemyDefinition? definition) && !definition._moonWeights.ContainsKey(moon))
+                {
+                    enemyWithRarity.rarity = definition._moonWeights[moon].Calculate(forceRecalculate: true);
+                }
+            }
+        }
+    }
+    
     public static EnemyConfig CreateEnemyConfig(CRMod mod, EnemyData data, string enemyName)
     {
         using(ConfigContext section = mod.ConfigManager.CreateConfigSection(enemyName))

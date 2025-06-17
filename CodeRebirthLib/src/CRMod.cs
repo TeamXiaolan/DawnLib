@@ -22,6 +22,9 @@ using UnityEngine;
 namespace CodeRebirthLib;
 public class CRMod
 {
+    private static readonly List<CRMod> _allMods = new();
+    public static IReadOnlyList<CRMod> AllMods => _allMods.AsReadOnly();
+    
     public ConfigManager ConfigManager { get; }
     public ContentContainer Content { get; private set; }
     
@@ -50,25 +53,18 @@ public class CRMod
         return (CRRegistry<T>) _registries[name];
     }
 
-    public CRRegistry<CREnemyDefinition> EnemyRegistry()
-    {
-        return GetRegistryByName<CREnemyDefinition>(CREnemyDefinition.REGISTRY_ID);
-    }
+    public CRRegistry<CREnemyDefinition> EnemyRegistry() => GetRegistryByName<CREnemyDefinition>(CREnemyDefinition.REGISTRY_ID);
+    public static IEnumerable<CREnemyDefinition> AllEnemies() => AllMods.SelectMany(mod => mod.EnemyRegistry());
     
-    public CRRegistry<CRItemDefinition> ItemRegistry()
-    {
-        return GetRegistryByName<CRItemDefinition>(CRItemDefinition.REGISTRY_ID);
-    }
+    public CRRegistry<CRItemDefinition> ItemRegistry() => GetRegistryByName<CRItemDefinition>(CRItemDefinition.REGISTRY_ID);
+    public static IEnumerable<CRItemDefinition> AllItems() => AllMods.SelectMany(mod => mod.ItemRegistry());
+
+    public CRRegistry<CRMapObjectDefinition> MapObjectRegistry() => GetRegistryByName<CRMapObjectDefinition>(CRMapObjectDefinition.REGISTRY_ID);
+    public static IEnumerable<CRMapObjectDefinition> AllMapObjects() => AllMods.SelectMany(mod => mod.MapObjectRegistry());
     
-    public CRRegistry<CRMapObjectDefinition> MapObjectRegistry()
-    {
-        return GetRegistryByName<CRMapObjectDefinition>(CRMapObjectDefinition.REGISTRY_ID);
-    }
-    
-    public CRRegistry<CRUnlockableDefinition> UnlockableRegistry()
-    {
-        return GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
-    }
+    public CRRegistry<CRUnlockableDefinition> UnlockableRegistry() => GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
+    public static IEnumerable<CRUnlockableDefinition> AllUnlockables() => AllMods.SelectMany(mod => mod.UnlockableRegistry());
+
     
     // todo: i dont like how many arguments are here lmao
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)
@@ -99,6 +95,8 @@ public class CRMod
         {
             AddWeatherRegistry();
         }
+        
+        _allMods.Add(this);
     }
 
     void AddDefaultRegistries()

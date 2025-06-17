@@ -50,11 +50,6 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
 
 public static class CRRegistryExtensions
 {
-    public static bool TryGetFromEnemyName<T>(this CRRegistry<T> registry, string enemyName, [NotNullWhen(true)] out T? value) where T : CREnemyDefinition
-    {
-        return registry.TryGetFirstBySomeName(it => it.EnemyType.enemyName, enemyName, out value);
-    }
-    
     public static bool TryGetFromItemName<T>(this CRRegistry<T> registry, string itemName, [NotNullWhen(true)] out T? value) where T : CRItemDefinition
     {
         return registry.TryGetFirstBySomeName(it => it.Item.itemName, itemName, out value);

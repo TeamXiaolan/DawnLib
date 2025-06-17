@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using CodeRebirthLib.ContentManagement.Enemies;
 
 namespace CodeRebirthLib.ModCompats;
 static class WeatherRegistryCompatibility
@@ -13,5 +14,7 @@ static class WeatherRegistryCompatibility
 
     private static void WeatherRegistry_EventManager_WeatherChanged((SelectableLevel selectableLevel, WeatherRegistry.Weather weather) args)
     {
+        // todo: in theory this should only recalculate for the specific moon, but oh well
+        CREnemyDefinition.UpdateAllWeights();
     }
 }
