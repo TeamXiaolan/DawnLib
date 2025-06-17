@@ -20,14 +20,6 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
-    <!-- Set NuGet Sources -->
-    <PropertyGroup>
-        <RestoreAdditionalProjectSources>
-            https://api.nuget.org/v3/index.json;
-            https://nuget.bepinex.dev/v3/index.json
-        </RestoreAdditionalProjectSources>
-    </PropertyGroup>
-
     <!-- Embed Debug Symbols for Easier Debugging -->
     <PropertyGroup>
         <DebugSymbols>true</DebugSymbols>

@@ -22,14 +22,6 @@
       </Reference>
       <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all"/>
     </ItemGroup>
-
-    <!-- Set NuGet Sources -->
-    <PropertyGroup>
-        <RestoreAdditionalProjectSources>
-            https://api.nuget.org/v3/index.json;
-            https://nuget.bepinex.dev/v3/index.json
-        </RestoreAdditionalProjectSources>
-    </PropertyGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\CodeRebirthLib\CodeRebirthLib.csproj" />
