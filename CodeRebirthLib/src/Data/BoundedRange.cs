@@ -7,11 +7,11 @@ namespace CodeRebirthLib.Data;
 public class BoundedRange
 {
     [field: SerializeField]
-    public int Min { get; private set; }
+    public float Min { get; private set; }
     [field: SerializeField]
-    public int Max { get; private set; }
+    public float Max { get; private set; }
 
-    public BoundedRange(int min, int max)
+    public BoundedRange(float min, float max)
     {
         Min = min;
         Max = max;

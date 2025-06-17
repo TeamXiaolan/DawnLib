@@ -7,8 +7,9 @@ using Random = System.Random;
 namespace CodeRebirthLib.Extensions;
 public static class RandomExtensions
 {
-    public static int Next(this Random random, BoundedRange range) {
-        return (int)(random.NextDouble() * (range.Max - range.Min) + range.Min);
+    public static float Next(this Random random, BoundedRange range)
+    {
+        return (float)(random.NextDouble() * (range.Max - range.Min) + range.Min);
     }
     
     public static double NextDouble(this Random random, double min, double max)

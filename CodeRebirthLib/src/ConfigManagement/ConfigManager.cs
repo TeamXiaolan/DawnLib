@@ -48,7 +48,10 @@ public class ConfigManager(ConfigFile file)
             CRDynamicConfigType.String => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultString, configDefinition.Description),
             CRDynamicConfigType.Int => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultInt, configDefinition.Description),
             CRDynamicConfigType.Bool => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultBool, configDefinition.Description),
-            CRDynamicConfigType.Float => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultFloat, configDefinition.Description)
+            CRDynamicConfigType.Float => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultFloat, configDefinition.Description),
+            CRDynamicConfigType.BoundedRange => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultBoundedRange, configDefinition.Description),
+            CRDynamicConfigType.AnimationCurve => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultAnimationCurve, configDefinition.Description),
+            _ => throw new NotImplementedException(),
         };
     }
     
