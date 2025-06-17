@@ -1,4 +1,5 @@
 ﻿using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.Util;
 
 namespace CodeRebirthLib.Patches;
 static class StartOfRoundPatch
@@ -16,6 +17,7 @@ static class StartOfRoundPatch
     private static void StartOfRoundOnStart(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         orig(self);
+        MoreLayerMasks.Init();
         CREnemyDefinition.CreateMoonAttributeStacks();
     }
 }

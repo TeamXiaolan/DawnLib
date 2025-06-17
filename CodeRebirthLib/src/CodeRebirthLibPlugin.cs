@@ -46,7 +46,6 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         }
         
         ExtendedTOML.Init();
-        MoreLayerMasks.Init();
         
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))  
         {
