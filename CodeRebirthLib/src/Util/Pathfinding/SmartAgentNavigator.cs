@@ -86,9 +86,14 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     private Coroutine? checkPathsRoutine = null;
 
+    public bool CheckPathsOngoing()
+    {
+        return checkPathsRoutine != null;
+    }
+
     public void CheckPaths<T>(IEnumerable<(T, Vector3)> points, Action<List<(T, float)>> action)
     {
-        if (checkPathsRoutine != null)
+        if (CheckPathsOngoing())
         {
             StopCoroutine(checkPathsRoutine);
             ClearPathfindingOperation();

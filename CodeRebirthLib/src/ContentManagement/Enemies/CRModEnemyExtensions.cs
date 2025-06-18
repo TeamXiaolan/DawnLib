@@ -11,7 +11,7 @@ public static class CRModEnemyExtensions
 
     public static bool TryGetDefinition(this EnemyType type, [NotNullWhen(true)] out CREnemyDefinition? definition)
     {
-        definition = CRMod.AllEnemies().FirstOrDefault(it => it.EnemyType.enemyName == type.enemyName);
+        definition = CRMod.AllEnemies().FirstOrDefault(it => it.EnemyType == type);
         return definition; // implict cast
     }
 }

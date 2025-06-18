@@ -11,7 +11,7 @@ public static class MoreLayerMasks
     public static int CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask { get; private set; }
     public static int CollidersAndRoomAndRailingAndInteractableMask { get; private set; }
     public static int CollidersAndRoomAndPlayersAndInteractableMask { get; private set; }
-    public static int ClayersAndInteractableAndEnemiesAndPropsHazardMask { get; private set; }
+    public static int PlayersAndInteractableAndEnemiesAndPropsHazardMask { get; private set; }
     public static int CollidersAndRoomMaskAndDefaultAndEnemies { get; private set; }
     public static int PlayersAndEnemiesAndHazardMask { get; private set; }
     public static int PlayersAndRagdollMask { get; private set; }
@@ -45,7 +45,7 @@ public static class MoreLayerMasks
         CollidersAndRoomMaskAndDefaultAndEnemies = StartOfRound.Instance.collidersAndRoomMaskAndDefault | EnemiesMask;
         CollidersAndRoomAndRailingAndInteractableMask = StartOfRound.Instance.collidersAndRoomMask | InteractableMask | RailingMask;
         CollidersAndRoomAndPlayersAndInteractableMask = StartOfRound.Instance.collidersAndRoomMaskAndPlayers | InteractableMask;
-        ClayersAndInteractableAndEnemiesAndPropsHazardMask = PlayersAndEnemiesAndHazardMask | InteractableMask | PropsMask;
+        PlayersAndInteractableAndEnemiesAndPropsHazardMask = PlayersAndEnemiesAndHazardMask | InteractableMask | PropsMask;
         CollidersAndRoomAndRailingAndTerrainAndHazardAndVehicleAndDefaultMask = StartOfRound.Instance.collidersAndRoomMask | HazardMask | RailingMask | TerrainMask | VehicleMask | DefaultMask;
         CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask = StartOfRound.Instance.collidersAndRoomMaskAndPlayers | EnemiesMask | TerrainMask | VehicleMask;
         CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleAndDefaultMask = CollidersAndRoomAndPlayersAndEnemiesAndTerrainAndVehicleMask | DefaultMask;

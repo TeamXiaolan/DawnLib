@@ -1,11 +1,8 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
-using On.LethalConfig.Mods;
 
 namespace CodeRebirthLib.ContentManagement;
-
 public abstract class ContentHandler(CRMod mod)
 {
     protected bool IsContentEnabled(string bundleName)
@@ -16,22 +13,22 @@ public abstract class ContentHandler(CRMod mod)
         }
         return IsContentEnabled(data);
     }
-    
+
     protected bool IsContentEnabled(AssetBundleData assetBundleData)
     {
         string configName = assetBundleData.configName;
 
-        using(ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
+        using (ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
         {
             bool isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true).Value;
             return isEnabled;
         }
     }
-    
+
     protected bool TryLoadContentBundle<TAsset>(string assetBundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
     {
         asset = null;
-        
+
         if (!mod.TryGetBundleDataFromName(assetBundleName, out AssetBundleData? assetBundleData))
         {
             mod.Logger?.LogWarning($"Assetbundle name: {assetBundleName} is not implemented yet!");
@@ -42,9 +39,9 @@ public abstract class ContentHandler(CRMod mod)
             return false;
 
         ConstructorInfo constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
-        asset = (TAsset) constructorInfo.Invoke([mod, assetBundleName]);
+        asset = (TAsset)constructorInfo.Invoke([mod, assetBundleName]);
         asset.AssetBundleData = assetBundleData;
-        
+
         asset.TryUnload();
         return true;
     }
@@ -68,6 +65,16 @@ public abstract class ContentHandler(CRMod mod)
     }
 
     protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
+    {
+        if (TryLoadContentBundle(bundleName, out asset, forceEnabled))
+        {
+            LoadAllContent(asset!);
+            return true;
+        }
+        return false;
+    }
+
+    protected bool RegisterContentByRef<TAsset>(string bundleName, ref TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
     {
         if (TryLoadContentBundle(bundleName, out asset, forceEnabled))
         {

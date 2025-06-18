@@ -66,7 +66,6 @@ public class CRMod
     
     public CRRegistry<CRUnlockableDefinition> UnlockableRegistry() => GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
     public static IEnumerable<CRUnlockableDefinition> AllUnlockables() => AllMods.SelectMany(mod => mod.UnlockableRegistry());
-
     
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
     {
