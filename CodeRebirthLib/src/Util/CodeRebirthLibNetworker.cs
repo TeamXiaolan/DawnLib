@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+using System.Collections;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.Extensions;
+using LethalLib;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 
     private void Awake()
     {
+        if (StartOfRound.Instance == null)
+            return;
+
         CRLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
         SaveSettings = new($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);

@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CodeRebirthLib.ContentManagement.Items;
 
-namespace CodeRebirthLib.ContentManagement.Enemies;
+namespace CodeRebirthLib.ContentManagement.Items;
 public static class CRModItemExtensions
 {
     public static bool TryGetFromItemName(this CRRegistry<CRItemDefinition> registry, string itemName, [NotNullWhen(true)] out CRItemDefinition? value)

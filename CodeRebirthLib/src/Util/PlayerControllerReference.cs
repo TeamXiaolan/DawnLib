@@ -6,7 +6,6 @@ namespace CodeRebirthLib.Util;
 public class PlayerControllerReference : INetworkSerializable
 {
     private int _playerID;
-    private PlayerControllerReference() { }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {

@@ -22,7 +22,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
     internal AssetBundleLoader(Assembly assembly, string filePath) : this(CRLib.LoadBundle(assembly, filePath))
     { }
 
-    internal AssetBundleLoader(AssetBundle bundle)
+    protected AssetBundleLoader(AssetBundle bundle)
     {
         _bundle = bundle;
         Type type = typeof(T);

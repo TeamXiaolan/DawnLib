@@ -25,7 +25,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
     {
         Config = CreateItemConfig(mod, data, Item.itemName);
 
-        BoundedRange itemWorth = Config.Worth.Value ?? new BoundedRange(-1, -1);
+        BoundedRange itemWorth = Config.Worth?.Value ?? new BoundedRange(-1, -1);
         if (itemWorth.Min != -1 && itemWorth.Max != -1)
         {
             Item.minValue = (int)(itemWorth.Min / 0.4f);

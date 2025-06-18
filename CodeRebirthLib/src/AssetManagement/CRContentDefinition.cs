@@ -51,7 +51,11 @@ public abstract class CRContentDefinition<T> : CRContentDefinition where T : Ent
     public override void Register(CRMod mod)
     {
         base.Register(mod);
-        Register(mod, GetEntities(mod).First(it => it.entityName == EntityNameReference));
+        Register(mod, GetEntities(mod).First(it =>
+        {
+            CodeRebirthLibPlugin.ExtendedLogging($"{this} | Comparing {EntityNameReference} with {it.entityName}.");
+            return it.entityName == EntityNameReference;
+        }));
     }
 
     public abstract void Register(CRMod mod, T data);

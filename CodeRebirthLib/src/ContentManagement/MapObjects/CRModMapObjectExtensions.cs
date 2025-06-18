@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CodeRebirthLib.ContentManagement.MapObjects;
 
-namespace CodeRebirthLib.ContentManagement.Enemies;
+namespace CodeRebirthLib.ContentManagement.MapObjects;
 public static class CRModMapObjectExtensions
 {
     public static bool TryGetFromMapObjectName(this CRRegistry<CRMapObjectDefinition> registry, string mapObjectName, [NotNullWhen(true)] out CRMapObjectDefinition? value)

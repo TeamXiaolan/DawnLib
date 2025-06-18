@@ -18,13 +18,14 @@ public class ProgressiveUnlockData
     {
         Definition = definition;
         OriginalName = _unlockable.unlockableName;
-        
         ProgressiveUnlockableHandler.AllProgressiveUnlockables.Add(this);
     }
 
     public void Unlock(HUDDisplayTip? displayTip = null)
     {
-        if(IsUnlocked) return;
+        if (IsUnlocked)
+            return;
+
         IsUnlocked = true;
 
         _unlockable.unlockableName = OriginalName;

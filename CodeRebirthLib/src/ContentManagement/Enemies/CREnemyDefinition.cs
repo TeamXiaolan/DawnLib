@@ -27,7 +27,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     
     public EnemyConfig Config { get; private set; }
 
-    private Dictionary<SelectableLevel, AttributeStack<int>> _moonWeights;
+    private Dictionary<SelectableLevel, AttributeStack<int>> _moonWeights = new();
     
     public override void Register(CRMod mod, EnemyData data)
     {
@@ -86,6 +86,9 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
 
     internal static void UpdateAllWeights()
     {
+        if (StartOfRound.Instance == null || StartOfRound.Instance.levels == null)
+            return;
+
         foreach (SelectableLevel moon in StartOfRound.Instance.levels)
         {
             foreach (SpawnableEnemyWithRarity enemyWithRarity in moon.Enemies)

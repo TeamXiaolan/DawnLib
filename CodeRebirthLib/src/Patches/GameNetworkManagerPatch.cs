@@ -2,7 +2,6 @@
 using System.Text;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
-using Mono.Cecil.Cil;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -23,6 +22,7 @@ static class GameNetworkManagerPatch
 
         prefab.AddComponent<CodeRebirthLibNetworker>();
         NetworkManager.Singleton.AddNetworkPrefab(prefab);
+        CodeRebirthLibNetworker.prefab = prefab;
         
         orig(self);
         VanillaEnemies.Init();

@@ -22,7 +22,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 
     public UnlockableConfig Config { get; private set; }
 
-    public ProgressiveUnlockData? ProgressiveData { get; private set; }
+    public ProgressiveUnlockData? ProgressiveData { get; private set; } // todo: setup host saving and sync'd loading.
     
     public override void Register(CRMod mod, UnlockableData data)
     {
@@ -38,11 +38,10 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
             LethalLib.Modules.Unlockables.RegisterUnlockable(UnlockableItemDef, Config.Cost.Value, StoreType.Decor);
         }
 
-        if (Config.IsProgressive?.Value ?? data.isProgressive)
+        if (Config.IsProgressive?.Value ?? data.isProgressive) // todo: fix progressive on leaving and re-entering lobby before going back into orbit saving the progressive state
         {
             if (!ProgressiveDenyNode) ProgressiveDenyNode = CreateDefaultProgressiveDenyNode();
-            
-            
+            ProgressiveData = new ProgressiveUnlockData(this);
         }
         
         mod.UnlockableRegistry().Register(this);

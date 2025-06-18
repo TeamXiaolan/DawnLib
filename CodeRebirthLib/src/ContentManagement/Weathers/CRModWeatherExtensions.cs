@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace CodeRebirthLib.ContentManagement.Weathers;
-
 public static class CRModWeatherExtensions
 {
     public static CRRegistry<CRWeatherDefinition> WeatherRegistry(this CRMod mod)

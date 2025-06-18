@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CodeRebirthLib.ContentManagement.Unlockables;
 
-namespace CodeRebirthLib.ContentManagement.Enemies;
+namespace CodeRebirthLib.ContentManagement.Unlockables;
 public static class CRModUnlockableExtensions
 {
     public static bool TryGetFromUnlockableName(this CRRegistry<CRUnlockableDefinition> registry, string unlockableName, [NotNullWhen(true)] out CRUnlockableDefinition? value)
