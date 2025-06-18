@@ -62,6 +62,8 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
     {
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRWeatherDefinition>());
     }
+
+    public static IEnumerable<CRWeatherDefinition> All() => CRMod.AllMods.SelectMany(it => it.WeatherRegistry());
     
     public override List<WeatherData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.weathers).ToList(); // probably should be cached but i dont care anymore.
 }

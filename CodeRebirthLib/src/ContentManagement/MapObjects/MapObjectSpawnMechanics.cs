@@ -63,7 +63,8 @@ public class MapObjectSpawnMechanics
         else if (CurvesByCustomLevelType.TryGetValue(actualLevelName, out curve))
         {
             return curve;
-        }
+        } 
+        // todo
         /*else if (TryGetCurveDictAndLevelTag(curvesByCustomLevelType, level, out string tagName) && curvesByCustomLevelType.TryGetValue(tagName, out curve))
         {
             CodeRebirthLibPlugin.ExtendedLogging($"registering a mapobject through a tag, nice.");

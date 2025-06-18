@@ -24,10 +24,6 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     [field: FormerlySerializedAs("alignWithTerrain"), SerializeField]
     public bool AlignWithTerrain { get; private set; }
     
-    // xu what is this.
-    // [field: SerializeField]
-    // public SpawnSyncedCRObject.CRObjectType CRObjectType { get; private set; }
-    
     public MapObjectConfig Config { get; private set; }
     public MapObjectSpawnMechanics? InsideSpawnMechanics { get; private set; }
     public MapObjectSpawnMechanics? OutsideSpawnMechanics { get; private set; }
@@ -35,8 +31,6 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     public override void Register(CRMod mod, MapObjectData data)
     {
         Config = CreateMapObjectConfig(mod, data, ObjectName);
-
-        
         
         if (Config.InsideHazard.Value)
         {
