@@ -1,5 +1,9 @@
 ﻿using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace CodeRebirthLib.Patches;
 static class StartOfRoundPatch
@@ -19,5 +23,18 @@ static class StartOfRoundPatch
         orig(self);
         MoreLayerMasks.Init();
         CREnemyDefinition.CreateMoonAttributeStacks();
+        
+        self.NetworkObject.OnSpawn(() =>
+        {
+            if (self.IsServer || self.IsHost)
+            {
+                if (!CodeRebirthLibNetworker.Instance)
+                {
+                    GameObject networkerInstance = Object.Instantiate(CodeRebirthLibNetworker.prefab);
+                    SceneManager.MoveGameObjectToScene(networkerInstance, self.gameObject.scene);
+                    networkerInstance.GetComponent<NetworkObject>().Spawn();
+                }
+            }
+        });
     }
 }

@@ -8,6 +8,8 @@ namespace CodeRebirthLib.Util;
 
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
+    internal static GameObject prefab; // todo: this is currently created in GameNetworkManagerPatch, but should be in a bundle that gets loaded.
+    
     internal static EntranceTeleport[] entrancePoints = [];
     internal ES3Settings SaveSettings;
     internal System.Random CRLibRandom = new();
