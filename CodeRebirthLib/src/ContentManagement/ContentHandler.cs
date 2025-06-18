@@ -73,16 +73,6 @@ public abstract class ContentHandler(CRMod mod)
         }
         return false;
     }
-
-    protected bool RegisterContentByRef<TAsset>(string bundleName, ref TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
-    {
-        if (TryLoadContentBundle(bundleName, out asset, forceEnabled))
-        {
-            LoadAllContent(asset!);
-            return true;
-        }
-        return false;
-    }
 }
 
 public abstract class ContentHandler<T> : ContentHandler where T : ContentHandler<T>
