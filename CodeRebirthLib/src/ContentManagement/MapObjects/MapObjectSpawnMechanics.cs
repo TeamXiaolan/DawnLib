@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ModCompats;
 using LethalLib.Modules;
 using UnityEngine;
 
@@ -63,12 +64,11 @@ public class MapObjectSpawnMechanics
         {
             return curve;
         } 
-        // todo
-        /*else if (TryGetCurveDictAndLevelTag(curvesByCustomLevelType, level, out string tagName) && curvesByCustomLevelType.TryGetValue(tagName, out curve))
+        else if (LLLCompatibility.Enabled && LLLCompatibility.TryGetCurveDictAndLevelTag(CurvesByCustomLevelType, level, out string tagName) && CurvesByCustomLevelType.TryGetValue(tagName, out curve))
         {
             CodeRebirthLibPlugin.ExtendedLogging($"registering a mapobject through a tag, nice.");
             return curve;
-        }*/
+        }
         else if (isVanilla && Vanilla != null)
         {
             return Vanilla;
@@ -84,4 +84,6 @@ public class MapObjectSpawnMechanics
         CodeRebirthLibPlugin.ExtendedLogging($"Failed to find curve for level: {level}");
         return AnimationCurve.Linear(0, 0, 1, 0); // Default case if no curve matches
     }
+    
+    
 }
