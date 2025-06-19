@@ -64,7 +64,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
             }
             else
             {
-                CodeRebirthLibPlugin.Logger.LogError($"client requested progressive data status of {definition.UnlockableItemDef.unlockable.unlockableName} (index: {i}, networkID: {unlockableNetworkId}) (index: {i}) but that doesn't exist on the server!!");
+                CodeRebirthLibPlugin.Logger.LogError($"client requested progressive data status of a non-existing unlockable!!! (index: {i}, networkID: {unlockableNetworkId})");
                 values[i] = false;
             }
         }
