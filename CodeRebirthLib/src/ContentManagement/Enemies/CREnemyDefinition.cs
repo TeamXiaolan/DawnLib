@@ -60,7 +60,6 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
         mod.EnemyRegistry().Register(this);
     }
 
-    // todo: i dont like how nested this is lmao
     internal static void CreateMoonAttributeStacks()
     {
         foreach (SelectableLevel moon in StartOfRound.Instance.levels)

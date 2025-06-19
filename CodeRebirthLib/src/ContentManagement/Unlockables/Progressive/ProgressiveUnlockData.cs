@@ -41,7 +41,6 @@ public class ProgressiveUnlockData
     public void Load(ES3Settings settings)
     {
         IsUnlocked = ES3.Load(_saveID, false, settings);
-        // todo: add override?
         UpdateName();
         CodeRebirthLibPlugin.ExtendedLogging($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {_unlockable.unlockableName} with saveID: {_saveID}");
     }

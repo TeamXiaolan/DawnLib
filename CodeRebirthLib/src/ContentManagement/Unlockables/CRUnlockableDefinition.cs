@@ -22,7 +22,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 
     public UnlockableConfig Config { get; private set; }
 
-    public ProgressiveUnlockData? ProgressiveData { get; private set; } // todo: setup host saving and sync'd loading.
+    public ProgressiveUnlockData? ProgressiveData { get; private set; }
     
     public override void Register(CRMod mod, UnlockableData data)
     {
