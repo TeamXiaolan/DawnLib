@@ -23,6 +23,10 @@ source = "../CodeRebirthLib/bin/Release/netstandard2.1/com.github.xuuxiaolan.cod
 target = "BepInEx/plugins/CodeRebirthLib/"
 
 [[build.copy]]
+source = "../CodeRebirthLib/res/coderebirthlibmain"
+target = "BepInEx/plugins/CodeRebirthLib/Assets"
+
+[[build.copy]]
 source = "./CHANGELOG.md"
 target = "/"
 
