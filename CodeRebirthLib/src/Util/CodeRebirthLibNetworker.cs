@@ -1,17 +1,16 @@
-using System.Collections;
+using System.Collections.Generic;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.Extensions;
-using LethalLib;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace CodeRebirthLib.Util;
-
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
     internal static GameObject prefab; // todo: this is currently created in GameNetworkManagerPatch, but should be in a bundle that gets loaded.
     
-    internal static EntranceTeleport[] entrancePoints = [];
+    internal static EntranceTeleport[] _entrancePoints = [];
+    public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
     internal ES3Settings SaveSettings;
     internal System.Random CRLibRandom = new();
 
@@ -26,10 +25,21 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         ProgressiveUnlockableHandler.LoadAll(SaveSettings);
     }
 
+    internal void SaveCodeRebirthLibData()
+    {
+        if (!NetworkManager.Singleton.IsHost) return;
+        ProgressiveUnlockableHandler.SaveAll(SaveSettings);
+    }
+
+    internal static void ResetCodeRebirthLibData(ES3Settings saveSettings)
+    {
+        ES3.DeleteFile(saveSettings);
+    }
+
     private void OnNewRoundStart()
     {
-        entrancePoints = FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.InstanceID);
-        foreach (var entrance in entrancePoints)
+        _entrancePoints = FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.InstanceID);
+        foreach (var entrance in _entrancePoints)
         {
             if (!entrance.FindExitPoint())
             {

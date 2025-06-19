@@ -68,18 +68,18 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
             foreach (SpawnableEnemyWithRarity enemyWithRarity in moon.Enemies)
             {
                 EnemyType enemy = enemyWithRarity.enemyType;
-                if (enemy.TryGetDefinition(out CREnemyDefinition? definition) && !definition._moonWeights.ContainsKey(moon))
-                {
-                    AttributeStack<int> stack = new AttributeStack<int>(enemyWithRarity.rarity);
-                    stack.Add(input => { // Handle Weather Multipliers, note that this keeps the reference of 'definition' and 'moon' from the foreach loops
-                        string weatherName = moon.currentWeather.ToString();
-                        if (!definition.WeatherMultipliers.TryGetValue(weatherName, out float multiplier))
-                            return input;
-                        
-                        return Mathf.FloorToInt(multiplier * input);
-                    });
-                    definition._moonWeights[moon] = stack;
-                }
+                if (!enemy.TryGetDefinition(out CREnemyDefinition? definition) || definition._moonWeights.ContainsKey(moon))
+                    continue;
+
+                AttributeStack<int> stack = new(enemyWithRarity.rarity);
+                stack.Add(input => { // Handle Weather Multipliers, note that this keeps the reference of 'definition' and 'moon' from the foreach loops
+                    string weatherName = moon.currentWeather.ToString();
+                    if (!definition.WeatherMultipliers.TryGetValue(weatherName, out float multiplier))
+                        return input;
+                    
+                    return Mathf.FloorToInt(multiplier * input);
+                });
+                definition._moonWeights[moon] = stack;
             }
         }
     }
@@ -104,16 +104,14 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     
     public static EnemyConfig CreateEnemyConfig(CRMod mod, EnemyData data, string enemyName)
     {
-        using(ConfigContext section = mod.ConfigManager.CreateConfigSection(enemyName))
+        using ConfigContext section = mod.ConfigManager.CreateConfigSection(enemyName);
+        return new EnemyConfig
         {
-            return new EnemyConfig
-            {
-                SpawnWeights = section.Bind("Spawn Weights", $"Spawn weights for {enemyName}.", data.spawnWeights),
-                WeatherMultipliers = section.Bind("Weather Multipliers", $"Weather * SpawnWeight multipliers for {enemyName}.", data.weatherMultipliers),
-                PowerLevel = section.Bind("Power Level", $"Power level for {enemyName}.", data.powerLevel),
-                MaxSpawnCount = section.Bind("Max Spaw nCount", $"Max spawn count for {enemyName}.", data.maxSpawnCount)
-            };
-        }
+            SpawnWeights = section.Bind("Spawn Weights", $"Spawn weights for {enemyName}.", data.spawnWeights),
+            WeatherMultipliers = section.Bind("Weather Multipliers", $"Weather * SpawnWeight multipliers for {enemyName}.", data.weatherMultipliers),
+            PowerLevel = section.Bind("Power Level", $"Power level for {enemyName}.", data.powerLevel),
+            MaxSpawnCount = section.Bind("Max Spaw nCount", $"Max spawn count for {enemyName}.", data.maxSpawnCount)
+        };
     }
 
     public const string REGISTRY_ID = "enemies";

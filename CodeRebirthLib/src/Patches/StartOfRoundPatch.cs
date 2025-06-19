@@ -12,6 +12,13 @@ static class StartOfRoundPatch
     {
         On.StartOfRound.Start += StartOfRoundOnStart;
         On.StartOfRound.SetPlanetsWeather += RefreshEnemyWeights;
+        On.StartOfRound.AutoSaveShipData += StartOfRound_AutoSaveShipData;
+    }
+
+    private static void StartOfRound_AutoSaveShipData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
+    {
+        orig(self);
+        CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
     }
 
     private static void RefreshEnemyWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedplayersonserver)

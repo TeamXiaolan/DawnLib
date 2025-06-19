@@ -39,8 +39,8 @@ public class SmartAgentNavigator : NetworkBehaviour
     {
         this.isOutside = isOutside;
 
-        exitPoints.Clear(); // todo: Replace this findobjectsoftype with something cached
-        foreach (var exit in FindObjectsOfType<EntranceTeleport>())
+        exitPoints.Clear();
+        foreach (var exit in CodeRebirthLibNetworker.EntrancePoints)
         {
             exitPoints.Add(exit);
             if (exit.entranceId == 0 && exit.isEntranceToBuilding)

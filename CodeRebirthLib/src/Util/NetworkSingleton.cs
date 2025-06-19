@@ -1,10 +1,9 @@
-﻿using System;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 
 namespace CodeRebirthLib.Util;
 public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSingleton<T>
 {
-    public static T Instance { get; private set; }
+    public static T? Instance { get; private set; }
 
     public override void OnNetworkSpawn()
     {

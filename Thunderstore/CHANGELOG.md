@@ -1,4 +1,8 @@
-# v0.1.0
+# v0.1.1
+
+- Finished adding Progressive Unlockables support.
+
+## v0.1.0
 
 - Added support for BoundedRange and AnimationCurve editor configs.
 - Almost finished adding support for Progressive Unlockables.

@@ -35,6 +35,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         EnemyAIPatch.Init();
         StartOfRoundPatch.Init();
         TerminalPatch.Init();
+        DeleteFileButtonPatch.Init();
         
         if (LethalConfigCompatibility.Enabled)
         {
