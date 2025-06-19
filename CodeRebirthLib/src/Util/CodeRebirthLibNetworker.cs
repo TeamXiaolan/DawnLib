@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
+using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.Extensions;
+using GameNetcodeStuff;
+using Mono.Cecil.Cil;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,7 +15,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
     internal ES3Settings SaveSettings;
     internal System.Random CRLibRandom = new();
-
+    
     private void Awake()
     {
         if (StartOfRound.Instance == null)
@@ -20,7 +24,68 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         CRLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
         SaveSettings = new($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
-        ProgressiveUnlockableHandler.LoadAll(SaveSettings);
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        if (IsHost || IsServer)
+        {
+            ProgressiveUnlockableHandler.LoadAll(SaveSettings);
+        }
+        else
+        {
+            RequestProgressiveUnlockableStatesServerRPC(
+                GameNetworkManager.Instance.localPlayerController,
+                CRMod.AllUnlockables()
+                    .Where(it => it.ProgressiveData != null)
+                    .Select(it => it.ProgressiveData!.networkID)
+                    .ToArray()
+            );
+        }
+    }
+
+    // to reduce the amount of network traffic that is sent
+    [ServerRpc(RequireOwnership = false)]
+    void RequestProgressiveUnlockableStatesServerRPC(PlayerControllerReference requester, uint[] expectedOrder)
+    {
+        PlayerControllerB player = requester;
+        CodeRebirthLibPlugin.Logger.LogInfo($"Sending states of progressive unlockables for player: '{player.playerUsername}'");
+        bool[] values = new bool[expectedOrder.Length];
+
+        for (int i = 0; i < expectedOrder.Length; i++)
+        {
+            uint unlockableNetworkId = expectedOrder[i];
+            CRUnlockableDefinition? definition = CRMod.AllUnlockables().FirstOrDefault(it => it.ProgressiveData!.networkID == unlockableNetworkId);
+            if (definition)
+            {
+                values[i] = definition!.ProgressiveData!.IsUnlocked;
+                CodeRebirthLibPlugin.ExtendedLogging($"set values[{i}] = {values[i]}");
+            }
+            else
+            {
+                CodeRebirthLibPlugin.Logger.LogError($"client requested progressive data status of {definition.UnlockableItemDef.unlockable.unlockableName} (index: {i}, networkID: {unlockableNetworkId}) (index: {i}) but that doesn't exist on the server!!");
+                values[i] = false;
+            }
+        }
+        
+        ProgressiveUnlockableStateResponseClientRPC(values, new ClientRpcParams() {
+            Send = {
+                TargetClientIds = [player.OwnerClientId]
+            }
+        });
+    }
+
+    [ClientRpc]
+    void ProgressiveUnlockableStateResponseClientRPC(bool[] states, ClientRpcParams rpcParams = default)
+    {
+        CRUnlockableDefinition[] definitions = CRMod.AllUnlockables().Where(it => it.ProgressiveData != null).ToArray();
+        for(int i = 0; i < definitions.Length; i++)
+        {
+            CRUnlockableDefinition definition = definitions[i];
+            CodeRebirthLibPlugin.ExtendedLogging($"setting state of {definition.UnlockableItemDef.unlockable.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.networkID})");
+            definition.ProgressiveData!.SetFromServer(states[i]);
+        }
     }
 
     internal void SaveCodeRebirthLibData()
