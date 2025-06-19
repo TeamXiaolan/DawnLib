@@ -39,7 +39,7 @@ static class StartOfRoundPatch
             {
                 if (!CodeRebirthLibNetworker.Instance)
                 {
-                    GameObject networkerInstance = Object.Instantiate(CodeRebirthLibNetworker.prefab);
+                    GameObject networkerInstance = Object.Instantiate(CodeRebirthLibPlugin.Main.NetworkerPrefab);
                     SceneManager.MoveGameObjectToScene(networkerInstance, self.gameObject.scene);
                     networkerInstance.GetComponent<NetworkObject>().Spawn();
                 }

@@ -35,16 +35,18 @@ public class ProgressiveUnlockData
             HUDManager.Instance.DisplayTip(displayTip);
         }
     }
-    
+
     public void Load(ES3Settings settings)
     {
         IsUnlocked = ES3.Load(_saveID, false, settings);
         // todo: add override?
         _unlockable.unlockableName = IsUnlocked ? OriginalName : LOCKED_NAME;
+        CodeRebirthLibPlugin.ExtendedLogging($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {_unlockable.unlockableName} with saveID: {_saveID}");
     }
 
     public void Save(ES3Settings settings)
     {
+        CodeRebirthLibPlugin.ExtendedLogging($"Saving unlockable: {_unlockable.unlockableName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {_saveID}");
         ES3.Save(_saveID, IsUnlocked, settings);
     }
 }

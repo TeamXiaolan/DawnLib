@@ -24,7 +24,7 @@ target = "BepInEx/plugins/CodeRebirthLib/"
 
 [[build.copy]]
 source = "../CodeRebirthLib/res/coderebirthlibmain"
-target = "BepInEx/plugins/CodeRebirthLib/Assets"
+target = "BepInEx/plugins/CodeRebirthLib/Assets/"
 
 [[build.copy]]
 source = "./CHANGELOG.md"

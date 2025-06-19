@@ -2,14 +2,13 @@ using System.IO;
 using BepInEx;
 using BepInEx.Logging;
 using System.Reflection;
-using BepInEx.Bootstrap;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Patches;
 using UnityEngine;
 using CodeRebirthLib.Extensions;
-using CodeRebirthLib.Util;
 using CodeRebirthLib.ModCompats;
 using Unity.Netcode;
+using CodeRebirthLib.AssetManagement;
 
 namespace CodeRebirthLib;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
@@ -21,14 +20,20 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 {
 	internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static ConfigManager ConfigManager { get; private set; } = null!;
+    internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
+    {
+        [LoadFromBundle("CodeRebirthLibNetworker.prefab")]
+        public GameObject NetworkerPrefab { get; private set; } = null!;
+    }
+    internal static MainAssets Main { get; private set; } = null!;
     
 	private void Awake()
-	{
+    {
         Logger = base.Logger;
         ConfigManager = new ConfigManager(Config);
 
         CodeRebirthLibConfig.Bind(ConfigManager);
-        
+
         NetcodePatcher();
         RoundManagerPatch.Patch();
         GameNetworkManagerPatch.Init();
@@ -36,7 +41,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         StartOfRoundPatch.Init();
         TerminalPatch.Init();
         DeleteFileButtonPatch.Init();
-        
+
         if (LethalConfigCompatibility.Enabled)
         {
             LethalConfigCompatibility.Init();
@@ -46,10 +51,12 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         {
             WeatherRegistryCompatibility.Init();
         }
-        
+
         ExtendedTOML.Init();
-        
-        foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))  
+
+        Main = new MainAssets(CRLib.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
+
+        foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))
         {
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
             CRModVersion modInformation = mainBundle.LoadAsset<CRModVersion>("Mod Information.asset");
@@ -61,9 +68,9 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
             CRLib.RegisterNoCodeMod(modInformation.CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
         }
-      
-		Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
-	}
+
+        Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+    }
     
 	private void NetcodePatcher()
 	{

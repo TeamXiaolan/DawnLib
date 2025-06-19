@@ -24,7 +24,7 @@ public static class CRLib
 
     public static void BroadcastTip(HUDDisplayTip displayTip)
     {
-        CodeRebirthLibNetworker.Instance.BroadcastDisplayTipServerRPC(displayTip);
+        CodeRebirthLibNetworker.Instance?.BroadcastDisplayTipServerRPC(displayTip);
     }
     
     internal static CRMod RegisterNoCodeMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath)

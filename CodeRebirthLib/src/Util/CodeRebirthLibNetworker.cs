@@ -7,8 +7,6 @@ using UnityEngine;
 namespace CodeRebirthLib.Util;
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
-    internal static GameObject prefab; // todo: this is currently created in GameNetworkManagerPatch, but should be in a bundle that gets loaded.
-    
     internal static EntranceTeleport[] _entrancePoints = [];
     public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
     internal ES3Settings SaveSettings;
