@@ -17,7 +17,12 @@ public static class CRModWeatherExtensions
 
     public static bool TryGetFromWeatherName(this CRRegistry<CRWeatherDefinition> registry, string weatherName, [NotNullWhen(true)] out CRWeatherDefinition? value)
     {
-        return registry.TryGetFirstBySomeName(it => it.Weather.Name, weatherName, out value);
+        return registry.TryGetFirstBySomeName(
+            it => it.Weather.Name, 
+            weatherName, 
+            out value,
+            $"TryGetFromWeatherName failed with weatherName: {weatherName}"
+        );
     }
 
     /*public static bool TryGetDefinition(this Weather type, [NotNullWhen(true)] out CRWeatherDefinition? definition)

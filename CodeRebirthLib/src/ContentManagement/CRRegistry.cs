@@ -22,9 +22,13 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
         CodeRebirthLibPlugin.ExtendedLogging($"added {item.name} to registry.");
     }
 
-    public bool TryGetFirstBySomeName(Func<TDefinition, string> transformer, string name, [NotNullWhen(true)] out TDefinition? value)
+    public bool TryGetFirstBySomeName(Func<TDefinition, string> transformer, string name, [NotNullWhen(true)] out TDefinition? value, string? failContext = null)
     {
         value = this.FirstOrDefault(it => transformer(it).Contains(name, StringComparison.OrdinalIgnoreCase));
+        if (!value && !string.IsNullOrEmpty(failContext))
+        {
+            CodeRebirthLibPlugin.ExtendedLogging(failContext);
+        }
         return value;// implicit cast to bool
     }
     

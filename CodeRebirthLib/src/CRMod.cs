@@ -129,7 +129,7 @@ public class CRMod
         }
         
         IEnumerable<Type> contentHandlers = Assembly.GetLoadableTypes().Where(x =>
-            x.BaseType != null
+            !x.IsNested && x.BaseType != null
             && x.BaseType.IsGenericType
             && x.BaseType.GetGenericTypeDefinition() == typeof(ContentHandler<>)
         );

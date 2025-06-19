@@ -38,7 +38,14 @@ public abstract class ContentHandler(CRMod mod)
         if (!forceEnabled && !IsContentEnabled(assetBundleData))
             return false;
 
-        ConstructorInfo constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
+        ConstructorInfo? constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
+
+        if (constructorInfo == null)
+        {
+            mod.Logger?.LogError($"{typeof(TAsset).Name} is not properly setup to handle TryLoadContentBundle. It must have a constructor with (CRMod, string) as arguments!");
+            return false;
+        }
+        
         asset = (TAsset)constructorInfo.Invoke([mod, assetBundleName]);
         asset.AssetBundleData = assetBundleData;
 

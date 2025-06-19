@@ -51,7 +51,7 @@ public class ConfigManager(ConfigFile file)
             CRDynamicConfigType.Float => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultFloat, configDefinition.Description),
             CRDynamicConfigType.BoundedRange => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultBoundedRange, configDefinition.Description),
             CRDynamicConfigType.AnimationCurve => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultAnimationCurve, configDefinition.Description),
-            _ => throw new NotImplementedException(),
+            _ => throw new ArgumentOutOfRangeException($"DynamicConfigType of '{configDefinition.DynamicConfigType}' is not yet internally implemented!!"),
         };
     }
     
