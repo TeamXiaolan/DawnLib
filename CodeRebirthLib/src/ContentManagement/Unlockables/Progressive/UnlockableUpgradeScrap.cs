@@ -1,5 +1,4 @@
-﻿using System;
-using LethalLib.Extras;
+﻿using LethalLib.Extras;
 using UnityEngine;
 using UnityEngine.Serialization;
 

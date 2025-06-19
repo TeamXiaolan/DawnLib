@@ -12,15 +12,15 @@ public class ProgressiveUnlockData
     public const string LOCKED_NAME = "???";
     public string OriginalName { get; private set; }
     
-    private UnlockableItem _unlockable => Definition.UnlockableItemDef.unlockable;
+    private UnlockableItem Unlockable => Definition.UnlockableItemDef.unlockable;
     
-    private string _saveID => _unlockable.ToString(); // todo: something better than this
-    internal uint networkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(_saveID), 0);
+    private string SaveID => OriginalName; // todo: something better than this
+    internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(SaveID), 0);
     
     public ProgressiveUnlockData(CRUnlockableDefinition definition)
     {
         Definition = definition;
-        OriginalName = _unlockable.unlockableName;
+        OriginalName = Unlockable.unlockableName;
         ProgressiveUnlockableHandler.AllProgressiveUnlockables.Add(this);
     }
 
@@ -40,15 +40,15 @@ public class ProgressiveUnlockData
 
     public void Load(ES3Settings settings)
     {
-        IsUnlocked = ES3.Load(_saveID, false, settings);
+        IsUnlocked = ES3.Load(SaveID, false, settings);
         UpdateName();
-        CodeRebirthLibPlugin.ExtendedLogging($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {_unlockable.unlockableName} with saveID: {_saveID}");
+        CodeRebirthLibPlugin.ExtendedLogging($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {Unlockable.unlockableName} with saveID: {SaveID}");
     }
 
     public void Save(ES3Settings settings)
     {
-        CodeRebirthLibPlugin.ExtendedLogging($"Saving unlockable: {_unlockable.unlockableName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {_saveID}");
-        ES3.Save(_saveID, IsUnlocked, settings);
+        CodeRebirthLibPlugin.ExtendedLogging($"Saving unlockable: {Unlockable.unlockableName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {SaveID}");
+        ES3.Save(SaveID, IsUnlocked, settings);
     }
 
     internal void SetFromServer(bool isUnlocked)
@@ -60,6 +60,6 @@ public class ProgressiveUnlockData
 
     private void UpdateName()
     {
-        _unlockable.unlockableName = IsUnlocked ? OriginalName : LOCKED_NAME;
+        Unlockable.unlockableName = IsUnlocked ? OriginalName : LOCKED_NAME;
     }
 }

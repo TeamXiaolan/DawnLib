@@ -1,9 +1,5 @@
-﻿using System;
-using System.Text;
-using CodeRebirthLib.ContentManagement.Enemies;
+﻿using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
-using Unity.Netcode;
-using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
 static class GameNetworkManagerPatch
@@ -24,6 +20,7 @@ static class GameNetworkManagerPatch
     private static void GameNetworkManager_SaveItemsInShip(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
     {
         orig(self);
+        CodeRebirthLibPlugin.ExtendedLogging($"Saving CodeRebirthLibData");
         CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
     }
 

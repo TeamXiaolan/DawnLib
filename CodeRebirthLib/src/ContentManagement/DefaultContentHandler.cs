@@ -1,5 +1,4 @@
-﻿using System.IO;
-using CodeRebirthLib.AssetManagement;
+﻿using CodeRebirthLib.AssetManagement;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement;
@@ -9,10 +8,11 @@ public class DefaultContentHandler : ContentHandler
     {
         foreach (AssetBundleData bundleData in mod.Content.assetBundles)
         {
-            if(!IsContentEnabled(bundleData)) continue;
-            DefaultBundle bundle = new DefaultBundle(AssetBundle.LoadFromFile(mod.GetRelativePath("Assets", bundleData.assetBundleName)));
+            if (!IsContentEnabled(bundleData))
+                continue;
+
+            DefaultBundle bundle = new(AssetBundle.LoadFromFile(mod.GetRelativePath("Assets", bundleData.assetBundleName)));
             LoadAllContent(bundle);
         }
     }
-
 }

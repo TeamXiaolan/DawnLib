@@ -4,6 +4,7 @@ using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.ContentManagement.Weathers;
+using LethalLevelLoader;
 using LethalLib.Extras;
 using LethalLib.Modules;
 using UnityEngine;
@@ -41,6 +42,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
         if (Config.IsProgressive?.Value ?? data.isProgressive)
         {
             if (!ProgressiveDenyNode) ProgressiveDenyNode = CreateDefaultProgressiveDenyNode();
+            CodeRebirthLibPlugin.ExtendedLogging($"Creating ProgressiveUnlockData for {UnlockableItemDef.unlockable.unlockableName}");
             ProgressiveData = new ProgressiveUnlockData(this);
         }
         
