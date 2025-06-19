@@ -3,8 +3,6 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.ContentManagement;
-using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
 using UnityEngine;
 
@@ -18,7 +16,7 @@ public static class CRLib
     
     public static CRMod RegisterMod(BaseUnityPlugin plugin, AssetBundle mainBundle)
     {
-        ConfigManager configManager = new ConfigManager(plugin.Config);
+        ConfigManager configManager = new(plugin.Config);
         return new CRMod(plugin.GetType().Assembly, plugin, mainBundle, Path.GetDirectoryName(plugin.GetType().Assembly.Location)!, configManager);
     }
 
@@ -29,7 +27,7 @@ public static class CRLib
     
     internal static CRMod RegisterNoCodeMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath)
     {
-        ConfigManager configManager = new ConfigManager(GenerateConfigFile(plugin));
+        ConfigManager configManager = new(GenerateConfigFile(plugin));
         return new CRMod(plugin, mainBundle, basePath, configManager);
     }
 
