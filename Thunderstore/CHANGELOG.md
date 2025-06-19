@@ -1,6 +1,10 @@
 # v0.1.1
 
 - Finished adding Progressive Unlockables support.
+- Fixed netcode patcher basically not working lol.
+- Improved logging a lot.
+- Added PathFindingLib as dependency because I forgot last version.
+- Added LLL soft dependency for item and enemy ContentTag support.
 
 ## v0.1.0
 

@@ -59,7 +59,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
             uint unlockableNetworkId = expectedOrder[i];
             CRUnlockableDefinition? definition = CRMod.AllUnlockables().FirstOrDefault(it =>
             {
-                return it.ProgressiveData.NetworkID == unlockableNetworkId;
+                return it.ProgressiveData != null && it.ProgressiveData.NetworkID == unlockableNetworkId;
             });
             if (definition)
             {

@@ -14,7 +14,7 @@ public class ProgressiveUnlockData
     
     private UnlockableItem Unlockable => Definition.UnlockableItemDef.unlockable;
     
-    private string SaveID => OriginalName; // todo: something better than this
+    private string SaveID => OriginalName;
     internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(SaveID), 0);
     
     public ProgressiveUnlockData(CRUnlockableDefinition definition)
