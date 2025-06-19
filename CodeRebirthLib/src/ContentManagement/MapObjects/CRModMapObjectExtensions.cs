@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace CodeRebirthLib.ContentManagement.MapObjects;
 public static class CRModMapObjectExtensions

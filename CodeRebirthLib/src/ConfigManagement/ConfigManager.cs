@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using CodeRebirthLib.ContentManagement;
-using CodeRebirthLib.Exceptions;
 using LethalLib.Modules;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace CodeRebirthLib.ConfigManagement;
 

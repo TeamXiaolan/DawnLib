@@ -65,24 +65,33 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     {
         foreach (SelectableLevel moon in StartOfRound.Instance.levels)
         {
-            foreach (SpawnableEnemyWithRarity enemyWithRarity in moon.Enemies)
-            {
-                EnemyType enemy = enemyWithRarity.enemyType;
-                if (!enemy.TryGetDefinition(out CREnemyDefinition? definition) || definition._moonWeights.ContainsKey(moon))
-                    continue;
-
-                AttributeStack<int> stack = new(enemyWithRarity.rarity);
-                stack.Add(input => { // Handle Weather Multipliers, note that this keeps the reference of 'definition' and 'moon' from the foreach loops
-                    string weatherName = moon.currentWeather.ToString();
-                    if (!definition.WeatherMultipliers.TryGetValue(weatherName, out float multiplier))
-                        return input;
-                    
-                    return Mathf.FloorToInt(multiplier * input);
-                });
-                definition._moonWeights[moon] = stack;
-            }
+            CreateMoonAttributesStackForSetEnemiesInLevel(moon.Enemies, moon);
+            CreateMoonAttributesStackForSetEnemiesInLevel(moon.OutsideEnemies, moon);
+            CreateMoonAttributesStackForSetEnemiesInLevel(moon.DaytimeEnemies, moon);
         }
     }
+
+    private static void CreateMoonAttributesStackForSetEnemiesInLevel(List<SpawnableEnemyWithRarity> enemies, SelectableLevel level)
+    {
+        foreach (SpawnableEnemyWithRarity enemyWithRarity in enemies)
+        {
+            EnemyType enemy = enemyWithRarity.enemyType;
+            if (!enemy.TryGetDefinition(out CREnemyDefinition? definition) || definition._moonWeights.ContainsKey(level))
+                continue;
+
+            AttributeStack<int> stack = new(enemyWithRarity.rarity);
+            stack.Add(input =>
+            { // Handle Weather Multipliers, note that this keeps the reference of 'definition' and 'moon' from the foreach loops
+                string weatherName = level.currentWeather.ToString();
+                if (!definition.WeatherMultipliers.TryGetValue(weatherName, out float multiplier))
+                    return input;
+
+                return Mathf.FloorToInt(multiplier * input);
+            });
+            definition._moonWeights[level] = stack;
+        }
+    }
+    
 
     internal static void UpdateAllWeights()
     {
@@ -91,17 +100,24 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
 
         foreach (SelectableLevel moon in StartOfRound.Instance.levels)
         {
-            foreach (SpawnableEnemyWithRarity enemyWithRarity in moon.Enemies)
-            {
-                EnemyType enemy = enemyWithRarity.enemyType;
-                if (enemy.TryGetDefinition(out CREnemyDefinition? definition) && !definition._moonWeights.ContainsKey(moon))
-                {
-                    enemyWithRarity.rarity = definition._moonWeights[moon].Calculate(forceRecalculate: true);
-                }
-            }
+            UpdateAllEnemyWeightsForLevel(moon.Enemies, moon);
+            UpdateAllEnemyWeightsForLevel(moon.OutsideEnemies, moon);
+            UpdateAllEnemyWeightsForLevel(moon.DaytimeEnemies, moon);
         }
     }
-    
+
+    internal static void UpdateAllEnemyWeightsForLevel(List<SpawnableEnemyWithRarity> enemies, SelectableLevel level)
+    {
+        foreach (SpawnableEnemyWithRarity enemyWithRarity in enemies)
+        {
+            EnemyType enemy = enemyWithRarity.enemyType;
+            if (!enemy.TryGetDefinition(out CREnemyDefinition? definition) || !definition._moonWeights.ContainsKey(level))
+                continue;
+
+            enemyWithRarity.rarity = definition._moonWeights[level].Calculate(forceRecalculate: true);
+        }
+    }
+
     public static EnemyConfig CreateEnemyConfig(CRMod mod, EnemyData data, string enemyName)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSection(enemyName);

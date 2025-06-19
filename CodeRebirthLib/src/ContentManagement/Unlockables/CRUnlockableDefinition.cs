@@ -38,7 +38,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
             LethalLib.Modules.Unlockables.RegisterUnlockable(UnlockableItemDef, Config.Cost.Value, StoreType.Decor);
         }
 
-        if (Config.IsProgressive?.Value ?? data.isProgressive) // todo: fix progressive on leaving and re-entering lobby before going back into orbit saving the progressive state
+        if (Config.IsProgressive?.Value ?? data.isProgressive)
         {
             if (!ProgressiveDenyNode) ProgressiveDenyNode = CreateDefaultProgressiveDenyNode();
             ProgressiveData = new ProgressiveUnlockData(this);

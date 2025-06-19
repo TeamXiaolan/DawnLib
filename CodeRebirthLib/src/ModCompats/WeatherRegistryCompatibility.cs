@@ -14,7 +14,8 @@ static class WeatherRegistryCompatibility
 
     private static void WeatherRegistry_EventManager_WeatherChanged((SelectableLevel selectableLevel, WeatherRegistry.Weather weather) args)
     {
-        // todo: in theory this should only recalculate for the specific moon, but oh well
-        CREnemyDefinition.UpdateAllWeights();
+        CREnemyDefinition.UpdateAllEnemyWeightsForLevel(args.selectableLevel.Enemies, args.selectableLevel);
+        CREnemyDefinition.UpdateAllEnemyWeightsForLevel(args.selectableLevel.OutsideEnemies, args.selectableLevel);
+        CREnemyDefinition.UpdateAllEnemyWeightsForLevel(args.selectableLevel.DaytimeEnemies, args.selectableLevel);
     }
 }
