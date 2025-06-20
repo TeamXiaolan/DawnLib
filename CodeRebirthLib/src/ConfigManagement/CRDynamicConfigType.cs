@@ -1,5 +1,4 @@
 ﻿namespace CodeRebirthLib.ConfigManagement;
-
 public enum CRDynamicConfigType
 {
     String,
@@ -7,5 +6,5 @@ public enum CRDynamicConfigType
     Float,
     Bool,
     BoundedRange,
-    AnimationCurve
+    AnimationCurve,
 }

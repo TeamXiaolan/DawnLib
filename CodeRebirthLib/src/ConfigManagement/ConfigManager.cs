@@ -8,11 +8,10 @@ using LethalLib.Modules;
 using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement;
-
 // todo: look over this again and see how much can become toml types?
 public class ConfigManager(ConfigFile file)
 {
-    private static readonly Regex ConfigCleanerRegex = new Regex(@"[\n\t""`\[\]']");
+    private static readonly Regex ConfigCleanerRegex = new(@"[\n\t""`\[\]']");
     internal static string CleanStringForConfig(string input)
     {
         // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
@@ -28,7 +27,7 @@ public class ConfigManager(ConfigFile file)
     {
         return CreateConfigSection(data.configName + " Options");
     }
-    
+
     public ConfigEntry<T> CreateGeneralConfig<T>(
         string header,
         string name,
@@ -51,7 +50,7 @@ public class ConfigManager(ConfigFile file)
             _ => throw new ArgumentOutOfRangeException($"DynamicConfigType of '{configDefinition.DynamicConfigType}' is not yet internally implemented!!"),
         };
     }
-    
+
     public static (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) ParseMoonsWithRarity(string? configMoonRarity)
     {
         Dictionary<Levels.LevelTypes, int> spawnRateByLevelType = new();
@@ -114,7 +113,7 @@ public class ConfigManager(ConfigFile file)
             {
                 name = "modded";
             }
-            if (System.Enum.TryParse(name, true, out Levels.LevelTypes levelType))
+            if (Enum.TryParse(name, true, out Levels.LevelTypes levelType))
             {
                 spawnRateByLevelType[levelType] = entryParts[1];
             }
@@ -122,7 +121,7 @@ public class ConfigManager(ConfigFile file)
             {
                 // Try appending "Level" to the name and re-attempt parsing
                 string modifiedName = name + "level";
-                if (System.Enum.TryParse(modifiedName, true, out levelType))
+                if (Enum.TryParse(modifiedName, true, out levelType))
                 {
                     spawnRateByLevelType[levelType] = entryParts[1];
                 }
@@ -135,7 +134,10 @@ public class ConfigManager(ConfigFile file)
         }
         return (spawnRateByLevelType, spawnRateByCustomLevelType);
     }
-    
+
     // todo: mark obsolete?
-    public static AnimationCurve ParseCurve(string keyValuePairs) => TomlTypeConverter.ConvertToValue<AnimationCurve>(keyValuePairs);
+    public static AnimationCurve ParseCurve(string keyValuePairs)
+    {
+        return TomlTypeConverter.ConvertToValue<AnimationCurve>(keyValuePairs);
+    }
 }

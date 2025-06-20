@@ -7,23 +7,24 @@ using CodeRebirthLib.Extensions;
 using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
+using Random = System.Random;
 
 namespace CodeRebirthLib.Util;
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
     internal static EntranceTeleport[] _entrancePoints = [];
-    public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
+    internal Random CRLibRandom = new();
     internal ES3Settings SaveSettings;
-    internal System.Random CRLibRandom = new();
-    
+    public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
+
     private void Awake()
     {
         if (StartOfRound.Instance == null)
             return;
 
-        CRLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
+        CRLibRandom = new Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
-        SaveSettings = new($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
+        SaveSettings = new ES3Settings($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
     }
 
     public IEnumerator Start()
@@ -57,10 +58,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < expectedOrder.Length; i++)
         {
             uint unlockableNetworkId = expectedOrder[i];
-            CRUnlockableDefinition? definition = CRMod.AllUnlockables().FirstOrDefault(it =>
-            {
-                return it.ProgressiveData != null && it.ProgressiveData.NetworkID == unlockableNetworkId;
-            });
+            CRUnlockableDefinition? definition = CRMod.AllUnlockables().FirstOrDefault(it => { return it.ProgressiveData != null && it.ProgressiveData.NetworkID == unlockableNetworkId; });
             if (definition)
             {
                 values[i] = definition.ProgressiveData.IsUnlocked;
@@ -72,19 +70,22 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
                 values[i] = false;
             }
         }
-        
-        ProgressiveUnlockableStateResponseClientRpc(values, new ClientRpcParams() {
-            Send = {
-                TargetClientIds = [player.OwnerClientId]
-            }
-        });
+
+        ProgressiveUnlockableStateResponseClientRpc(values,
+            new ClientRpcParams
+            {
+                Send =
+                {
+                    TargetClientIds = [player.OwnerClientId],
+                },
+            });
     }
 
     [ClientRpc]
     private void ProgressiveUnlockableStateResponseClientRpc(bool[] states, ClientRpcParams rpcParams = default)
     {
         CRUnlockableDefinition[] definitions = CRMod.AllUnlockables().Where(it => it.ProgressiveData != null).ToArray();
-        for(int i = 0; i < definitions.Length; i++)
+        for (int i = 0; i < definitions.Length; i++)
         {
             CRUnlockableDefinition definition = definitions[i];
             CodeRebirthLibPlugin.ExtendedLogging($"setting state of {definition.UnlockableItemDef.unlockable.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
@@ -95,7 +96,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     internal void SaveCodeRebirthLibData()
     {
         if (!NetworkManager.Singleton.IsHost) return;
-        CodeRebirthLibPlugin.ExtendedLogging($"Running SaveAll");
+        CodeRebirthLibPlugin.ExtendedLogging("Running SaveAll");
         ProgressiveUnlockableHandler.SaveAll(SaveSettings);
     }
 
@@ -107,7 +108,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     private void OnNewRoundStart()
     {
         _entrancePoints = FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.InstanceID);
-        foreach (var entrance in _entrancePoints)
+        foreach (EntranceTeleport? entrance in _entrancePoints)
         {
             if (!entrance.FindExitPoint())
             {
@@ -123,7 +124,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     }
 
     [ClientRpc]
-    void BroadcastDisplayTipClientRPC(HUDDisplayTip displayTip)
+    private void BroadcastDisplayTipClientRPC(HUDDisplayTip displayTip)
     {
         HUDManager.Instance.DisplayTip(displayTip);
     }

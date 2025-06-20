@@ -12,11 +12,17 @@ public class PlayerControllerReference : INetworkSerializable
         serializer.SerializeValue(ref _playerID);
     }
 
-    public static implicit operator PlayerControllerB(PlayerControllerReference reference) => StartOfRound.Instance.allPlayerScripts[reference._playerID];
-    public static implicit operator PlayerControllerReference(PlayerControllerB player) => new()
+    public static implicit operator PlayerControllerB(PlayerControllerReference reference)
     {
-        _playerID = Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player), // (int)player.playerClientId,
-    };
+        return StartOfRound.Instance.allPlayerScripts[reference._playerID];
+    }
+    public static implicit operator PlayerControllerReference(PlayerControllerB player)
+    {
+        return new PlayerControllerReference
+        {
+            _playerID = Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player), // (int)player.playerClientId,
+        };
+    }
 
     public override bool Equals(object? obj)
     {

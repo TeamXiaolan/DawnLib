@@ -3,7 +3,6 @@ using System.Linq;
 using BepInEx.Configuration;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.Exceptions;
 using CodeRebirthLib.Patches;
 using LethalLib.Extras;
@@ -13,31 +12,35 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.MapObjects;
-
 [CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Definition")]
 public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 {
-    [field: FormerlySerializedAs("gameObject"), SerializeField]
+
+    public const string REGISTRY_ID = "map_objects";
+
+    [field: FormerlySerializedAs("gameObject")] [field: SerializeField]
     public GameObject GameObject { get; private set; }
-    [field: FormerlySerializedAs("objectName"), SerializeField]
+
+    [field: FormerlySerializedAs("objectName")] [field: SerializeField]
     public string ObjectName { get; private set; }
-    [field: FormerlySerializedAs("alignWithTerrain"), SerializeField]
+
+    [field: FormerlySerializedAs("alignWithTerrain")] [field: SerializeField]
     public bool AlignWithTerrain { get; private set; }
-    
+
     public MapObjectConfig Config { get; private set; }
     public MapObjectSpawnMechanics? InsideSpawnMechanics { get; private set; }
     public MapObjectSpawnMechanics? OutsideSpawnMechanics { get; private set; }
-    
+
     public override void Register(CRMod mod, MapObjectData data)
     {
         Config = CreateMapObjectConfig(mod, data, ObjectName);
-        
+
         if (Config.InsideHazard?.Value ?? data.isInsideHazard)
         {
-            SpawnableMapObjectDef insideDef = ScriptableObject.CreateInstance<SpawnableMapObjectDef>();
+            SpawnableMapObjectDef insideDef = CreateInstance<SpawnableMapObjectDef>();
             insideDef.spawnableMapObject = new SpawnableMapObject
             {
-                prefabToSpawn = GameObject
+                prefabToSpawn = GameObject,
             };
             try
             {
@@ -49,7 +52,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
                 exception.LogNicely(mod.Logger);
                 return; // shouldn't probably be a return
             }
-            
+
             LethalLib.Modules.MapObjects.RegisterMapObject(
                 insideDef,
                 Levels.LevelTypes.All,
@@ -60,13 +63,13 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 
         if (Config.OutsideHazard?.Value ?? data.isOutsideHazard)
         {
-            SpawnableOutsideObjectDef outsideDef = ScriptableObject.CreateInstance<SpawnableOutsideObjectDef>();
+            SpawnableOutsideObjectDef outsideDef = CreateInstance<SpawnableOutsideObjectDef>();
             outsideDef.spawnableMapObject = new SpawnableOutsideObjectWithRarity
             {
-                spawnableObject = ScriptableObject.CreateInstance<SpawnableOutsideObject>()
+                spawnableObject = CreateInstance<SpawnableOutsideObject>(),
             };
             outsideDef.spawnableMapObject.spawnableObject.prefabToSpawn = GameObject;
-            
+
             try
             {
                 OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights!.Value);
@@ -78,18 +81,18 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
                 return; // shouldn't probably be a return
             }
 
-            RegisteredCRMapObject registeredCRMapObject = new RegisteredCRMapObject()
+            RegisteredCRMapObject registeredCRMapObject = new()
             {
                 alignWithTerrain = AlignWithTerrain,
                 hasNetworkObject = outsideDef.spawnableMapObject.spawnableObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
                 outsideObject = outsideDef.spawnableMapObject,
                 levels = Levels.LevelTypes.All,
                 spawnLevelOverrides = OutsideSpawnMechanics.LevelOverrides,
-                spawnRateFunction = OutsideSpawnMechanics.CurveFunction
+                spawnRateFunction = OutsideSpawnMechanics.CurveFunction,
             };
             RoundManagerPatch.registeredMapObjects.Add(registeredCRMapObject);
         }
-        
+
         mod.MapObjectRegistry().Register(this);
     }
 
@@ -99,33 +102,34 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
         {
             ConfigEntry<bool>? insideHazard = null, outsideHazard = null;
             ConfigEntry<string>? insideCurves = null, outsideCurves = null;
-            if(data.createInsideHazardConfig)
+            if (data.createInsideHazardConfig)
                 insideHazard = section.Bind("Is Inside Hazard", $"Whether {objectName} is an inside hazard", data.isInsideHazard);
-            
-            if(data.createOutsideHazardConfig)
+
+            if (data.createOutsideHazardConfig)
                 outsideHazard = section.Bind("Is Outside Hazard", $"Whether {objectName} is an outside hazard", data.isOutsideHazard);
 
             if ((insideHazard?.Value ?? false) && data.createInsideCurveSpawnWeightsConfig)
                 insideCurves = section.Bind("Inside Spawn Weights", $"Curve weights for {objectName} when spawning inside.", data.defaultInsideCurveSpawnWeights);
-            
+
             if ((outsideHazard?.Value ?? false) && data.createOutsideCurveSpawnWeightsConfig)
                 outsideCurves = section.Bind("Inside Spawn Weights", $"Curve weights for {objectName} when spawning outside.", data.defaultOutsideCurveSpawnWeights);
-            
+
             return new MapObjectConfig
             {
                 InsideHazard = insideHazard, OutsideHazard = outsideHazard,
                 InsideCurveSpawnWeights = insideCurves,
-                OutsideCurveSpawnWeights = outsideCurves
+                OutsideCurveSpawnWeights = outsideCurves,
             };
         }
     }
-    
-    public const string REGISTRY_ID = "map_objects";
 
     public static void RegisterTo(CRMod mod)
     {
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRMapObjectDefinition>());
     }
-    
-    public override List<MapObjectData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.mapObjects).ToList();
+
+    public override List<MapObjectData> GetEntities(CRMod mod)
+    {
+        return mod.Content.assetBundles.SelectMany(it => it.mapObjects).ToList();
+    }
 }

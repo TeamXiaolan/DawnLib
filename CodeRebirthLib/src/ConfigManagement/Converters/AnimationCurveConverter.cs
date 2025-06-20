@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using CodeRebirthLib.Exceptions;
 using UnityEngine;
 
@@ -11,14 +10,14 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
     protected override string ConvertToString(AnimationCurve value)
     {
         string[] pairs = new string[value.keys.Length];
-        for(int i = 0; i < value.keys.Length; i++)
+        for (int i = 0; i < value.keys.Length; i++)
         {
             Keyframe keyframe = value.keys[i];
             pairs[i] = $"{keyframe.time},{keyframe.value}";
         }
         return string.Join(';', pairs);
     }
-    
+
     protected override AnimationCurve ConvertToObject(string keyValuePairs)
     {
         // Split the input string into individual key-value pairs
@@ -29,11 +28,8 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
             {
                 return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, result));
             }
-            else
-            {
-                CodeRebirthLibPlugin.Logger.LogError($"Invalid key-value pairs format: {keyValuePairs}");
-                return AnimationCurve.Linear(0, 0, 1, 0);
-            }
+            CodeRebirthLibPlugin.Logger.LogError($"Invalid key-value pairs format: {keyValuePairs}");
+            return AnimationCurve.Linear(0, 0, 1, 0);
         }
         List<Keyframe> keyframes = new();
 
@@ -42,8 +38,8 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
         {
             string[] splitPair = pair.Split(',').Select(s => s.Trim()).ToArray();
             if (splitPair.Length == 2 &&
-                float.TryParse(splitPair[0], System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture, out float time) &&
-                float.TryParse(splitPair[1], System.Globalization.NumberStyles.Float, CultureInfo.InvariantCulture, out float value))
+                float.TryParse(splitPair[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float time) &&
+                float.TryParse(splitPair[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float value))
             {
                 keyframes.Add(new Keyframe(time, value));
             }
@@ -55,7 +51,7 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
         }
 
         // Create the animation curve with the generated keyframes and apply smoothing
-        var curve = new AnimationCurve(keyframes.ToArray());
+        AnimationCurve curve = new(keyframes.ToArray());
         /*for (int i = 0; i < keyframes.Count; i++)
         {
             curve.SmoothTangents(i, 0.5f); // Adjust the smoothing as necessary

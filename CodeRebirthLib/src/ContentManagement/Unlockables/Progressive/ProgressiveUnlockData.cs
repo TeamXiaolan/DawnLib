@@ -6,23 +6,23 @@ using CodeRebirthLib.Util;
 namespace CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 public class ProgressiveUnlockData
 {
-    public CRUnlockableDefinition Definition { get; }
-    public bool IsUnlocked { get; private set; }
 
     public const string LOCKED_NAME = "???";
-    public string OriginalName { get; private set; }
-    
-    private UnlockableItem Unlockable => Definition.UnlockableItemDef.unlockable;
-    
-    private string SaveID => OriginalName;
-    internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(SaveID), 0);
-    
+
     public ProgressiveUnlockData(CRUnlockableDefinition definition)
     {
         Definition = definition;
         OriginalName = Unlockable.unlockableName;
         ProgressiveUnlockableHandler.AllProgressiveUnlockables.Add(this);
     }
+    public CRUnlockableDefinition Definition { get; }
+    public bool IsUnlocked { get; private set; }
+    public string OriginalName { get; }
+
+    private UnlockableItem Unlockable => Definition.UnlockableItemDef.unlockable;
+
+    private string SaveID => OriginalName;
+    internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(SaveID), 0);
 
     public void Unlock(HUDDisplayTip? displayTip = null)
     {

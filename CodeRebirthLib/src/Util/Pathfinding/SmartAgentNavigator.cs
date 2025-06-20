@@ -8,27 +8,30 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 namespace CodeRebirthLib.Util.Pathfinding;
 [RequireComponent(typeof(NavMeshAgent))]
 public class SmartAgentNavigator : NetworkBehaviour
 {
-    [HideInInspector] public bool cantMove = false;
-    [HideInInspector] public UnityEvent<bool> OnUseEntranceTeleport = new();
+    [HideInInspector] public bool cantMove;
+    [HideInInspector] public EntranceTeleport lastUsedEntranceTeleport;
+    [HideInInspector] public NavMeshAgent agent = null!;
+    [HideInInspector] public bool isOutside = true;
+    [HideInInspector] public List<EntranceTeleport> exitPoints = new();
+    [HideInInspector] public EntranceTeleport? mainEntrance;
+
+    private readonly float nonAgentMovementSpeed = 10f;
+
+    private Coroutine? checkPathsRoutine;
+    private MineshaftElevatorController? elevatorScript;
+    private bool inElevator;
     [HideInInspector] public UnityEvent<bool> OnEnableOrDisableAgent = new();
     [HideInInspector] public UnityEvent<bool> OnEnterOrExitElevator = new();
-    [HideInInspector] public EntranceTeleport lastUsedEntranceTeleport;
-
-    private float nonAgentMovementSpeed = 10f;
-    [HideInInspector] public NavMeshAgent agent = null!;
+    [HideInInspector] public UnityEvent<bool> OnUseEntranceTeleport = new();
+    [HideInInspector] public PathfindingOperation? pathfindingOperation;
     private Vector3 pointToGo = Vector3.zero;
-    [HideInInspector] public bool isOutside = true;
-    private bool usingElevator = false;
-    private bool inElevator = false;
-    private MineshaftElevatorController? elevatorScript = null;
-    [HideInInspector] public PathfindingOperation? pathfindingOperation = null;
-    [HideInInspector] public List<EntranceTeleport> exitPoints = new();
-    [HideInInspector] public EntranceTeleport? mainEntrance = null;
+    private bool usingElevator;
 
     public void Awake()
     {
@@ -40,7 +43,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         this.isOutside = isOutside;
 
         exitPoints.Clear();
-        foreach (var exit in CodeRebirthLibNetworker.EntrancePoints)
+        foreach (EntranceTeleport? exit in CodeRebirthLibNetworker.EntrancePoints)
         {
             exitPoints.Add(exit);
             if (exit.entranceId == 0 && exit.isEntranceToBuilding)
@@ -84,8 +87,6 @@ public class SmartAgentNavigator : NetworkBehaviour
         return GoToDestination(destination);
     }
 
-    private Coroutine? checkPathsRoutine = null;
-
     public bool CheckPathsOngoing()
     {
         return checkPathsRoutine != null;
@@ -106,12 +107,14 @@ public class SmartAgentNavigator : NetworkBehaviour
         CodeRebirthLibPlugin.ExtendedLogging($"Checking paths for {points.Count()} objects");
         var TList = new List<(T, float)>();
         ClearPathfindingOperation();
-        foreach (var (obj, point) in points.ToArray())
+        foreach ((T obj, Vector3 point) in points.ToArray())
         {
             bool pathFound = false;
             float bestDistance = float.MaxValue;
             while (!TryFindViablePath(point, out pathFound, out bestDistance, out _))
+            {
                 yield return null; // Wait for the path to be finished calculating
+            }
 
             if (pathFound)
             {
@@ -126,7 +129,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     private void HandleDisabledAgentPathing()
     {
         Vector3 targetPosition = pointToGo;
-        float arcHeight = 10f;  // Adjusted arc height for a more pronounced arc
+        float arcHeight = 10f; // Adjusted arc height for a more pronounced arc
         float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
 
         if (Vector3.Distance(transform.position, targetPosition) <= 1f)
@@ -173,7 +176,7 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     public float CanPathToPoint(Vector3 startPos, Vector3 endPos)
     {
-        NavMeshPath path = new NavMeshPath();
+        NavMeshPath path = new();
         bool pathFound = NavMesh.CalculatePath(startPos, endPos, NavMesh.AllAreas, path);
 
         if (!pathFound || path.status != NavMeshPathStatus.PathComplete)
@@ -215,7 +218,7 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     public bool TryFindViablePath(Vector3 endPosition, out bool foundPath, out float bestDistance, out EntranceTeleport? entranceTeleport)
     {
-        var findPathThroughTeleportsOperation = ChangePathfindingOperation(() => new FindPathThroughTeleportsOperation(exitPoints, agent.GetPathOrigin(), endPosition, agent));
+        FindPathThroughTeleportsOperation findPathThroughTeleportsOperation = ChangePathfindingOperation(() => new FindPathThroughTeleportsOperation(exitPoints, agent.GetPathOrigin(), endPosition, agent));
         return findPathThroughTeleportsOperation.TryGetShortestPath(out foundPath, out bestDistance, out entranceTeleport);
     }
 
@@ -234,13 +237,13 @@ public class SmartAgentNavigator : NetworkBehaviour
                         HandleElevatorActions(elevatorScript, goingUp);
                         return false;
                     }
-                    else if (!elevatorScript.elevatorFinishedMoving && Vector3.Distance(actualEndPosition, elevatorScript.elevatorInsidePoint.position) < 7f)
+                    if (!elevatorScript.elevatorFinishedMoving && Vector3.Distance(actualEndPosition, elevatorScript.elevatorInsidePoint.position) < 7f)
                     {
                         return false;
                     }
                 }
 
-                if ((isOutside && actualEndPosition.y > -50) || (!isOutside && actualEndPosition.y < -50))
+                if (isOutside && actualEndPosition.y > -50 || !isOutside && actualEndPosition.y < -50)
                 {
                     DetermineIfNeedToDisableAgent(actualEndPosition);
                     return false;
@@ -253,7 +256,7 @@ public class SmartAgentNavigator : NetworkBehaviour
                 // fallback?
                 return false;
             }
-            else if (entranceToUse == null)
+            if (entranceToUse == null)
             {
                 // Plugin.ExtendedLogging($"No entrance found, but path found");
                 agent.SetDestination(actualEndPosition);
@@ -278,7 +281,6 @@ public class SmartAgentNavigator : NetworkBehaviour
             return;
         }
         UseTheElevator(elevatorScript, goingUp);
-        return;
     }
 
     private void DoPathingThroughEntrance(EntranceTeleport viableEntrance)
@@ -292,7 +294,6 @@ public class SmartAgentNavigator : NetworkBehaviour
         {
             agent.Warp(destinationAfterTeleport);
             SetThingOutsideServerRpc(!isOutside, new NetworkBehaviourReference(viableEntrance));
-            return;
         }
         else
         {
@@ -311,10 +312,10 @@ public class SmartAgentNavigator : NetworkBehaviour
         }
         if (usingElevator) return true;
         // Determine if the elevator is needed based on destination proximity and current position
-        bool destinationCloserToMainEntrance = Vector3.Distance(destination, RoundManager.FindMainEntrancePosition(true, false)) < Vector3.Distance(destination, elevatorScript.elevatorBottomPoint.position);
+        bool destinationCloserToMainEntrance = Vector3.Distance(destination, RoundManager.FindMainEntrancePosition(true)) < Vector3.Distance(destination, elevatorScript.elevatorBottomPoint.position);
         bool notCloseToTopPoint = Vector3.Distance(transform.position, elevatorScript.elevatorTopPoint.position) > 15f;
         goingUp = destinationCloserToMainEntrance;
-        return (destinationCloserToMainEntrance && notCloseToTopPoint) || (!notCloseToTopPoint && !destinationCloserToMainEntrance);
+        return destinationCloserToMainEntrance && notCloseToTopPoint || !notCloseToTopPoint && !destinationCloserToMainEntrance;
     }
 
     private void UseTheElevator(MineshaftElevatorController elevatorScript, bool goingUp)
@@ -358,7 +359,7 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     private bool NeedToCallElevator(MineshaftElevatorController elevatorScript, bool needToGoUp)
     {
-        return !elevatorScript.elevatorCalled && ((!elevatorScript.elevatorIsAtBottom && needToGoUp) || (elevatorScript.elevatorIsAtBottom && !needToGoUp));
+        return !elevatorScript.elevatorCalled && (!elevatorScript.elevatorIsAtBottom && needToGoUp || elevatorScript.elevatorIsAtBottom && !needToGoUp);
     }
 
     private void MoveToWaitingPoint(MineshaftElevatorController elevatorScript, bool needToGoUp)
@@ -391,7 +392,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     }
 
     /// <summary>
-    /// Finds the closest valid point from a partial path.
+    ///     Finds the closest valid point from a partial path.
     /// </summary>
     /// <returns>The closest valid point to continue the journey from.</returns>
     private Vector3 FindClosestValidPoint()
@@ -400,7 +401,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     }
 
     /// <summary>
-    /// Warps the agent forward in its current direction until it lands on a valid NavMesh.
+    ///     Warps the agent forward in its current direction until it lands on a valid NavMesh.
     /// </summary>
     /// <param name="originalDestination">The target destination outside the navmesh.</param>
     /// <returns>The point on the navmesh.</returns>
@@ -430,8 +431,8 @@ public class SmartAgentNavigator : NetworkBehaviour
     }
 
     /// <summary>
-    /// Adjusts the agent's speed based on its remaining distance.
-    /// The farther the distance, the faster the agent moves.
+    ///     Adjusts the agent's speed based on its remaining distance.
+    ///     The farther the distance, the faster the agent moves.
     /// </summary>
     /// <param name="distance">The distance to the target.</param>
     public void AdjustSpeedBasedOnDistance(float multiplierBoost)
@@ -449,7 +450,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     }
 
     /// <summary>
-    /// Cancels the current movement and stops the agent.
+    ///     Cancels the current movement and stops the agent.
     /// </summary>
     public void StopNavigation()
     {
@@ -461,7 +462,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     }
 
     /// <summary>
-    /// Teleports the agent to a specified location.
+    ///     Teleports the agent to a specified location.
     /// </summary>
     /// <param name="location">The target location to warp to.</param>
     public void WarpToLocation(Vector3 location)
@@ -502,14 +503,14 @@ public class SmartAgentNavigator : NetworkBehaviour
     [SerializeField]
     private float _nodeRemovalPrecision = 5f;
 
-    private Coroutine? _searchRoutine = null;
+    private Coroutine? _searchRoutine;
     private float _searchRadius = 50f;
     private readonly List<Vector3> _positionsToSearch = new();
     private readonly List<(Vector3 nodePosition, Vector3 position)> _roamingPointsVectorList = new();
 
     private IEnumerator SearchAlgorithm(float radius)
     {
-        yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 3f));
+        yield return new WaitForSeconds(Random.Range(0f, 3f));
         // Plugin.ExtendedLogging($"Starting search routine for {this.gameObject.name} at {this.transform.position} with radius {radius}");
         _positionsToSearch.Clear();
         yield return StartCoroutine(GetSetOfAcceptableNodesForRoaming(radius));
@@ -530,7 +531,7 @@ public class SmartAgentNavigator : NetworkBehaviour
                 GoToDestination(positionToTravel);
                 yield return new WaitForSeconds(0.5f);
 
-                if (!agent.enabled || Vector3.Distance(this.transform.position, positionToTravel) <= 3 + agent.stoppingDistance)
+                if (!agent.enabled || Vector3.Distance(transform.position, positionToTravel) <= 3 + agent.stoppingDistance)
                 {
                     reachedDestination = true;
                 }
@@ -555,7 +556,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         {
             for (int i = 0; i < 20; i++)
             {
-                Vector3 randomPosition = RoundManager.Instance.GetRandomNavMeshPositionInRadius(this.transform.position, radius, default);
+                Vector3 randomPosition = RoundManager.Instance.GetRandomNavMeshPositionInRadius(transform.position, radius);
                 _roamingPointsVectorList.Add((randomPosition, randomPosition));
             }
         }

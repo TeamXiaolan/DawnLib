@@ -3,6 +3,7 @@ using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.Extensions;
 using Unity.Netcode;
 using UnityEngine;
+using Random = System.Random;
 
 namespace CodeRebirthLib.Patches;
 static class RoundManagerPatch
@@ -18,17 +19,17 @@ static class RoundManagerPatch
     {
         orig(self);
 
-        System.Random random = new(StartOfRound.Instance.randomMapSeed + 69);
+        Random random = new(StartOfRound.Instance.randomMapSeed + 69);
         foreach (RegisteredCRMapObject registeredMapObject in registeredMapObjects)
         {
             HandleSpawningOutsideMapObjects(registeredMapObject, random);
         }
     }
-    
-    private static void HandleSpawningOutsideMapObjects(RegisteredCRMapObject mapObjDef, System.Random random)
+
+    private static void HandleSpawningOutsideMapObjects(RegisteredCRMapObject mapObjDef, Random random)
     {
         SelectableLevel level = RoundManager.Instance.currentLevel;
-        AnimationCurve animationCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 0));
+        AnimationCurve animationCurve = new(new Keyframe(0, 0), new Keyframe(1, 0));
         GameObject prefabToSpawn = mapObjDef.outsideObject.spawnableObject.prefabToSpawn;
 
         if (mapObjDef.hasNetworkObject && !NetworkManager.Singleton.IsServer)
@@ -40,9 +41,9 @@ static class RoundManagerPatch
         for (int i = 0; i < randomNumberToSpawn; i++)
         {
             Vector3 spawnPos = RoundManager.Instance.outsideAINodes[random.Next(RoundManager.Instance.outsideAINodes.Length)].transform.position;
-            spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, random, -1) + (Vector3.up * 2);
+            spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, random) + Vector3.up * 2;
             Physics.Raycast(spawnPos, Vector3.down, out RaycastHit hit, 100, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore);
-            
+
             if (!hit.collider)
                 continue;
 

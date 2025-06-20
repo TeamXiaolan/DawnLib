@@ -1,12 +1,11 @@
 ﻿using System;
-using UnityEngine.Experimental.GlobalIllumination;
 
 namespace CodeRebirthLib.Data;
 public enum CompatibilityBool
 {
     Never,
     Always,
-    IfVersionMatches
+    IfVersionMatches,
 }
 
 public static class CompatibilityBoolExtensions
@@ -18,7 +17,7 @@ public static class CompatibilityBoolExtensions
             CompatibilityBool.Never => false,
             CompatibilityBool.Always => true,
             CompatibilityBool.IfVersionMatches => Version.Parse(compatibilityVersion) == currentModVersion, // support doing like 2.*
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
 }

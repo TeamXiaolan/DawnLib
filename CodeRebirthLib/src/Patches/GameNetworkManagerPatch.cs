@@ -20,7 +20,7 @@ static class GameNetworkManagerPatch
     private static void GameNetworkManager_SaveItemsInShip(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
     {
         orig(self);
-        CodeRebirthLibPlugin.ExtendedLogging($"Saving CodeRebirthLibData");
+        CodeRebirthLibPlugin.ExtendedLogging("Saving CodeRebirthLibData");
         CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
     }
 
@@ -34,7 +34,7 @@ static class GameNetworkManagerPatch
         }
         else
         {
-            settings = new($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
+            settings = new ES3Settings($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
         }
         CodeRebirthLibNetworker.ResetCodeRebirthLibData(settings);
     }

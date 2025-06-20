@@ -13,7 +13,7 @@ public static class CRLib
     {
         return AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(assembly.Location), "Assets", filePath));
     }
-    
+
     public static CRMod RegisterMod(BaseUnityPlugin plugin, AssetBundle mainBundle)
     {
         ConfigManager configManager = new(plugin.Config);
@@ -24,7 +24,7 @@ public static class CRLib
     {
         CodeRebirthLibNetworker.Instance?.BroadcastDisplayTipServerRPC(displayTip);
     }
-    
+
     internal static CRMod RegisterNoCodeMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath)
     {
         ConfigManager configManager = new(GenerateConfigFile(plugin));

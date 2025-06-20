@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace CodeRebirthLib.AssetManagement;
-
 [AttributeUsage(AttributeTargets.Property)]
 public class LoadFromBundleAttribute(string bundleFile) : Attribute
 {

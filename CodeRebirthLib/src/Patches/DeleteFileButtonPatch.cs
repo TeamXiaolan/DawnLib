@@ -1,4 +1,3 @@
-
 using CodeRebirthLib.Util;
 
 namespace CodeRebirthLib.Patches;

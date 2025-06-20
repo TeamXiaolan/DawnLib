@@ -18,7 +18,7 @@ public abstract class ContentHandler(CRMod mod)
     {
         string configName = assetBundleData.configName;
 
-        using (ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
+        using(ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
         {
             bool isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true).Value;
             return isEnabled;
@@ -45,7 +45,7 @@ public abstract class ContentHandler(CRMod mod)
             mod.Logger?.LogError($"{typeof(TAsset).Name} is not properly setup to handle TryLoadContentBundle. It must have a constructor with (CRMod, string) as arguments!");
             return false;
         }
-        
+
         asset = (TAsset)constructorInfo.Invoke([mod, assetBundleName]);
         asset.AssetBundleData = assetBundleData;
 
@@ -84,10 +84,10 @@ public abstract class ContentHandler(CRMod mod)
 
 public abstract class ContentHandler<T> : ContentHandler where T : ContentHandler<T>
 {
-    public static T Instance { get; private set; } = null!;
-    
+
     public ContentHandler(CRMod mod) : base(mod)
     {
         Instance = (T)this;
     }
+    public static T Instance { get; private set; } = null!;
 }

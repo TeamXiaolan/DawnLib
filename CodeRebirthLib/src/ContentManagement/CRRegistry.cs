@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using CodeRebirthLib.AssetManagement;
 using System.Linq;
+using CodeRebirthLib.AssetManagement;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement;
@@ -14,7 +14,16 @@ public abstract class CRRegistry
 public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> where TDefinition : CRContentDefinition
 {
     [SerializeField]
-    private List<TDefinition> _items = new();
+    private readonly List<TDefinition> _items = new();
+
+    public IEnumerator<TDefinition> GetEnumerator()
+    {
+        return _items.GetEnumerator();
+    }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 
     public void Register(TDefinition item)
     {
@@ -29,20 +38,11 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
         {
             CodeRebirthLibPlugin.ExtendedLogging(failContext);
         }
-        return value;// implicit cast to bool
+        return value; // implicit cast to bool
     }
-    
+
     public bool TryGetFromAssetName(string name, [NotNullWhen(true)] out TDefinition? value)
     {
         return TryGetFirstBySomeName(it => it.name, name, out value);
-    }
-    
-    public IEnumerator<TDefinition> GetEnumerator()
-    {
-        return _items.GetEnumerator();
-    }
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

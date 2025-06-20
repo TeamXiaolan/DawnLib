@@ -10,8 +10,8 @@ public class MalformedAnimationCurveConfigException(string pair) : Exception
 
     public void LogNicely(ManualLogSource? logger)
     {
-        if(logger == null) return;
-        
+        if (logger == null) return;
+
         string[] splitPair = Pair.Split(',').Select(s => s.Trim()).ToArray();
         logger.LogError($"Invalid key,value pair format: '{Pair}'! More details:");
         logger.LogError($"   Found '{splitPair.Length}' parts");

@@ -8,18 +8,18 @@ static class ExtendedTOML
     private static readonly List<TOMLConverter> _converters =
     [
         new BoundedRangeConverter(),
-        new AnimationCurveConverter()
+        new AnimationCurveConverter(),
     ];
-    
+
     internal static void Init()
     {
         foreach (TOMLConverter converter in _converters)
         {
             TomlTypeConverter.AddConverter(converter.ConvertingType,
-                new TypeConverter()
+                new TypeConverter
                 {
                     ConvertToObject = (s, type) => converter.Deserialize(s),
-                    ConvertToString = (obj, type) => converter.Serialize(obj)
+                    ConvertToString = (obj, type) => converter.Serialize(obj),
                 }
             );
             CodeRebirthLibPlugin.Logger.LogInfo($"[ExtendedTOML] Registered converter for '{converter.ConvertingType.Name}'");

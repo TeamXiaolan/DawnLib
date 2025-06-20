@@ -1,33 +1,32 @@
+using System;
 using System.IO;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
-using System.Reflection;
+using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.Patches;
-using UnityEngine;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.ModCompats;
+using CodeRebirthLib.Patches;
+using LethalLib;
+using PathfindingLib;
 using Unity.Netcode;
-using CodeRebirthLib.AssetManagement;
+using UnityEngine;
+using PluginInfo = WeatherRegistry.PluginInfo;
 
 namespace CodeRebirthLib;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-[BepInDependency(LethalLib.Plugin.ModGUID)]
-[BepInDependency(WeatherRegistry.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(Plugin.ModGUID)]
+[BepInDependency(PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency(PathfindingLib.PathfindingLibPlugin.PluginGUID)]
+[BepInDependency(PathfindingLibPlugin.PluginGUID)]
 class CodeRebirthLibPlugin : BaseUnityPlugin
 {
-	internal new static ManualLogSource Logger { get; private set; } = null!;
+    internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static ConfigManager ConfigManager { get; private set; } = null!;
-    internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
-    {
-        [LoadFromBundle("CodeRebirthLibNetworker.prefab")]
-        public GameObject NetworkerPrefab { get; private set; } = null!;
-    }
     internal static MainAssets Main { get; private set; } = null!;
-    
-	private void Awake()
+
+    private void Awake()
     {
         Logger = base.Logger;
         ConfigManager = new ConfigManager(Config);
@@ -71,33 +70,39 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
-    
-	private void NetcodePatcher()
-	{
-		var types = Assembly.GetExecutingAssembly().GetLoadableTypes();
-		foreach (var type in types)
-		{
+
+    private void NetcodePatcher()
+    {
+        var types = Assembly.GetExecutingAssembly().GetLoadableTypes();
+        foreach (Type? type in types)
+        {
             if (type.IsNested || !typeof(NetworkBehaviour).IsAssignableFrom(type))
             {
                 continue; // we do not care about fixing it, if it is not a network behaviour
             }
-			var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-			foreach (var method in methods)
-			{
-				var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-				if (attributes.Length > 0)
-				{
-					method.Invoke(null, null);
-				}
-			}
-		}
-	}
-    
+            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            foreach (MethodInfo? method in methods)
+            {
+                object[]? attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                if (attributes.Length > 0)
+                {
+                    method.Invoke(null, null);
+                }
+            }
+        }
+    }
+
     internal static void ExtendedLogging(object text)
     {
         if (CodeRebirthLibConfig.ExtendedLogging)
         {
             Logger.LogInfo(text);
         }
+    }
+
+    internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
+    {
+        [LoadFromBundle("CodeRebirthLibNetworker.prefab")]
+        public GameObject NetworkerPrefab { get; private set; } = null!;
     }
 }

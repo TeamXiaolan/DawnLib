@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GameNetcodeStuff;
 using UnityEngine;
@@ -14,7 +13,7 @@ public class CREnemyAdditionalData : MonoBehaviour
     public IReadOnlyList<EnemyAICollisionDetect> EnemyAICollisionDetects => _enemyAICollisionDetects.AsReadOnly();
     public PlayerControllerB? PlayerThatLastHit { get; internal set; }
     public bool KilledByPlayer { get; internal set; }
-    
+
     private void OnDestroy()
     {
         _additionalData.Remove(_enemy);

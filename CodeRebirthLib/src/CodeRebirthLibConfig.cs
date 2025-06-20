@@ -1,6 +1,5 @@
 ﻿using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Data;
-using CodeRebirthLib.Patches;
 
 namespace CodeRebirthLib;
 static class CodeRebirthLibConfig

@@ -1,7 +1,5 @@
-using CodeRebirthLib.Util;
-using GameNetcodeStuff;
-using System.Collections.Generic;
 using CodeRebirthLib.ContentManagement.Enemies;
+using GameNetcodeStuff;
 
 namespace CodeRebirthLib.Patches;
 static class EnemyAIPatch
@@ -27,7 +25,7 @@ static class EnemyAIPatch
         {
             data.PlayerThatLastHit = playerWhoHit;
         }
-        
+
         if (!self.isEnemyDead && self.enemyHP - force <= 0 && playerWhoHit != null)
         {
             data.KilledByPlayer = true;

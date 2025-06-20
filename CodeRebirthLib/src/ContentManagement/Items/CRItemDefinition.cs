@@ -1,26 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Configuration;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Data;
-using LethalLib.Modules;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.Items;
-
 [CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Definitions/Item Definition")]
 public class CRItemDefinition : CRContentDefinition<ItemData>
 {
-    [field: FormerlySerializedAs("item"), SerializeField]
+
+    public const string REGISTRY_ID = "items";
+
+    [field: FormerlySerializedAs("item")] [field: SerializeField]
     public Item Item { get; private set; }
-    
-    [field: FormerlySerializedAs("terminalNode"), SerializeField]
+
+    [field: FormerlySerializedAs("terminalNode")] [field: SerializeField]
     public TerminalNode? TerminalNode { get; private set; }
 
     public ItemConfig Config { get; private set; }
-    
+
     public override void Register(CRMod mod, ItemData data)
     {
         Config = CreateItemConfig(mod, data, Item.itemName);
@@ -39,37 +39,38 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
         if (Config.IsScrapItem?.Value ?? data.isScrap)
         {
-            (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights?.Value ?? data.spawnWeights);
+            (var spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights?.Value ?? data.spawnWeights);
             LethalLib.Modules.Items.RegisterScrap(Item, spawnRateByLevelType, spawnRateByCustomLevelType);
         }
-        
+
         mod.ItemRegistry().Register(this);
     }
-    
+
     public static ItemConfig CreateItemConfig(CRMod mod, ItemData data, string itemName)
     {
         using(ConfigContext section = mod.ConfigManager.CreateConfigSection(itemName))
         {
-            ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
-            ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
-            
+            var isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
+            var isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
+
             return new ItemConfig
             {
                 SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind("Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
                 IsScrapItem = isScrapItem,
-                Worth = (isScrapItem?.Value ?? false)? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
+                Worth = isScrapItem?.Value ?? false ? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
                 IsShopItem = isShopItem,
-                Cost = (isShopItem?.Value ?? false)? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null
+                Cost = isShopItem?.Value ?? false ? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
             };
         }
     }
-    
-    public const string REGISTRY_ID = "items";
 
     public static void RegisterTo(CRMod mod)
     {
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRItemDefinition>());
     }
-    
-    public override List<ItemData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.items).ToList();
+
+    public override List<ItemData> GetEntities(CRMod mod)
+    {
+        return mod.Content.assetBundles.SelectMany(it => it.items).ToList();
+    }
 }

@@ -1,5 +1,4 @@
-﻿using BepInEx.Configuration;
-using CodeRebirthLib.Data;
+﻿using CodeRebirthLib.Data;
 
 namespace CodeRebirthLib.ConfigManagement.Converters;
 public class BoundedRangeConverter : TOMLConverter<BoundedRange>
@@ -14,5 +13,4 @@ public class BoundedRangeConverter : TOMLConverter<BoundedRange>
         string[] parts = value.Split(",");
         return new BoundedRange(int.Parse(parts[0]), int.Parse(parts[1]));
     }
-    
 }

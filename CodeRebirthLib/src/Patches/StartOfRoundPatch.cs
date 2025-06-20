@@ -32,7 +32,7 @@ static class StartOfRoundPatch
         CREnemyDefinition.CreateMoonAttributeStacks();
         orig(self);
         MoreLayerMasks.Init();
-        
+
         self.NetworkObject.OnSpawn(() =>
         {
             if (self.IsServer || self.IsHost)

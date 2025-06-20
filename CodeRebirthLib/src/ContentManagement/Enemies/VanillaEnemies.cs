@@ -7,8 +7,10 @@ namespace CodeRebirthLib.ContentManagement.Enemies;
 [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "All these variables are named to match the scriptable object name")]
 public static class VanillaEnemies
 {
+
+    private static readonly List<EnemyType> _allTypes = new();
     public static IReadOnlyList<EnemyType> AllEnemyTypes => _allTypes.AsReadOnly();
-    
+
     public static EnemyType Flowerman { get; private set; }
     public static EnemyType Centipede { get; private set; }
     public static EnemyType MouthDog { get; private set; }
@@ -36,8 +38,6 @@ public static class VanillaEnemies
     public static EnemyType ClaySurgeon { get; private set; }
     public static EnemyType CaveDweller { get; private set; }
 
-    static List<EnemyType> _allTypes = new();
-    
     internal static void Init()
     {
         List<string> unknownTypes = [];

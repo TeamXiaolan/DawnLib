@@ -1,42 +1,20 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using PathfindingLib.Jobs;
+using PathfindingLib.Utilities;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Experimental.AI;
-using Unity.Jobs;
-using System.Linq;
-using System.Collections.Generic;
-using PathfindingLib.Jobs;
-using PathfindingLib.Utilities;
 
 namespace CodeRebirthLib.Util.Pathfinding;
 public class FindPathThroughTeleportsOperation : PathfindingOperation
 {
-    PooledFindPathJob? FindDirectPathToDestinationJob;
-    EntranceTeleport[] entranceTeleports;
-    PooledFindPathJob[] FindEntrancePointJobs;
-    PooledFindPathJob[] FindDestinationJobs;
-
-    public override void Dispose()
-    {
-        if (FindDirectPathToDestinationJob != null)
-        {
-            JobPools.ReleaseFindPathJob(FindDirectPathToDestinationJob);
-            FindDirectPathToDestinationJob = null;
-        }
-        foreach (var jobWrapper in FindEntrancePointJobs)
-        {
-            if (jobWrapper == null) continue;
-            JobPools.ReleaseFindPathJob(jobWrapper);
-        }
-        foreach (var jobWrapper in FindDestinationJobs)
-        {
-            if (jobWrapper == null) continue;
-            JobPools.ReleaseFindPathJob(jobWrapper);
-        }
-        entranceTeleports = [];
-        FindEntrancePointJobs = [];
-        FindDestinationJobs = [];
-    }
+    private EntranceTeleport[] entranceTeleports;
+    private PooledFindPathJob[] FindDestinationJobs;
+    private PooledFindPathJob? FindDirectPathToDestinationJob;
+    private PooledFindPathJob[] FindEntrancePointJobs;
 
     public FindPathThroughTeleportsOperation(IEnumerable<EntranceTeleport> entrancePoints, Vector3 startPos, Vector3 endPos, NavMeshAgent agent)
     {
@@ -51,7 +29,7 @@ public class FindPathThroughTeleportsOperation : PathfindingOperation
         FindDestinationJobs = new PooledFindPathJob[entranceTeleports.Length];
         for (int i = 0; i < entranceTeleports.Length; i++)
         {
-            var currentEntranceTeleport = entranceTeleports[i];
+            EntranceTeleport? currentEntranceTeleport = entranceTeleports[i];
             if (currentEntranceTeleport == null) continue;
             if (currentEntranceTeleport.exitPoint == null || currentEntranceTeleport.entrancePoint == null) continue;
             PooledFindPathJob findEntrancePointJob = JobPools.GetFindPathJob();
@@ -66,6 +44,28 @@ public class FindPathThroughTeleportsOperation : PathfindingOperation
         }
     }
 
+    public override void Dispose()
+    {
+        if (FindDirectPathToDestinationJob != null)
+        {
+            JobPools.ReleaseFindPathJob(FindDirectPathToDestinationJob);
+            FindDirectPathToDestinationJob = null;
+        }
+        foreach (PooledFindPathJob? jobWrapper in FindEntrancePointJobs)
+        {
+            if (jobWrapper == null) continue;
+            JobPools.ReleaseFindPathJob(jobWrapper);
+        }
+        foreach (PooledFindPathJob? jobWrapper in FindDestinationJobs)
+        {
+            if (jobWrapper == null) continue;
+            JobPools.ReleaseFindPathJob(jobWrapper);
+        }
+        entranceTeleports = [];
+        FindEntrancePointJobs = [];
+        FindDestinationJobs = [];
+    }
+
     public bool TryGetShortestPath(out bool foundPath, out float totalDistance, out EntranceTeleport? entranceTeleport)
     {
         totalDistance = -1;
@@ -76,7 +76,7 @@ public class FindPathThroughTeleportsOperation : PathfindingOperation
         if (FindDirectPathToDestinationJob == null)
             return false;
 
-        var statusOfDirectPathJob = FindDirectPathToDestinationJob.Job.GetStatus().GetResult();
+        PathQueryStatus statusOfDirectPathJob = FindDirectPathToDestinationJob.Job.GetStatus().GetResult();
         if (statusOfDirectPathJob == PathQueryStatus.InProgress)
         {
             // CodeRebirthLibPlugin.ExtendedLogging("Direct path job in progress");
@@ -93,8 +93,8 @@ public class FindPathThroughTeleportsOperation : PathfindingOperation
         {
             if (entranceTeleports[i] == null) continue;
             if (FindEntrancePointJobs[i] == null || FindDestinationJobs[i] == null) continue;
-            var statusOfEntranceJob = FindEntrancePointJobs[i].Job.GetStatus().GetResult();
-            var statusOfDestinationJob = FindDestinationJobs[i].Job.GetStatus().GetResult();
+            PathQueryStatus statusOfEntranceJob = FindEntrancePointJobs[i].Job.GetStatus().GetResult();
+            PathQueryStatus statusOfDestinationJob = FindDestinationJobs[i].Job.GetStatus().GetResult();
             // CodeRebirthLibPlugin.ExtendedLogging($"Entrance job status: {statusOfEntranceJob} and destination job status: {statusOfDestinationJob}");
             if (statusOfEntranceJob == PathQueryStatus.InProgress)
             {

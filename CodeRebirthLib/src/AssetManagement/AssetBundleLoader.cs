@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 using CodeRebirthLib.ContentManagement;
 using LethalLib.Modules;
@@ -12,18 +11,19 @@ using Object = UnityEngine.Object;
 namespace CodeRebirthLib.AssetManagement;
 public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetBundleLoader<T>
 {
-    public AssetBundleData? AssetBundleData { get; set; } = null;
-    public CRContentDefinition[] Content { get; private set;  }
+    private readonly bool _hasNonPreloadAudioClips;
+    private readonly bool _hasVideoClips;
 
 
     private AssetBundle? _bundle;
-    private bool _hasVideoClips, _hasNonPreloadAudioClips;
-    
+
     protected AssetBundleLoader(CRMod mod, string filePath) : this(mod.Assembly, filePath)
-    { }
+    {
+    }
 
     internal AssetBundleLoader(Assembly assembly, string filePath) : this(CRLib.LoadBundle(assembly, filePath))
-    { }
+    {
+    }
 
     protected AssetBundleLoader(AssetBundle bundle)
     {
@@ -38,13 +38,15 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
         }
         foreach (Object asset in bundle.LoadAllAssets())
         {
-            switch(asset) {
-                case GameObject gameObject: {
+            switch (asset)
+            {
+                case GameObject gameObject:
+                    {
                         Utilities.FixMixerGroups(gameObject);
                         CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Fixed Mixer Groups: {gameObject.name}");
 
                         if (gameObject.GetComponent<NetworkObject>() == null)
-                            continue; 
+                            continue;
 
                         NetworkPrefabs.RegisterNetworkPrefab(gameObject);
                         CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Registered Network Prefab: {gameObject.name}");
@@ -54,8 +56,8 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
                     _hasVideoClips = true;
                     break;
                 case AudioClip audioClip:
-                    if(audioClip.preloadAudioData) break;
-                    
+                    if (audioClip.preloadAudioData) break;
+
                     _hasNonPreloadAudioClips = true;
                     break;
             }
@@ -63,9 +65,12 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
         Content = bundle.LoadAllAssets<CRContentDefinition>();
     }
-    
-    internal void TryUnload() {
-        if(AssetBundleData?.AlwaysKeepLoaded ?? true) return;
+    public AssetBundleData? AssetBundleData { get; set; } = null;
+    public CRContentDefinition[] Content { get; }
+
+    internal void TryUnload()
+    {
+        if (AssetBundleData?.AlwaysKeepLoaded ?? true) return;
 
         if (_bundle == null)
         {
@@ -81,14 +86,14 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
         {
             CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip.");
         }
-        
+
         _bundle.Unload(false);
         _bundle = null;
     }
-    
-    private UnityEngine.Object LoadAsset(AssetBundle bundle, string path)
+
+    private Object LoadAsset(AssetBundle bundle, string path)
     {
-        UnityEngine.Object result = bundle.LoadAsset<UnityEngine.Object>(path);
+        Object result = bundle.LoadAsset<Object>(path);
         if (result == null)
             throw new ArgumentException(path + " is not valid in the assetbundle!");
 

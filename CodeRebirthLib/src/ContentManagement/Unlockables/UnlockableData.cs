@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace CodeRebirthLib.ContentManagement.Unlockables;
-
 [Serializable]
 public class UnlockableData : EntityData
 {

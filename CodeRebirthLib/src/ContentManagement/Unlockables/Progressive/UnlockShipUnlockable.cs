@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using CodeRebirthLib.Util;
 using GameNetcodeStuff;
 using Unity.Netcode;
@@ -10,9 +9,9 @@ namespace CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 public class UnlockShipUnlockable : NetworkBehaviour
 {
     [FormerlySerializedAs("interactTrigger")] [SerializeField]
-    InteractTrigger _interactTrigger = null!;
+    private InteractTrigger _interactTrigger = null!;
 
-    void Start()
+    private void Start()
     {
         _interactTrigger.onInteract.AddListener(OnInteract);
     }
@@ -39,7 +38,7 @@ public class UnlockShipUnlockable : NetworkBehaviour
                 .First(it => it.Definition.UnlockableItemDef == unlockableUpgradeScrap.UnlockableItemDef);
             unlockData.Unlock(
                 new HUDDisplayTip(
-                    "Assembled Parts", 
+                    "Assembled Parts",
                     $"Congratulations on finding the parts, Unlocked {unlockData.OriginalName}."
                 )
             );

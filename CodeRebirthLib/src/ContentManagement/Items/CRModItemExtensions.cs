@@ -17,7 +17,7 @@ public static class CRModItemExtensions
     public static bool TryGetDefinition(this Item type, [NotNullWhen(true)] out CRItemDefinition? definition)
     {
         definition = CRMod.AllItems().FirstOrDefault(it => it.Item == type);
-        if(!definition) CodeRebirthLibPlugin.ExtendedLogging($"TryGetDefinition for ItemDefinition failed with {type.itemName}");
+        if (!definition) CodeRebirthLibPlugin.ExtendedLogging($"TryGetDefinition for ItemDefinition failed with {type.itemName}");
         return definition; // implict cast
     }
 }

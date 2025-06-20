@@ -11,7 +11,7 @@ public static class NetworkObjectExtensions
         yield return new WaitUntil(() => networkObject.IsSpawned);
     }
 
-    static IEnumerator RunActionAfterSpawned(NetworkObject networkObject, Action action)
+    private static IEnumerator RunActionAfterSpawned(NetworkObject networkObject, Action action)
     {
         yield return networkObject.WaitUntilSpawned();
         action();

@@ -4,12 +4,16 @@ using CodeRebirthLib.AssetManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 using WeatherRegistry;
+using WeatherRegistry.Modules;
 
 namespace CodeRebirthLib.ContentManagement.Weathers;
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Definitions/Weather Definition")]
 public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 {
-    [field: FormerlySerializedAs("Weather"), SerializeField]
+
+    public const string REGISTRY_ID = "weathers";
+
+    [field: FormerlySerializedAs("Weather")] [field: SerializeField]
     public Weather Weather { get; private set; }
 
     public override void Register(CRMod mod, WeatherData data)
@@ -41,27 +45,29 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
             SunAnimatorBool = Weather.Effect.SunAnimatorBool,
         };
 
-        Weather weather = new Weather($"{Weather.Name}", newImprovedWeatherEffect);
+        Weather weather = new($"{Weather.Name}", newImprovedWeatherEffect);
         weather.Color = Weather.Color;
-        weather.Config = new()
+        weather.Config = new RegistryWeatherConfig
         {
-            DefaultWeight = new(data.spawnWeight),
-            ScrapValueMultiplier = new(data.scrapValueMultiplier),
-            ScrapAmountMultiplier = new(data.scrapMultiplier),
-            FilteringOption = new(!data.isExclude, data.createExcludeConfig),
-            LevelFilters = new(data.excludeOrIncludeList),
+            DefaultWeight = new IntegerConfigHandler(data.spawnWeight),
+            ScrapValueMultiplier = new FloatConfigHandler(data.scrapValueMultiplier),
+            ScrapAmountMultiplier = new FloatConfigHandler(data.scrapMultiplier),
+            FilteringOption = new BooleanConfigHandler(!data.isExclude, data.createExcludeConfig),
+            LevelFilters = new LevelListConfigHandler(data.excludeOrIncludeList),
         };
 
         WeatherManager.RegisterWeather(weather);
         mod.WeatherRegistry().Register(this);
     }
-    
-    public const string REGISTRY_ID = "weathers";
 
     public static void RegisterTo(CRMod mod)
     {
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRWeatherDefinition>());
     }
-    
-    public override List<WeatherData> GetEntities(CRMod mod) => mod.Content.assetBundles.SelectMany(it => it.weathers).ToList(); // probably should be cached but i dont care anymore.
+
+    public override List<WeatherData> GetEntities(CRMod mod)
+    {
+        return mod.Content.assetBundles.SelectMany(it => it.weathers).ToList();
+        // probably should be cached but i dont care anymore.
+    }
 }

@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using CodeRebirthLib.Data;
+using LethalConfig;
 using LethalConfig.ConfigItems;
 using On.LethalConfig.AutoConfig;
 using UnityEngine;
@@ -13,21 +14,21 @@ namespace CodeRebirthLib.ModCompats;
 static class LethalConfigCompatibility
 {
     internal const string VERSION = "1.4.6";
-    public static bool Enabled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(LethalConfig.PluginInfo.Guid) && CodeRebirthLibConfig.LethalConfigCompatibility.ShouldRunCompatibility(VERSION, Chainloader.PluginInfos[LethalConfig.PluginInfo.Guid].Metadata.Version);
-    
-    private static ConfigFile _dummyConfig;
-    private static FieldInfo _typedValueField = typeof(ConfigEntry<>).GetField("_typedValue", BindingFlags.Instance | BindingFlags.NonPublic);
 
-    
+    private static ConfigFile _dummyConfig;
+    private static readonly FieldInfo _typedValueField = typeof(ConfigEntry<>).GetField("_typedValue", BindingFlags.Instance | BindingFlags.NonPublic);
+    public static bool Enabled => Chainloader.PluginInfos.ContainsKey(PluginInfo.Guid) && CodeRebirthLibConfig.LethalConfigCompatibility.ShouldRunCompatibility(VERSION, Chainloader.PluginInfos[PluginInfo.Guid].Metadata.Version);
+
+
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
         _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "coderebirthlib.dummy.youshouldneverseethis.cfg"), false);
         _dummyConfig.SaveOnConfigSet = false;
-        
-        On.LethalConfig.AutoConfig.AutoConfigGenerator.GenerateConfigForEntry += ExtendGenerateConfigForEntry;
+
+        AutoConfigGenerator.GenerateConfigForEntry += ExtendGenerateConfigForEntry;
     }
-    
+
     private static BaseConfigItem ExtendGenerateConfigForEntry(AutoConfigGenerator.orig_GenerateConfigForEntry orig, ConfigEntryBase configEntryBase)
     {
         try
@@ -45,10 +46,7 @@ static class LethalConfigCompatibility
             // Create a poxy entry to spoof it as a string.
             ConfigEntry<string> proxyEntry = _dummyConfig.Bind(configEntryBase.Definition, TomlTypeConverter.ConvertToString(configEntryBase.BoxedValue, configEntryBase.SettingType), configEntryBase.Description);
 
-            proxyEntry.SettingChanged += (sender, args) =>
-            {
-                configEntryBase.BoxedValue = TomlTypeConverter.ConvertToValue(proxyEntry.Value, configEntryBase.SettingType);
-            };
+            proxyEntry.SettingChanged += (sender, args) => { configEntryBase.BoxedValue = TomlTypeConverter.ConvertToValue(proxyEntry.Value, configEntryBase.SettingType); };
             _dummyConfig.SettingChanged += (sender, args) =>
             {
                 if (args.ChangedSetting == configEntryBase)

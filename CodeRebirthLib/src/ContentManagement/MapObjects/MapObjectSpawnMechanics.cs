@@ -9,19 +9,11 @@ using UnityEngine;
 namespace CodeRebirthLib.ContentManagement.MapObjects;
 public class MapObjectSpawnMechanics
 {
-    public Dictionary<Levels.LevelTypes, AnimationCurve> CurvesByLevelType { get; } = new();
-    public Dictionary<string, AnimationCurve> CurvesByCustomLevelType { get; } = new();
 
-    public AnimationCurve? All { get; private set; } = null;
-    public AnimationCurve? Vanilla { get; private set; } = null;
-    public AnimationCurve? Modded { get; private set; } = null;
-
-    public string[] LevelOverrides => CurvesByCustomLevelType.Keys.Select(it => it.ToLowerInvariant()).ToArray();
-    
     public MapObjectSpawnMechanics(string configString)
     {
         (Dictionary<Levels.LevelTypes, string> spawnRateByLevelType, Dictionary<string, string> spawnRateByCustomLevelType) = ConfigManager.ParseLevelTypesWithCurves(configString);
-        
+
         foreach ((Levels.LevelTypes levelType, string value) in spawnRateByLevelType)
         {
             AnimationCurve parsed = ConfigManager.ParseCurve(value);
@@ -45,7 +37,15 @@ public class MapObjectSpawnMechanics
             CurvesByCustomLevelType[moonName] = ConfigManager.ParseCurve(value);
         }
     }
-    
+    public Dictionary<Levels.LevelTypes, AnimationCurve> CurvesByLevelType { get; } = new();
+    public Dictionary<string, AnimationCurve> CurvesByCustomLevelType { get; } = new();
+
+    public AnimationCurve? All { get; }
+    public AnimationCurve? Vanilla { get; }
+    public AnimationCurve? Modded { get; }
+
+    public string[] LevelOverrides => CurvesByCustomLevelType.Keys.Select(it => it.ToLowerInvariant()).ToArray();
+
     public AnimationCurve CurveFunction(SelectableLevel level)
     {
         if (level == null)
@@ -60,30 +60,28 @@ public class MapObjectSpawnMechanics
         {
             return curve;
         }
-        else if (CurvesByCustomLevelType.TryGetValue(actualLevelName, out curve))
+        if (CurvesByCustomLevelType.TryGetValue(actualLevelName, out curve))
         {
-            return curve;
-        } 
-        else if (LLLCompatibility.Enabled && LLLCompatibility.TryGetCurveDictAndLevelTag(CurvesByCustomLevelType, level, out string tagName) && CurvesByCustomLevelType.TryGetValue(tagName, out curve))
-        {
-            CodeRebirthLibPlugin.ExtendedLogging($"registering a mapobject through a tag, nice.");
             return curve;
         }
-        else if (isVanilla && Vanilla != null)
+        if (LLLCompatibility.Enabled && LLLCompatibility.TryGetCurveDictAndLevelTag(CurvesByCustomLevelType, level, out string tagName) && CurvesByCustomLevelType.TryGetValue(tagName, out curve))
+        {
+            CodeRebirthLibPlugin.ExtendedLogging("registering a mapobject through a tag, nice.");
+            return curve;
+        }
+        if (isVanilla && Vanilla != null)
         {
             return Vanilla;
         }
-        else if (Modded != null)
+        if (Modded != null)
         {
             return Modded;
         }
-        else if (All != null)
+        if (All != null)
         {
             return All;
         }
         CodeRebirthLibPlugin.ExtendedLogging($"Failed to find curve for level: {level}");
         return AnimationCurve.Linear(0, 0, 1, 0); // Default case if no curve matches
     }
-    
-    
 }

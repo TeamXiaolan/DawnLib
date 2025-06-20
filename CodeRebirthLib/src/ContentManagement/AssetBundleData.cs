@@ -13,9 +13,10 @@ namespace CodeRebirthLib.ContentManagement;
 public class AssetBundleData
 {
     public string assetBundleName;
-    [field: SerializeField, FormerlySerializedAs("keepLoaded")]
+
+    [field: SerializeField] [field: FormerlySerializedAs("keepLoaded")]
     public bool AlwaysKeepLoaded { get; private set; }
-    
+
     public string configName;
     public List<WeatherData> weathers;
     public List<EnemyData> enemies;

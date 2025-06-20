@@ -11,17 +11,17 @@ public static class RandomExtensions
     {
         return (float)(random.NextDouble() * (range.Max - range.Min) + range.Min);
     }
-    
+
     public static double NextDouble(this Random random, double min, double max)
     {
-        return (random.NextDouble() * (max - min)) + min;
+        return random.NextDouble() * (max - min) + min;
     }
 
     public static float NextFloat(this Random random, float min, float max)
     {
         return (float)random.NextDouble(min, max);
     }
-    
+
     public static T NextEnum<T>(this Random random) where T : struct, Enum
     {
         Array values = Enum.GetValues(typeof(T));
@@ -33,12 +33,12 @@ public static class RandomExtensions
         int index = random.Next(collection.Count);
         return collection[index];
     }
-    
+
     public static bool NextBool(this Random random)
     {
         return random.Next(2) == 0;
     }
-    
+
     public static int NextSign(this Random random)
     {
         return random.NextBool() ? 1 : -1;
