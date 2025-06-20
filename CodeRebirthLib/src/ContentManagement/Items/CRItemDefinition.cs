@@ -32,14 +32,14 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             Item.maxValue = (int)(itemWorth.Max / 0.4f);
         }
 
-        if (Config.IsShopItem.Value)
+        if (Config.IsShopItem?.Value ?? data.isShopItem)
         {
-            LethalLib.Modules.Items.RegisterShopItem(Item, null, null, TerminalNode, Config.Cost.Value);
+            LethalLib.Modules.Items.RegisterShopItem(Item, null, null, TerminalNode, Config.Cost?.Value ?? data.cost);
         }
 
-        if (Config.IsScrapItem.Value)
+        if (Config.IsScrapItem?.Value ?? data.isScrap)
         {
-            (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights.Value);
+            (Dictionary<Levels.LevelTypes, int> spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights?.Value ?? data.spawnWeights);
             LethalLib.Modules.Items.RegisterScrap(Item, spawnRateByLevelType, spawnRateByCustomLevelType);
         }
         
@@ -50,16 +50,16 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
     {
         using(ConfigContext section = mod.ConfigManager.CreateConfigSection(itemName))
         {
-            ConfigEntry<bool> isScrapItem = section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap);
-            ConfigEntry<bool> isShopItem = section.Bind("Is Shop Item", $"Whether {itemName} is a shop item..", data.isShopItem);
+            ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
+            ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
             
             return new ItemConfig
             {
-                SpawnWeights = section.Bind("Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights),
+                SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind("Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
                 IsScrapItem = isScrapItem,
-                Worth = isScrapItem.Value? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
+                Worth = (isScrapItem?.Value ?? false)? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
                 IsShopItem = isShopItem,
-                Cost = isShopItem.Value? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null
+                Cost = (isShopItem?.Value ?? false)? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null
             };
         }
     }
