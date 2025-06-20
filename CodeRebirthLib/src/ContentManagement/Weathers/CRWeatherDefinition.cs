@@ -56,6 +56,7 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
             LevelFilters = new LevelListConfigHandler(data.excludeOrIncludeList),
         };
 
+        this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
         mod.WeatherRegistry().Register(this);
     }

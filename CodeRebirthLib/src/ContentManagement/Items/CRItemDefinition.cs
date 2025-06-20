@@ -48,20 +48,18 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public static ItemConfig CreateItemConfig(CRMod mod, ItemData data, string itemName)
     {
-        using(ConfigContext section = mod.ConfigManager.CreateConfigSection(itemName))
-        {
-            var isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
-            var isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
+        using ConfigContext section = mod.ConfigManager.CreateConfigSection(itemName);
+        var isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
+        var isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
 
-            return new ItemConfig
-            {
-                SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind("Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
-                IsScrapItem = isScrapItem,
-                Worth = isScrapItem?.Value ?? false ? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
-                IsShopItem = isShopItem,
-                Cost = isShopItem?.Value ?? false ? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
-            };
-        }
+        return new ItemConfig
+        {
+            SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind("Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
+            IsScrapItem = isScrapItem,
+            Worth = isScrapItem?.Value ?? false ? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
+            IsShopItem = isShopItem,
+            Cost = isShopItem?.Value ?? false ? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
+        };
     }
 
     public static void RegisterTo(CRMod mod)

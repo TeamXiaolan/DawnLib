@@ -1,4 +1,10 @@
-# v0.1.1
+# v0.1.2
+
+- Fixed reference of weather when recreating the Weather object in code, thanks morvian.
+- Added nuget package.
+- Fixed outside mapobject configs being labelled as inside and thus being overriden by inside spawn weight config generation.
+
+## v0.1.1
 
 - Finished adding Progressive Unlockables support.
 - Fixed netcode patcher basically not working lol.

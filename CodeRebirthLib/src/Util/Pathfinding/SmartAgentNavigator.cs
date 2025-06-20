@@ -97,6 +97,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         if (CheckPathsOngoing())
         {
             StopCoroutine(checkPathsRoutine);
+            checkPathsRoutine = null;
             ClearPathfindingOperation();
         }
         checkPathsRoutine = StartCoroutine(CheckPathsCoroutine(points, action));
