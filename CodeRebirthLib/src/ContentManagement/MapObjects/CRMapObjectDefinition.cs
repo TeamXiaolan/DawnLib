@@ -44,7 +44,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             };
             try
             {
-                InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights!.Value);
+                InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
@@ -72,7 +72,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 
             try
             {
-                OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights!.Value);
+                OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
