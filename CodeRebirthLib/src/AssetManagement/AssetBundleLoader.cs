@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using CodeRebirthLib.ContentManagement;
+using LethalLevelLoader;
 using LethalLib.Modules;
 using Unity.Netcode;
 using UnityEngine;
@@ -12,8 +14,9 @@ namespace CodeRebirthLib.AssetManagement;
 public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetBundleLoader<T>
 {
     private readonly bool _hasNonPreloadAudioClips;
+    private List<string> _audioClipNames = new();
     private readonly bool _hasVideoClips;
-
+    private List<string> _videoClipNames = new();
 
     private AssetBundle? _bundle;
 
@@ -28,6 +31,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
     protected AssetBundleLoader(AssetBundle bundle)
     {
         _bundle = bundle;
+
         Type type = typeof(T);
         foreach (PropertyInfo property in type.GetProperties())
         {
@@ -36,28 +40,30 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
             property.SetValue(this, LoadAsset(bundle, loadInstruction.BundleFile));
         }
+
         foreach (Object asset in bundle.LoadAllAssets())
         {
             switch (asset)
             {
                 case GameObject gameObject:
-                    {
-                        Utilities.FixMixerGroups(gameObject);
-                        CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Fixed Mixer Groups: {gameObject.name}");
+                    Utilities.FixMixerGroups(gameObject);
+                    CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Fixed Mixer Groups: {gameObject.name}");
 
-                        if (gameObject.GetComponent<NetworkObject>() == null)
-                            continue;
+                    if (gameObject.GetComponent<NetworkObject>() == null)
+                        continue;
 
-                        NetworkPrefabs.RegisterNetworkPrefab(gameObject);
-                        CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Registered Network Prefab: {gameObject.name}");
-                        break;
-                    }
-                case VideoClip:
+                    NetworkPrefabs.RegisterNetworkPrefab(gameObject);
+                    CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Registered Network Prefab: {gameObject.name}");
+                    break;
+                case VideoClip videoClip:
+                    _videoClipNames.Add(videoClip.name);
                     _hasVideoClips = true;
                     break;
                 case AudioClip audioClip:
-                    if (audioClip.preloadAudioData) break;
+                    if (audioClip.preloadAudioData)
+                        break;
 
+                    _audioClipNames.Add(audioClip.name);
                     _hasNonPreloadAudioClips = true;
                     break;
             }
@@ -65,26 +71,37 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
         Content = bundle.LoadAllAssets<CRContentDefinition>();
     }
+
     public AssetBundleData? AssetBundleData { get; set; } = null;
     public CRContentDefinition[] Content { get; }
 
     internal void TryUnload()
     {
-        if (AssetBundleData?.AlwaysKeepLoaded ?? true) return;
+        if (AssetBundleData?.AlwaysKeepLoaded ?? true)
+            return;
 
         if (_bundle == null)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning("Tried to unload bundle twice?");
+            CodeRebirthLibPlugin.Logger.LogError("Tried to unload bundle twice?");
+            throw new NullReferenceException();
         }
 
         if (_hasVideoClips)
         {
             CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this from happening.");
+            foreach (string videoClipName in _videoClipNames)
+            {
+                CodeRebirthLibPlugin.ExtendedLogging($"VideoClip Name: {videoClipName}");
+            }
         }
 
         if (_hasNonPreloadAudioClips)
         {
             CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip.");
+            foreach (string audioClipName in _audioClipNames)
+            {
+                CodeRebirthLibPlugin.ExtendedLogging($"AudioClip Name: {audioClipName}");
+            }
         }
 
         _bundle.Unload(false);
