@@ -1,4 +1,8 @@
-# v0.1.2
+# v0.2.0
+
+- Fixed WeatherRegistry SoftDependency not being so soft.
+
+## v0.1.2
 
 - Fixed reference of weather when recreating the Weather object in code, thanks morvian.
 - Added nuget package.

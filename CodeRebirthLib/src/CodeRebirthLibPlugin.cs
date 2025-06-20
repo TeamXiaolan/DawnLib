@@ -5,9 +5,12 @@ using BepInEx;
 using BepInEx.Logging;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.ModCompats;
 using CodeRebirthLib.Patches;
+using CodeRebirthLib.Util;
+using CodeRebirthLib.Util.Pathfinding;
 using LethalLib;
 using PathfindingLib;
 using Unity.Netcode;
@@ -73,21 +76,24 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = Assembly.GetExecutingAssembly().GetLoadableTypes();
-        foreach (Type? type in types)
+        var types = new Type[] { typeof(UnlockShipUnlockable), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker) };
+        foreach (var type in types)
         {
-            if (type.IsNested || !typeof(NetworkBehaviour).IsAssignableFrom(type))
+            try
             {
-                continue; // we do not care about fixing it, if it is not a network behaviour
-            }
-            var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-            foreach (MethodInfo? method in methods)
-            {
-                object[]? attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                if (attributes.Length > 0)
+                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                foreach (var method in methods)
                 {
-                    method.Invoke(null, null);
+                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                    if (attributes.Length > 0)
+                    {
+                        method.Invoke(null, null);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning($"supressed an error from netcode patcher, probably fine but should still log that something happened: {e}.");
             }
         }
     }
