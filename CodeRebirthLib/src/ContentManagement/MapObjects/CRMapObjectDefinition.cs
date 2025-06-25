@@ -107,15 +107,16 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
         if (data.createOutsideHazardConfig)
             outsideHazard = section.Bind($"{objectName} | Is Outside Hazard", $"Whether {objectName} is an outside hazard", data.isOutsideHazard);
 
-        if ((insideHazard?.Value ?? false) && data.createInsideCurveSpawnWeightsConfig)
+        if ((insideHazard?.Value ?? true) && data.createInsideCurveSpawnWeightsConfig)
             insideCurves = section.Bind($"{objectName} | Inside Spawn Weights", $"Curve weights for {objectName} when spawning inside.", data.defaultInsideCurveSpawnWeights);
 
-        if ((outsideHazard?.Value ?? false) && data.createOutsideCurveSpawnWeightsConfig)
+        if ((outsideHazard?.Value ?? true) && data.createOutsideCurveSpawnWeightsConfig)
             outsideCurves = section.Bind($"{objectName} | Outside Spawn Weights", $"Curve weights for {objectName} when spawning outside.", data.defaultOutsideCurveSpawnWeights);
 
         return new MapObjectConfig
         {
-            InsideHazard = insideHazard, OutsideHazard = outsideHazard,
+            InsideHazard = insideHazard,
+            OutsideHazard = outsideHazard,
             InsideCurveSpawnWeights = insideCurves,
             OutsideCurveSpawnWeights = outsideCurves,
         };

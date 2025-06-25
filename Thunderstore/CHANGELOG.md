@@ -1,4 +1,8 @@
-# v0.3.0
+# v0.3.1
+
+- Probably fixed the last config issue with outside hazards?
+
+## v0.3.0
 
 - Fixed issues with config generation being both hard to read, not being generated at all due to other options or not generating the enabled config due to force enabling overriding it.
 - Updated readme with a template for using CodeRebirthLib and how to setup a UnityProject for CodeRebirthLib (and also how you should be setting up a UnityProject for content like moons or anything you are doing really).
