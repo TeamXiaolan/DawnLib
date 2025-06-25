@@ -24,9 +24,10 @@ public abstract class CRContentDefinition : ScriptableObject
     public virtual void Register(CRMod mod)
     {
         _mod = mod;
+        using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (CRDynamicConfig configDefinition in _configEntries)
         {
-            _generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, AssetBundleData.configName);
+            _generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
         }
     }
 

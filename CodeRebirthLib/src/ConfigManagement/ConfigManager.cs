@@ -37,16 +37,21 @@ public class ConfigManager(ConfigFile file)
         return file.Bind(CleanStringForConfig(header), CleanStringForConfig(name), DynamicConfigType, Description);
     }
 
-    public ConfigEntryBase CreateDynamicConfig(CRDynamicConfig configDefinition, string configName)
+    public ConfigEntryBase CreateDynamicConfig(CRDynamicConfig configDefinition, ConfigContext context)
     {
+        ConfigEntryBase Bind<T>(T defaultValue)
+        {
+            return context.Bind(configDefinition.settingName, configDefinition.Description, defaultValue);
+        }
+        
         return configDefinition.DynamicConfigType switch
         {
-            CRDynamicConfigType.String => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultString, configDefinition.Description),
-            CRDynamicConfigType.Int => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultInt, configDefinition.Description),
-            CRDynamicConfigType.Bool => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultBool, configDefinition.Description),
-            CRDynamicConfigType.Float => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultFloat, configDefinition.Description),
-            CRDynamicConfigType.BoundedRange => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultBoundedRange, configDefinition.Description),
-            CRDynamicConfigType.AnimationCurve => CreateGeneralConfig(configName, configDefinition.settingName, configDefinition.defaultAnimationCurve, configDefinition.Description),
+            CRDynamicConfigType.String => Bind(configDefinition.defaultString),
+            CRDynamicConfigType.Int => Bind(configDefinition.defaultInt),
+            CRDynamicConfigType.Bool => Bind(configDefinition.defaultBool),
+            CRDynamicConfigType.Float => Bind(configDefinition.defaultFloat),
+            CRDynamicConfigType.BoundedRange => Bind(configDefinition.defaultBoundedRange),
+            CRDynamicConfigType.AnimationCurve => Bind(configDefinition.defaultAnimationCurve),
             _ => throw new ArgumentOutOfRangeException($"DynamicConfigType of '{configDefinition.DynamicConfigType}' is not yet internally implemented!!"),
         };
     }
