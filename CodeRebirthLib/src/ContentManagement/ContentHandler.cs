@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 
 namespace CodeRebirthLib.ContentManagement;
 public abstract class ContentHandler(CRMod mod)
 {
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     protected bool IsContentEnabled(string bundleName)
     {
         if (!mod.TryGetBundleDataFromName(bundleName, out AssetBundleData? data))
@@ -14,6 +16,7 @@ public abstract class ContentHandler(CRMod mod)
         return IsContentEnabled(data);
     }
 
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     protected bool IsContentEnabled(AssetBundleData assetBundleData)
     {
         string configName = assetBundleData.configName;
@@ -35,7 +38,8 @@ public abstract class ContentHandler(CRMod mod)
             return false;
         }
 
-        if (!IsContentEnabled(assetBundleData) && !forceEnabled)
+        bool isEnabled = IsContentEnabled(assetBundleData);
+        if (!isEnabled && !forceEnabled)
             return false;
 
         ConstructorInfo? constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
