@@ -35,7 +35,7 @@ public abstract class ContentHandler(CRMod mod)
             return false;
         }
 
-        if (!forceEnabled && !IsContentEnabled(assetBundleData))
+        if (!IsContentEnabled(assetBundleData) && !forceEnabled)
             return false;
 
         ConstructorInfo? constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);

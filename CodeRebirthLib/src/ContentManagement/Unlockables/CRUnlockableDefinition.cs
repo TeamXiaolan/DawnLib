@@ -57,7 +57,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
             IsProgressive = data.createProgressiveConfig ? context.Bind("Is Progressive", $"Whether {unlockableName} is considered a progressive purchase.", data.isProgressive) : null,
             IsDecor = context.Bind("Is Decor", $"Whether {unlockableName} is considered a decor.", data.isDecor),
             IsShipUpgrade = context.Bind("Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
-            Cost = context.Bind("Cost", $"Csot for {unlockableName} in the shop.", data.cost),
+            Cost = context.Bind("Cost", $"Cost for {unlockableName} in the shop.", data.cost),
         };
     }
 

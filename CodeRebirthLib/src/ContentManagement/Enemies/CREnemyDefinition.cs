@@ -126,7 +126,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
             SpawnWeights = section.Bind("Spawn Weights", $"Spawn weights for {enemyName}.", data.spawnWeights),
             WeatherMultipliers = section.Bind("Weather Multipliers", $"Weather * SpawnWeight multipliers for {enemyName}.", data.weatherMultipliers),
             PowerLevel = section.Bind("Power Level", $"Power level for {enemyName}.", data.powerLevel),
-            MaxSpawnCount = section.Bind("Max Spaw nCount", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
+            MaxSpawnCount = section.Bind("Max Spawn Count", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
         };
     }
 
