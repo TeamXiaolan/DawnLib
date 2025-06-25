@@ -102,16 +102,16 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
         ConfigEntry<bool>? insideHazard = null, outsideHazard = null;
         ConfigEntry<string>? insideCurves = null, outsideCurves = null;
         if (data.createInsideHazardConfig)
-            insideHazard = section.Bind("Is Inside Hazard", $"Whether {objectName} is an inside hazard", data.isInsideHazard);
+            insideHazard = section.Bind($"{objectName} | Is Inside Hazard", $"Whether {objectName} is an inside hazard", data.isInsideHazard);
 
         if (data.createOutsideHazardConfig)
-            outsideHazard = section.Bind("Is Outside Hazard", $"Whether {objectName} is an outside hazard", data.isOutsideHazard);
+            outsideHazard = section.Bind($"{objectName} | Is Outside Hazard", $"Whether {objectName} is an outside hazard", data.isOutsideHazard);
 
         if ((insideHazard?.Value ?? false) && data.createInsideCurveSpawnWeightsConfig)
-            insideCurves = section.Bind("Inside Spawn Weights", $"Curve weights for {objectName} when spawning inside.", data.defaultInsideCurveSpawnWeights);
+            insideCurves = section.Bind($"{objectName} | Inside Spawn Weights", $"Curve weights for {objectName} when spawning inside.", data.defaultInsideCurveSpawnWeights);
 
         if ((outsideHazard?.Value ?? false) && data.createOutsideCurveSpawnWeightsConfig)
-            outsideCurves = section.Bind("Outside Spawn Weights", $"Curve weights for {objectName} when spawning outside.", data.defaultOutsideCurveSpawnWeights);
+            outsideCurves = section.Bind($"{objectName} | Outside Spawn Weights", $"Curve weights for {objectName} when spawning outside.", data.defaultOutsideCurveSpawnWeights);
 
         return new MapObjectConfig
         {

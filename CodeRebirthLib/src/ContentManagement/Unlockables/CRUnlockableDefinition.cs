@@ -54,10 +54,10 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
     {
         return new UnlockableConfig
         {
-            IsProgressive = data.createProgressiveConfig ? context.Bind("Is Progressive", $"Whether {unlockableName} is considered a progressive purchase.", data.isProgressive) : null,
-            IsDecor = context.Bind("Is Decor", $"Whether {unlockableName} is considered a decor.", data.isDecor),
-            IsShipUpgrade = context.Bind("Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
-            Cost = context.Bind("Cost", $"Cost for {unlockableName} in the shop.", data.cost),
+            IsProgressive = data.createProgressiveConfig ? context.Bind($"{unlockableName} | Is Progressive", $"Whether {unlockableName} is considered a progressive purchase.", data.isProgressive) : null,
+            IsDecor = context.Bind($"{unlockableName} | Is Decor", $"Whether {unlockableName} is considered a decor.", data.isDecor),
+            IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
+            Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", data.cost),
         };
     }
 

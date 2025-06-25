@@ -54,11 +54,11 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
         return new ItemConfig
         {
-            SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind("Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
+            SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
             IsScrapItem = isScrapItem,
-            Worth = isScrapItem?.Value ?? false ? section.Bind("Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
+            Worth = isScrapItem?.Value ?? false ? section.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
             IsShopItem = isShopItem,
-            Cost = isShopItem?.Value ?? false ? section.Bind("Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
+            Cost = isShopItem?.Value ?? false ? section.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
     }
 

@@ -123,10 +123,10 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     {
         return new EnemyConfig
         {
-            SpawnWeights = section.Bind("Spawn Weights", $"Spawn weights for {enemyName}.", data.spawnWeights),
-            WeatherMultipliers = section.Bind("Weather Multipliers", $"Weather * SpawnWeight multipliers for {enemyName}.", data.weatherMultipliers),
-            PowerLevel = section.Bind("Power Level", $"Power level for {enemyName}.", data.powerLevel),
-            MaxSpawnCount = section.Bind("Max Spawn Count", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
+            SpawnWeights = section.Bind($"{enemyName} | Spawn Weights", $"Spawn weights for {enemyName}.", data.spawnWeights),
+            WeatherMultipliers = section.Bind($"{enemyName} | Weather Multipliers", $"Weather * SpawnWeight multipliers for {enemyName}.", data.weatherMultipliers),
+            PowerLevel = section.Bind($"{enemyName} | Power Level", $"Power level for {enemyName}.", data.powerLevel),
+            MaxSpawnCount = section.Bind($"{enemyName} | Max Spawn Count", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
         };
     }
 
