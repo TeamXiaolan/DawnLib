@@ -27,7 +27,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 
     public override void Register(CRMod mod, UnlockableData data)
     {
-        Config = CreateUnlockableConfig(mod, data, UnlockableItemDef.unlockable.unlockableName);
+        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        Config = CreateUnlockableConfig(mod, section, data, UnlockableItemDef.unlockable.unlockableName);
 
         if (Config.IsShipUpgrade.Value)
         {
@@ -49,9 +50,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
         mod.UnlockableRegistry().Register(this);
     }
 
-    public static UnlockableConfig CreateUnlockableConfig(CRMod mod, UnlockableData data, string unlockableName)
+    public static UnlockableConfig CreateUnlockableConfig(CRMod mod, ConfigContext context, UnlockableData data, string unlockableName)
     {
-        using ConfigContext context = mod.ConfigManager.CreateConfigSection(unlockableName);
         return new UnlockableConfig
         {
             IsProgressive = data.createProgressiveConfig ? context.Bind("Is Progressive", $"Whether {unlockableName} is considered a progressive purchase.", data.isProgressive) : null,

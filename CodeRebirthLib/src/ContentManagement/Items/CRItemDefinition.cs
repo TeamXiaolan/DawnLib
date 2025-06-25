@@ -23,7 +23,8 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public override void Register(CRMod mod, ItemData data)
     {
-        Config = CreateItemConfig(mod, data, Item.itemName);
+        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);   
+        Config = CreateItemConfig(mod, section, data, Item.itemName);
 
         BoundedRange itemWorth = Config.Worth?.Value ?? new BoundedRange(-1, -1);
         if (itemWorth.Min != -1 && itemWorth.Max != -1)
@@ -46,9 +47,8 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         mod.ItemRegistry().Register(this);
     }
 
-    public static ItemConfig CreateItemConfig(CRMod mod, ItemData data, string itemName)
+    public static ItemConfig CreateItemConfig(CRMod mod, ConfigContext section, ItemData data, string itemName)
     {
-        using ConfigContext section = mod.ConfigManager.CreateConfigSection(itemName);
         var isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
         var isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
 
