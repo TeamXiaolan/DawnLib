@@ -34,7 +34,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     public override void Register(CRMod mod, MapObjectData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateMapObjectConfig(mod, section, data, ObjectName);
+        Config = CreateMapObjectConfig(section, data, ObjectName);
 
         if (Config.InsideHazard?.Value ?? data.isInsideHazard)
         {
@@ -97,7 +97,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
         mod.MapObjectRegistry().Register(this);
     }
 
-    public static MapObjectConfig CreateMapObjectConfig(CRMod mod, ConfigContext section, MapObjectData data, string objectName)
+    public static MapObjectConfig CreateMapObjectConfig(ConfigContext section, MapObjectData data, string objectName)
     {
         ConfigEntry<bool>? insideHazard = null, outsideHazard = null;
         ConfigEntry<string>? insideCurves = null, outsideCurves = null;

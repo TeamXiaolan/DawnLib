@@ -28,7 +28,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
     public override void Register(CRMod mod, UnlockableData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateUnlockableConfig(mod, section, data, UnlockableItemDef.unlockable.unlockableName);
+        Config = CreateUnlockableConfig(section, data, UnlockableItemDef.unlockable.unlockableName);
 
         if (Config.IsShipUpgrade.Value)
         {
@@ -50,7 +50,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
         mod.UnlockableRegistry().Register(this);
     }
 
-    public static UnlockableConfig CreateUnlockableConfig(CRMod mod, ConfigContext context, UnlockableData data, string unlockableName)
+    public static UnlockableConfig CreateUnlockableConfig(ConfigContext context, UnlockableData data, string unlockableName)
     {
         return new UnlockableConfig
         {

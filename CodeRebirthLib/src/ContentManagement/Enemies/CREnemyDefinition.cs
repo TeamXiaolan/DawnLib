@@ -38,7 +38,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
         }
 
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateEnemyConfig(mod, section, data, EnemyType.enemyName);
+        Config = CreateEnemyConfig(section, data, EnemyType.enemyName);
 
         List<string> weatherMultipliersList = Config.WeatherMultipliers.Value.Split(',').ToList();
         foreach (string[]? weatherMultiplierInList in weatherMultipliersList.Select(s => s.Split(':')))
@@ -119,7 +119,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
         }
     }
 
-    public static EnemyConfig CreateEnemyConfig(CRMod mod, ConfigContext section, EnemyData data, string enemyName)
+    public static EnemyConfig CreateEnemyConfig(ConfigContext section, EnemyData data, string enemyName)
     {
         return new EnemyConfig
         {
