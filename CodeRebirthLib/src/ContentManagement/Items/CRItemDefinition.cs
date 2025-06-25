@@ -49,8 +49,8 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public static ItemConfig CreateItemConfig(ConfigContext section, ItemData data, string itemName)
     {
-        var isScrapItem = data.generateScrapConfig ? section.Bind("Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
-        var isShopItem = data.generateShopItemConfig ? section.Bind("Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
+        var isScrapItem = data.generateScrapConfig ? section.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
+        var isShopItem = data.generateShopItemConfig ? section.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
 
         return new ItemConfig
         {
