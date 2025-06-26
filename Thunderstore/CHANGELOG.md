@@ -1,4 +1,9 @@
-# v0.3.1
+# v0.4.0
+
+- Fixed a desync bug with spawning non networked outside hazards.
+- Added more extended logging for potential.
+
+## v0.3.1
 
 - Probably fixed the last config issue with outside hazards?
 

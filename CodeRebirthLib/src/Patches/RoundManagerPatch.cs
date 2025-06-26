@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.Extensions;
+using LethalLevelLoader;
 using Unity.Netcode;
 using UnityEngine;
 using Random = System.Random;
@@ -31,18 +32,38 @@ static class RoundManagerPatch
         SelectableLevel level = RoundManager.Instance.currentLevel;
         AnimationCurve animationCurve = new(new Keyframe(0, 0), new Keyframe(1, 0));
         GameObject prefabToSpawn = mapObjDef.outsideObject.spawnableObject.prefabToSpawn;
-
-        if (mapObjDef.hasNetworkObject && !NetworkManager.Singleton.IsServer)
-            return;
-
         animationCurve = mapObjDef.spawnRateFunction(level);
-        int randomNumberToSpawn = Mathf.FloorToInt(animationCurve.Evaluate(random.NextFloat(0f, 1f)) + 0.5f);
+
+        int randomNumberToSpawn;
+        if (mapObjDef.hasNetworkObject)
+        {
+            float number = animationCurve.Evaluate(UnityEngine.Random.Range(0f, 1f)) + 0.5f;
+            CodeRebirthLibPlugin.ExtendedLogging($"number generated for host only: {number}");
+            randomNumberToSpawn = Mathf.FloorToInt(number);
+        }
+        else
+        {
+            float number = animationCurve.Evaluate(random.NextFloat(0f, 1f)) + 0.5f;
+            CodeRebirthLibPlugin.ExtendedLogging("number generated for everyone: " + number);
+            randomNumberToSpawn = Mathf.FloorToInt(number);
+        }
         CodeRebirthLibPlugin.ExtendedLogging($"Spawning {randomNumberToSpawn} of {prefabToSpawn.name} for level {level}");
         for (int i = 0; i < randomNumberToSpawn; i++)
         {
-            Vector3 spawnPos = RoundManager.Instance.outsideAINodes[random.Next(RoundManager.Instance.outsideAINodes.Length)].transform.position;
-            spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, random) + Vector3.up * 2;
-            Physics.Raycast(spawnPos, Vector3.down, out RaycastHit hit, 100, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore);
+            Vector3 spawnPos;
+            if (mapObjDef.hasNetworkObject)
+            {
+                spawnPos = RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
+                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, new System.Random(UnityEngine.Random.Range(0, 10000)), -1) + (Vector3.up * 2);
+            }
+            else
+            {
+                spawnPos = RoundManager.Instance.outsideAINodes[random.Next(RoundManager.Instance.outsideAINodes.Length)].transform.position;
+                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, random, -1) + (Vector3.up * 2);
+            }
+
+            if (!Physics.Raycast(spawnPos, Vector3.down, out RaycastHit hit, 100, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
+                continue;
 
             if (!hit.collider)
                 continue;
