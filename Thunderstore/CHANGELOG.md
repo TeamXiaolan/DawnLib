@@ -1,4 +1,8 @@
-# v0.4.0
+# v0.4.1
+
+- Fixed an issue with clients trying to spawn hazards they can't.
+
+## v0.4.0
 
 - Fixed a desync bug with spawning non networked outside hazards.
 - Added more extended logging for potential.

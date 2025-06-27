@@ -37,6 +37,9 @@ static class RoundManagerPatch
         int randomNumberToSpawn;
         if (mapObjDef.hasNetworkObject)
         {
+            if (!NetworkManager.Singleton.IsServer)
+                return;
+
             float number = animationCurve.Evaluate(UnityEngine.Random.Range(0f, 1f)) + 0.5f;
             CodeRebirthLibPlugin.ExtendedLogging($"number generated for host only: {number}");
             randomNumberToSpawn = Mathf.FloorToInt(number);
