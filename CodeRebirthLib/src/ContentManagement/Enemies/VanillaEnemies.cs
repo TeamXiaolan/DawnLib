@@ -7,7 +7,6 @@ namespace CodeRebirthLib.ContentManagement.Enemies;
 [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "All these variables are named to match the scriptable object name")]
 public static class VanillaEnemies
 {
-
     private static readonly List<EnemyType> _allTypes = new();
     public static IReadOnlyList<EnemyType> AllEnemyTypes => _allTypes.AsReadOnly();
 
@@ -37,6 +36,7 @@ public static class VanillaEnemies
     public static EnemyType BushWolf { get; private set; }
     public static EnemyType ClaySurgeon { get; private set; }
     public static EnemyType CaveDweller { get; private set; }
+    public static EnemyType GiantKiwi { get; private set; }
 
     internal static void Init()
     {
@@ -45,7 +45,9 @@ public static class VanillaEnemies
         for (int i = 0; i < NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs.Count; i++)
         {
             NetworkPrefab networkPrefab = NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs[i];
-            if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI)) continue;
+            if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI) || enemyAI.enemyType == null)
+                continue;
+
             _allTypes.Add(enemyAI.enemyType);
             CodeRebirthLibPlugin.ExtendedLogging($"Found enemy: {enemyAI.enemyType.name}");
 

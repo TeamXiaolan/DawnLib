@@ -1,4 +1,8 @@
-# v0.4.1
+# v0.5.0
+
+- Fixed some exceptions with enemies that dont have an EnemyType, also added GiantKiwi to list of vanilla enemies.
+
+## v0.4.1
 
 - Fixed an issue with clients trying to spawn hazards they can't.
 
