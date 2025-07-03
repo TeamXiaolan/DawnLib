@@ -11,7 +11,6 @@ namespace CodeRebirthLib.ContentManagement.Enemies;
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Definitions/Enemy Definition")]
 public class CREnemyDefinition : CRContentDefinition<EnemyData>
 {
-
     public const string REGISTRY_ID = "enemies";
 
     [field: FormerlySerializedAs("enemyType")] [field: SerializeField]

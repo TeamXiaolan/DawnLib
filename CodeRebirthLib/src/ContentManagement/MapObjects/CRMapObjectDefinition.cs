@@ -15,7 +15,6 @@ namespace CodeRebirthLib.ContentManagement.MapObjects;
 [CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Definition")]
 public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 {
-
     public const string REGISTRY_ID = "map_objects";
 
     [field: FormerlySerializedAs("gameObject")] [field: SerializeField]

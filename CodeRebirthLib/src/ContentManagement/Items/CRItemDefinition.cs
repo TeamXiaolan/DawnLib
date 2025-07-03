@@ -11,7 +11,6 @@ namespace CodeRebirthLib.ContentManagement.Items;
 [CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Definitions/Item Definition")]
 public class CRItemDefinition : CRContentDefinition<ItemData>
 {
-
     public const string REGISTRY_ID = "items";
 
     [field: FormerlySerializedAs("item")] [field: SerializeField]

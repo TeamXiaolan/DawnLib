@@ -10,7 +10,6 @@ namespace CodeRebirthLib.ContentManagement.Weathers;
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Definitions/Weather Definition")]
 public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 {
-
     public const string REGISTRY_ID = "weathers";
 
     [field: FormerlySerializedAs("Weather")] [field: SerializeField]
