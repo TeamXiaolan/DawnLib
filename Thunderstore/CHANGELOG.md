@@ -1,4 +1,8 @@
-# v0.5.0
+# v0.6.0
+
+- Fixed scraps and shop items not creating some configs.
+
+## v0.5.0
 
 - Fixed some exceptions with enemies that dont have an EnemyType, also added GiantKiwi to list of vanilla enemies.
 

@@ -12,7 +12,6 @@ namespace CodeRebirthLib.ContentManagement.Unlockables;
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
 public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 {
-
     public const string REGISTRY_ID = "unlockables";
 
     [field: FormerlySerializedAs("unlockableItemDef")] [field: SerializeField]
