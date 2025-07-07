@@ -1,4 +1,4 @@
-﻿using CodeRebirthLib.Util;
+﻿using CodeRebirthLib.Util.INetworkSerializables;
 
 namespace CodeRebirthLib.Extensions;
 public static class HUDManagerExtensions

@@ -2,7 +2,7 @@
 using GameNetcodeStuff;
 using Unity.Netcode;
 
-namespace CodeRebirthLib.Util;
+namespace CodeRebirthLib.Util.INetworkSerializables;
 public class PlayerControllerReference : INetworkSerializable
 {
     private int _playerID;

@@ -4,16 +4,16 @@ using System.Linq;
 using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.Extensions;
+using CodeRebirthLib.Util.INetworkSerializables;
 using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
-using Random = System.Random;
 
 namespace CodeRebirthLib.Util;
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
     internal static EntranceTeleport[] _entrancePoints = [];
-    internal Random CRLibRandom = new();
+    internal System.Random CRLibRandom = new();
     internal ES3Settings SaveSettings;
     public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
 
@@ -22,7 +22,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         if (StartOfRound.Instance == null)
             return;
 
-        CRLibRandom = new Random(StartOfRound.Instance.randomMapSeed + 6969);
+        CRLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
         SaveSettings = new ES3Settings($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using CodeRebirthLib.Extensions;
-using CodeRebirthLib.Util;
+using CodeRebirthLib.Util.INetworkSerializables;
 
 namespace CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 public class ProgressiveUnlockData

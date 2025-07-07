@@ -4,6 +4,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Util;
+using CodeRebirthLib.Util.INetworkSerializables;
 using UnityEngine;
 
 namespace CodeRebirthLib;

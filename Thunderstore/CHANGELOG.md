@@ -1,4 +1,17 @@
-# v0.6.0
+# v0.7.0
+
+- Added a bunch of random useful scripts like:
+  - OwnerNetworkAnimator.
+  - ClientNetworkTransform.
+  - AmbientNoisePlayer
+  - AutoRotate
+  - ChanceScript
+  - EnemyOnlyTriggers
+  - PlayerOnlyTriggers
+  - ForceScanColorOnItem
+  - SpawnSyncedCRLibObject
+
+## v0.6.0
 
 - Fixed scraps and shop items not creating some configs.
 

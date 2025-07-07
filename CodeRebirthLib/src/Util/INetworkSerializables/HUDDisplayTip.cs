@@ -1,6 +1,6 @@
 ﻿using Unity.Netcode;
 
-namespace CodeRebirthLib.Util;
+namespace CodeRebirthLib.Util.INetworkSerializables;
 // todo: add other things that are used in a hud display tip.
 public class HUDDisplayTip : INetworkSerializable
 {
