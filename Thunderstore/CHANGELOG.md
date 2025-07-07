@@ -1,4 +1,8 @@
-# v0.7.0
+# v0.7.1
+
+- Forgot to add OwnerNetworkAnimator and ClientNetworkTransform.
+
+## v0.7.0
 
 - Added a bunch of random useful scripts like:
   - OwnerNetworkAnimator.
