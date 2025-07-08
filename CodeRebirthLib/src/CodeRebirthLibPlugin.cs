@@ -6,14 +6,12 @@ using BepInEx.Logging;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
-using CodeRebirthLib.Extensions;
 using CodeRebirthLib.ModCompats;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.Pathfinding;
 using LethalLib;
 using PathfindingLib;
-using Unity.Netcode;
 using UnityEngine;
 using PluginInfo = WeatherRegistry.PluginInfo;
 
@@ -60,15 +58,22 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))
         {
+            Logger.LogFatal("Loading mod: " + Path.GetFileName(path));
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
-            CRModVersion modInformation = mainBundle.LoadAsset<CRModVersion>("Mod Information.asset");
-            if (modInformation == null)
+            CRModVersion[] modInformation = mainBundle.LoadAllAssets<CRModVersion>();
+            if (modInformation.Length == 0)
             {
-                Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' does not have a 'Mod Information' file. Make sure you include one with that specific name!");
+                Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' does not have a 'Mod Information' file!");
                 continue;
             }
 
-            CRLib.RegisterNoCodeMod(modInformation.CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
+            if (modInformation.Length >= 1)
+            {
+                Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' has multiple 'Mod Information' files! Only the first one will be used.");
+            }
+
+            Logger.LogInfo($"name: {modInformation[0].Name}, version: {modInformation[0].Version}");
+            CRLib.RegisterNoCodeMod(modInformation[0].CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
         }
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");

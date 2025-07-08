@@ -2,7 +2,9 @@
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
+using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
 using UnityEngine;
@@ -28,8 +30,14 @@ public static class CRLib
 
     internal static CRMod RegisterNoCodeMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath)
     {
+        CodeRebirthLibPlugin.ExtendedLogging("Registering no-code mod!");
         ConfigManager configManager = new(GenerateConfigFile(plugin));
-        return new CRMod(plugin, mainBundle, basePath, configManager);
+        CRMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
+        foreach (var assetBundleData in noCodeMod.Content.assetBundles)
+        {
+            new DefaultContentHandler(noCodeMod).RegisterContent<DefaultBundle>(assetBundleData.assetBundleName, out _); // todo : i think i got pretty far in, there needs to be error handling for putting assetbundles next to eachother rather than mainbundle then Assets/subbundle and also config manager line 28 is erroring rn
+        }
+        return noCodeMod;
     }
 
     internal static ConfigFile GenerateConfigFile(BepInPlugin plugin)

@@ -1,4 +1,10 @@
-# v0.7.2
+# v0.8.0
+
+- Improved readme and added a wiki in thunderstore with different registerations.
+- Fixed editor only registerations.
+
+## v0.7.2
+
 - Improve LethalConfig Patch
   - It will no longer display (harmless) errors, and more configs will display inside LethalConfig.
 

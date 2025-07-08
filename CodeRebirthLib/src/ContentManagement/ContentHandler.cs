@@ -21,7 +21,7 @@ public abstract class ContentHandler(CRMod mod)
     {
         string configName = assetBundleData.configName;
 
-        using(ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
+        using (ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
         {
             bool isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true).Value;
             return isEnabled;
@@ -75,7 +75,7 @@ public abstract class ContentHandler(CRMod mod)
         }
     }
 
-    protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
+    public bool RegisterContent<TAsset>(string bundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset> // todo : i had to switch from protected to public?
     {
         if (TryLoadContentBundle(bundleName, out asset, forceEnabled))
         {

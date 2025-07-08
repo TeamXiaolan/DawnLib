@@ -32,6 +32,10 @@ Each content bundle like `my_item_bundle` will contain an `AssetBundleData` Scri
 
 ### Setup - Code/CSharp
 
+There is a template for your plugin that you can use to get started:
+
+> Check the wiki section in thunderstore to see how to download the C# template and use it.
+
 To register and get content out of the asset bundles in C# use:
 
 > [!NOTE]
@@ -43,18 +47,6 @@ To register and get content out of the asset bundles in C# use:
 > -> main_bundle
 > -> my_item_bundle
 > ```
-
-There is a template for your plugin that you can use to get started:
-
-- Start by making a folder somewhere on your pc to store the template, open something with an IDE like VSCode or VS and clone this github repository onto that folder <https://github.com/TeamXiaolan/CodeRebirthLib-Mod-Template>.
-- And then navigate to a terminal and type `dotnet net install .`
-- From there you can start using the template, do this by making a folder, preferrably something like your mod's name, for example, call the folder `CodeRebirth` (that's my mod's name, it's just an example).
-- Then, if using Rider, and you know how to use C# templates, then um do it? I don't have Rider so I have no idea.
-- But, if using VSCode or VS, type into the terminal the two commands:
-- `dotnet new sln --name CodeRebirth`
-- `dotnet new crlibmod -M com.github.xuuxiaolan.coderebirth -MM "PATH\TO\MMHOOK\FOLDER" -B "PATH\TO\MODMANAGER\PLUGINS\FOLDER" --name CodeRebirth`
-- `-M` is the mod guid, `-MM` is the folder to mmhook files `-B` is folder to the bepinex plugin folder. also make sure to include `--name` otherwise it just dumps it wherever!?
-- Finally, enter the project's folder you made with these commands and type in the final command: `dotnet tool install -g tcli` and from there you can do builds and stuff.
 
 ```cs
 // In your plugin
@@ -106,38 +98,8 @@ if (mod.WeatherRegistry().TryGetFromWeatherName("Meteor Shower", out CRWeatherDe
 
 Finally just do a release build and everything should just be put into your mod manager's specific profile that you gave to the template.
 
-### Setup - Editor
+### Setup - Unity Editor
 
-- If you have a Code/CSharp project setup for this then you only need to do a couple extra things.
-- First, Create a new UnityProject: 2022.3.9f1 with 3D High Definition Rendering Pipeline (HDRP).
-- Then add this package: <https://github.com/XuuXiaolan/CR-AssetBundle-Builder.git>.
-- Then you need to patch your UnityProject with the latest lethal release, to do this go through the steps in nomnom's unity lc project patcher github repository: <https://github.com/nomnomab/unity-lc-project-patcher>.
-
-CodeRebirthLib supports registering mods in the editor. However, it is untested. To register automatically you need to:
-
-- make your main bundle have the extension `.crmod`
-- contain a `ModInformation` Scriptable Object named exactly `Mod Information`
-
-> Expected structure is:
->
-> ```text
-> yourmod.crmod
-> my_item_bundle
-> ```
-
-### Setup - Extra Notes for the Editor portion
-
-- The way you should be setting up your project in the editor is very simple, you need to go through this path after patching: `Assets/LethalCompany/Mods/plugins/` and create a folder there that's just your mod's name, so something like `CodeRebirth`.
-- From there create another folder inside that and call it dependencies, this is where you'll go to thunderstore and manually download `CodeRebirthLib` and all its dependencies and just drag them in there so it should look something like this:
-
-![Dependencies Image](https://i.postimg.cc/KjkGy2GH/image.png)
-
-- Don't forget to go to the CodeRebirthLib dll and untick `Validate References` so it doesn't check for soft dependencies like LethalConfig or WeatherRegistry.
-- Also if you ever need to update your unity project to the latest lethal version, you can just make a new unity project, patch that one with the latest lethal version, and drag your `ModNameFolder` into the plugins folder like how it is in the previous unity project you had, that's it.
-
-> [!NOTE]
-> If you use a vanilla asset in your unity project into your mod, make sure to move it somewhere in your own mod's folder, so that when you do update to latest lethal version, it doesnt get lost from accidently deleting it.
-
-- Finally, if using CRAssetBundleBuilder (which is recommended), set your bundle output path to the `res` folder in your project if you have a CSharp/Code project, and if not, just make an `Assetbundles` folder next to `Dependencies` folder and put them all in there.
+- Check the UnityEditor section of the wiki on thunderstore to setup the Unity Editor.
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord for help.
