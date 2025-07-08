@@ -76,6 +76,12 @@ public class CRMod
         return Path.Combine(_basePath, Path.Combine(path));
     }
 
+    public bool TryGetRelativeFile(out string fullPath, params string[] path)
+    {
+        fullPath = GetRelativePath(path);
+        return File.Exists(fullPath);
+    }
+
     public void CreateRegistry<T>(string name, CRRegistry<T> registry) where T : CRContentDefinition
     {
         _registries[name] = registry;
