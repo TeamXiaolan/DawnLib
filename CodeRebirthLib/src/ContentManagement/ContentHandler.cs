@@ -75,7 +75,7 @@ public abstract class ContentHandler(CRMod mod)
         }
     }
 
-    public bool RegisterContent<TAsset>(string bundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset> // todo : i had to switch from protected to public?
+    protected bool RegisterContent<TAsset>(string bundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
     {
         if (TryLoadContentBundle(bundleName, out asset, forceEnabled))
         {

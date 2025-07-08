@@ -23,6 +23,12 @@ public abstract class CRContentDefinition : ScriptableObject
 
     public virtual void Register(CRMod mod)
     {
+        if (AssetBundleData == null)
+        {
+            mod.Logger?.LogError($"BUG! Tried to register {name} without setting AssetBundleData?");
+            return;
+        }
+        
         _mod = mod;
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (CRDynamicConfig configDefinition in _configEntries)

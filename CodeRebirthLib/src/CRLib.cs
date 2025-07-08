@@ -33,9 +33,10 @@ public static class CRLib
         CodeRebirthLibPlugin.ExtendedLogging("Registering no-code mod!");
         ConfigManager configManager = new(GenerateConfigFile(plugin));
         CRMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
+        noCodeMod.Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID);
         foreach (var assetBundleData in noCodeMod.Content.assetBundles)
         {
-            new DefaultContentHandler(noCodeMod).RegisterContent<DefaultBundle>(assetBundleData.assetBundleName, out _); // todo : i think i got pretty far in, there needs to be error handling for putting assetbundles next to eachother rather than mainbundle then Assets/subbundle and also config manager line 28 is erroring rn
+            _ = new DefaultContentHandler(noCodeMod);  // todo : i think i got pretty far in, there needs to be error handling for putting assetbundles next to eachother rather than mainbundle then Assets/subbundle
         }
         return noCodeMod;
     }

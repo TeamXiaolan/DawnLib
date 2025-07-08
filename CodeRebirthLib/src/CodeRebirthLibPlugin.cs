@@ -60,6 +60,8 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         {
             Logger.LogFatal("Loading mod: " + Path.GetFileName(path));
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
+            ExtendedLogging($"[AssetBundle Loading] {mainBundle.name} contains these objects: {string.Join(",", mainBundle.GetAllAssetNames())}");
+            
             CRModVersion[] modInformation = mainBundle.LoadAllAssets<CRModVersion>();
             if (modInformation.Length == 0)
             {

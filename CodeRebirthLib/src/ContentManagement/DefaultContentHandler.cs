@@ -8,10 +8,13 @@ public class DefaultContentHandler : ContentHandler
     {
         foreach (AssetBundleData bundleData in mod.Content.assetBundles)
         {
+            mod.Logger?.LogDebug($"Trying to register bundle: {bundleData}");
+            
             if (!IsContentEnabled(bundleData))
                 continue;
 
             DefaultBundle bundle = new(AssetBundle.LoadFromFile(mod.GetRelativePath("Assets", bundleData.assetBundleName)));
+            bundle.AssetBundleData = bundleData;
             LoadAllContent(bundle);
         }
     }
