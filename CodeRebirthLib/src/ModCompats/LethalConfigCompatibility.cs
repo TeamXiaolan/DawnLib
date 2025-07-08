@@ -44,7 +44,12 @@ static class LethalConfigCompatibility
             CodeRebirthLibPlugin.ExtendedLogging($"[LethalConfigPatch] toml type converter can actually support: {configEntryBase.SettingType}");
 
             // Create a poxy entry to spoof it as a string.
-            ConfigEntry<string> proxyEntry = _dummyConfig.Bind(configEntryBase.Definition, TomlTypeConverter.ConvertToString(configEntryBase.BoxedValue, configEntryBase.SettingType), configEntryBase.Description);
+            ConfigEntry<string> proxyEntry = _dummyConfig.Bind(
+                configEntryBase.Definition.Section, 
+                configEntryBase.Definition.Key, 
+                TomlTypeConverter.ConvertToString(configEntryBase.BoxedValue, configEntryBase.SettingType), 
+                configEntryBase.Description.Description
+            );
 
             proxyEntry.SettingChanged += (sender, args) => { configEntryBase.BoxedValue = TomlTypeConverter.ConvertToValue(proxyEntry.Value, configEntryBase.SettingType); };
             _dummyConfig.SettingChanged += (sender, args) =>
