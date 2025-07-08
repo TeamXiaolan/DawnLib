@@ -1,4 +1,8 @@
-# v0.7.1
+# v0.7.2
+- Improve LethalConfig Patch
+  - It will no longer display (harmless) errors, and more configs will display inside LethalConfig.
+
+## v0.7.1
 
 - Forgot to add OwnerNetworkAnimator and ClientNetworkTransform.
 
