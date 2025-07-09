@@ -1,4 +1,9 @@
-# v0.8.0
+# v0.8.1
+
+- Renamed some internal file names for clarity.
+- Added AuthorName and ModName to CRModInformation.
+
+## v0.8.0
 
 - Improved readme and added a wiki in thunderstore with different registerations.
 - Fixed editor only registerations.

@@ -62,7 +62,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
             ExtendedLogging($"[AssetBundle Loading] {mainBundle.name} contains these objects: {string.Join(",", mainBundle.GetAllAssetNames())}");
             
-            CRModVersion[] modInformation = mainBundle.LoadAllAssets<CRModVersion>();
+            CRModInformation[] modInformation = mainBundle.LoadAllAssets<CRModInformation>();
             if (modInformation.Length == 0)
             {
                 Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' does not have a 'Mod Information' file!");
@@ -74,7 +74,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
                 Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' has multiple 'Mod Information' files! Only the first one will be used.");
             }
 
-            Logger.LogInfo($"name: {modInformation[0].Name}, version: {modInformation[0].Version}");
+            Logger.LogInfo($"AuthorName: {modInformation[0].AuthorName}, ModName: {modInformation[0].ModName}, Version: {modInformation[0].Version}");
             CRLib.RegisterNoCodeMod(modInformation[0].CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
         }
 
