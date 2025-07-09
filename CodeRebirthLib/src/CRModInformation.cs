@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+using BepInEx;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -24,10 +25,14 @@ public class CRModInformation : ScriptableObject
     public string ModDescription { get; private set; }
 
     [field: SerializeField]
+    [Tooltip("Comma separated list of dependencies that this mod depends on apart from the default CRLib, BepInEx and potentially WeatherRegistry, grab from the thunderstore page.")]
+    public List<string> ExtraDependencies { get; private set; } = new();
+
+    [field: SerializeField]
     public string WebsiteUrl { get; private set; }
 
     [field: SerializeField]
-    public Sprite ModIcon { get; private set; }
+    public Texture2D ModIcon { get; private set; }
 
     public BepInPlugin CreatePluginMetadata()
     {
