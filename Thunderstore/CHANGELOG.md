@@ -2,6 +2,7 @@
 
 - Improved readme and added a wiki in thunderstore with different registerations.
 - Fixed editor only registerations.
+- Added more logs and more error handling.
 
 ## v0.7.2
 
