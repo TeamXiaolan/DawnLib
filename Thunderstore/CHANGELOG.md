@@ -1,4 +1,8 @@
-# v0.8.2
+# v0.9.0
+
+- Implemented ZIP building for no-code mods.
+
+## v0.8.2
 
 - Fixed a tiny whoopsie with authorname + modname GUID being XuXiaolanCodeRebirth instead of XuXiaolan.CodeRebirth
 
