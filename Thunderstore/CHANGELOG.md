@@ -1,4 +1,8 @@
-# v0.8.1
+# v0.8.2
+
+- Fixed a tiny whoopsie with authorname + modname GUID being XuXiaolanCodeRebirth instead of XuXiaolan.CodeRebirth
+
+## v0.8.1
 
 - Renamed some internal file names for clarity.
 - Added AuthorName and ModName to CRModInformation.

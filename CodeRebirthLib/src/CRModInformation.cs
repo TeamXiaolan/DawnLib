@@ -16,6 +16,6 @@ public class CRModInformation : ScriptableObject
 
     public BepInPlugin CreatePluginMetadata()
     {
-        return new BepInPlugin(AuthorName + ModName, ModName, Version);
+        return new BepInPlugin(AuthorName + "." + ModName, ModName, Version);
     }
 }
