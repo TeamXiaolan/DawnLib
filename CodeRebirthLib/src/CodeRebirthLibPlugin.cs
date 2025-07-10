@@ -6,6 +6,7 @@ using BepInEx.Logging;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
+using CodeRebirthLib.MiscScriptManagement;
 using CodeRebirthLib.ModCompats;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
@@ -83,7 +84,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(UnlockShipUnlockable), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker) };
+        var types = new Type[] { typeof(UnlockShipUnlockable), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator) };
         foreach (var type in types)
         {
             try
