@@ -1,4 +1,9 @@
-# v0.9.0
+# v0.9.1
+
+- Implemented saving to the AssetBundlePath and BuildOutputPath to the `Mod Information` ZIP Building stuff.
+- Made sure some key NetworkBehaviours were NetcodePatched.
+
+## v0.9.0
 
 - Implemented ZIP building for no-code mods.
 
