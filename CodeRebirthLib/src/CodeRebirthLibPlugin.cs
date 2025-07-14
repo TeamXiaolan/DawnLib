@@ -21,6 +21,7 @@ namespace CodeRebirthLib;
 [BepInDependency(Plugin.ModGUID)]
 [BepInDependency(PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID)]
 class CodeRebirthLibPlugin : BaseUnityPlugin
 {
