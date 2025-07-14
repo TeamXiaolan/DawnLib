@@ -15,12 +15,15 @@ static class LethalQuantitiesCompatibility
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(LethalQuantities.PluginInfo.PLUGIN_GUID);
 
     private static bool _useLQConverter;
-    private static AnimationCurveTypeConverter _lqConverter = new();
-    private static TypeConverter _crlibConverter = ExtendedTOML.WrapCRLibConverter(new AnimationCurveConverter());
+    private static TypeConverter _lqConverter;
+    private static TypeConverter _crlibConverter;
     
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
+        _lqConverter = new AnimationCurveTypeConverter();
+        _crlibConverter = ExtendedTOML.WrapCRLibConverter(new AnimationCurveConverter());
+        
         On.LethalQuantities.Patches.RoundManagerPatch.onStartPrefix += MarkShouldUseLQConverter;
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += ReplaceAnimationCurveConverter;
     }
