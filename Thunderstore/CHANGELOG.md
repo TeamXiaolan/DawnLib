@@ -1,4 +1,10 @@
-# v0.9.1
+# v0.9.2
+
+- Fixed a tiny rare bug with SmartAgentNavigator.
+- Changed order of config generation.
+- Fixed LethalQuantities compatibility.
+
+## v0.9.1
 
 - Implemented saving to the AssetBundlePath and BuildOutputPath to the `Mod Information` ZIP Building stuff.
 - Made sure some key NetworkBehaviours were NetcodePatched.

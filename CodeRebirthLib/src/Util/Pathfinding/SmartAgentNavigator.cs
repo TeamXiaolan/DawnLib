@@ -524,7 +524,7 @@ public class SmartAgentNavigator : NetworkBehaviour
                 yield break;
             }
             _positionsToSearch.RemoveAt(0);
-            yield return StartCoroutine(ClearProximityNodes(_positionsToSearch, positionToTravel, _nodeRemovalPrecision));
+            ClearProximityNodes(_positionsToSearch, positionToTravel, _nodeRemovalPrecision);
             bool reachedDestination = false;
             while (!reachedDestination)
             {
@@ -581,11 +581,11 @@ public class SmartAgentNavigator : NetworkBehaviour
         _positionsToSearch.Shuffle();
     }
 
-    private IEnumerator ClearProximityNodes(List<Vector3> positionsToSearch, Vector3 positionToTravel, float radius)
+    private void ClearProximityNodes(List<Vector3> positionsToSearch, Vector3 positionToTravel, float radius)
     {
         int count = positionsToSearch.Count;
         if (count == 0)
-            yield break;
+            return;
 
         for (int i = count - 1; i >= 0; i--)
         {
@@ -593,7 +593,6 @@ public class SmartAgentNavigator : NetworkBehaviour
             {
                 positionsToSearch.RemoveAt(i);
             }
-            yield return null;
         }
     }
     #endregion
