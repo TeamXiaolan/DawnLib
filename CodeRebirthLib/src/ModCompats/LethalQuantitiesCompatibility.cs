@@ -43,6 +43,7 @@ static class LethalQuantitiesCompatibility
             return _crlibConverter;
         }
     }
+
     private static void MarkShouldUseLQConverter(RoundManagerPatch.orig_onStartPrefix orig, RoundManager __instance)
     {
         _useLQConverter = true;

@@ -51,11 +51,10 @@ public class MapObjectSpawnMechanics
         if (level == null)
             return AnimationCurve.Linear(0, 0, 1, 0);
 
-        string actualLevelName = Levels.Compatibility.GetLLLNameOfLevel(level.sceneName);
-
+        string actualLevelName = Levels.Compatibility.GetLLLNameOfLevel(level.name);
         bool isValidLevelType = Enum.TryParse(actualLevelName, true, out Levels.LevelTypes levelType);
         bool isVanilla = isValidLevelType && levelType != Levels.LevelTypes.Modded;
-
+        CodeRebirthLibPlugin.ExtendedLogging($"Actual level name: {actualLevelName} | LevelType: {levelType} | isValidLevelType: {isValidLevelType} | isVanilla: {isVanilla}");
         if (CurvesByLevelType.TryGetValue(levelType, out AnimationCurve curve))
         {
             return curve;

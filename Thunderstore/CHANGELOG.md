@@ -3,6 +3,7 @@
 - Fixed a tiny rare bug with SmartAgentNavigator.
 - Changed order of config generation.
 - Fixed LethalQuantities compatibility.
+- Fixed a bug with outside spawn weights not seeing moon names properly.
 
 ## v0.9.1
 

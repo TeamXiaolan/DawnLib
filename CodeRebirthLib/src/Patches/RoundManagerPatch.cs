@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.Extensions;
-using LethalLevelLoader;
 using Unity.Netcode;
 using UnityEngine;
 using Random = System.Random;
