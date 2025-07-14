@@ -15,14 +15,23 @@ static class ExtendedTOML
     {
         foreach (TOMLConverter converter in _converters)
         {
-            TomlTypeConverter.AddConverter(converter.ConvertingType,
-                new TypeConverter
-                {
-                    ConvertToObject = (s, type) => converter.Deserialize(s),
-                    ConvertToString = (obj, type) => converter.Serialize(obj),
-                }
-            );
+            if (!converter.IsEnabled())
+            {
+                CodeRebirthLibPlugin.ExtendedLogging($"[ExtendedTOML] Skipped converter for '{converter.ConvertingType.Name}' it disabled itself.");
+                continue;
+            }
+            
+            TomlTypeConverter.AddConverter(converter.ConvertingType, WrapCRLibConverter(converter));
             CodeRebirthLibPlugin.Logger.LogInfo($"[ExtendedTOML] Registered converter for '{converter.ConvertingType.Name}'");
         }
+    }
+
+    internal static TypeConverter WrapCRLibConverter(TOMLConverter converter)
+    {
+        return new TypeConverter
+        {
+            ConvertToObject = (s, type) => converter.Deserialize(s),
+            ConvertToString = (obj, type) => converter.Serialize(obj),
+        };
     }
 }

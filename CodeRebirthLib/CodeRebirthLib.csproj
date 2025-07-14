@@ -47,6 +47,8 @@
         <PackageReference Include="Evaisa.LethalLib" Publicize="true" Version="1.*" />
         <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="*" PrivateAssets="all" />
         <PackageReference Include="mrov.MrovLib" Publicize="true" Version="*" PrivateAssets="all" />
+
+        <PackageReference Include="BananaPuncher714-LethalQuantities" Version="1.2.9" PrivateAssets="all" Publicize="true" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -68,6 +70,15 @@
       <Reference Include="MMHOOK_Assembly-CSharp">
         <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
+        <Reference Include="MMHOOK_LethalQuantities">
+            <HintPath>deps\MMHOOK_LethalQuantities.dll</HintPath>
+        </Reference>
+        <Reference Include="MMHOOK_BepInEx">
+            <HintPath>deps\MMHOOK_BepInEx.dll</HintPath>
+        </Reference>
+        <Reference Include="MMHOOK_BepInEx.Preloader">
+            <HintPath>deps\MMHOOK_BepInEx.Preloader.dll</HintPath>
+        </Reference>
       <Reference Include="PathfindingLib">
         <HintPath>deps\PathfindingLib.dll</HintPath>
       </Reference>

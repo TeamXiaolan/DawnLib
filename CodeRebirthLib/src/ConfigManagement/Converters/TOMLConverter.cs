@@ -6,6 +6,8 @@ public abstract class TOMLConverter
     public abstract Type ConvertingType { get; }
     public abstract string Serialize(object raw);
     public abstract object Deserialize(string value);
+
+    public virtual bool IsEnabled() => true;
 }
 
 public abstract class TOMLConverter<T> : TOMLConverter

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using CodeRebirthLib.Exceptions;
+using CodeRebirthLib.ModCompats;
 using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement.Converters;
@@ -58,5 +59,10 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
         }*/
 
         return curve;
+    }
+
+    public override bool IsEnabled()
+    {
+        return !LethalQuantitiesCompatibility.Enabled;
     }
 }

@@ -53,6 +53,11 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
             WeatherRegistryCompatibility.Init();
         }
 
+        if (LethalQuantitiesCompatibility.Enabled)
+        {
+            LethalQuantitiesCompatibility.Init();
+        }
+
         ExtendedTOML.Init();
 
         Main = new MainAssets(CRLib.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
