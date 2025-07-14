@@ -23,15 +23,28 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public override void Register(CRMod mod, ItemData data)
     {
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);   
-        Config = CreateItemConfig(section, data, Item.itemName);
+        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        BoundedRange itemWorth = new BoundedRange(Item.minValue * .4f, Item.maxValue * .4f);
+        Config = CreateItemConfig(section, data, itemWorth, Item.itemName);
 
-        BoundedRange itemWorth = Config.Worth?.Value ?? new BoundedRange(-1, -1);
-        if (itemWorth.Min != -1 && itemWorth.Max != -1)
+        if (Config.Worth != null)
         {
-            Item.minValue = (int)(itemWorth.Min / 0.4f);
-            Item.maxValue = (int)(itemWorth.Max / 0.4f);
+            BoundedRange configValue = Config.Worth.Value;
+            
+            // Perform migration:
+            if (configValue.Min == -1 || configValue.Max == -1)
+            {
+                mod.Logger?.LogInfo($"Migrating scrap value of {Item.itemName} from -1,-1.");
+                Config.Worth.Value = itemWorth; // itemWorth hasn't been updated here, so by setting a new value, it effectively changes from -1,-1 to the default item worth from above.
+            }
+            else
+            {
+                itemWorth = configValue;
+            }
         }
+        
+        Item.minValue = (int)(itemWorth.Min / 0.4f);
+        Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
         if (Config.IsShopItem?.Value ?? data.isShopItem)
         {
@@ -47,7 +60,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         mod.ItemRegistry().Register(this);
     }
 
-    public static ItemConfig CreateItemConfig(ConfigContext section, ItemData data, string itemName)
+    public static ItemConfig CreateItemConfig(ConfigContext section, ItemData data, BoundedRange defaultScrapValue, string itemName)
     {
         ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? section.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
         ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? section.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
@@ -56,7 +69,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         {
             SpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Spawn Weights", $"Spawn weights for {itemName}.", data.spawnWeights) : null,
             IsScrapItem = isScrapItem,
-            Worth = isScrapItem?.Value ?? data.isScrap ? section.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning. -1,-1 is the default.", new BoundedRange(-1, -1)) : null,
+            Worth = isScrapItem?.Value ?? data.isScrap ? section.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
             IsShopItem = isShopItem,
             Cost = isShopItem?.Value ?? data.isShopItem ? section.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
