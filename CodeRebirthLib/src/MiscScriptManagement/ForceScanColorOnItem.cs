@@ -1,8 +1,10 @@
+using CodeRebirthLib.ModCompats;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CodeRebirthLib.MiscScriptManagement;
+
 public class ForceScanColorOnItem : MonoBehaviour
 {
     public GrabbableObject grabbableObject = null!;
@@ -30,7 +32,11 @@ public class ForceScanColorOnItem : MonoBehaviour
         if (scanNodeProperties == null)
             return;
 
-        RectTransform? rectTransformOfImportance = null;
+        if (GoodItemScanCompatibility.Enabled && GoodItemScanCompatibility.TryGetRectTransform(scanNodeProperties, out var rectTransform))
+        {
+            HandleChangingColor(rectTransform);
+        }
+
         if (!HUDManager.Instance.scanNodes.ContainsValue(scanNodeProperties))
             return;
 
@@ -38,20 +44,22 @@ public class ForceScanColorOnItem : MonoBehaviour
         {
             if (value == scanNodeProperties)
             {
-                rectTransformOfImportance = key;
+                HandleChangingColor(key);
+                break;
                 // Plugin.ExtendedLogging($"Found scan node's gameobject: {key}");
             }
         }
-        if (rectTransformOfImportance == null)
-            return;
+    }
 
-        foreach (Image image in rectTransformOfImportance.GetComponentsInChildren<Image>())
+    private void HandleChangingColor(RectTransform rectTransformOfImportance)
+    {
+        var scanNodeAdditionalData = ScanNodeAdditionalData.CreateOrGet(rectTransformOfImportance);
+        foreach (Image image in scanNodeAdditionalData.ImagesAttached)
         {
             image.color = new Color(borderColor.r, borderColor.g, borderColor.b, image.color.a);
         }
 
-        Transform transformOfImportance = rectTransformOfImportance.GetChild(1);
-        foreach (TextMeshProUGUI text in transformOfImportance.GetComponentsInChildren<TextMeshProUGUI>())
+        foreach (TextMeshProUGUI text in scanNodeAdditionalData.TextsAttached)
         {
             text.color = new Color(textColor.r, textColor.g, textColor.b, text.color.a);
         }

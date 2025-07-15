@@ -49,6 +49,7 @@
         <PackageReference Include="mrov.MrovLib" Publicize="true" Version="*" PrivateAssets="all" />
 
         <PackageReference Include="BananaPuncher714-LethalQuantities" Version="1.2.9" PrivateAssets="all" Publicize="true" />
+        <PackageReference Include="TestAccount666-GoodItemScan" Version="1.14.0" PrivateAssets="all" Publicize="true" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

@@ -1,4 +1,8 @@
-# v0.9.2
+# v0.9.3
+
+- Added Compatibility support with GoodItemScan not allowing custom items to have custom scanNode colours.
+
+## v0.9.2
 
 - Fixed a tiny rare bug with SmartAgentNavigator.
 - Changed order of config generation.
