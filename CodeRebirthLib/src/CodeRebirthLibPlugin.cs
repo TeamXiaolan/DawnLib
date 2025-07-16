@@ -76,7 +76,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
                 continue;
             }
 
-            if (modInformation.Length >= 1)
+            if (modInformation.Length > 1)
             {
                 Logger.LogError($".crmod bundle: '{Path.GetFileName(path)}' has multiple 'Mod Information' files! Only the first one will be used.");
             }

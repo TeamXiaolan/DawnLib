@@ -1,4 +1,8 @@
-# v0.9.3
+# v0.9.4
+
+- Was accidently checking if there was more than 1 Mod Information incorrectly, never caused any issues but would push a warning.
+
+## v0.9.3
 
 - Added Compatibility support with GoodItemScan not allowing custom items to have custom scanNode colours.
 
