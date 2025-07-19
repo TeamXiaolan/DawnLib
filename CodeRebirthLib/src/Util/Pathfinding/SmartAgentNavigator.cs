@@ -10,6 +10,13 @@ using UnityEngine.AI;
 using UnityEngine.Events;
 
 namespace CodeRebirthLib.Util.Pathfinding;
+
+public struct GenericPath<T>(T generic, float pathLength)
+{
+    public T Generic = generic;
+    public float PathLength = pathLength;
+}
+
 [RequireComponent(typeof(NavMeshAgent))]
 public class SmartAgentNavigator : NetworkBehaviour
 {
@@ -17,7 +24,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     [HideInInspector] public UnityEvent<bool> OnUseEntranceTeleport = new();
     [HideInInspector] public UnityEvent<bool> OnEnableOrDisableAgent = new();
     [HideInInspector] public UnityEvent<bool> OnEnterOrExitElevator = new();
-    [HideInInspector] public EntranceTeleport lastUsedEntranceTeleport;
+    [HideInInspector] public EntranceTeleport? lastUsedEntranceTeleport = null;
 
     private Vector3 pointToGo = Vector3.zero;
     private Coroutine? searchRoutine = null;
@@ -25,11 +32,10 @@ public class SmartAgentNavigator : NetworkBehaviour
     private SmartPathTask? pathingTask = null;
     private SmartPathTask? checkPathsTask = null;
     private SmartPathTask? roamingTask = null;
+    private AgentState _agentState = AgentState.NotSet;
 
     [HideInInspector]
     public NavMeshAgent agent = null!;
-    [HideInInspector]
-    public bool isOutside = true;
     [HideInInspector]
     public Coroutine? checkPathsRoutine = null;
 
@@ -37,9 +43,14 @@ public class SmartAgentNavigator : NetworkBehaviour
     [SerializeField]
     private float _nodeRemovalPrecision = 5f;
     [SerializeField]
-    private bool _canWanderIntoOrOutOfInterior = false;
-    [SerializeField]
-    private SmartPathfindingLinkFlags _allowedLinks = (SmartPathfindingLinkFlags)(-1);
+    private SmartPathfindingLinkFlags _allowedLinks = SmartPathfindingLinkFlags.InternalTeleports | SmartPathfindingLinkFlags.MainEntrance | SmartPathfindingLinkFlags.Elevators | SmartPathfindingLinkFlags.FireExits;
+
+    public enum AgentState
+    {
+        NotSet,
+        Inside,
+        Outside
+    }
 
     public enum GoToDestinationResult
     {
@@ -54,9 +65,19 @@ public class SmartAgentNavigator : NetworkBehaviour
         SmartPathfinding.RegisterSmartAgent(agent);
     }
 
+    public bool IsAgentOutside()
+    {
+        if (_agentState == AgentState.NotSet)
+        {
+            CodeRebirthLibPlugin.Logger.LogError($"{this.name} is not initialized yet! Please call `SetAllValues` first.");
+            return false;
+        }
+        return _agentState == AgentState.Outside;
+    }
+
     public void SetAllValues(bool isOutside)
     {
-        this.isOutside = isOutside;
+        _agentState = isOutside ? AgentState.Outside : AgentState.Inside;
     }
 
     private SmartPathfindingLinkFlags GetAllowedPathLinks()
@@ -125,6 +146,13 @@ public class SmartAgentNavigator : NetworkBehaviour
         return result;
     }
 
+    public void DisposeOfTasks()
+    {
+        pathingTask?.Dispose();
+        checkPathsTask?.Dispose();
+        roamingTask?.Dispose();
+    }
+
     #region Destination Handling
     private bool GoToSmartPathDestination(in SmartPathDestination destination)
     {
@@ -136,11 +164,11 @@ public class SmartAgentNavigator : NetworkBehaviour
             case SmartDestinationType.InternalTeleport:
                 HandleInternalTeleportDestination(destination);
                 break;
-            case SmartDestinationType.Elevator:
-                HandleElevatorDestination(destination);
-                break;
             case SmartDestinationType.EntranceTeleport:
                 HandleEntranceTeleportDestination(destination);
+                break;
+            case SmartDestinationType.Elevator:
+                HandleElevatorDestination(destination);
                 break;
             default:
                 return false;
@@ -189,7 +217,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         return checkPathsRoutine != null;
     }
 
-    public void CheckPaths<T>(IEnumerable<(T, Vector3)> points, Action<List<(T, float)>> action)
+    public void CheckPaths<T>(IEnumerable<(T, Vector3)> points, Action<List<GenericPath<T>>> action)
     {
         if (checkPathsRoutine != null)
         {
@@ -198,9 +226,9 @@ public class SmartAgentNavigator : NetworkBehaviour
         checkPathsRoutine = StartCoroutine(CheckPathsCoroutine(points, action));
     }
 
-    private IEnumerator CheckPathsCoroutine<T>(IEnumerable<(T, Vector3)> points, Action<List<(T, float)>> action)
+    private IEnumerator CheckPathsCoroutine<T>(IEnumerable<(T, Vector3)> points, Action<List<GenericPath<T>>> action)
     {
-        var TList = new List<(T, float)>();
+        var TList = new List<GenericPath<T>>();
         checkPathsTask ??= new SmartPathTask();
         List<Vector3> pointsVectorList = points.Select(x => x.Item2).ToList();
         List<T> pointsTList = points.Select(x => x.Item1).ToList();
@@ -219,7 +247,7 @@ public class SmartAgentNavigator : NetworkBehaviour
             if (checkPathsTask.GetResult(i) is not SmartPathDestination destination)
                 continue;
 
-            TList.Add((pointsTList[i], checkPathsTask.GetPathLength(i)));
+            TList.Add(new GenericPath<T>(pointsTList[i], checkPathsTask.GetPathLength(i)));
         }
 
         action(TList);
@@ -324,8 +352,8 @@ public class SmartAgentNavigator : NetworkBehaviour
     public void SetThingOutsideClientRpc(NetworkBehaviourReference entranceTeleportReference)
     {
         lastUsedEntranceTeleport = (EntranceTeleport)entranceTeleportReference;
-        isOutside = !lastUsedEntranceTeleport.isEntranceToBuilding;
-        OnUseEntranceTeleport.Invoke(isOutside);
+        _agentState = !lastUsedEntranceTeleport.isEntranceToBuilding ? AgentState.Outside : AgentState.Inside;
+        OnUseEntranceTeleport.Invoke(!lastUsedEntranceTeleport.isEntranceToBuilding);
     }
 
     private Vector3 FindClosestValidPoint()
@@ -335,12 +363,6 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     public void AdjustSpeedBasedOnDistance(float minDistance, float maxDistance, float minSpeed, float maxSpeed, float multiplierBoost)
     {
-        minDistance = 0f;
-        maxDistance = 40f;
-
-        minSpeed = 0f; // Speed when closest
-        maxSpeed = 10f; // Speed when farthest
-
         float clampedDistance = Mathf.Clamp(agent.remainingDistance, minDistance, maxDistance);
         float normalizedDistance = (clampedDistance - minDistance) / (maxDistance - minDistance);
 
@@ -417,12 +439,12 @@ public class SmartAgentNavigator : NetworkBehaviour
     {
         _roamingPointsVectorList.Clear();
 
-        if (_canWanderIntoOrOutOfInterior)
+        if (_allowedLinks.HasFlag(SmartPathfindingLinkFlags.FireExits) || _allowedLinks.HasFlag(SmartPathfindingLinkFlags.MainEntrance))
         {
             _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
             _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
         }
-        else if (isOutside)
+        else if (IsAgentOutside())
         {
             _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
         }
