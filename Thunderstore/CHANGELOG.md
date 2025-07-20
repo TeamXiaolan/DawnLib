@@ -1,4 +1,9 @@
-# v0.9.6
+# v0.9.7
+
+- Polished achievements a bit more.
+- Fixed an issue where navigators are on a company moon.
+
+## v0.9.6
 
 - Fixed some possible networking issues with ChanceScript and ApplyRendererVariants.
 - Added a rough implementation of something new I'm working on, Achievements, because I don't really wanna wait for this AchievementsLib that's been 99% done for who knows how long.

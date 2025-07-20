@@ -441,16 +441,16 @@ public class SmartAgentNavigator : NetworkBehaviour
 
         if (_allowedLinks.HasFlag(SmartPathfindingLinkFlags.FireExits) || _allowedLinks.HasFlag(SmartPathfindingLinkFlags.MainEntrance))
         {
-            _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
-            _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.insideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.outsideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
         }
         else if (IsAgentOutside())
         {
-            _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.outsideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
         }
         else
         {
-            _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.insideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
         }
 
         if (_roamingPointsVectorList.Count == 0)
