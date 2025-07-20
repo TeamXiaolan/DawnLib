@@ -19,6 +19,7 @@ public class MaterialRendererVariantWithWeight : IWeighted
 {
     public MaterialsWithRenderer materialsWithRenderer = new();
 
+    [field: SerializeField]
     public int Weight { get; set; } = 1;
 }
 
