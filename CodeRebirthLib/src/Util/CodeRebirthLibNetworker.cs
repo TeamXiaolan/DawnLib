@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.Extensions;
@@ -95,6 +96,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 
     internal void SaveCodeRebirthLibData()
     {
+        CRAchievementHandler.SaveAll(); // I assume everyone runs this (CHECK THIS, IT'S PROBABLY NOT TRUE)
         if (!NetworkManager.Singleton.IsHost) return;
         CodeRebirthLibPlugin.ExtendedLogging("Running SaveAll");
         ProgressiveUnlockableHandler.SaveAll(SaveSettings);
@@ -118,7 +120,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     }
 
     [ServerRpc(RequireOwnership = false)]
-    internal void BroadcastDisplayTipServerRPC(HUDDisplayTip displayTip)
+    public void BroadcastDisplayTipServerRPC(HUDDisplayTip displayTip)
     {
         BroadcastDisplayTipClientRPC(displayTip);
     }

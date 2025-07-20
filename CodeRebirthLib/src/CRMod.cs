@@ -10,6 +10,7 @@ using BepInEx.Logging;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
+using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
@@ -21,6 +22,7 @@ using CodeRebirthLib.ModCompats;
 using UnityEngine;
 
 namespace CodeRebirthLib;
+
 public class CRMod
 {
     private static readonly List<CRMod> _allMods = new();
@@ -129,6 +131,15 @@ public class CRMod
         return AllMods.SelectMany(mod => mod.UnlockableRegistry());
     }
 
+    public CRRegistry<CRAchievementBaseDefinition> AchievementRegistry()
+    {
+        return GetRegistryByName<CRAchievementBaseDefinition>(CRAchievementBaseDefinition.REGISTRY_ID);
+    }
+    public static IEnumerable<CRAchievementBaseDefinition> AllAchievements()
+    {
+        return AllMods.SelectMany(mod => mod.AchievementRegistry());
+    }
+
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
     {
         data = Content.assetBundles.FirstOrDefault(it => it.assetBundleName == bundleName);
@@ -141,6 +152,7 @@ public class CRMod
         CRMapObjectDefinition.RegisterTo(this);
         CRItemDefinition.RegisterTo(this);
         CRUnlockableDefinition.RegisterTo(this);
+        CRAchievementBaseDefinition.RegisterTo(this);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]

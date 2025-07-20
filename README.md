@@ -14,6 +14,7 @@ Currently supports:
 ## Native (CodeRebirthLib)
 
 - Outside Map Objects
+- Achievements
 
 ## PathfindingLib
 

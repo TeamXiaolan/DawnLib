@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
+using CodeRebirth.src.MiscScripts;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
@@ -43,6 +44,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         StartOfRoundPatch.Init();
         TerminalPatch.Init();
         DeleteFileButtonPatch.Init();
+        MenuManagerPatch.Init();
 
         if (LethalConfigCompatibility.Enabled)
         {
@@ -89,7 +91,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(UnlockShipUnlockable), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator) };
+        var types = new Type[] { typeof(UnlockShipUnlockable), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants) };
         foreach (var type in types)
         {
             try

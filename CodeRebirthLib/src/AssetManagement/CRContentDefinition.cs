@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.AssetManagement;
+
 public abstract class CRContentDefinition : ScriptableObject
 {
     [FormerlySerializedAs("ConfigEntries")] [SerializeField]
@@ -17,7 +18,7 @@ public abstract class CRContentDefinition : ScriptableObject
     public string EntityNameReference { get; private set; }
 
     private readonly Dictionary<string, ConfigEntryBase> _generalConfigs = new();
-    private CRMod _mod;
+    protected CRMod _mod { get; private set; }
 
     internal AssetBundleData AssetBundleData;
 

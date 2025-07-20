@@ -1,4 +1,11 @@
-# v0.9.5
+# v0.9.6
+
+- Fixed some possible networking issues with ChanceScript and ApplyRendererVariants.
+- Added a rough implementation of something new I'm working on, Achievements, because I don't really wanna wait for this AchievementsLib that's been 99% done for who knows how long.
+- Achievements are per player and they are global only (making save-file only achievements doesn't quite make much sense).
+- No UI done for achievements yet but soon.
+
+## v0.9.5
 
 - Networked the chance script so each client gets it at the same time.
 - Added a new PathfindingLib Impl.

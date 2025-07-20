@@ -2,6 +2,7 @@
 using CodeRebirthLib.Util;
 
 namespace CodeRebirthLib.Patches;
+
 static class GameNetworkManagerPatch
 {
     internal static void Init()
