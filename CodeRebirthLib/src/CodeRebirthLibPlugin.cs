@@ -65,7 +65,6 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))
         {
-            Logger.LogFatal("Loading mod: " + Path.GetFileName(path));
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
             ExtendedLogging($"[AssetBundle Loading] {mainBundle.name} contains these objects: {string.Join(",", mainBundle.GetAllAssetNames())}");
             

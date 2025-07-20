@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CodeRebirthLib.Data;
 using UnityEngine;
 using Random = System.Random;
 
 namespace CodeRebirthLib.Extensions;
+
 public static class RandomExtensions
 {
     public static float Next(this Random random, BoundedRange range)
@@ -47,5 +49,21 @@ public static class RandomExtensions
     public static Quaternion NextQuaternion(this Random random)
     {
         return Quaternion.Euler(random.NextFloat(0f, 360f), random.NextFloat(0f, 360f), random.NextFloat(0f, 360f));
+    }
+
+    public static T NextWeighted<T>(this Random random, IList<T> list) where T : IWeighted
+    {
+        int totalWeight = list.Sum(it => it.Weight);
+        int chosenWeight = random.Next(0, totalWeight + 1);
+
+        T chosen = list.First();
+        foreach (T weighted in list)
+        {
+            chosen = weighted;
+            chosenWeight -= weighted.Weight;
+            if (chosenWeight <= 0)
+                break;
+        }
+        return chosen;
     }
 }
