@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CodeRebirthLib.Extensions;
 
 namespace CodeRebirthLib.ContentManagement.Enemies;
 public static class CRModEnemyExtensions
 {
     public static bool TryGetFromEnemyName(this CRRegistry<CREnemyDefinition> registry, string enemyName, [NotNullWhen(true)] out CREnemyDefinition? value)
     {
-        return registry.TryGetFirstBySomeName(
+        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
             it => it.EnemyType.enemyName,
             enemyName,
             out value,

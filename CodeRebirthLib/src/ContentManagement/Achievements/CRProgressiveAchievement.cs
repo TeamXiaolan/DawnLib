@@ -28,13 +28,30 @@ public class CRProgressiveAchievement : CRAchievementBaseDefinition
         ES3.Save(_mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", CurrentProgress, globalSettings);
     }
 
-    public void IncrementProgress(float amount)
+    public bool IncrementProgress(float amount)
     {
         CurrentProgress += amount;
         if (CurrentProgress >= MaxProgress && !Completed)
         {
             CurrentProgress = MaxProgress;
-            TryCompleteAchievement();
+            return TryCompleteAchievement();
         }
+        return false;
+    }
+
+    public override bool TryCompleteAchievement()
+    {
+        if (Completed)
+        {
+            return false;
+        }
+
+        if (CurrentProgress < MaxProgress)
+        {
+            return false;
+        }
+
+        Completed = true;
+        return Completed;
     }
 }

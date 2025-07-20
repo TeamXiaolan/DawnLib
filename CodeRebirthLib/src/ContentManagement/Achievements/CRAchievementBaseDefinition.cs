@@ -8,13 +8,17 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public const string REGISTRY_ID = "achievements";
 
     [field: SerializeField]
+    public Sprite AchievementIcon { get; private set; }
+    [field: SerializeField]
     public string AchievementName { get; private set; }
     [field: SerializeField]
     public string AchievementDescription { get; private set; }
     [field: SerializeField]
-    public Sprite AchievementIcon { get; private set; }
+    public string AchievementRequirement { get; private set; }
+    [field: SerializeField]
+    public bool IsHidden { get; private set; }
 
-    public bool Completed { get; private set; } = false;
+    public bool Completed { get; protected set; } = false;
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {
         Completed = ES3.Load(_mod.Plugin.GUID + "." + AchievementName, false, globalSettings);
@@ -27,16 +31,7 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
         CodeRebirthLibPlugin.ExtendedLogging($"Saving Achievement: {AchievementName} with value: {Completed}");
     }
 
-    public bool TryCompleteAchievement()
-    {
-        if (Completed)
-        {
-            return false;
-        }
-
-        Completed = true;
-        return Completed;
-    }
+    public abstract bool TryCompleteAchievement();
 
     public static void RegisterTo(CRMod mod)
     {

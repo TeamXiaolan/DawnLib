@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CodeRebirthLib.AssetManagement;
+using CodeRebirthLib.Extensions;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement;
@@ -31,6 +32,7 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
         CodeRebirthLibPlugin.ExtendedLogging($"added {item.name} to registry.");
     }
 
+    [Obsolete("Use TryGetFirstBySomeName from CRRegistryExtensions instead")]
     public bool TryGetFirstBySomeName(Func<TDefinition, string> transformer, string name, [NotNullWhen(true)] out TDefinition? value, string? failContext = null)
     {
         value = this.FirstOrDefault(it => transformer(it).Contains(name, StringComparison.OrdinalIgnoreCase));
@@ -43,6 +45,6 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
 
     public bool TryGetFromAssetName(string name, [NotNullWhen(true)] out TDefinition? value)
     {
-        return TryGetFirstBySomeName(it => it.name, name, out value);
+        return CRRegistryExtensions.TryGetFirstBySomeName(this, it => it.name, name, out value);
     }
 }

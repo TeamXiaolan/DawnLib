@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CodeRebirthLib.Extensions;
 
 namespace CodeRebirthLib.ContentManagement.Weathers;
 public static class CRModWeatherExtensions
@@ -17,7 +18,7 @@ public static class CRModWeatherExtensions
 
     public static bool TryGetFromWeatherName(this CRRegistry<CRWeatherDefinition> registry, string weatherName, [NotNullWhen(true)] out CRWeatherDefinition? value)
     {
-        return registry.TryGetFirstBySomeName(
+        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
             it => it.Weather.Name,
             weatherName,
             out value,

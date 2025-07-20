@@ -1,12 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CodeRebirthLib.Extensions;
 
 namespace CodeRebirthLib.ContentManagement.Unlockables;
 public static class CRModUnlockableExtensions
 {
     public static bool TryGetFromUnlockableName(this CRRegistry<CRUnlockableDefinition> registry, string unlockableName, [NotNullWhen(true)] out CRUnlockableDefinition? value)
     {
-        return registry.TryGetFirstBySomeName(
+        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
             it => it.UnlockableItemDef.unlockable.unlockableName,
             unlockableName,
             out value,
