@@ -2,8 +2,11 @@
 
 - Networked the chance script so each client gets it at the same time.
 - Added a new PathfindingLib Impl.
+- Slightly reorganized the generation of configs
+  - Purely cosemetic, no config information (should) be lost
 
 ## v0.9.4
+
 
 - Was accidently checking if there was more than 1 Mod Information incorrectly, never caused any issues but would push a warning.
 

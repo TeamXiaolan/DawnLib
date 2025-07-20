@@ -64,13 +64,13 @@ public abstract class CRContentDefinition<T> : CRContentDefinition where T : Ent
 {
     public override void Register(CRMod mod)
     {
-        base.Register(mod);
         Register(mod,
             GetEntities(mod).First(it =>
             {
                 CodeRebirthLibPlugin.ExtendedLogging($"{this} | Comparing {EntityNameReference} with {it.entityName}.");
                 return it.entityName == EntityNameReference;
             }));
+        base.Register(mod);
     }
 
     public abstract void Register(CRMod mod, T data);
