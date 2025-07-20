@@ -27,4 +27,14 @@ public class CRProgressiveAchievement : CRAchievementBaseDefinition
         base.SaveAchievementState(globalSettings);
         ES3.Save(_mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", CurrentProgress, globalSettings);
     }
+
+    public void IncrementProgress(float amount)
+    {
+        CurrentProgress += amount;
+        if (CurrentProgress >= MaxProgress && !Completed)
+        {
+            CurrentProgress = MaxProgress;
+            TryCompleteAchievement();
+        }
+    }
 }
