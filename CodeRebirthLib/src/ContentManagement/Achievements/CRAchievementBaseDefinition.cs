@@ -11,6 +11,8 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public string AchievementName { get; private set; }
     [field: SerializeField]
     public string AchievementDescription { get; private set; }
+    [field: SerializeField]
+    public Sprite AchievementIcon { get; private set; }
 
     public bool Completed { get; private set; } = false;
     public virtual void LoadAchievementState(ES3Settings globalSettings)

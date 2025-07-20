@@ -6,9 +6,9 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 public class CRProgressiveAchievement : CRAchievementBaseDefinition
 {
     [field: SerializeField]
-    public int MaxProgress { get; private set; }
+    public float MaxProgress { get; private set; }
 
-    public int CurrentProgress { get; private set; }
+    public float CurrentProgress { get; private set; }
 
     public override void LoadAchievementState(ES3Settings globalSettings)
     {
@@ -19,7 +19,7 @@ public class CRProgressiveAchievement : CRAchievementBaseDefinition
             return;
         }
 
-        CurrentProgress = ES3.Load(_mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", 0, globalSettings);
+        CurrentProgress = ES3.Load(_mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", 0f, globalSettings);
     }
 
     public override void SaveAchievementState(ES3Settings globalSettings)
