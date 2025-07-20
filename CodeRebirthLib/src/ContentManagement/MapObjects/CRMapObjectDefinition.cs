@@ -45,20 +45,18 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             try
             {
                 InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
+                LethalLib.Modules.MapObjects.RegisterMapObject(
+                    insideDef,
+                    Levels.LevelTypes.All,
+                    InsideSpawnMechanics.LevelOverrides,
+                    InsideSpawnMechanics.CurveFunction
+                );
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
                 mod.Logger?.LogError($"Failed to parse outside curve for map object: {ObjectName}");
                 exception.LogNicely(mod.Logger);
-                return; // shouldn't probably be a return
             }
-
-            LethalLib.Modules.MapObjects.RegisterMapObject(
-                insideDef,
-                Levels.LevelTypes.All,
-                InsideSpawnMechanics.LevelOverrides,
-                InsideSpawnMechanics.CurveFunction
-            );
         }
 
         if (Config.OutsideHazard?.Value ?? data.isOutsideHazard)
@@ -73,24 +71,22 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             try
             {
                 OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
+                RegisteredCRMapObject registeredCRMapObject = new()
+                {
+                    alignWithTerrain = AlignWithTerrain,
+                    hasNetworkObject = outsideDef.spawnableMapObject.spawnableObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
+                    outsideObject = outsideDef.spawnableMapObject,
+                    levels = Levels.LevelTypes.All,
+                    spawnLevelOverrides = OutsideSpawnMechanics.LevelOverrides,
+                    spawnRateFunction = OutsideSpawnMechanics.CurveFunction,
+                };
+                RoundManagerPatch.registeredMapObjects.Add(registeredCRMapObject);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
                 mod.Logger?.LogError($"Failed to parse outside curve for map object: {ObjectName}");
                 exception.LogNicely(mod.Logger);
-                return; // shouldn't probably be a return
             }
-
-            RegisteredCRMapObject registeredCRMapObject = new()
-            {
-                alignWithTerrain = AlignWithTerrain,
-                hasNetworkObject = outsideDef.spawnableMapObject.spawnableObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
-                outsideObject = outsideDef.spawnableMapObject,
-                levels = Levels.LevelTypes.All,
-                spawnLevelOverrides = OutsideSpawnMechanics.LevelOverrides,
-                spawnRateFunction = OutsideSpawnMechanics.CurveFunction,
-            };
-            RoundManagerPatch.registeredMapObjects.Add(registeredCRMapObject);
         }
 
         mod.MapObjectRegistry().Register(this);
