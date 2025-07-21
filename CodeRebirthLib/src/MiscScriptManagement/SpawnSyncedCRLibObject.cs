@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace CodeRebirthLib.MiscScriptManagement;
 public class SpawnSyncedCRLibObject : MonoBehaviour

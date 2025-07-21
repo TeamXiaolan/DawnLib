@@ -1,4 +1,9 @@
-# v0.9.8
+# v0.9.9
+
+- Touched up code all over a bit more, achievements are mostly finished in practise with only UI left.
+- Added a component that allows you to run events based on trying to complete achievements, an event on completing an achievement, and incrementing achievement progress.
+
+## v0.9.8
 
 - More null checks with navigators on a company moon.
 
