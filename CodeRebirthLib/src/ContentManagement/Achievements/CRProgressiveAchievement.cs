@@ -21,13 +21,13 @@ public class CRProgressiveAchievement : CRAchievementBaseDefinition
             return;
         }
 
-        CurrentProgress = ES3.Load(_mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", 0f, globalSettings);
+        CurrentProgress = ES3.Load(Mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", 0f, globalSettings);
     }
 
     public override void SaveAchievementState(ES3Settings globalSettings)
     {
         base.SaveAchievementState(globalSettings);
-        ES3.Save(_mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", CurrentProgress, globalSettings);
+        ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", CurrentProgress, globalSettings);
     }
 
     public bool IncrementProgress(float amount)

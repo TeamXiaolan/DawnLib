@@ -21,13 +21,13 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public bool Completed { get; protected set; } = false;
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {
-        Completed = ES3.Load(_mod.Plugin.GUID + "." + AchievementName, false, globalSettings);
+        Completed = ES3.Load(Mod.Plugin.GUID + "." + AchievementName, false, globalSettings);
         CodeRebirthLibPlugin.ExtendedLogging($"Loaded Achievement: {AchievementName} with value: {Completed}");
     }
 
     public virtual void SaveAchievementState(ES3Settings globalSettings)
     {
-        ES3.Save(_mod.Plugin.GUID + "." + AchievementName, Completed, globalSettings);
+        ES3.Save(Mod.Plugin.GUID + "." + AchievementName, Completed, globalSettings);
         CodeRebirthLibPlugin.ExtendedLogging($"Saving Achievement: {AchievementName} with value: {Completed}");
     }
 

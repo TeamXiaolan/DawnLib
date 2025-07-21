@@ -18,11 +18,9 @@ public abstract class CRContentDefinition : ScriptableObject
     public string EntityNameReference { get; private set; }
 
     private readonly Dictionary<string, ConfigEntryBase> _generalConfigs = new();
-    protected CRMod _mod { get; private set; }
+    public CRMod Mod { get; private set; }
 
     internal AssetBundleData AssetBundleData;
-
-    public CRMod Mod => _mod;
 
     public virtual void Register(CRMod mod)
     {
@@ -32,7 +30,7 @@ public abstract class CRContentDefinition : ScriptableObject
             return;
         }
         
-        _mod = mod;
+        Mod = mod;
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (CRDynamicConfig configDefinition in _configEntries)
         {
@@ -55,7 +53,7 @@ public abstract class CRContentDefinition : ScriptableObject
 
         if (CodeRebirthLibConfig.ExtendedLogging)
         {
-            _mod.Logger?.LogWarning($"TryGetGeneralConfig: '{configName}' does not exist on '{name}', returning false and entry will be null");
+            Mod.Logger?.LogWarning($"TryGetGeneralConfig: '{configName}' does not exist on '{name}', returning false and entry will be null");
         }
 
         entry = null;
