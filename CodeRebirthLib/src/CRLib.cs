@@ -2,7 +2,6 @@
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
-using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.Util;

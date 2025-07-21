@@ -1,5 +1,4 @@
-using Unity.Netcode;
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +23,7 @@ public class SpawnSyncedCRLibObject : MonoBehaviour
         {
             foreach (var mapObjectDefinition in CRMod.AllMapObjects())
             {
-                if (!objectTypeWithRarity.CRLibObjectName.Equals(mapObjectDefinition.ObjectName, System.StringComparison.OrdinalIgnoreCase))
+                if (!objectTypeWithRarity.CRLibObjectName.Equals(mapObjectDefinition.ObjectName, StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 spawnableObjectsList.Add((mapObjectDefinition.GameObject, objectTypeWithRarity.Rarity));

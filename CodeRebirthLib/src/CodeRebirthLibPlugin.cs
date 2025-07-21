@@ -36,7 +36,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         ConfigManager = new ConfigManager(Config);
 
         CodeRebirthLibConfig.Bind(ConfigManager);
-
+        
         NetcodePatcher();
         RoundManagerPatch.Patch();
         GameNetworkManagerPatch.Init();

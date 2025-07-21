@@ -8,7 +8,6 @@ using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Weathers;
-using LethalLevelLoader;
 using LethalLib.Modules;
 using Unity.Netcode;
 using UnityEngine;
