@@ -1,4 +1,8 @@
-# v0.9.7
+# v0.9.8
+
+- More null checks with navigators on a company moon.
+
+## v0.9.7
 
 - Polished achievements a bit more.
 - Fixed an issue where navigators are on a company moon.

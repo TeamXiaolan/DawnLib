@@ -441,21 +441,20 @@ public class SmartAgentNavigator : NetworkBehaviour
 
         if (_allowedLinks.HasFlag(SmartPathfindingLinkFlags.FireExits) || _allowedLinks.HasFlag(SmartPathfindingLinkFlags.MainEntrance))
         {
-            if (RoundManager.Instance.insideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
-            if (RoundManager.Instance.outsideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.insideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Where(x => x != null).Select(x => x.transform.position));
+            if (RoundManager.Instance.outsideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Where(x => x != null).Select(x => x.transform.position));
         }
         else if (IsAgentOutside())
         {
-            if (RoundManager.Instance.outsideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.outsideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.outsideAINodes.Where(x => x != null).Select(x => x.transform.position));
         }
         else
         {
-            if (RoundManager.Instance.insideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Select(x => x.transform.position));
+            if (RoundManager.Instance.insideAINodes != null) _roamingPointsVectorList.AddRange(RoundManager.Instance.insideAINodes.Where(x => x != null).Select(x => x.transform.position));
         }
 
         if (_roamingPointsVectorList.Count == 0)
         {
-
             for (int i = 0; i < 20; i++)
             {
                 _roamingPointsVectorList.Add(RoundManager.Instance.GetRandomNavMeshPositionInRadius(this.transform.position, radius, default));
