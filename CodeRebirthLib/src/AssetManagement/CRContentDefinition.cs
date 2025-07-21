@@ -22,6 +22,8 @@ public abstract class CRContentDefinition : ScriptableObject
 
     internal AssetBundleData AssetBundleData;
 
+    public CRMod Mod => _mod;
+
     public virtual void Register(CRMod mod)
     {
         if (AssetBundleData == null)
