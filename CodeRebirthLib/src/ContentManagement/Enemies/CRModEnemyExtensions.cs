@@ -7,8 +7,7 @@ public static class CRModEnemyExtensions
 {
     public static bool TryGetFromEnemyName(this CRRegistry<CREnemyDefinition> registry, string enemyName, [NotNullWhen(true)] out CREnemyDefinition? value)
     {
-        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
-            it => it.EnemyType.enemyName,
+        return registry.TryGetFirstBySomeName(it => it.EnemyType.enemyName,
             enemyName,
             out value,
             $"TryGetFromEnemyName failed with enemyName: {enemyName}"

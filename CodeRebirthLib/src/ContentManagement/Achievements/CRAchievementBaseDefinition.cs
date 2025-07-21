@@ -31,7 +31,16 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
         CodeRebirthLibPlugin.ExtendedLogging($"Saving Achievement: {AchievementName} with value: {Completed}");
     }
 
-    public abstract bool TryCompleteAchievement();
+    protected bool TryCompleteAchievement()
+    {
+        if (Completed)
+        {
+            return false;
+        }
+
+        Completed = true;
+        return Completed;
+    }
 
     public static void RegisterTo(CRMod mod)
     {

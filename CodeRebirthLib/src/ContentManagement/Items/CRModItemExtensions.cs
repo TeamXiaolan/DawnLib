@@ -7,8 +7,7 @@ public static class CRModItemExtensions
 {
     public static bool TryGetFromItemName(this CRRegistry<CRItemDefinition> registry, string itemName, [NotNullWhen(true)] out CRItemDefinition? value)
     {
-        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
-            it => it.Item.itemName,
+        return registry.TryGetFirstBySomeName(it => it.Item.itemName,
             itemName,
             out value,
             $"TryGetFromItemName failed with itemName: {itemName}"

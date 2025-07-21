@@ -2,17 +2,11 @@ using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
-[CreateAssetMenu(fileName = "New Instant Achievement Definition", menuName = "CodeRebirthLib/Definitions/Instant Achievement Definition")]
+[CreateAssetMenu(fileName = "New Instant Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Instant Definition")]
 public class CRInstantAchievement : CRAchievementBaseDefinition
 {
-    public override bool TryCompleteAchievement()
+    public bool TriggerAchievement()
     {
-        if (Completed)
-        {
-            return false;
-        }
-
-        Completed = true;
-        return Completed;
+        return TryCompleteAchievement();
     }
 }

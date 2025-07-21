@@ -6,8 +6,7 @@ public static class CRModMapObjectExtensions
 {
     public static bool TryGetFromMapObjectName(this CRRegistry<CRMapObjectDefinition> registry, string mapObjectName, [NotNullWhen(true)] out CRMapObjectDefinition? value)
     {
-        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
-            it => it.ObjectName,
+        return registry.TryGetFirstBySomeName(it => it.ObjectName,
             mapObjectName,
             out value,
             $"TryGetFromMapObjectName failed with mapObjectName: {mapObjectName}"

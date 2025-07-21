@@ -31,20 +31,4 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
         _items.Add(item);
         CodeRebirthLibPlugin.ExtendedLogging($"added {item.name} to registry.");
     }
-
-    [Obsolete("Use TryGetFirstBySomeName from CRRegistryExtensions instead")]
-    public bool TryGetFirstBySomeName(Func<TDefinition, string> transformer, string name, [NotNullWhen(true)] out TDefinition? value, string? failContext = null)
-    {
-        value = this.FirstOrDefault(it => transformer(it).Contains(name, StringComparison.OrdinalIgnoreCase));
-        if (!value && !string.IsNullOrEmpty(failContext))
-        {
-            CodeRebirthLibPlugin.ExtendedLogging(failContext);
-        }
-        return value; // implicit cast to bool
-    }
-
-    public bool TryGetFromAssetName(string name, [NotNullWhen(true)] out TDefinition? value)
-    {
-        return CRRegistryExtensions.TryGetFirstBySomeName(this, it => it.name, name, out value);
-    }
 }

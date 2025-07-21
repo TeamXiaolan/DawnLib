@@ -2,13 +2,15 @@ using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
-[CreateAssetMenu(fileName = "New Progressive Achievement Definition", menuName = "CodeRebirthLib/Definitions/Progressive Achievement Definition")]
+[CreateAssetMenu(fileName = "New Progressive Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Progressive Definition")]
 public class CRProgressiveAchievement : CRAchievementBaseDefinition
 {
     [field: SerializeField]
     public float MaxProgress { get; private set; }
 
     public float CurrentProgress { get; private set; }
+
+    public float Percentage => CurrentProgress / MaxProgress;
 
     public override void LoadAchievementState(ES3Settings globalSettings)
     {
@@ -31,27 +33,11 @@ public class CRProgressiveAchievement : CRAchievementBaseDefinition
     public bool IncrementProgress(float amount)
     {
         CurrentProgress += amount;
-        if (CurrentProgress >= MaxProgress && !Completed)
+        if (CurrentProgress >= MaxProgress)
         {
             CurrentProgress = MaxProgress;
             return TryCompleteAchievement();
         }
         return false;
-    }
-
-    public override bool TryCompleteAchievement()
-    {
-        if (Completed)
-        {
-            return false;
-        }
-
-        if (CurrentProgress < MaxProgress)
-        {
-            return false;
-        }
-
-        Completed = true;
-        return Completed;
     }
 }

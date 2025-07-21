@@ -7,8 +7,7 @@ public static class CRModUnlockableExtensions
 {
     public static bool TryGetFromUnlockableName(this CRRegistry<CRUnlockableDefinition> registry, string unlockableName, [NotNullWhen(true)] out CRUnlockableDefinition? value)
     {
-        return CRRegistryExtensions.TryGetFirstBySomeName(registry, 
-            it => it.UnlockableItemDef.unlockable.unlockableName,
+        return registry.TryGetFirstBySomeName(it => it.UnlockableItemDef.unlockable.unlockableName,
             unlockableName,
             out value,
             $"TryGetFromUnlockableName failed with unlockableName: {unlockableName}"
