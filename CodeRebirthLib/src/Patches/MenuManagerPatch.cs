@@ -1,4 +1,5 @@
 using CodeRebirthLib.ContentManagement.Achievements;
+using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
 
@@ -13,5 +14,6 @@ static class MenuManagerPatch
     {
         orig(self);
         CRAchievementHandler.LoadAll();
+        GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUICanvasPrefab);
     }
 }

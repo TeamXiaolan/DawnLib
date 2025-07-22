@@ -125,5 +125,11 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
     {
         [LoadFromBundle("CodeRebirthLibNetworker.prefab")]
         public GameObject NetworkerPrefab { get; private set; } = null!;
+
+        [LoadFromBundle("AchievementUIElement.prefab")]
+        public GameObject AchievementUIElementPrefab { get; private set; } = null!;
+
+        [LoadFromBundle("AchievementUICanvas.prefab")]
+        public GameObject AchievementUICanvasPrefab { get; private set; } = null!;
     }
 }

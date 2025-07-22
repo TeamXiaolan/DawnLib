@@ -104,3 +104,9 @@ Finally just do a release build and everything should just be put into your mod 
 - Check the UnityEditor section of the wiki on thunderstore to setup the Unity Editor.
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord for help.
+
+### Credits
+
+- Bongo Loaforc (Code)
+- XuXiaolan (Code)
+- Slayer (Achievement UI)
