@@ -16,7 +16,7 @@ public class AchievementUICanvas : MonoBehaviour
     {
         foreach (var achievement in CRMod.AllAchievements())
         {
-            CodeRebirthLibPlugin.Logger.LogInfo($"Adding achievement: {achievement.AchievementName}");
+            CodeRebirthLibPlugin.ExtendedLogging($"Adding achievement: {achievement.AchievementName}");
             var uiElement = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUIElementPrefab, _achievementContents.transform);
             uiElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
         }

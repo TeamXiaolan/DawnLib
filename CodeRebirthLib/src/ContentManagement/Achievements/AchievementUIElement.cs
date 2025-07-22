@@ -16,6 +16,9 @@ public class AchievementUIElement : MonoBehaviour
     private GameObject _achievementProgressGO = null!;
 
     [SerializeField]
+    private Button _achievementHiddenButton = null!;
+
+    [SerializeField]
     private Image _achievementIcon = null!;
 
     public void SetupAchievementUI(CRAchievementBaseDefinition definition)
@@ -23,6 +26,11 @@ public class AchievementUIElement : MonoBehaviour
         _achievementNameTMP.text = definition.AchievementName;
         _achievementDescriptionTMP.text = definition.AchievementDescription;
         _achievementIcon.sprite = definition.AchievementIcon;
+        if (!definition.IsHidden)
+        {
+            _achievementHiddenButton.onClick.Invoke();
+        }
+
         if (definition is CRProgressiveAchievement progressiveAchievement)
         {
             Image image = _achievementProgressGO.GetComponentInChildren<Image>();
