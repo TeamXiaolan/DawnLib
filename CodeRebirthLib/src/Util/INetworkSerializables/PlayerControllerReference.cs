@@ -7,6 +7,9 @@ public class PlayerControllerReference : INetworkSerializable
 {
     private int _playerID;
 
+    public bool IsLocalClient => Array.IndexOf(StartOfRound.Instance.allPlayerScripts, GameNetworkManager.Instance.localPlayerController) == _playerID;
+    public bool IsAlive => !StartOfRound.Instance.allPlayerScripts[_playerID].isPlayerDead;
+    
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref _playerID);
