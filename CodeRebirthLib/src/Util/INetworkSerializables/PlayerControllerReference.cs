@@ -1,5 +1,6 @@
 ﻿using System;
 using GameNetcodeStuff;
+using Steamworks.Data;
 using Unity.Netcode;
 
 namespace CodeRebirthLib.Util.INetworkSerializables;
@@ -9,6 +10,7 @@ public class PlayerControllerReference : INetworkSerializable
 
     public bool IsLocalClient => Array.IndexOf(StartOfRound.Instance.allPlayerScripts, GameNetworkManager.Instance.localPlayerController) == _playerID;
     public bool IsAlive => !StartOfRound.Instance.allPlayerScripts[_playerID].isPlayerDead;
+    public bool IsValid => _playerID != -1 && StartOfRound.Instance.allPlayerScripts[_playerID];
     
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
@@ -26,6 +28,10 @@ public class PlayerControllerReference : INetworkSerializable
         {
             _playerID = Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player), // (int)player.playerClientId,
         };
+    }
+    public static implicit operator bool(PlayerControllerReference reference)
+    {
+        return reference.IsValid;
     }
 
     public override bool Equals(object? obj)
