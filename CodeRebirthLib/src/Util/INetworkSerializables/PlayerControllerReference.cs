@@ -17,6 +17,7 @@ public class PlayerControllerReference : INetworkSerializable
 
     public static implicit operator PlayerControllerB(PlayerControllerReference reference)
     {
+        if (reference._playerID == -1) return null;
         return StartOfRound.Instance.allPlayerScripts[reference._playerID];
     }
     public static implicit operator PlayerControllerReference(PlayerControllerB player)
