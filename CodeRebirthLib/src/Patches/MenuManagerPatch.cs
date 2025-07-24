@@ -1,5 +1,6 @@
 using CodeRebirthLib.ContentManagement.Achievements;
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace CodeRebirthLib.Patches;
 
@@ -14,6 +15,7 @@ static class MenuManagerPatch
     {
         orig(self);
         CRAchievementHandler.LoadAll();
-        GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUICanvasPrefab);
+        var canvas = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUICanvasPrefab, self.transform.parent.Find("MenuContainer"));
+        canvas.GetComponent<AchievementUICanvas>()._menuManager = self;
     }
 }

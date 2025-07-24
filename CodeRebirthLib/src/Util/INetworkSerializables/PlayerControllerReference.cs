@@ -23,6 +23,7 @@ public class PlayerControllerReference : INetworkSerializable
         if (reference._playerID == -1) return null;
         return StartOfRound.Instance.allPlayerScripts[reference._playerID];
     }
+
     public static implicit operator PlayerControllerReference(PlayerControllerB player)
     {
         return new PlayerControllerReference
@@ -30,6 +31,7 @@ public class PlayerControllerReference : INetworkSerializable
             _playerID = Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player), // (int)player.playerClientId,
         };
     }
+
     public static implicit operator bool(PlayerControllerReference reference)
     {
         return reference.IsValid;
