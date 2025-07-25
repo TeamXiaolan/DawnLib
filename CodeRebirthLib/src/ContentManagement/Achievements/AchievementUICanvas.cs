@@ -35,12 +35,25 @@ public class AchievementUICanvas : MonoBehaviour
 
     private void AddAllAchievementsToContents()
     {
-        foreach (var achievement in CRMod.AllAchievements())
+        foreach (var crMod in CRMod.AllMods)
         {
-            CodeRebirthLibPlugin.ExtendedLogging($"Adding achievement: {achievement.AchievementName}");
-            var uiElement = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUIElementPrefab, _achievementContents.transform);
-            uiElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
+            int achievementCount = 0;
+            // instantiate a mod element if it has ANY achievements
+            foreach (var achievement in crMod.AchievementRegistry())
+            {
+                achievementCount++;
+                CodeRebirthLibPlugin.ExtendedLogging($"Adding achievement: {achievement.AchievementName}");
+                var uiElement = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUIElementPrefab, _achievementContents.transform);
+                uiElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
+            }
+
+            if (achievementCount > 0)
+            {
+                var uiElement = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementModUIElementPrefab, _achievementContents.transform);
+                // uiElement.GetComponent<AchievementModUIElement>().SetupModUI(crMod, achievements, or smthn?);
+            }
         }
+
     }
 
     public void BackButtonOnClick()
