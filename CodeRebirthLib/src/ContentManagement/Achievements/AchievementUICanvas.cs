@@ -1,12 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
+using CodeRebirthLib.Util;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
-public class AchievementUICanvas : MonoBehaviour
+public class AchievementUICanvas : Singleton<AchievementUICanvas>
 {
     [SerializeField]
     private GameObject _achievementContents = null!;
+
+    [SerializeField]
+    private GameObject _modContents = null!;
 
     [SerializeField]
     private Button _backButton = null!;
@@ -16,9 +22,13 @@ public class AchievementUICanvas : MonoBehaviour
     [SerializeField]
     private GameObject _openAchievementsButtonPrefab = null!;
 
+    [SerializeField]
+    private GameObject _achievementModUIElementPrefab = null!;
+
     private Button _achievementsButton = null!;
     private GameObject _mainButtons = null!;
     internal MenuManager _menuManager = null!;
+    internal List<AchievementModUIElement> _modUIElements = new();
 
     private void Start()
     {
@@ -37,20 +47,14 @@ public class AchievementUICanvas : MonoBehaviour
     {
         foreach (var crMod in CRMod.AllMods)
         {
-            int achievementCount = 0;
             // instantiate a mod element if it has ANY achievements
-            foreach (var achievement in crMod.AchievementRegistry())
+            if (crMod.AchievementRegistry().Count() > 0)
             {
-                achievementCount++;
-                CodeRebirthLibPlugin.ExtendedLogging($"Adding achievement: {achievement.AchievementName}");
-                var uiElement = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUIElementPrefab, _achievementContents.transform);
-                uiElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
-            }
-
-            if (achievementCount > 0)
-            {
-                var uiElement = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementModUIElementPrefab, _achievementContents.transform);
-                // uiElement.GetComponent<AchievementModUIElement>().SetupModUI(crMod, achievements, or smthn?);
+                var uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
+                AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();
+                modUIElement._achievementsContainer = _achievementContents;
+                _modUIElements.Add(modUIElement);
+                modUIElement.SetupModUI(crMod);
             }
         }
 

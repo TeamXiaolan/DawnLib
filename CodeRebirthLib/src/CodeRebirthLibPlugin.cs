@@ -83,7 +83,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
             }
 
             Logger.LogInfo($"AuthorName: {modInformation[0].AuthorName}, ModName: {modInformation[0].ModName}, Version: {modInformation[0].Version}");
-            CRLib.RegisterNoCodeMod(modInformation[0].CreatePluginMetadata(), mainBundle, Path.GetDirectoryName(path)!);
+            CRLib.RegisterNoCodeMod(modInformation[0], mainBundle, Path.GetDirectoryName(path)!);
         }
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
@@ -125,12 +125,6 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
     {
         [LoadFromBundle("CodeRebirthLibNetworker.prefab")]
         public GameObject NetworkerPrefab { get; private set; } = null!;
-
-        [LoadFromBundle("AchievementModUIElement.prefab")]
-        public GameObject AchievementModUIElementPrefab { get; private set; } = null!;
-
-        [LoadFromBundle("AchievementUIElement.prefab")]
-        public GameObject AchievementUIElementPrefab { get; private set; } = null!;
 
         [LoadFromBundle("AchievementUICanvas.prefab")]
         public GameObject AchievementUICanvasPrefab { get; private set; } = null!;

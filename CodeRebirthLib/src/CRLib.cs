@@ -43,11 +43,13 @@ public static class CRLib
         CodeRebirthLibNetworker.Instance?.BroadcastDisplayTipServerRPC(displayTip);
     }
 
-    internal static CRMod RegisterNoCodeMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath)
+    internal static CRMod RegisterNoCodeMod(CRModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
+        var plugin = modInfo.CreatePluginMetadata();
         CodeRebirthLibPlugin.ExtendedLogging("Registering no-code mod!");
         ConfigManager configManager = new(GenerateConfigFile(plugin));
         CRMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
+        noCodeMod.ModInformation = modInfo;
         noCodeMod.Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID);
         foreach (var assetBundleData in noCodeMod.Content.assetBundles)
         {
