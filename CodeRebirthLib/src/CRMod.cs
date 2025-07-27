@@ -324,6 +324,7 @@ public class CRMod
     {
         return AllMods.SelectMany(mod => mod.AchievementRegistry());
     }
+    public static event Action<CRAchievementBaseDefinition> OnAchievementUnlocked;
 
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
     {

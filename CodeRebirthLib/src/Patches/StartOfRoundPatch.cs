@@ -1,4 +1,5 @@
-﻿using CodeRebirthLib.ContentManagement.Enemies;
+﻿using CodeRebirthLib.ContentManagement.Achievements;
+using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
 using Unity.Netcode;
@@ -44,6 +45,8 @@ static class StartOfRoundPatch
                     networkerInstance.GetComponent<NetworkObject>().Spawn();
                 }
             }
+            if (!AchievementUIGetCanvas.Instance) Object.Instantiate(CodeRebirthLibPlugin.Main.AchievementGetUICanvasPrefab);
+            
         });
     }
 }
