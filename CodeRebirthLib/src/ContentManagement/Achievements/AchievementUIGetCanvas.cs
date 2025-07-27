@@ -1,10 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using CodeRebirthLib.Util;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
@@ -33,7 +30,7 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
         CRMod.OnAchievementUnlocked -= QueuePopup;
     }
 
-    private void QueuePopup(CRAchievementBaseDefinition achievement)
+    internal void QueuePopup(CRAchievementBaseDefinition achievement)
     {
         achievementQueue.Enqueue(achievement);
         if (achievementContent.transform.childCount == 0)
@@ -45,12 +42,12 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
         while (achievementQueue.Count > 0)
         {
             var achievement = achievementQueue.Dequeue();
-            GameObject achivementElement = Instantiate(_achievementGetUIElementPrefab, achievementContent.transform);
-            achivementElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
+            GameObject achievementElement = Instantiate(_achievementGetUIElementPrefab, achievementContent.transform);
+            achievementElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
             yield return new WaitForSeconds(PopupTime);
-            achivementElement.GetComponent<Animator>().SetTrigger(SlideOut);
+            achievementElement.GetComponent<Animator>().SetTrigger(SlideOut);
             yield return new WaitForSeconds(PopupTime);
-            Destroy(achivementElement);
+            Destroy(achievementElement);
         }
     }
 }

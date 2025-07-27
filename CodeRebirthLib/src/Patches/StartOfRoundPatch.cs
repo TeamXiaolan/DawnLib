@@ -19,6 +19,7 @@ static class StartOfRoundPatch
     private static void StartOfRound_AutoSaveShipData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);
+        CRAchievementHandler.SaveAll();
         CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
     }
 
@@ -45,8 +46,8 @@ static class StartOfRoundPatch
                     networkerInstance.GetComponent<NetworkObject>().Spawn();
                 }
             }
-            if (!AchievementUIGetCanvas.Instance) Object.Instantiate(CodeRebirthLibPlugin.Main.AchievementGetUICanvasPrefab);
-            
+
+            if (AchievementUIGetCanvas.Instance == null) Object.Instantiate(CodeRebirthLibPlugin.Main.AchievementGetUICanvasPrefab);
         });
     }
 }

@@ -39,6 +39,7 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
         }
 
         Completed = true;
+        AchievementUIGetCanvas.Instance?.QueuePopup(this);
         return Completed;
     }
 

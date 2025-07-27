@@ -1,4 +1,5 @@
-﻿using CodeRebirthLib.ContentManagement.Enemies;
+﻿using CodeRebirthLib.ContentManagement.Achievements;
+using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
 
 namespace CodeRebirthLib.Patches;
@@ -8,8 +9,15 @@ static class GameNetworkManagerPatch
     internal static void Init()
     {
         On.GameNetworkManager.Start += GameNetworkManagerOnStart;
+        On.GameNetworkManager.SaveLocalPlayerValues += GameNetworkManager_SaveLocalPlayerValues;
         On.GameNetworkManager.SaveItemsInShip += GameNetworkManager_SaveItemsInShip;
         On.GameNetworkManager.ResetSavedGameValues += GameNetworkManager_ResetSavedGameValues;
+    }
+
+    private static void GameNetworkManager_SaveLocalPlayerValues(On.GameNetworkManager.orig_SaveLocalPlayerValues orig, GameNetworkManager self)
+    {
+        orig(self);
+        CRAchievementHandler.SaveAll();
     }
 
     private static void GameNetworkManagerOnStart(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
