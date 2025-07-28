@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BepInEx.Bootstrap;
@@ -22,16 +23,11 @@ public class AchievementModUIElement : MonoBehaviour
     [SerializeField]
     private GameObject _achievementUIElementPrefab = null!;
 
-    [SerializeField]
-    private GameObject _modAchievementsContainerPrefab = null!;
-
     internal GameObject _achievementsContainer = null!;
-    private GameObject _modAchievementsContainer = null!;
+    private List<GameObject> _achievementsContainerList = new();
+
     internal void SetupModUI(CRMod mod)
     {
-        _modAchievementsContainer = GameObject.Instantiate(_modAchievementsContainerPrefab, _achievementsContainer.transform);
-        _modAchievementsContainer.name = $"CodeRebirthLib Achievement UI - {mod.Plugin.GUID}";
-
         _modNameText.text = mod.ModInformation.ModName;
         if (mod.ModInformation.ModIcon != null)
         {
@@ -39,14 +35,23 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        foreach (var achievement in mod.AchievementRegistry())
+        var sortedAchievements = mod.AchievementRegistry().OrderBy(a => a.AchievementName).ToList();
+
+        foreach (var achievement in sortedAchievements)
         {
             CodeRebirthLibPlugin.ExtendedLogging($"Adding achievement: {achievement.AchievementName}");
-            var uiElement = GameObject.Instantiate(_achievementUIElementPrefab, _modAchievementsContainer.transform);
-            uiElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
+
+            var go = GameObject.Instantiate(_achievementUIElementPrefab, _achievementsContainer.transform);
+            go.SetActive(false);
+
+            var ui = go.GetComponent<AchievementUIElement>();
+            ui.SetupAchievementUI(achievement);
+
+            go.name = $"CodeRebirthLib Achievement UI - {achievement.AchievementName} - {mod.Plugin.GUID}";
+            _achievementsContainerList.Add(go);
         }
+
         _achievementAccessButton.onClick.AddListener(OnButtonClick);
-        _modAchievementsContainer.SetActive(false);
     }
 
     public void OnButtonClick()
@@ -57,8 +62,15 @@ public class AchievementModUIElement : MonoBehaviour
             if (modUIElement == this)
                 continue;
 
-            modUIElement._modAchievementsContainer.SetActive(false);
+            foreach (var achievement in modUIElement._achievementsContainerList)
+            {
+                achievement.SetActive(!achievement.activeSelf);
+            }
         }
-        _modAchievementsContainer.SetActive(!_modAchievementsContainer.activeSelf);
+
+        foreach (var achievement in _achievementsContainerList)
+        {
+            achievement.SetActive(!achievement.activeSelf);
+        }
     }
 }

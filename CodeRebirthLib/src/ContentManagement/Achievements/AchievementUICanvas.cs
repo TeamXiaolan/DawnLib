@@ -9,13 +9,14 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 public class AchievementUICanvas : Singleton<AchievementUICanvas>
 {
     [SerializeField]
-    private GameObject _achievementContents = null!;
+    internal GameObject _achievementContents = null!;
 
     [SerializeField]
     private GameObject _modContents = null!;
 
     [SerializeField]
     private Button _backButton = null!;
+
     [SerializeField]
     private GameObject _background = null!;
 
