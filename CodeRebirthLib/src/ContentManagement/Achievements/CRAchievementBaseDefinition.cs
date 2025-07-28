@@ -17,6 +17,8 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public string AchievementRequirement { get; private set; }
     [field: SerializeField]
     public bool IsHidden { get; private set; }
+    [field: SerializeField]
+    public bool ContributesToPlatinumAchievement { get; private set; } // todo: platinum achievements and achievement organisation
 
     public bool Completed { get; protected set; } = false;
     public virtual void LoadAchievementState(ES3Settings globalSettings)
