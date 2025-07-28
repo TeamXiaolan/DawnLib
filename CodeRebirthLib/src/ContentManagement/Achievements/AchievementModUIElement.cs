@@ -35,7 +35,7 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        var sortedAchievements = mod.AchievementRegistry().OrderBy(a => a.AchievementName).ToList();
+        var sortedAchievements = mod.AchievementRegistry().OrderByDescending(a => a.AchievementName).ToList();
 
         foreach (var achievement in sortedAchievements)
         {

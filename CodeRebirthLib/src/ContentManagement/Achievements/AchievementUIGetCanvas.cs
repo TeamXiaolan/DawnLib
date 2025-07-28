@@ -14,9 +14,6 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
     
     [SerializeField]
     private GameObject achievementContent = null!;
-
-    [SerializeField]
-    private float PopupTime = 2f;
     
     private Queue<CRAchievementBaseDefinition> achievementQueue = new();
 
@@ -44,9 +41,9 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
             var achievement = achievementQueue.Dequeue();
             GameObject achievementElement = Instantiate(_achievementGetUIElementPrefab, achievementContent.transform);
             achievementElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
-            yield return new WaitForSeconds(PopupTime);
+            yield return new WaitForSeconds(achievement.PopupTime);
             achievementElement.GetComponent<Animator>().SetTrigger(SlideOut);
-            yield return new WaitForSeconds(PopupTime);
+            yield return new WaitForSeconds(3f);
             Destroy(achievementElement);
         }
     }
