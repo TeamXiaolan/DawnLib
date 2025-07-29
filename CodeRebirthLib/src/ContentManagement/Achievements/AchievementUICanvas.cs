@@ -26,7 +26,7 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
     [SerializeField]
     private GameObject _achievementModUIElementPrefab = null!;
 
-    private Button _achievementsButton = null!;
+    internal Button _achievementsButton = null!;
     private GameObject _mainButtons = null!;
     internal MenuManager _menuManager = null!;
     internal List<AchievementModUIElement> _modUIElements = new();
@@ -34,13 +34,8 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
     private void Start()
     {
         _mainButtons = _menuManager.menuButtons;
-        var openAchievementsButton = GameObject.Instantiate(_openAchievementsButtonPrefab, _mainButtons.transform);
-        _achievementsButton = openAchievementsButton.GetComponent<Button>();
-
-        _achievementsButton.onClick.AddListener(AchievementsButtonOnClick);
         _backButton.onClick.AddListener(BackButtonOnClick);
         _backButton.onClick.AddListener(_menuManager.PlayCancelSFX);
-        _achievementsButton.onClick.AddListener(_menuManager.PlayConfirmSFX);
         AddAllAchievementsToContents();
     }
 
