@@ -65,4 +65,6 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
         base.Register(mod);
         mod.AchievementRegistry().Register(this);
     }
+
+    public virtual bool IsActive() { return true; }
 }
