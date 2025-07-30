@@ -25,7 +25,6 @@ public class HUDDisplayTip : INetworkSerializable
     public string Body => _body;
     public AlertType Type => _alertType;
 
-
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref _header);

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
-/*
+/* TODOs
  * Allow changing of colour text after achievement is unlocked (Default is greyed out text)
  * Allow custom border colours
  * Somehow allow gradients for text and border

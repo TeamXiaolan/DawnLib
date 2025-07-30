@@ -10,7 +10,7 @@ static class RoundManagerPatch
 {
     internal static List<RegisteredCRMapObject> registeredMapObjects = [];
 
-    internal static void Patch()
+    internal static void Init()
     {
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
     }

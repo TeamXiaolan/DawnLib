@@ -15,12 +15,11 @@ using CodeRebirthLib.Util.Pathfinding;
 using LethalLib;
 using PathfindingLib;
 using UnityEngine;
-using PluginInfo = WeatherRegistry.PluginInfo;
 
 namespace CodeRebirthLib;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(Plugin.ModGUID)]
-[BepInDependency(PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency(WeatherRegistry.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID)]
@@ -36,9 +35,8 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         ConfigManager = new ConfigManager(Config);
 
         CodeRebirthLibConfig.Bind(ConfigManager);
-        
         NetcodePatcher();
-        RoundManagerPatch.Patch();
+        RoundManagerPatch.Init();
         GameNetworkManagerPatch.Init();
         EnemyAIPatch.Init();
         StartOfRoundPatch.Init();
@@ -69,7 +67,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         {
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
             ExtendedLogging($"[AssetBundle Loading] {mainBundle.name} contains these objects: {string.Join(",", mainBundle.GetAllAssetNames())}");
-            
+
             CRModInformation[] modInformation = mainBundle.LoadAllAssets<CRModInformation>();
             if (modInformation.Length == 0)
             {

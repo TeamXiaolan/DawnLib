@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
-[CreateAssetMenu(fileName = "New Progressive Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Progressive Definition")]
-public class CRProgressiveAchievement : CRAchievementBaseDefinition
+[CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Stat Definition")]
+public class CRStatAchievement : CRAchievementBaseDefinition
 {
     [field: SerializeField]
     public float MaxProgress { get; private set; }
