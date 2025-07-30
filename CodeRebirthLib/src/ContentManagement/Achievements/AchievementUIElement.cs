@@ -31,7 +31,7 @@ public class AchievementUIElement : MonoBehaviour
             _achievementHiddenButton.onClick.Invoke();
         }
 
-        if (definition is CRStatAchievement progressiveAchievement)
+        if (definition is IProgressAchievement progressiveAchievement)
         {
             Image image = _achievementProgressGO.GetComponentInChildren<Image>();
             image.fillAmount = progressiveAchievement.Percentage;

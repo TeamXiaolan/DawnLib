@@ -3,7 +3,7 @@ using UnityEngine;
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 [CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Stat Definition")]
-public class CRStatAchievement : CRAchievementBaseDefinition
+public class CRStatAchievement : CRAchievementBaseDefinition, IProgressAchievement
 {
     [field: SerializeField]
     public float MaxProgress { get; private set; }

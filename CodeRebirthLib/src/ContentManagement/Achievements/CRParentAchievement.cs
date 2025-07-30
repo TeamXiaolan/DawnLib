@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
-public class CRParentAchievement : CRAchievementBaseDefinition
+public class CRParentAchievement : CRAchievementBaseDefinition, IProgressAchievement
 {
     [SerializeField]
     private List<string> _childrenAchievementNames;
@@ -16,22 +16,23 @@ public class CRParentAchievement : CRAchievementBaseDefinition
         CRMod.OnAchievementUnlocked += definition =>
         {
             if(definition.Mod != mod) return;
-            if (CheckAllModsCompleted())
+            if (CountCompleted() >= _childrenAchievementNames.Count)
             {
                 TryCompleteAchievement();
             }
         };
     }
 
-    bool CheckAllModsCompleted()
+    int CountCompleted()
     {
         return Mod.AchievementRegistry()
             .Where(it => _childrenAchievementNames.Contains(it.AchievementName))
-            .All(it => it.Completed);
+            .Count(it => it.Completed);
     }
 
     public override bool IsActive()
     {
         return Mod.AchievementRegistry().Count(it => _childrenAchievementNames.Contains(it.AchievementName)) == _childrenAchievementNames.Count;
     }
+    public float Percentage => (float)CountCompleted() / _childrenAchievementNames.Count;
 }
