@@ -61,12 +61,15 @@ public class CRMod
         CodeRebirthLibPlugin.ExtendedLogging($"Mod Icon found! {ModInformation.ModIcon != null}");
 
         var manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
-        ModInformation.ModDescription = LoadDesc(manifestPath);
-        ModInformation.ModName = LoadModName(manifestPath);
-        ModInformation.AuthorName = LoadAuthorName(manifestPath);
-        ModInformation.Version = LoadVersionNumber(manifestPath);
-        ModInformation.ExtraDependencies = LoadDependencies(manifestPath);
-        ModInformation.WebsiteUrl = LoadWebsiteUrl(manifestPath);
+        string manifestContents = File.ReadAllText(manifestPath);
+        ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
+        
+        ModInformation.ModDescription = manifest.description;
+        ModInformation.ModName = manifest.name;
+        ModInformation.AuthorName = manifest.author_name;
+        ModInformation.Version = manifest.version_number;
+        ModInformation.ExtraDependencies = manifest.dependencies;
+        ModInformation.WebsiteUrl = manifest.website_url;
         CodeRebirthLibPlugin.ExtendedLogging($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
     }
 
@@ -81,144 +84,6 @@ public class CRMod
 
         var ModIcon = Sprite.Create(iconTex, new Rect(0, 0, iconTex.width, iconTex.height), new Vector2(0.5f, 0.5f), 100);
         return ModIcon;
-    }
-
-    private string LoadDesc(string manifestPath)
-    {
-        try
-        {
-            if (manifestPath == default)
-                return string.Empty;
-
-            string manifestContents = File.ReadAllText(manifestPath);
-
-            var manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents);
-            if (manifest is null)
-                return string.Empty;
-
-            return manifest.description;
-        }
-        catch (JsonReaderException e)
-        {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Failed to load author name from manifest.json: {e.Message} with filepath: {manifestPath}");
-            return string.Empty;
-            // Catch-all just to make sure we don't crash if we can't load the manifest.
-        }
-    }
-
-    private string LoadAuthorName(string manifestPath)
-    {
-        try
-        {
-            if (manifestPath == default)
-                return string.Empty;
-
-            var manifestContents = File.ReadAllText(manifestPath);
-
-            var manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents);
-            if (manifest is null)
-                return string.Empty;
-
-            return manifest.author_name;
-        }
-        catch (JsonReaderException e)
-        {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Failed to load author name from manifest.json: {e.Message} with filepath: {manifestPath}");
-            return string.Empty;
-            // Catch-all just to make sure we don't crash if we can't load the manifest.
-        }
-    }
-
-    private string LoadModName(string manifestPath)
-    {
-        try
-        {
-            if (manifestPath == default)
-                return string.Empty;
-
-            var manifestContents = File.ReadAllText(manifestPath);
-
-            var manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents);
-            if (manifest is null)
-                return string.Empty;
-
-            return manifest.name;
-        }
-        catch (JsonReaderException e)
-        {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Failed to load author name from manifest.json: {e.Message} with filepath: {manifestPath}");
-            return string.Empty;
-            // Catch-all just to make sure we don't crash if we can't load the manifest.
-        }
-    }
-
-    private string LoadVersionNumber(string manifestPath)
-    {
-        try
-        {
-            if (manifestPath == default)
-                return string.Empty;
-
-            var manifestContents = File.ReadAllText(manifestPath);
-
-            var manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents);
-            if (manifest is null)
-                return string.Empty;
-
-            return manifest.version_number;
-        }
-        catch (JsonReaderException e)
-        {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Failed to load author name from manifest.json: {e.Message} with filepath: {manifestPath}");
-            return string.Empty;
-            // Catch-all just to make sure we don't crash if we can't load the manifest.
-        }
-    }
-
-    private string LoadWebsiteUrl(string manifestPath)
-    {
-        try
-        {
-            if (manifestPath == default)
-                return string.Empty;
-
-            var manifestContents = File.ReadAllText(manifestPath);
-
-            var manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents);
-            if (manifest is null)
-                return string.Empty;
-
-            return manifest.website_url;
-        }
-        catch (JsonReaderException e)
-        {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Failed to load author name from manifest.json: {e.Message} with filepath: {manifestPath}");
-            return string.Empty;
-            // Catch-all just to make sure we don't crash if we can't load the manifest.
-        }
-    }
-
-    private List<string> LoadDependencies(string manifestPath)
-    {
-        try
-        {
-            if (manifestPath == default)
-                return new();
-
-            var manifestContents = File.ReadAllText(manifestPath);
-
-            var manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents);
-            if (manifest is null)
-                return new();
-
-            return manifest.dependencies;
-        }
-        catch (JsonReaderException e)
-        {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Failed to load author name from manifest.json: {e.Message} with filepath: {manifestPath}");
-            return new();
-            // Catch-all just to make sure we don't crash if we can't load the manifest.
-        }
     }
 
     internal CRMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager)
