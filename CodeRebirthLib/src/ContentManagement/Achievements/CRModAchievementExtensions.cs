@@ -16,12 +16,12 @@ public static class CRModAchievementExtensions
 
     public static bool TryTriggerAchievement(this IEnumerable<CRAchievementBaseDefinition> registry, string achievementName)
     {
-        // todo: CodeRebirthLibPlugin.Logger.LogError($"Trying to complete achievement: {_achievementName} but could not be found. Or it is not a CRInstantAchievement");
-        return registry.TryGetFromAchievementName(achievementName, out CRAchievementBaseDefinition? value) && value is CRInstantAchievement instant && instant.TriggerAchievement();
+        // todo: CodeRebirthLibPlugin.Logger.LogError($"Trying to complete achievement: {_achievementName} but could not be found. Or it is not a CRDiscoveryAchievement");
+        return registry.TryGetFromAchievementName(achievementName, out CRAchievementBaseDefinition? value) && value is CRDiscoveryAchievement instant && instant.TriggerAchievement();
     }
 
     public static bool TryIncrementAchievement(this IEnumerable<CRAchievementBaseDefinition> registry, string achievementName, float amount)
     {
-        return registry.TryGetFromAchievementName(achievementName, out CRAchievementBaseDefinition? value) && value is CRProgressiveAchievement progressive && progressive.IncrementProgress(amount);
+        return registry.TryGetFromAchievementName(achievementName, out CRAchievementBaseDefinition? value) && value is CRStatAchievement progressive && progressive.IncrementProgress(amount);
     }
 }

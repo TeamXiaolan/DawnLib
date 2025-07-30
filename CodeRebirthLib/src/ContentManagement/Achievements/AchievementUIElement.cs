@@ -31,12 +31,12 @@ public class AchievementUIElement : MonoBehaviour
             _achievementHiddenButton.onClick.Invoke();
         }
 
-        if (definition is CRProgressiveAchievement progressiveAchievement)
+        if (definition is CRStatAchievement progressiveAchievement)
         {
             Image image = _achievementProgressGO.GetComponentInChildren<Image>();
             image.fillAmount = progressiveAchievement.Percentage;
         }
-        else if (definition is CRInstantAchievement instantAchievement)
+        else if (definition is CRDiscoveryAchievement instantAchievement)
         {
             _achievementProgressGO.SetActive(false);
         }
