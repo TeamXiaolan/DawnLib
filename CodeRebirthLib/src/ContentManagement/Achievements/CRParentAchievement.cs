@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Data;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
-public class CRParentAchievement : CRAchievementBaseDefinition, IProgressAchievement
+public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
 {
     [SerializeField]
     private List<string> _childrenAchievementNames;
@@ -34,5 +35,6 @@ public class CRParentAchievement : CRAchievementBaseDefinition, IProgressAchieve
     {
         return Mod.AchievementRegistry().Count(it => _childrenAchievementNames.Contains(it.AchievementName)) == _childrenAchievementNames.Count;
     }
-    public float Percentage => (float)CountCompleted() / _childrenAchievementNames.Count;
+    public float MaxProgress => _childrenAchievementNames.Count;
+    public float CurrentProgress => CountCompleted();
 }

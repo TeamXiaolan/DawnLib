@@ -1,16 +1,16 @@
+using CodeRebirthLib.Data;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 [CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Stat Definition")]
-public class CRStatAchievement : CRAchievementBaseDefinition, IProgressAchievement
+public class CRStatAchievement : CRAchievementBaseDefinition, IProgress
 {
+
     [field: SerializeField]
     public float MaxProgress { get; private set; }
 
     public float CurrentProgress { get; private set; }
-
-    public float Percentage => CurrentProgress / MaxProgress;
 
     public override void LoadAchievementState(ES3Settings globalSettings)
     {

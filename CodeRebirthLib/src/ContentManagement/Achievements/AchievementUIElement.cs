@@ -1,3 +1,4 @@
+using CodeRebirthLib.Data;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,10 +32,10 @@ public class AchievementUIElement : MonoBehaviour
             _achievementHiddenButton.onClick.Invoke();
         }
 
-        if (definition is IProgressAchievement progressiveAchievement)
+        if (definition is IProgress progressiveAchievement)
         {
             Image image = _achievementProgressGO.GetComponentInChildren<Image>();
-            image.fillAmount = progressiveAchievement.Percentage;
+            image.fillAmount = progressiveAchievement.Percentage();
         }
         else if (definition is CRDiscoveryAchievement instantAchievement)
         {
