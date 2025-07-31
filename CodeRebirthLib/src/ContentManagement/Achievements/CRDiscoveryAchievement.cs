@@ -1,12 +1,70 @@
+using System.Collections.Generic;
+using CodeRebirthLib.Data;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 [CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Discovery Definition")]
-public class CRDiscoveryAchievement : CRAchievementBaseDefinition
+public class CRDiscoveryAchievement : CRAchievementBaseDefinition, IProgress
 {
-    public bool TriggerAchievement()
+    [Tooltip("Unique string ID for each discovery to account for progress.")]
+    [field: SerializeField]
+    public List<string> UniqueStringIDs { get; private set; }
+
+    public List<string> CurrentlyCollectedUniqueStringIDs { get; private set; } = new List<string>();
+    public override void LoadAchievementState(ES3Settings globalSettings)
     {
-        return TryCompleteAchievement();
+        base.LoadAchievementState(globalSettings);
+        if (Completed)
+        {
+            CurrentlyCollectedUniqueStringIDs = UniqueStringIDs;
+            return;
+        }
+
+        CurrentlyCollectedUniqueStringIDs = ES3.Load(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", new List<string>(), globalSettings);
+    }
+
+    public override void SaveAchievementState(ES3Settings globalSettings)
+    {
+        base.SaveAchievementState(globalSettings);
+        ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", CurrentProgress, globalSettings);
+    }
+
+    public float MaxProgress => UniqueStringIDs.Count;
+    public float CurrentProgress => CurrentlyCollectedUniqueStringIDs.Count;
+
+    public bool TryDiscoverMoreProgress(string UniqueID)
+    {
+        if (CurrentlyCollectedUniqueStringIDs.Contains(UniqueID))
+            return false;
+
+        if (!UniqueStringIDs.Contains(UniqueID))
+            return false;
+
+        CurrentlyCollectedUniqueStringIDs.Add(UniqueID);
+        if (CurrentProgress >= MaxProgress)
+        {
+            CurrentlyCollectedUniqueStringIDs = UniqueStringIDs;
+            return TryCompleteAchievement();
+        }
+        return false;
+    }
+
+    public bool TryDiscoverMoreProgress(IEnumerable<string> UniqueID)
+    {
+        foreach (string id in UniqueID)
+        {
+            if (CurrentlyCollectedUniqueStringIDs.Contains(id) || !UniqueStringIDs.Contains(id))
+                continue;
+
+            CurrentlyCollectedUniqueStringIDs.Add(id);
+        }
+
+        if (CurrentProgress >= MaxProgress)
+        {
+            CurrentlyCollectedUniqueStringIDs = UniqueStringIDs;
+            return TryCompleteAchievement();
+        }
+        return false;
     }
 }
