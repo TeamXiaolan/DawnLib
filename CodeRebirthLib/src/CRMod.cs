@@ -58,7 +58,6 @@ public class CRMod
 
         var iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
         ModInformation.ModIcon = LoadIcon(iconPath);
-        CodeRebirthLibPlugin.ExtendedLogging($"Mod Icon found! {ModInformation.ModIcon != null}");
 
         var manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
         string manifestContents = File.ReadAllText(manifestPath);

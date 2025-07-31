@@ -88,7 +88,6 @@ public abstract class ContentHandler(CRMod mod)
 
 public abstract class ContentHandler<T> : ContentHandler where T : ContentHandler<T>
 {
-
     public ContentHandler(CRMod mod) : base(mod)
     {
         Instance = (T)this;

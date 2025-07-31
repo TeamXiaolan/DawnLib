@@ -37,7 +37,7 @@ public class AchievementUIElement : MonoBehaviour
             Image image = _achievementProgressGO.GetComponentInChildren<Image>();
             image.fillAmount = progressiveAchievement.Percentage();
         }
-        else if (definition is CRDiscoveryAchievement instantAchievement)
+        else
         {
             _achievementProgressGO.SetActive(false);
         }
