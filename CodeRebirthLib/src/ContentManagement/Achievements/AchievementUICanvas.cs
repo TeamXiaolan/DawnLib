@@ -21,9 +21,6 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
     private GameObject _background = null!;
 
     [SerializeField]
-    private GameObject _openAchievementsButtonPrefab = null!;
-
-    [SerializeField]
     private GameObject _achievementModUIElementPrefab = null!;
 
     internal Button _achievementsButton = null!;
