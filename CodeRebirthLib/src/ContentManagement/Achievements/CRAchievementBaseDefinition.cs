@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using CodeRebirthLib.AssetManagement;
+using TMPro;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
@@ -16,13 +18,23 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public const string REGISTRY_ID = "achievements";
 
     [field: SerializeField]
-    public Sprite AchievementIcon { get; private set; }
+    public Sprite? AchievementIcon { get; private set; }
+
+    [field: Space(10)]
     [field: SerializeField]
     public string AchievementName { get; private set; }
     [field: SerializeField]
     public string AchievementDescription { get; private set; }
+
+    [field: SerializeField]
+    public TMP_ColorGradient? FinishedAchievementNameColorGradientPreset { get; private set; }
+    [field: SerializeField]
+    public TMP_ColorGradient? FinishedAchievementDescColorGradientPreset { get; private set; }
+
+    [field: Space(10)]
     [field: SerializeField]
     public string AchievementRequirement { get; private set; }
+
     [field: SerializeField]
     public bool IsHidden { get; private set; }
     [field: SerializeField]

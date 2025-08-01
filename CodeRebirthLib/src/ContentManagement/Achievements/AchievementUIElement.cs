@@ -22,6 +22,9 @@ public class AchievementUIElement : MonoBehaviour
     [SerializeField]
     private Image _achievementIcon = null!;
 
+    [SerializeField]
+    private Color _unfinishedAchievementColor = new(0.5f, 0.5f, 0.5f);
+
     public void SetupAchievementUI(CRAchievementBaseDefinition definition)
     {
         _achievementNameTMP.text = definition.AchievementName;
@@ -30,6 +33,17 @@ public class AchievementUIElement : MonoBehaviour
         if (!definition.IsHidden)
         {
             _achievementHiddenButton.onClick.Invoke();
+        }
+
+        if (!definition.Completed)
+        {
+            _achievementNameTMP.color = _unfinishedAchievementColor;
+            _achievementDescriptionTMP.color = _unfinishedAchievementColor;
+        }
+        else
+        {
+            _achievementNameTMP.colorGradientPreset = definition.FinishedAchievementNameColorGradientPreset;
+            _achievementDescriptionTMP.colorGradientPreset = definition.FinishedAchievementDescColorGradientPreset;
         }
 
         if (definition is IProgress progressiveAchievement)
