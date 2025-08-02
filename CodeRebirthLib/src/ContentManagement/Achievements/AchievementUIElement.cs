@@ -25,6 +25,9 @@ public class AchievementUIElement : MonoBehaviour
     [SerializeField]
     private Color _unfinishedAchievementColor = new(0.5f, 0.5f, 0.5f);
 
+    [SerializeField]
+    private Image _backgroundImage = null!;
+
     public void SetupAchievementUI(CRAchievementBaseDefinition definition)
     {
         _achievementNameTMP.text = definition.AchievementName;
@@ -42,6 +45,11 @@ public class AchievementUIElement : MonoBehaviour
         }
         else
         {
+            if (definition.FinishedAchievementBackgroundIcon != null)
+            {
+                _backgroundImage.sprite = definition.FinishedAchievementBackgroundIcon;
+                _backgroundImage.color = Color.white;
+            }
             _achievementNameTMP.colorGradientPreset = definition.FinishedAchievementNameColorGradientPreset;
             _achievementDescriptionTMP.colorGradientPreset = definition.FinishedAchievementDescColorGradientPreset;
         }

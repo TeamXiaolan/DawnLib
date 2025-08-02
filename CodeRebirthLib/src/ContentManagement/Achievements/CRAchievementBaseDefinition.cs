@@ -30,6 +30,8 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public TMP_ColorGradient? FinishedAchievementNameColorGradientPreset { get; private set; }
     [field: SerializeField]
     public TMP_ColorGradient? FinishedAchievementDescColorGradientPreset { get; private set; }
+    [field: SerializeField]
+    public Sprite? FinishedAchievementBackgroundIcon { get; private set; }
 
     [field: Space(10)]
     [field: SerializeField]
