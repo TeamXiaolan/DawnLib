@@ -102,10 +102,9 @@ public class ConfigManager(ConfigFile file)
         return (spawnRateByLevelType, spawnRateByCustomLevelType);
     }
 
-    public static (Dictionary<Levels.LevelTypes, string> spawnRateByLevelType, Dictionary<string, string> spawnRateByCustomLevelType) ParseLevelTypesWithCurves(string configMoonRarity)
+    public static Dictionary<string, string> ParseLevelNameWithCurves(string configMoonRarity)
     {
-        Dictionary<Levels.LevelTypes, string> spawnRateByLevelType = new();
-        Dictionary<string, string> spawnRateByCustomLevelType = new();
+        Dictionary<string, string> spawnRateByMoonName = new();
         foreach (string entry in configMoonRarity.Split('|').Select(s => s.Trim()))
         {
             string[] entryParts = entry.Split('-').Select(s => s.Trim()).ToArray();
@@ -118,26 +117,12 @@ public class ConfigManager(ConfigFile file)
             {
                 name = "modded";
             }
-            if (Enum.TryParse(name, true, out Levels.LevelTypes levelType))
-            {
-                spawnRateByLevelType[levelType] = entryParts[1];
-            }
-            else
-            {
-                // Try appending "Level" to the name and re-attempt parsing
-                string modifiedName = name + "level";
-                if (Enum.TryParse(modifiedName, true, out levelType))
-                {
-                    spawnRateByLevelType[levelType] = entryParts[1];
-                }
-                else
-                {
-                    spawnRateByCustomLevelType[name] = entryParts[1];
-                    spawnRateByCustomLevelType[modifiedName] = entryParts[1];
-                }
-            }
+            // Try appending "Level" to the name and re-attempt parsing
+            string modifiedName = name + "level";
+            spawnRateByMoonName[name] = entryParts[1];
+            spawnRateByMoonName[name + "level"] = entryParts[1];
         }
-        return (spawnRateByLevelType, spawnRateByCustomLevelType);
+        return spawnRateByMoonName;
     }
 
     // todo: mark obsolete?

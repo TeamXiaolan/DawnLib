@@ -5,8 +5,6 @@ using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Exceptions;
 using CodeRebirthLib.Patches;
-using LethalLib.Extras;
-using LethalLib.Modules;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -37,20 +35,20 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 
         if (Config.InsideHazard?.Value ?? data.isInsideHazard)
         {
-            SpawnableMapObjectDef insideDef = CreateInstance<SpawnableMapObjectDef>();
-            insideDef.spawnableMapObject = new SpawnableMapObject
+            SpawnableMapObject spawnableMapObject = new SpawnableMapObject
             {
                 prefabToSpawn = GameObject,
             };
             try
             {
                 InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
-                LethalLib.Modules.MapObjects.RegisterMapObject(
-                    insideDef,
-                    Levels.LevelTypes.All,
-                    InsideSpawnMechanics.LevelOverrides,
-                    InsideSpawnMechanics.CurveFunction
+                RegisteredCRMapObject<SpawnableMapObject> insideRegistration = new(
+                    mapObject: spawnableMapObject,
+                    alignWithTerrain: AlignWithTerrain,
+                    hasNetworkObject: spawnableMapObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
+                    spawnRateFunction: InsideSpawnMechanics.CurveFunction
                 );
+                StartOfRoundPatch.registeredInsideMapObjects.Add(insideRegistration);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
@@ -61,26 +59,22 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 
         if (Config.OutsideHazard?.Value ?? data.isOutsideHazard)
         {
-            SpawnableOutsideObjectDef outsideDef = CreateInstance<SpawnableOutsideObjectDef>();
-            outsideDef.spawnableMapObject = new SpawnableOutsideObjectWithRarity
+            SpawnableOutsideObjectWithRarity spawnableMapObject = new SpawnableOutsideObjectWithRarity
             {
                 spawnableObject = CreateInstance<SpawnableOutsideObject>(),
             };
-            outsideDef.spawnableMapObject.spawnableObject.prefabToSpawn = GameObject;
+            spawnableMapObject.spawnableObject.prefabToSpawn = GameObject;
 
             try
             {
                 OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
-                RegisteredCRMapObject registeredCRMapObject = new()
-                {
-                    alignWithTerrain = AlignWithTerrain,
-                    hasNetworkObject = outsideDef.spawnableMapObject.spawnableObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
-                    outsideObject = outsideDef.spawnableMapObject,
-                    levels = Levels.LevelTypes.All,
-                    spawnLevelOverrides = OutsideSpawnMechanics.LevelOverrides,
-                    spawnRateFunction = OutsideSpawnMechanics.CurveFunction,
-                };
-                RoundManagerPatch.registeredMapObjects.Add(registeredCRMapObject);
+                RegisteredCRMapObject<SpawnableOutsideObject> outsideRegistration = new(
+                    mapObject: spawnableMapObject.spawnableObject,
+                    alignWithTerrain: AlignWithTerrain,
+                    hasNetworkObject: spawnableMapObject.spawnableObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
+                    spawnRateFunction: OutsideSpawnMechanics.CurveFunction
+                );
+                RoundManagerPatch.registeredOutsideObjects.Add(outsideRegistration);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {

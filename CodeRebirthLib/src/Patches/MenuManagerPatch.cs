@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CodeRebirthLib.ContentManagement.Achievements;
+using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -19,6 +20,7 @@ static class MenuManagerPatch
     private static void MenuManager_Start(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
+        VanillaLevels.Init();
         CRAchievementHandler.LoadAll();
         DoAchievementUI(self);
         DoSoundFixes(self);
