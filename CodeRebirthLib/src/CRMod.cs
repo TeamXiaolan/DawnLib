@@ -37,10 +37,10 @@ public class CRMod
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)
     {
         Assembly = assembly;
-        ResolveCodeModeInformation(assembly);
+        ResolveCodeModInformation(assembly);
     }
 
-    private void ResolveCodeModeInformation(Assembly assembly)
+    private void ResolveCodeModInformation(Assembly assembly)
     {
         ModInformation = ScriptableObject.CreateInstance<CRModInformation>();
         var searchDir = Path.GetFullPath(assembly.Location);
@@ -102,7 +102,6 @@ public class CRMod
         }
 
         Content = containers[0];
-
         AddDefaultRegistries();
         if (WeatherRegistryCompatibility.Enabled)
         {

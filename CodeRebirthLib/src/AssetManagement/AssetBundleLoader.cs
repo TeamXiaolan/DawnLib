@@ -8,11 +8,10 @@ using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.ContentManagement.Unlockables;
 using CodeRebirthLib.ContentManagement.Weathers;
-using LethalLib.Modules;
+using CodeRebirthLib.Patches;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Video;
-using NetworkPrefabs = LethalLib.Modules.NetworkPrefabs;
 using Object = UnityEngine.Object;
 
 namespace CodeRebirthLib.AssetManagement;
@@ -53,13 +52,13 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             switch (asset)
             {
                 case GameObject gameObject:
-                    Utilities.FixMixerGroups(gameObject);
+                    MenuManagerPatch.FixCRLibMixerGroups(gameObject);
                     CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Fixed Mixer Groups: {gameObject.name}");
 
                     if (gameObject.GetComponent<NetworkObject>() == null)
                         continue;
 
-                    NetworkPrefabs.RegisterNetworkPrefab(gameObject);
+                    GameNetworkManagerPatch.RegisterCRLibNetworkPrefab(gameObject);
                     CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Registered Network Prefab: {gameObject.name}");
                     break;
                 case VideoClip videoClip:

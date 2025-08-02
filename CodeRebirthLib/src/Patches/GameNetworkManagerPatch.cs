@@ -1,11 +1,33 @@
-﻿using CodeRebirthLib.ContentManagement.Achievements;
+﻿using System.Collections.Generic;
+using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
 
 static class GameNetworkManagerPatch
 {
+    private static List<GameObject> _networkPrefabs = new();
+    private static bool _alreadyRegisteredNetworkPrefabs = false;
+
+    public static void RegisterCRLibNetworkPrefab(GameObject? prefab)
+    {
+        if (prefab == null)
+        {
+            // TODO: throw?
+            return;
+        }
+
+        if (_alreadyRegisteredNetworkPrefabs)
+        {
+            // TODO: throw or error/warning?
+            return;
+        }
+        _networkPrefabs.Add(prefab);
+    }
+
     internal static void Init()
     {
         On.GameNetworkManager.Start += GameNetworkManagerOnStart;
@@ -23,7 +45,15 @@ static class GameNetworkManagerPatch
     private static void GameNetworkManagerOnStart(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
     {
         orig(self);
+        foreach (GameObject networkPrefab in _networkPrefabs)
+        {
+            if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(networkPrefab))
+                continue;
+
+            NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
+        }
         VanillaEnemies.Init();
+        _alreadyRegisteredNetworkPrefabs = true;
     }
 
     private static void GameNetworkManager_SaveItemsInShip(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
