@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CodeRebirthLib.AssetManagement;
 using TMPro;
 using UnityEngine;
@@ -6,11 +5,7 @@ using UnityEngine;
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 /* TODOs
- * Allow changing of colour text after achievement is unlocked (Default is greyed out text)
- * Allow custom border colours
- * Somehow allow gradients for text and border
  * Button to reset specific achievements
- * Ability to setup a "platinum" achievement's properties but NOT the text or description (those are automatically made by the lib).
  * probably more im forgetting
 */
 public abstract class CRAchievementBaseDefinition : CRContentDefinition
