@@ -21,13 +21,13 @@ public class CRDiscoveryAchievement : CRAchievementBaseDefinition, IProgress
             return;
         }
 
-        CurrentlyCollectedUniqueStringIDs = ES3.Load(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", new List<string>(), globalSettings);
+        CurrentlyCollectedUniqueStringIDs = ES3.Load(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", new List<string>(), globalSettings); // this error'd with expecting [ or null but found 0?
     }
 
     public override void SaveAchievementState(ES3Settings globalSettings)
     {
         base.SaveAchievementState(globalSettings);
-        ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", CurrentProgress, globalSettings);
+        ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", CurrentlyCollectedUniqueStringIDs, globalSettings);
     }
 
     public override void ResetProgress()
