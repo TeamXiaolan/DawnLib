@@ -34,4 +34,9 @@ public class AchievementTriggers : MonoBehaviour
             _onAchievementCompleted.Invoke();
         }
     }
+
+    public void ResetAllAchievementProgress()
+    {
+        CRMod.AllAchievements().ResetAchievementProgress(_achievementName);
+    }
 }

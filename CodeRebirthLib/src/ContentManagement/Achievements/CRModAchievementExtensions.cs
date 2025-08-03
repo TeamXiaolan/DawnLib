@@ -34,4 +34,12 @@ public static class CRModAchievementExtensions
     {
         return registry.TryGetFromAchievementName(achievementName, out CRAchievementBaseDefinition? value) && value is CRDiscoveryAchievement discovery && discovery.TryDiscoverMoreProgress(uniqueStringID);
     }
+
+    public static void ResetAchievementProgress(this IEnumerable<CRAchievementBaseDefinition> registry, string achievementName)
+    {
+        if (registry.TryGetFromAchievementName(achievementName, out CRAchievementBaseDefinition? value))
+        {
+            value.ResetProgress();
+        }
+    }
 }

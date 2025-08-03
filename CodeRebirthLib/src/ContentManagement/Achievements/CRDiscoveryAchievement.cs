@@ -30,6 +30,13 @@ public class CRDiscoveryAchievement : CRAchievementBaseDefinition, IProgress
         ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", CurrentProgress, globalSettings);
     }
 
+    public override void ResetProgress()
+    {
+        base.ResetProgress();
+        CurrentlyCollectedUniqueStringIDs = new();
+        SaveAchievementState(CRAchievementHandler.globalSettings);
+    }
+
     public float MaxProgress => UniqueStringIDs.Count;
     public float CurrentProgress => CurrentlyCollectedUniqueStringIDs.Count;
 

@@ -62,6 +62,11 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
         return Completed;
     }
 
+    public virtual void ResetProgress() // do i need to reload all achievements after this so that parent achievement actually updates for this same with the UI?
+    {
+        Completed = false;
+    }
+
     public static void RegisterTo(CRMod mod)
     {
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRAchievementBaseDefinition>());

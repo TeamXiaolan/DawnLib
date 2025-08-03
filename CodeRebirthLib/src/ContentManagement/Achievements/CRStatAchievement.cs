@@ -30,6 +30,13 @@ public class CRStatAchievement : CRAchievementBaseDefinition, IProgress
         ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", CurrentProgress, globalSettings);
     }
 
+    public override void ResetProgress()
+    {
+        base.ResetProgress();
+        CurrentProgress = 0f;
+        SaveAchievementState(CRAchievementHandler.globalSettings);
+    }
+
     public bool IncrementProgress(float amount)
     {
         CurrentProgress += amount;
