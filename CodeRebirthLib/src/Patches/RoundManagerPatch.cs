@@ -9,7 +9,7 @@ using Random = System.Random;
 namespace CodeRebirthLib.Patches;
 static class RoundManagerPatch
 {
-    internal static List<RegisteredCRMapObject<SpawnableOutsideObject>> registeredOutsideObjects = [];
+    internal static List<CRMapObjectDefinition> registeredOutsideObjects = [];
 
     internal static void Init()
     {
@@ -23,12 +23,12 @@ static class RoundManagerPatch
 
         foreach (RandomMapObject randomMapObject in randomMapObjects)
         {
-            foreach (RegisteredCRMapObject<SpawnableMapObject> mapObject in StartOfRoundPatch.registeredInsideMapObjects)
+            foreach (CRMapObjectDefinition mapObject in StartOfRoundPatch.registeredInsideMapObjects)
             {
-                if (randomMapObject.spawnablePrefabs.Any((prefab) => prefab == mapObject.MapObject.prefabToSpawn))
+                if (randomMapObject.spawnablePrefabs.Any((prefab) => prefab == mapObject.GameObject))
                     continue;
 
-                randomMapObject.spawnablePrefabs.Add(mapObject.MapObject.prefabToSpawn);
+                randomMapObject.spawnablePrefabs.Add(mapObject.GameObject);
             }
         }
         orig(self);
@@ -39,21 +39,21 @@ static class RoundManagerPatch
         orig(self);
 
         Random random = new(StartOfRound.Instance.randomMapSeed + 69);
-        foreach (RegisteredCRMapObject<SpawnableOutsideObject> registeredOutsideObject in registeredOutsideObjects)
+        foreach (CRMapObjectDefinition registeredOutsideObject in registeredOutsideObjects)
         {
-            if (registeredOutsideObject.MapObject == null)
+            if (registeredOutsideObject.GameObject == null)
                 continue;
 
             HandleSpawningOutsideObjects(registeredOutsideObject, random); // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
     }
 
-    private static void HandleSpawningOutsideObjects(RegisteredCRMapObject<SpawnableOutsideObject> outsideObjDef, Random random)
+    private static void HandleSpawningOutsideObjects(CRMapObjectDefinition outsideObjDef, Random random)
     {
         SelectableLevel level = RoundManager.Instance.currentLevel;
         AnimationCurve animationCurve = new(new Keyframe(0, 0), new Keyframe(1, 0));
-        GameObject prefabToSpawn = outsideObjDef.MapObject.prefabToSpawn;
-        animationCurve = outsideObjDef.SpawnRateFunction(level);
+        GameObject prefabToSpawn = outsideObjDef.GameObject;
+        animationCurve = outsideObjDef.OutsideSpawnMechanics.CurveFunction(level);
 
         int randomNumberToSpawn;
         if (outsideObjDef.HasNetworkObject)

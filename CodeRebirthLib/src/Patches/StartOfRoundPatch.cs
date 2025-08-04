@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 namespace CodeRebirthLib.Patches;
 static class StartOfRoundPatch
 {
-    internal static List<RegisteredCRMapObject<SpawnableMapObject>> registeredInsideMapObjects = [];
+    internal static List<CRMapObjectDefinition> registeredInsideMapObjects = [];
 
     internal static void Init()
     {
@@ -34,31 +34,31 @@ static class StartOfRoundPatch
         }
     }
 
-    private static void HandleAddingInsideMapObjectToLevel(RegisteredCRMapObject<SpawnableMapObject> registeredMapObject, SelectableLevel level)
+    private static void HandleAddingInsideMapObjectToLevel(CRMapObjectDefinition registeredMapObject, SelectableLevel level)
     {
-        if (level.spawnableMapObjects.Any(x => x.prefabToSpawn == registeredMapObject.MapObject.prefabToSpawn))
+        if (level.spawnableMapObjects.Any(x => x.prefabToSpawn == registeredMapObject.GameObject))
         {
             var list = level.spawnableMapObjects.ToList();
-            list.RemoveAll(x => x.prefabToSpawn == registeredMapObject.MapObject.prefabToSpawn);
+            list.RemoveAll(x => x.prefabToSpawn == registeredMapObject.GameObject);
             level.spawnableMapObjects = list.ToArray();
         }
 
         SpawnableMapObject spawnableMapObject = new()
         {
-            prefabToSpawn = registeredMapObject.MapObject.prefabToSpawn,
-            spawnFacingAwayFromWall = registeredMapObject.MapObject.spawnFacingAwayFromWall,
-            spawnFacingWall = registeredMapObject.MapObject.spawnFacingWall,
-            spawnWithBackToWall = registeredMapObject.MapObject.spawnWithBackToWall,
-            spawnWithBackFlushAgainstWall = registeredMapObject.MapObject.spawnWithBackFlushAgainstWall,
-            requireDistanceBetweenSpawns = registeredMapObject.MapObject.requireDistanceBetweenSpawns,
-            disallowSpawningNearEntrances = registeredMapObject.MapObject.disallowSpawningNearEntrances,
-            numberToSpawn = registeredMapObject.SpawnRateFunction(level) // this works right?
+            prefabToSpawn = registeredMapObject.GameObject,
+            spawnFacingAwayFromWall = registeredMapObject.InsideMapObjectSettings.spawnFacingAwayFromWall,
+            spawnFacingWall = registeredMapObject.InsideMapObjectSettings.spawnFacingWall,
+            spawnWithBackToWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackToWall,
+            spawnWithBackFlushAgainstWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackFlushAgainstWall,
+            requireDistanceBetweenSpawns = registeredMapObject.InsideMapObjectSettings.requireDistanceBetweenSpawns,
+            disallowSpawningNearEntrances = registeredMapObject.InsideMapObjectSettings.disallowSpawningNearEntrances,
+            numberToSpawn = registeredMapObject.OutsideSpawnMechanics!.CurveFunction(level) // this works right?
         };
 
         var mapObjectsList = level.spawnableMapObjects.ToList();
         mapObjectsList.Add(spawnableMapObject);
         level.spawnableMapObjects = mapObjectsList.ToArray(); // would it be a problem to add it to a level even though the numberToSpawn is certain to be 0 depending on the level?
-        CodeRebirthLibPlugin.ExtendedLogging($"added {registeredMapObject.MapObject.prefabToSpawn.name} to level {level.name}.");
+        CodeRebirthLibPlugin.ExtendedLogging($"added {registeredMapObject.GameObject.name} to level {level.name}.");
     }
 
     private static void StartOfRound_AutoSaveShipData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)

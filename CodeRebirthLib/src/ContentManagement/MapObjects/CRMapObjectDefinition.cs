@@ -24,31 +24,28 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     [field: FormerlySerializedAs("alignWithTerrain")] [field: SerializeField]
     public bool AlignWithTerrain { get; private set; }
 
+    [field: SerializeField]
+    public SpawnableMapObject InsideMapObjectSettings { get; private set; }
+    
     public MapObjectConfig Config { get; private set; }
     public MapObjectSpawnMechanics? InsideSpawnMechanics { get; private set; }
     public MapObjectSpawnMechanics? OutsideSpawnMechanics { get; private set; }
 
+    public bool HasNetworkObject { get; private set; }
+    
     public override void Register(CRMod mod, MapObjectData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMapObjectConfig(section, data, ObjectName);
 
+        HasNetworkObject = GameObject.GetComponent<NetworkObject>();
+        
         if (Config.InsideHazard?.Value ?? data.isInsideHazard)
         {
-            SpawnableMapObject spawnableMapObject = new SpawnableMapObject
-            {
-                prefabToSpawn = GameObject,
-            };
             try
             {
                 InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
-                RegisteredCRMapObject<SpawnableMapObject> insideRegistration = new(
-                    mapObject: spawnableMapObject,
-                    alignWithTerrain: AlignWithTerrain,
-                    hasNetworkObject: spawnableMapObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
-                    spawnRateFunction: InsideSpawnMechanics.CurveFunction
-                );
-                StartOfRoundPatch.registeredInsideMapObjects.Add(insideRegistration);
+                StartOfRoundPatch.registeredInsideMapObjects.Add(this);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
@@ -59,22 +56,11 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 
         if (Config.OutsideHazard?.Value ?? data.isOutsideHazard)
         {
-            SpawnableOutsideObjectWithRarity spawnableMapObject = new SpawnableOutsideObjectWithRarity
-            {
-                spawnableObject = CreateInstance<SpawnableOutsideObject>(),
-            };
-            spawnableMapObject.spawnableObject.prefabToSpawn = GameObject;
 
             try
             {
                 OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
-                RegisteredCRMapObject<SpawnableOutsideObject> outsideRegistration = new(
-                    mapObject: spawnableMapObject.spawnableObject,
-                    alignWithTerrain: AlignWithTerrain,
-                    hasNetworkObject: spawnableMapObject.spawnableObject.prefabToSpawn.GetComponent<NetworkObject>() != null,
-                    spawnRateFunction: OutsideSpawnMechanics.CurveFunction
-                );
-                RoundManagerPatch.registeredOutsideObjects.Add(outsideRegistration);
+                RoundManagerPatch.registeredOutsideObjects.Add(this);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
