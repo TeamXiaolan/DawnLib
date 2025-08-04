@@ -5,15 +5,13 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 [Serializable]
 public class CRAchievementBaseDefinitionReference
 {
-#if UNITY_EDITOR
     [SerializeField]
-    private CRAchievementBaseDefinitionAsset achievementAsset;
-#endif
+    internal CRAchievementBaseDefinition achievementAsset;
 
     [SerializeField]
     private string achievementName;
 
-    public string AchievementName => AchievementName;
+    public string AchievementName => achievementName;
 
     public static implicit operator string(CRAchievementBaseDefinitionReference reference)
     {

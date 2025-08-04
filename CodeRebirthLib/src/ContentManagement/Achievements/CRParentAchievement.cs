@@ -47,9 +47,19 @@ public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
 
     public override bool IsActive()
     {
+        foreach (var reference in ChildrenAchievementReferences)
+        {
+            if (reference.achievementAsset == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogFatal("Null reference in ChildrenAchievementReferences, yay, with name: " + reference.AchievementName);
+            }
+        }
         int counter = 0;
         foreach (var achievement in Mod.AchievementRegistry())
         {
+            if (achievement == this)
+                continue;
+
             if (!achievement.IsActive())
                 continue;
 
