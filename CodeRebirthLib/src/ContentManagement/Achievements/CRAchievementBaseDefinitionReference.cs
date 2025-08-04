@@ -6,7 +6,7 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 public class CRAchievementBaseDefinitionReference
 {
     [SerializeField]
-    internal CRAchievementBaseDefinition achievementAsset;
+    private string achievementAsset;
 
     [SerializeField]
     private string achievementName;
