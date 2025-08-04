@@ -8,7 +8,7 @@ using CodeRebirthLib.ContentManagement.Weathers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib.ContentManagement;
+namespace CodeRebirthLib.AssetManagement;
 [Serializable]
 public class AssetBundleData
 {

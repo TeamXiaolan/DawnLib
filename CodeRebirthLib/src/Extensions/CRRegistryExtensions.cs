@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CodeRebirthLib.AssetManagement;
+using CodeRebirthLib.ContentManagement;
 
 namespace CodeRebirthLib.Extensions;
 

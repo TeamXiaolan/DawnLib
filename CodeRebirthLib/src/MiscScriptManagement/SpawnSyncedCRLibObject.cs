@@ -25,7 +25,7 @@ public class SpawnSyncedCRLibObject : MonoBehaviour
         {
             foreach (var mapObjectDefinition in CRMod.AllMapObjects())
             {
-                if (!objectTypeWithRarity.CRLibObjectName.Equals(mapObjectDefinition.ObjectName, StringComparison.OrdinalIgnoreCase))
+                if (!objectTypeWithRarity.CRLibObjectName.Equals(mapObjectDefinition.MapObjectName, StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 spawnableObjectsList.Add((mapObjectDefinition.GameObject, objectTypeWithRarity.Rarity));

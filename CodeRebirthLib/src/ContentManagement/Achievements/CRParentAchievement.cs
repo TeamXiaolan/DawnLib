@@ -8,7 +8,7 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
 {
     [field: SerializeField]
-    public List<CRAchievementBaseDefinitionReference> ChildrenAchievementReferences { get; private set; } = new();
+    public List<string> ChildrenAchievementNames { get; private set; } = new();
 
     public override void Register(CRMod mod)
     {
@@ -18,7 +18,7 @@ public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
             if (definition.Mod != mod)
                 return;
 
-            if (CountCompleted() >= ChildrenAchievementReferences.Count)
+            if (CountCompleted() >= ChildrenAchievementNames.Count)
             {
                 TryCompleteAchievement();
             }
@@ -33,9 +33,9 @@ public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
             if (!achievement.Completed)
                 continue;
 
-            foreach (var reference in ChildrenAchievementReferences)
+            foreach (var achievementName in ChildrenAchievementNames)
             {
-                if (reference.AchievementName == achievement.AchievementName)
+                if (achievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
@@ -47,13 +47,6 @@ public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
 
     public override bool IsActive()
     {
-        foreach (var reference in ChildrenAchievementReferences)
-        {
-            if (reference.achievementAsset == null)
-            {
-                CodeRebirthLibPlugin.Logger.LogFatal("Null reference in ChildrenAchievementReferences, yay, with name: " + reference.AchievementName);
-            }
-        }
         int counter = 0;
         foreach (var achievement in Mod.AchievementRegistry())
         {
@@ -63,18 +56,18 @@ public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
             if (!achievement.IsActive())
                 continue;
 
-            foreach (var reference in ChildrenAchievementReferences)
+            foreach (var achievementName in ChildrenAchievementNames)
             {
-                if (reference.AchievementName == achievement.AchievementName)
+                if (achievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
                 }
             }
         }
-        return counter == ChildrenAchievementReferences.Count;
+        return counter == ChildrenAchievementNames.Count;
     }
 
-    public float MaxProgress => ChildrenAchievementReferences.Count;
+    public float MaxProgress => ChildrenAchievementNames.Count;
     public float CurrentProgress => CountCompleted();
 }

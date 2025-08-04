@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Enemies;
 [SuppressMessage("ReSharper", "IdentifierTypo", Justification = "All these variables are named to match the scriptable object name")]
@@ -33,7 +32,7 @@ public static class VanillaLevels
     {
         List<string> unknownTypes = [];
 
-        var levels = Resources.FindObjectsOfTypeAll<SelectableLevel>();
+        var levels = StartOfRound.Instance.levels;
         for (int i = 0; i < levels.Length; i++)
         {
             _allLevels.Add(levels[i]);

@@ -45,7 +45,7 @@ public class AchievementUIElement : MonoBehaviour
         }
         else
         {
-            if (definition.FinishedAchievementBackgroundIcon != null && _backgroundImage != null)
+            if (definition.FinishedAchievementBackgroundIcon != null)
             {
                 _backgroundImage.sprite = definition.FinishedAchievementBackgroundIcon;
                 _backgroundImage.color = Color.white;

@@ -20,7 +20,6 @@ static class MenuManagerPatch
     private static void MenuManager_Start(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
-        VanillaLevels.Init();
         CRAchievementHandler.LoadAll();
         DoAchievementUI(self);
         DoSoundFixes(self);
