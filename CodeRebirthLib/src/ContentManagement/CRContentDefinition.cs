@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using BepInEx.Configuration;
@@ -64,12 +65,20 @@ public abstract class CRContentDefinition<T> : CRContentDefinition where T : Ent
 {
     public override void Register(CRMod mod)
     {
+        try
+        {
         Register(mod,
             GetEntities(mod).First(it =>
             {
                 CodeRebirthLibPlugin.ExtendedLogging($"{this} | Comparing {EntityNameReference} with {it.entityName}.");
                 return it.entityName == EntityNameReference;
             }));
+        }
+        catch (InvalidOperationException ex)
+        {
+            mod.Logger?.LogError($"{this} with {EntityNameReference} failed to find a matching entity. {ex.Message}");
+        }
+
         base.Register(mod);
     }
 

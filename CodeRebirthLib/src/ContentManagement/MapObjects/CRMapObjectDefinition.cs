@@ -17,7 +17,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     [field: FormerlySerializedAs("gameObject")] [field: SerializeField]
     public GameObject GameObject { get; private set; }
 
-    [field: FormerlySerializedAs("ObjectName")] [field: SerializeField]
+    [field: FormerlySerializedAs("objectName")] [field: FormerlySerializedAs("ObjectName")] [field: SerializeField]
     public string MapObjectName { get; private set; }
 
     [field: FormerlySerializedAs("alignWithTerrain")] [field: SerializeField]

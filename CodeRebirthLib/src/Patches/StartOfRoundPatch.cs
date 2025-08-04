@@ -53,7 +53,7 @@ static class StartOfRoundPatch
             spawnWithBackFlushAgainstWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackFlushAgainstWall,
             requireDistanceBetweenSpawns = registeredMapObject.InsideMapObjectSettings.requireDistanceBetweenSpawns,
             disallowSpawningNearEntrances = registeredMapObject.InsideMapObjectSettings.disallowSpawningNearEntrances,
-            numberToSpawn = registeredMapObject.OutsideSpawnMechanics!.CurveFunction(level) // this works right?
+            numberToSpawn = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level) // this works right?
         };
 
         var mapObjectsList = level.spawnableMapObjects.ToList();
