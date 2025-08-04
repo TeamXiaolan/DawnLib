@@ -52,13 +52,13 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             switch (asset)
             {
                 case GameObject gameObject:
-                    MenuManagerPatch.FixCRLibMixerGroups(gameObject);
+                    CRLib.FixMixerGroups(gameObject);
                     CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Fixed Mixer Groups: {gameObject.name}");
 
                     if (gameObject.GetComponent<NetworkObject>() == null)
                         continue;
 
-                    GameNetworkManagerPatch.RegisterCRLibNetworkPrefab(gameObject);
+                    CRLib.RegisterNetworkPrefab(gameObject);
                     CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] Registered Network Prefab: {gameObject.name}");
                     break;
                 case VideoClip videoClip:

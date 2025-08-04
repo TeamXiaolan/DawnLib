@@ -9,24 +9,8 @@ namespace CodeRebirthLib.Patches;
 
 static class GameNetworkManagerPatch
 {
-    private static List<GameObject> _networkPrefabs = new();
+    internal static List<GameObject> networkPrefabs = new();
     private static bool _alreadyRegisteredNetworkPrefabs = false;
-
-    public static void RegisterCRLibNetworkPrefab(GameObject? prefab)
-    {
-        if (prefab == null)
-        {
-            // TODO: throw?
-            return;
-        }
-
-        if (_alreadyRegisteredNetworkPrefabs)
-        {
-            // TODO: throw or error/warning?
-            return;
-        }
-        _networkPrefabs.Add(prefab);
-    }
 
     internal static void Init()
     {
@@ -45,7 +29,7 @@ static class GameNetworkManagerPatch
     private static void GameNetworkManagerOnStart(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
     {
         orig(self);
-        foreach (GameObject networkPrefab in _networkPrefabs)
+        foreach (GameObject networkPrefab in networkPrefabs)
         {
             if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(networkPrefab))
                 continue;

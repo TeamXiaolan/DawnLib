@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
+using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
 using UnityEngine;
@@ -43,6 +45,18 @@ public static class CRLib
         CodeRebirthLibNetworker.Instance?.BroadcastDisplayTipServerRPC(displayTip);
     }
 
+    public static void RegisterNetworkPrefab(GameObject prefab)
+    {
+        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        GameNetworkManagerPatch.networkPrefabs.Add(prefab);
+    }
+
+    public static void FixMixerGroups(GameObject prefab)
+    {
+        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        MenuManagerPatch.prefabsToFix.Add(prefab);
+    }
+    
     internal static CRMod RegisterNoCodeMod(CRModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
         var plugin = modInfo.CreatePluginMetadata();

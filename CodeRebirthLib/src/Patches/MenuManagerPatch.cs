@@ -10,7 +10,7 @@ namespace CodeRebirthLib.Patches;
 static class MenuManagerPatch
 {
 
-    private static HashSet<GameObject> _prefabsToFix = new();
+    internal static HashSet<GameObject> prefabsToFix = new();
     private static bool _alreadyFixedAllPrefabs = false;
     internal static void Init()
     {
@@ -36,7 +36,7 @@ static class MenuManagerPatch
         }
 
         AudioMixer audioMixer = menuManagerAudioSource.outputAudioMixerGroup.audioMixer; // store this and reuse it in FixMixerGroups for fixing later audiosources?
-        foreach (GameObject prefabToFix in _prefabsToFix)
+        foreach (GameObject prefabToFix in prefabsToFix)
         {
             AudioSource[] audioSourcesToFix = prefabToFix.GetComponentsInChildren<AudioSource>();
             foreach (AudioSource audioSource in audioSourcesToFix)
@@ -53,21 +53,7 @@ static class MenuManagerPatch
             }
         }
         _alreadyFixedAllPrefabs = true;
-        _prefabsToFix.Clear();
-    }
-
-    public static void FixCRLibMixerGroups(GameObject prefab)
-    {
-        if (_alreadyFixedAllPrefabs)
-        {
-            // fix them, assumes it's after menumanager so im sure we can save a reference to the appropriate audioMixerGroup needed, is this even needed?
-            return;
-        }
-
-        if (_prefabsToFix.Contains(prefab))
-            return;
-
-        _prefabsToFix.Add(prefab);
+        prefabsToFix.Clear();
     }
 
     private static void DoAchievementUI(MenuManager menuManager)
