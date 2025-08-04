@@ -17,6 +17,7 @@ public class CRRegistry<TDefinition> : CRRegistry, IEnumerable<TDefinition> wher
     {
         return _items.GetEnumerator();
     }
+
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();

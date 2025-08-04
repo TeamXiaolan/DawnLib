@@ -25,6 +25,7 @@ static class StartOfRoundPatch
     private static void StartOfRound_Awake(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         orig(self);
+        VanillaLevels.Init();
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
             foreach (var insideMapObject in registeredInsideMapObjects)

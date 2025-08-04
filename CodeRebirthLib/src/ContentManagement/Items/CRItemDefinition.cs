@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
-using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Data;
 using UnityEngine;
@@ -21,6 +20,8 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public ItemConfig Config { get; private set; }
 
+    protected override string EntityNameReference => Item.itemName;
+
     public override void Register(CRMod mod, ItemData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
@@ -30,7 +31,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         if (Config.Worth != null)
         {
             BoundedRange configValue = Config.Worth.Value;
-            
+
             // Perform migration:
             if (configValue.Min == -1 || configValue.Max == -1)
             {
@@ -42,7 +43,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
                 itemWorth = configValue;
             }
         }
-        
+
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 

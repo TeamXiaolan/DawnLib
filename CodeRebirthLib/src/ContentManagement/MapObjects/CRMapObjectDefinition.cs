@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
-using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Exceptions;
 using CodeRebirthLib.Patches;
@@ -18,25 +17,27 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     [field: FormerlySerializedAs("gameObject")] [field: SerializeField]
     public GameObject GameObject { get; private set; }
 
-    [field: FormerlySerializedAs("objectName")] [field: SerializeField]
-    public string ObjectName { get; private set; }
+    [field: FormerlySerializedAs("ObjectName")] [field: SerializeField]
+    public string MapObjectName { get; private set; }
 
     [field: FormerlySerializedAs("alignWithTerrain")] [field: SerializeField]
     public bool AlignWithTerrain { get; private set; }
 
     [field: SerializeField]
-    public SpawnableMapObject InsideMapObjectSettings { get; private set; }
+    public SpawnableMapObject InsideMapObjectSettings { get; private set; } = new();
     
     public MapObjectConfig Config { get; private set; }
     public MapObjectSpawnMechanics? InsideSpawnMechanics { get; private set; }
     public MapObjectSpawnMechanics? OutsideSpawnMechanics { get; private set; }
 
     public bool HasNetworkObject { get; private set; }
-    
+
+    protected override string EntityNameReference => MapObjectName;
+
     public override void Register(CRMod mod, MapObjectData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateMapObjectConfig(section, data, ObjectName);
+        Config = CreateMapObjectConfig(section, data, EntityNameReference);
 
         HasNetworkObject = GameObject.GetComponent<NetworkObject>();
         
@@ -49,14 +50,13 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
-                mod.Logger?.LogError($"Failed to parse inside curve for map object: {ObjectName}");
+                mod.Logger?.LogError($"Failed to parse inside curve for map object: {EntityNameReference}");
                 exception.LogNicely(mod.Logger);
             }
         }
 
         if (Config.OutsideHazard?.Value ?? data.isOutsideHazard)
         {
-
             try
             {
                 OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
@@ -64,7 +64,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
-                mod.Logger?.LogError($"Failed to parse outside curve for map object: {ObjectName}");
+                mod.Logger?.LogError($"Failed to parse outside curve for map object: {EntityNameReference}");
                 exception.LogNicely(mod.Logger);
             }
         }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using LethalLib.Extras;
@@ -23,6 +22,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
     public UnlockableConfig Config { get; private set; }
 
     public ProgressiveUnlockData? ProgressiveData { get; private set; }
+
+    protected override string EntityNameReference => UnlockableItemDef.unlockable.unlockableName;
 
     public override void Register(CRMod mod, UnlockableData data)
     {

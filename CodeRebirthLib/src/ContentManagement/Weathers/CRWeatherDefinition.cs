@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.AssetManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 using WeatherRegistry;
@@ -14,6 +13,8 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 
     [field: FormerlySerializedAs("Weather")] [field: SerializeField]
     public Weather Weather { get; private set; }
+
+    protected override string EntityNameReference => Weather.Name;
 
     public override void Register(CRMod mod, WeatherData data)
     {

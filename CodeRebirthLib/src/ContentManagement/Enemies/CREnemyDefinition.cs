@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Util.Attributes;
 using UnityEngine;
@@ -28,6 +27,8 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     public Dictionary<string, float> WeatherMultipliers = new();
 
     public EnemyConfig Config { get; private set; }
+
+    protected override string EntityNameReference => EnemyType.enemyName;
 
     public override void Register(CRMod mod, EnemyData data)
     {

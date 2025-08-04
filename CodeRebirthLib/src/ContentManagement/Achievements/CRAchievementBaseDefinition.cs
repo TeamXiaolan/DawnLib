@@ -1,4 +1,3 @@
-using CodeRebirthLib.AssetManagement;
 using TMPro;
 using UnityEngine;
 
@@ -38,6 +37,9 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
     public float PopupTime { get; private set; } = 5f;
 
     public bool Completed { get; protected set; } = false;
+
+    protected override string EntityNameReference => AchievementName;
+
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {
         Completed = ES3.Load(Mod.Plugin.GUID + "." + AchievementName, false, globalSettings);

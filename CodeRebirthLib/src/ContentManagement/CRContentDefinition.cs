@@ -2,20 +2,19 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using BepInEx.Configuration;
+using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.ContentManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib.AssetManagement;
+namespace CodeRebirthLib.ContentManagement;
 
 public abstract class CRContentDefinition : ScriptableObject
 {
     [FormerlySerializedAs("ConfigEntries")] [SerializeField]
     private List<CRDynamicConfig> _configEntries;
 
-    [field: SerializeField]
-    public string EntityNameReference { get; private set; }
+    protected abstract string EntityNameReference { get; }
 
     private readonly Dictionary<string, ConfigEntryBase> _generalConfigs = new();
     public CRMod Mod { get; private set; }
