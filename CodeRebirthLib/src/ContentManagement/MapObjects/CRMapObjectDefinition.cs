@@ -49,7 +49,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
-                mod.Logger?.LogError($"Failed to parse outside curve for map object: {ObjectName}");
+                mod.Logger?.LogError($"Failed to parse inside curve for map object: {ObjectName}");
                 exception.LogNicely(mod.Logger);
             }
         }
