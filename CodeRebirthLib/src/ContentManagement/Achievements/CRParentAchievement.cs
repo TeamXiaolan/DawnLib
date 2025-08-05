@@ -8,7 +8,7 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
 {
     [field: SerializeField]
-    public List<string> ChildrenAchievementNames { get; private set; } = new();
+    public List<CRAchievementBaseDefinitionReference> ChildrenAchievementNames { get; private set; } = new();
 
     public override void Register(CRMod mod)
     {

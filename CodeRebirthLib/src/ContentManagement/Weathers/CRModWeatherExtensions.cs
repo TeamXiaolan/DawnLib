@@ -16,7 +16,7 @@ public static class CRModWeatherExtensions
         return CRMod.AllMods.SelectMany(mod => mod.WeatherRegistry());
     }
 
-    public static bool TryGetFromWeatherName(this CRRegistry<CRWeatherDefinition> registry, string weatherName, [NotNullWhen(true)] out CRWeatherDefinition? value)
+    public static bool TryGetFromWeatherName(this IEnumerable<CRWeatherDefinition> registry, string weatherName, [NotNullWhen(true)] out CRWeatherDefinition? value)
     {
         return registry.TryGetFirstBySomeName(it => it.Weather.Name,
             weatherName,

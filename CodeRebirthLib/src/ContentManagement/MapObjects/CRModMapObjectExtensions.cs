@@ -1,10 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using CodeRebirthLib.Extensions;
 
 namespace CodeRebirthLib.ContentManagement.MapObjects;
 public static class CRModMapObjectExtensions
 {
-    public static bool TryGetFromMapObjectName(this CRRegistry<CRMapObjectDefinition> registry, string mapObjectName, [NotNullWhen(true)] out CRMapObjectDefinition? value)
+    public static bool TryGetFromMapObjectName(this IEnumerable<CRMapObjectDefinition> registry, string mapObjectName, [NotNullWhen(true)] out CRMapObjectDefinition? value)
     {
         return registry.TryGetFirstBySomeName(it => it.MapObjectName,
             mapObjectName,

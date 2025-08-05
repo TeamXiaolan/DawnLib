@@ -1,11 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CodeRebirthLib.Extensions;
 
 namespace CodeRebirthLib.ContentManagement.Items;
 public static class CRModItemExtensions
 {
-    public static bool TryGetFromItemName(this CRRegistry<CRItemDefinition> registry, string itemName, [NotNullWhen(true)] out CRItemDefinition? value)
+    public static bool TryGetFromItemName(this IEnumerable<CRItemDefinition> registry, string itemName, [NotNullWhen(true)] out CRItemDefinition? value)
     {
         return registry.TryGetFirstBySomeName(it => it.Item.itemName,
             itemName,

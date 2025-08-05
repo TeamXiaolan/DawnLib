@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
+
 [Serializable]
 public class CRAchievementBaseDefinitionReference
 {
@@ -13,8 +14,17 @@ public class CRAchievementBaseDefinitionReference
 
     public string AchievementName => achievementName;
 
-    public static implicit operator string(CRAchievementBaseDefinitionReference reference)
+    public static implicit operator string?(CRAchievementBaseDefinitionReference reference)
     {
-        return reference?.AchievementName;
+        return reference.AchievementName;
+    }
+
+    public static implicit operator CRAchievementBaseDefinition?(CRAchievementBaseDefinitionReference reference)
+    {
+        if (CRMod.AllAchievements().TryGetFromAchievementName(reference.achievementName, out var achievement))
+        {
+            return achievement;
+        }
+        return null;
     }
 }
