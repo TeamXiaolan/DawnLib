@@ -108,6 +108,23 @@ public class CRMod
             AddWeatherRegistry();
         }
 
+        List<EntityData> entities = new();
+        foreach (var content in Content.assetBundles)
+        {
+            entities.AddRange(content.enemies);
+            entities.AddRange(content.items);
+            entities.AddRange(content.mapObjects);
+            entities.AddRange(content.unlockables);
+            entities.AddRange(content.weathers);
+        }
+
+        foreach (var entity in entities)
+        {
+            if (string.IsNullOrEmpty(entity.EntityName))
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"Defaulting to old entity name: {entity.entityName} for comparison, please update your mod to use the new references in ContentContainer.");
+            }
+        }
         _allMods.Add(this);
     }
     public static IReadOnlyList<CRMod> AllMods => _allMods.AsReadOnly();

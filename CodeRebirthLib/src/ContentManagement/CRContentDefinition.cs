@@ -67,12 +67,17 @@ public abstract class CRContentDefinition<T> : CRContentDefinition where T : Ent
     {
         try
         {
-        Register(mod,
-            GetEntities(mod).First(it =>
-            {
-                CodeRebirthLibPlugin.ExtendedLogging($"{this} | Comparing {EntityNameReference} with {it.entityName}.");
-                return it.entityName == EntityNameReference;
-            }));
+            Register(mod,
+                GetEntities(mod).First(it =>
+                {
+                    if (!string.IsNullOrEmpty(it.EntityName))
+                    {
+                        CodeRebirthLibPlugin.ExtendedLogging($"{this} | Comparing {EntityNameReference} with {it.EntityName}.");
+                        return it.EntityName == EntityNameReference;
+                    }
+                    return it.entityName == EntityNameReference;
+                    
+                }));
         }
         catch (InvalidOperationException ex)
         {

@@ -23,7 +23,7 @@ public static class VanillaLevels
     public static SelectableLevel EmbrionLevel { get; private set; }
     public static SelectableLevel LiquidationLevel { get; private set; }
 
-    public static bool IsVanillaLevel(SelectableLevel level) // is this stupid?
+    public static bool IsVanillaLevel(SelectableLevel level) // is this stupid? yes
     {
         return level == CompanyBuildingLevel || level == ExperimentationLevel || level == MarchLevel || level == VowLevel || level == AssuranceLevel || level == OffenseLevel || level == RendLevel || level == DineLevel || level == TitanLevel || level == AdamanceLevel || level == ArtificeLevel || level == EmbrionLevel || level == LiquidationLevel;
     }
@@ -41,7 +41,6 @@ public static class VanillaLevels
             PropertyInfo property = typeof(VanillaLevels).GetProperty(levels[i].name);
             if (property == null) unknownTypes.Add(levels[i].name);
             else property.SetValue(null, levels[i]);
-            // instead of this findobjectsoftypeall? or just wait for startofround.instance to be ready
         }
 
         CodeRebirthLibPlugin.ExtendedLogging($"Unknown levels: {string.Join(", ", unknownTypes)}");
