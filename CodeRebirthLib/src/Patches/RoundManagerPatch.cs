@@ -4,7 +4,6 @@ using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.Extensions;
 using Unity.Netcode;
 using UnityEngine;
-using Random = System.Random;
 
 namespace CodeRebirthLib.Patches;
 static class RoundManagerPatch
@@ -13,7 +12,7 @@ static class RoundManagerPatch
 
     internal static void Init()
     {
-        On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
+        On.RoundManager.SpawnOutsideHazards += RoundManager_SpawnOutsideHazards;
         On.RoundManager.SpawnMapObjects += RoundManager_SpawnMapObjects;
     }
 
@@ -34,26 +33,27 @@ static class RoundManagerPatch
         orig(self);
     }
 
-    private static void SpawnOutsideMapObjects(On.RoundManager.orig_SpawnOutsideHazards orig, RoundManager self)
+    private static void RoundManager_SpawnOutsideHazards(On.RoundManager.orig_SpawnOutsideHazards orig, RoundManager self)
     {
         orig(self);
 
-        Random random = new(StartOfRound.Instance.randomMapSeed + 69);
+        System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
+        System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
         foreach (CRMapObjectDefinition registeredOutsideObject in registeredOutsideObjects)
         {
             if (registeredOutsideObject.GameObject == null)
                 continue;
 
-            HandleSpawningOutsideObjects(registeredOutsideObject, random); // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
+            HandleSpawningOutsideObjects(registeredOutsideObject, everyoneRandom, serverOnlyRandom);
+            // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
     }
 
-    private static void HandleSpawningOutsideObjects(CRMapObjectDefinition outsideObjDef, Random random)
+    private static void HandleSpawningOutsideObjects(CRMapObjectDefinition outsideObjDef, System.Random everyoneRandom, System.Random serverOnlyRandom)
     {
         SelectableLevel level = RoundManager.Instance.currentLevel;
-        AnimationCurve animationCurve = new(new Keyframe(0, 0), new Keyframe(1, 0));
         GameObject prefabToSpawn = outsideObjDef.GameObject;
-        animationCurve = outsideObjDef.OutsideSpawnMechanics.CurveFunction(level);
+        AnimationCurve animationCurve = outsideObjDef.OutsideSpawnMechanics!.CurveFunction(level);
 
         int randomNumberToSpawn;
         if (outsideObjDef.HasNetworkObject)
@@ -61,13 +61,13 @@ static class RoundManagerPatch
             if (!NetworkManager.Singleton.IsServer)
                 return;
 
-            float number = animationCurve.Evaluate(UnityEngine.Random.Range(0f, 1f)) + 0.5f;
+            float number = animationCurve.Evaluate(serverOnlyRandom.NextFloat(0f, 1f)) + 0.5f;
             CodeRebirthLibPlugin.ExtendedLogging($"number generated for host only: {number}");
             randomNumberToSpawn = Mathf.FloorToInt(number);
         }
         else
         {
-            float number = animationCurve.Evaluate(random.NextFloat(0f, 1f)) + 0.5f;
+            float number = animationCurve.Evaluate(everyoneRandom.NextFloat(0f, 1f)) + 0.5f;
             CodeRebirthLibPlugin.ExtendedLogging("number generated for everyone: " + number);
             randomNumberToSpawn = Mathf.FloorToInt(number);
         }
@@ -78,13 +78,13 @@ static class RoundManagerPatch
             Vector3 spawnPos;
             if (outsideObjDef.HasNetworkObject)
             {
-                spawnPos = RoundManager.Instance.outsideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.outsideAINodes.Length)].transform.position; // TODO a lot of these UnityEngine's need to be changed to use a host seed of some sort so that seeds can fully replicate the whole level
-                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, new System.Random(UnityEngine.Random.Range(0, 10000)), -1) + (Vector3.up * 2);
+                spawnPos = RoundManager.Instance.outsideAINodes[serverOnlyRandom.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
+                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, serverOnlyRandom, -1) + (Vector3.up * 2);
             }
             else
             {
-                spawnPos = RoundManager.Instance.outsideAINodes[random.Next(RoundManager.Instance.outsideAINodes.Length)].transform.position;
-                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, random, -1) + (Vector3.up * 2);
+                spawnPos = RoundManager.Instance.outsideAINodes[everyoneRandom.Next(RoundManager.Instance.outsideAINodes.Length)].transform.position;
+                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, everyoneRandom, -1) + (Vector3.up * 2);
             }
 
             if (!Physics.Raycast(spawnPos, Vector3.down, out RaycastHit hit, 100, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))

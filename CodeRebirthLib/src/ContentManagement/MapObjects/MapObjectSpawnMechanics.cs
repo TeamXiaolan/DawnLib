@@ -51,7 +51,6 @@ public class MapObjectSpawnMechanics
             return AnimationCurve.Linear(0, 0, 1, 0);
 
         string actualLevelName = GetLLLNameOfLevel(level.name);
-        // bool isValidLevelType = Enum.TryParse(actualLevelName, true, out Levels.LevelTypes levelType); // TODO: some way to determine this stuff without LL, probably just using LLL lol
         bool isVanilla = VanillaLevels.IsVanillaLevel(level);
         CodeRebirthLibPlugin.ExtendedLogging($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
         if (isVanilla && CurvesByMoonName.TryGetValue(actualLevelName, out AnimationCurve curve))

@@ -7,7 +7,7 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
 public class CRParentAchievement : CRAchievementBaseDefinition, IProgress
 {
-    [field: SerializeField]
+    [field: SerializeReference]
     public List<CRAchievementReference> ChildrenAchievementNames { get; private set; } = new();
 
     public override void Register(CRMod mod)

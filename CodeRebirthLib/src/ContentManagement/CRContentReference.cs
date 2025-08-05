@@ -1,7 +1,6 @@
 ﻿using System;
 using Unity.Netcode;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CodeRebirthLib.ContentManagement;
 
@@ -9,10 +8,10 @@ namespace CodeRebirthLib.ContentManagement;
 public abstract class CRContentReference(string name) : INetworkSerializable
 {
     [SerializeField]
-    protected string entityName = name;
+    internal string entityName = name;
     
     [SerializeField]
-    private string _assetGUID;
+    internal string assetGUID = string.Empty;
     
     public abstract Type ContentType { get; }
     abstract internal string GetEntityName(CRContentDefinition obj);

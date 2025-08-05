@@ -44,6 +44,10 @@ static class StartOfRoundPatch
             level.spawnableMapObjects = list.ToArray();
         }
 
+        AnimationCurve curve = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level);
+        if (curve == AnimationCurve.Linear(0, 0, 1, 0))
+            return;
+
         SpawnableMapObject spawnableMapObject = new()
         {
             prefabToSpawn = registeredMapObject.GameObject,
@@ -56,9 +60,7 @@ static class StartOfRoundPatch
             numberToSpawn = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level) // this works right?
         };
 
-        var mapObjectsList = level.spawnableMapObjects.ToList();
-        mapObjectsList.Add(spawnableMapObject);
-        level.spawnableMapObjects = mapObjectsList.ToArray(); // would it be a problem to add it to a level even though the numberToSpawn is certain to be 0 depending on the level?
+        level.spawnableMapObjects = level.spawnableMapObjects.Append(spawnableMapObject).ToArray();
         CodeRebirthLibPlugin.ExtendedLogging($"added {registeredMapObject.GameObject.name} to level {level.name}.");
     }
 
