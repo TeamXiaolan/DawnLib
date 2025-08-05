@@ -14,7 +14,7 @@ static class TerminalPatch
         {
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
             ProgressiveUnlockData? unlockData = ProgressiveUnlockableHandler.AllProgressiveUnlockables
-                .FirstOrDefault(it => it.Definition.UnlockableItemDef.unlockable == unlockableItem);
+                .FirstOrDefault(it => it.Definition.UnlockableItem == unlockableItem);
 
             if (unlockData != null && !unlockData.IsUnlocked)
             {

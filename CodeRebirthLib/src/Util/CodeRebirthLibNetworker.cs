@@ -89,7 +89,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < definitions.Length; i++)
         {
             CRUnlockableDefinition definition = definitions[i];
-            CodeRebirthLibPlugin.ExtendedLogging($"setting state of {definition.UnlockableItemDef.unlockable.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
+            CodeRebirthLibPlugin.ExtendedLogging($"setting state of {definition.UnlockableItem.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
             definition.ProgressiveData!.SetFromServer(states[i]);
         }
     }

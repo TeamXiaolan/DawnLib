@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.ContentManagement.MapObjects;
 using CodeRebirthLib.Extensions;
@@ -6,14 +6,55 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
-static class RoundManagerPatch
+
+static class CRMapObjectsPatch
 {
-    internal static List<CRMapObjectDefinition> registeredOutsideObjects = [];
+    private static List<CRMapObjectDefinition> _registeredInsideMapObjects => CRMod.AllMapObjects().Where(x => x.InsideSpawnMechanics != null).ToList();
+    private static bool _alreadyAddedInsideMapObjects = false;
 
     internal static void Init()
     {
+        On.StartOfRound.Awake += StartOfRound_Awake;
         On.RoundManager.SpawnOutsideHazards += RoundManager_SpawnOutsideHazards;
         On.RoundManager.SpawnMapObjects += RoundManager_SpawnMapObjects;
+    }
+
+    private static void StartOfRound_Awake(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        orig(self);
+        if (_alreadyAddedInsideMapObjects)
+            return;
+
+        foreach (SelectableLevel level in StartOfRound.Instance.levels)
+        {
+            foreach (var insideMapObject in _registeredInsideMapObjects)
+            {
+                HandleAddingInsideMapObjectToLevel(insideMapObject, level);
+            }
+        }
+    }
+
+    private static void HandleAddingInsideMapObjectToLevel(CRMapObjectDefinition registeredMapObject, SelectableLevel level)
+    {
+        AnimationCurve curve = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level);
+        if (curve == AnimationCurve.Linear(0, 0, 1, 0))
+            return;
+
+        SpawnableMapObject spawnableMapObject = new()
+        {
+            prefabToSpawn = registeredMapObject.GameObject,
+            spawnFacingAwayFromWall = registeredMapObject.InsideMapObjectSettings.spawnFacingAwayFromWall,
+            spawnFacingWall = registeredMapObject.InsideMapObjectSettings.spawnFacingWall,
+            spawnWithBackToWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackToWall,
+            spawnWithBackFlushAgainstWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackFlushAgainstWall,
+            requireDistanceBetweenSpawns = registeredMapObject.InsideMapObjectSettings.requireDistanceBetweenSpawns,
+            disallowSpawningNearEntrances = registeredMapObject.InsideMapObjectSettings.disallowSpawningNearEntrances,
+            numberToSpawn = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level) // this works right?
+        };
+
+        level.spawnableMapObjects = level.spawnableMapObjects.Append(spawnableMapObject).ToArray();
+        _alreadyAddedInsideMapObjects = true;
+        CodeRebirthLibPlugin.ExtendedLogging($"added {registeredMapObject.GameObject.name} to level {level.name}.");
     }
 
     private static void RoundManager_SpawnMapObjects(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
@@ -22,7 +63,7 @@ static class RoundManagerPatch
 
         foreach (RandomMapObject randomMapObject in randomMapObjects)
         {
-            foreach (CRMapObjectDefinition mapObject in StartOfRoundPatch.registeredInsideMapObjects)
+            foreach (CRMapObjectDefinition mapObject in _registeredInsideMapObjects)
             {
                 if (randomMapObject.spawnablePrefabs.Any((prefab) => prefab == mapObject.GameObject))
                     continue;
@@ -32,6 +73,8 @@ static class RoundManagerPatch
         }
         orig(self);
     }
+
+    internal static List<CRMapObjectDefinition> registeredOutsideObjects => CRMod.AllMapObjects().Where(x => x.OutsideSpawnMechanics != null).ToList();
 
     private static void RoundManager_SpawnOutsideHazards(On.RoundManager.orig_SpawnOutsideHazards orig, RoundManager self)
     {

@@ -12,14 +12,14 @@ public class MoonWeightTransformer : WeightTransformer
     public override string ToConfigString()
     {
         string matchingMoons = string.Join(",", MatchingMoons);
-        return $"{matchingMoons} | {Value} | {Operation}";
+        return $" {matchingMoons} : {Value} : {Operation} |";
     }
 
     public override void FromConfigString(string config)
     {
-        string[] split = config.Split('|');
+        string[] split = config.Split(':');
 
-        MatchingMoons = split[0].Split(',').Select(s => s.Trim()).ToList();
+        MatchingMoons = split[0].Split(',').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).ToList();
         Value = float.Parse(split[1].Trim());
         Operation = Enum.Parse<WeightOperation>(split[2].Trim());
     }

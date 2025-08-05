@@ -4,7 +4,7 @@ using CodeRebirthLib.Extensions;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirth.src.MiscScripts;
+namespace CodeRebirthLib.MiscScripts;
 
 [Serializable]
 public class MaterialsWithRenderer

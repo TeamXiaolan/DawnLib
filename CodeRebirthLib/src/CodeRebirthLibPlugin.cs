@@ -3,11 +3,11 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
-using CodeRebirth.src.MiscScripts;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 using CodeRebirthLib.MiscScriptManagement;
+using CodeRebirthLib.MiscScripts;
 using CodeRebirthLib.ModCompats;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
@@ -35,7 +35,8 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
         CodeRebirthLibConfig.Bind(ConfigManager);
         NetcodePatcher();
-        RoundManagerPatch.Init();
+        CRItemsPatch.Init();
+        CRMapObjectsPatch.Init();
         GameNetworkManagerPatch.Init();
         EnemyAIPatch.Init();
         StartOfRoundPatch.Init();

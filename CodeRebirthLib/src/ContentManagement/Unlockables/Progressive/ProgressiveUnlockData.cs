@@ -19,7 +19,7 @@ public class ProgressiveUnlockData
     public bool IsUnlocked { get; private set; }
     public string OriginalName { get; }
 
-    private UnlockableItem Unlockable => Definition.UnlockableItemDef.unlockable;
+    private UnlockableItem Unlockable => Definition.UnlockableItem;
 
     private string SaveID => OriginalName;
     internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(SaveID), 0);

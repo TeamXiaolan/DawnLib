@@ -13,6 +13,14 @@ public class SpawnWeightsPreset : ScriptableObject
     [field: SerializeField]
     public List<WeightTransformer> SpawnWeightsTransformers { get; private set;} = new();
 
+    public void SetupSpawnWeightsPreset(int baseWeight, string presetsConfig)
+    {
+        SpawnWeightsTransformers.Clear();
+        BaseWeight = baseWeight;
+        // TODO differentiate between the different presets somehow in that one string and recreate all the transformers?
+        // SpawnWeightsTransformers.Add(weightTransformer);
+    }
+
     public float GetWeight()
     {
         float weight = BaseWeight;
@@ -24,4 +32,4 @@ public class SpawnWeightsPreset : ScriptableObject
     }
 }
 
-// my interior weight transformer = facility,manision | 0.3 | mult
+// my interior weight transformer = facility,manision : 0.3 : mult

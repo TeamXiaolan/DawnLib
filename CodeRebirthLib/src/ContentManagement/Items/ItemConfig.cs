@@ -8,6 +8,7 @@ public class ItemConfig : CRContentConfig
     public ConfigEntry<int>? Cost;
     public ConfigEntry<bool>? IsScrapItem;
     public ConfigEntry<bool>? IsShopItem;
-    public ConfigEntry<string>? SpawnWeights;
+    public ConfigEntry<int>? PresetsBaseWeight;
+    public ConfigEntry<string>? PresetsSpawnWeights;
     public ConfigEntry<BoundedRange>? Worth;
 }

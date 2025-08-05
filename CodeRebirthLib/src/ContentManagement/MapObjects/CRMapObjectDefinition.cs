@@ -46,7 +46,6 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             try
             {
                 InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
-                StartOfRoundPatch.registeredInsideMapObjects.Add(this);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {
@@ -60,7 +59,6 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             try
             {
                 OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
-                RoundManagerPatch.registeredOutsideObjects.Add(this);
             }
             catch (MalformedAnimationCurveConfigException exception)
             {

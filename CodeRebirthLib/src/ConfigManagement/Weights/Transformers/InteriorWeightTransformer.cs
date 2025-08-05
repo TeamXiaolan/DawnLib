@@ -12,14 +12,14 @@ public class InteriorWeightTransformer : WeightTransformer
     public override string ToConfigString()
     {
         string matchingInteriors = string.Join(",", MatchingInteriors);
-        return $"{matchingInteriors} | {Value} | {Operation}";
+        return $" {matchingInteriors} : {Value} : {Operation} |";
     }
 
     public override void FromConfigString(string config)
     {
-        string[] split = config.Split('|');
+        string[] split = config.Split(':');
 
-        MatchingInteriors = split[0].Split(',').Select(s => s.Trim()).ToList();
+        MatchingInteriors = split[0].Split(',').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).ToList();
         Value = float.Parse(split[1].Trim());
         Operation = Enum.Parse<WeightOperation>(split[2].Trim());
     }

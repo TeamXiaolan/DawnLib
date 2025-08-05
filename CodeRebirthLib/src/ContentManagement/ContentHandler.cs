@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ContentManagement.Unlockables;
 
 namespace CodeRebirthLib.ContentManagement;
 public abstract class ContentHandler(CRMod mod)
@@ -62,6 +63,9 @@ public abstract class ContentHandler(CRMod mod)
         CRContentDefinition[] definitions = bundle.Content;
         foreach (CRContentDefinition definition in definitions)
         {
+            if (definition is CRUnlockableDefinition)
+                continue;
+
             definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(mod);
         }

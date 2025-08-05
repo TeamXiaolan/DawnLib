@@ -1,10 +1,8 @@
-﻿using LethalLib.Extras;
-using UnityEngine;
-using UnityEngine.Serialization;
+﻿using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 public class UnlockableUpgradeScrap : GrabbableObject
 {
-    [field: SerializeField] [field: FormerlySerializedAs("unlockableItemDef")]
-    public UnlockableItemDef UnlockableItemDef { get; private set; } = null!;
+    [field: SerializeField]
+    public CRUnlockableReference CRUnlockableReference { get; private set; } = null!;
 }

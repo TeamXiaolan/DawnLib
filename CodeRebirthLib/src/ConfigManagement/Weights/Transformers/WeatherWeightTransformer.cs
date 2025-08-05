@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement.Weights.Transformers;
@@ -12,14 +11,18 @@ public class WeatherWeightTransformer : WeightTransformer
     public override string ToConfigString()
     {
         string matchingWeathers = string.Join(",", MatchingWeathers);
-        return $"{matchingWeathers} | {Value} | {Operation}";
+        return $" {matchingWeathers} : {Value} : {Operation} |";
     }
 
     public override void FromConfigString(string config)
     {
-        string[] split = config.Split('|');
+        string[] split = config.Split(':');
 
-        MatchingWeathers = split[0].Split(',').Select(s => s.Trim()).ToList();
+        MatchingWeathers.Clear();
+        foreach (var weather in split[0].Split(','))
+        {
+            MatchingWeathers.Add(weather.Trim().ToLowerInvariant());
+        }
         Value = float.Parse(split[1].Trim());
         Operation = Enum.Parse<WeightOperation>(split[2].Trim());
     }

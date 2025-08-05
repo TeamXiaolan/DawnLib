@@ -35,7 +35,7 @@ public class UnlockShipUnlockable : NetworkBehaviour
         if (player.currentlyHeldObjectServer is UnlockableUpgradeScrap unlockableUpgradeScrap)
         {
             ProgressiveUnlockData unlockData = ProgressiveUnlockableHandler.AllProgressiveUnlockables
-                .First(it => it.Definition.UnlockableItemDef == unlockableUpgradeScrap.UnlockableItemDef);
+                .First(it => it.Definition == unlockableUpgradeScrap.CRUnlockableReference);
             unlockData.Unlock(
                 new HUDDisplayTip(
                     "Assembled Parts",

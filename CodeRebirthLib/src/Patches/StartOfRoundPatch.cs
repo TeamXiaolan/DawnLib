@@ -2,7 +2,7 @@
 using System.Linq;
 using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
-using CodeRebirthLib.ContentManagement.MapObjects;
+using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
 using Unity.Netcode;
@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 namespace CodeRebirthLib.Patches;
 static class StartOfRoundPatch
 {
-    internal static List<CRMapObjectDefinition> registeredInsideMapObjects = [];
+    internal static List<CRItemDefinition> registeredCRItems => CRMod.AllItems().ToList();
 
     internal static void Init()
     {
@@ -26,42 +26,6 @@ static class StartOfRoundPatch
     {
         orig(self);
         VanillaLevels.Init();
-        foreach (SelectableLevel level in StartOfRound.Instance.levels)
-        {
-            foreach (var insideMapObject in registeredInsideMapObjects)
-            {
-                HandleAddingInsideMapObjectToLevel(insideMapObject, level);
-            }
-        }
-    }
-
-    private static void HandleAddingInsideMapObjectToLevel(CRMapObjectDefinition registeredMapObject, SelectableLevel level)
-    {
-        if (level.spawnableMapObjects.Any(x => x.prefabToSpawn == registeredMapObject.GameObject))
-        {
-            var list = level.spawnableMapObjects.ToList();
-            list.RemoveAll(x => x.prefabToSpawn == registeredMapObject.GameObject);
-            level.spawnableMapObjects = list.ToArray();
-        }
-
-        AnimationCurve curve = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level);
-        if (curve == AnimationCurve.Linear(0, 0, 1, 0))
-            return;
-
-        SpawnableMapObject spawnableMapObject = new()
-        {
-            prefabToSpawn = registeredMapObject.GameObject,
-            spawnFacingAwayFromWall = registeredMapObject.InsideMapObjectSettings.spawnFacingAwayFromWall,
-            spawnFacingWall = registeredMapObject.InsideMapObjectSettings.spawnFacingWall,
-            spawnWithBackToWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackToWall,
-            spawnWithBackFlushAgainstWall = registeredMapObject.InsideMapObjectSettings.spawnWithBackFlushAgainstWall,
-            requireDistanceBetweenSpawns = registeredMapObject.InsideMapObjectSettings.requireDistanceBetweenSpawns,
-            disallowSpawningNearEntrances = registeredMapObject.InsideMapObjectSettings.disallowSpawningNearEntrances,
-            numberToSpawn = registeredMapObject.InsideSpawnMechanics!.CurveFunction(level) // this works right?
-        };
-
-        level.spawnableMapObjects = level.spawnableMapObjects.Append(spawnableMapObject).ToArray();
-        CodeRebirthLibPlugin.ExtendedLogging($"added {registeredMapObject.GameObject.name} to level {level.name}.");
     }
 
     private static void StartOfRound_AutoSaveShipData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)

@@ -2,7 +2,6 @@
 using System.Linq;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Unlockables.Progressive;
-using LethalLib.Extras;
 using LethalLib.Modules;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -13,8 +12,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 {
     public const string REGISTRY_ID = "unlockables";
 
-    [field: FormerlySerializedAs("unlockableItemDef")] [field: SerializeField]
-    public UnlockableItemDef UnlockableItemDef { get; private set; }
+    public UnlockableItem UnlockableItem { get; private set; }
 
     [field: FormerlySerializedAs("DenyPurchaseNode")] [field: SerializeField]
     public TerminalNode? ProgressiveDenyNode { get; private set; }
@@ -23,27 +21,27 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 
     public ProgressiveUnlockData? ProgressiveData { get; private set; }
 
-    protected override string EntityNameReference => UnlockableItemDef.unlockable.unlockableName;
+    protected override string EntityNameReference => UnlockableItem.unlockableName;
 
     public override void Register(CRMod mod, UnlockableData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateUnlockableConfig(section, data, UnlockableItemDef.unlockable.unlockableName);
+        Config = CreateUnlockableConfig(section, data, UnlockableItem.unlockableName);
 
         if (Config.IsShipUpgrade.Value)
         {
-            LethalLib.Modules.Unlockables.RegisterUnlockable(UnlockableItemDef, Config.Cost.Value, StoreType.ShipUpgrade);
+            LethalLib.Modules.Unlockables.RegisterUnlockable(UnlockableItem, Config.Cost.Value, StoreType.ShipUpgrade);
         }
 
         if (Config.IsDecor.Value)
         {
-            LethalLib.Modules.Unlockables.RegisterUnlockable(UnlockableItemDef, Config.Cost.Value, StoreType.Decor);
+            LethalLib.Modules.Unlockables.RegisterUnlockable(UnlockableItem, Config.Cost.Value, StoreType.Decor);
         }
 
         if (Config.IsProgressive?.Value ?? data.isProgressive)
         {
             if (!ProgressiveDenyNode) ProgressiveDenyNode = CreateDefaultProgressiveDenyNode();
-            CodeRebirthLibPlugin.ExtendedLogging($"Creating ProgressiveUnlockData for {UnlockableItemDef.unlockable.unlockableName}");
+            CodeRebirthLibPlugin.ExtendedLogging($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
             ProgressiveData = new ProgressiveUnlockData(this);
         }
 
