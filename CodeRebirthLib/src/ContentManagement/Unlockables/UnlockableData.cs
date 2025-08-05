@@ -3,12 +3,8 @@ using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Unlockables;
 [Serializable]
-public class UnlockableData : EntityData
+public class UnlockableData : EntityData<CRUnlockableReference>
 {
-    [SerializeReference]
-    public CRUnlockableReference unlockableReference = new(string.Empty);
-    public override string EntityName => unlockableReference.entityName;
-
     public int cost;
     public bool isShipUpgrade;
     public bool isDecor;
