@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
@@ -43,7 +44,7 @@ public class ConfigManager(ConfigFile file)
         {
             return context.Bind(configDefinition.settingName, configDefinition.Description, defaultValue);
         }
-        
+
         return configDefinition.DynamicConfigType switch
         {
             CRDynamicConfigType.String => Bind(configDefinition.defaultString),
@@ -128,5 +129,39 @@ public class ConfigManager(ConfigFile file)
     public static AnimationCurve ParseCurve(string keyValuePairs)
     {
         return TomlTypeConverter.ConvertToValue<AnimationCurve>(keyValuePairs);
+    }
+
+    private const string illegalCharacters = ".,?!@#$%^&*()_+-=';:'\"";
+
+    private static string GetNumberlessPlanetName(string planetName)
+    {
+        if (planetName != null)
+            return new string(planetName.SkipWhile(c => !char.IsLetter(c)).ToArray());
+        else
+            return string.Empty;
+    }
+
+    private static string StripSpecialCharacters(string input)
+    {
+        string returnString = string.Empty;
+
+        foreach (char charmander in input)
+            if ((!illegalCharacters.ToCharArray().Contains(charmander) && char.IsLetterOrDigit(charmander)) || charmander.ToString() == " ")
+                returnString += charmander;
+
+        return returnString;
+    }
+
+    internal static string GetLLLNameOfLevel(string levelName)
+    {
+        // -> 10 Example
+        string newName = StripSpecialCharacters(GetNumberlessPlanetName(levelName));
+        // -> Example
+        if (!newName.EndsWith("Level", true, CultureInfo.InvariantCulture))
+            newName += "Level";
+        // -> ExampleLevel
+        newName = newName.ToLowerInvariant();
+        // -> examplelevel
+        return newName;
     }
 }

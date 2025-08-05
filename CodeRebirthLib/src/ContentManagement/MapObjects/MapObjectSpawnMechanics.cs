@@ -50,7 +50,7 @@ public class MapObjectSpawnMechanics
         if (level == null)
             return AnimationCurve.Linear(0, 0, 1, 0);
 
-        string actualLevelName = GetLLLNameOfLevel(level.name);
+        string actualLevelName = ConfigManager.GetLLLNameOfLevel(level.name);
         bool isVanilla = VanillaLevels.IsVanillaLevel(level);
         CodeRebirthLibPlugin.ExtendedLogging($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
         if (isVanilla && CurvesByMoonName.TryGetValue(actualLevelName, out AnimationCurve curve))
@@ -76,39 +76,5 @@ public class MapObjectSpawnMechanics
         }
         CodeRebirthLibPlugin.ExtendedLogging($"Failed to find curve for level: {level}");
         return AnimationCurve.Linear(0, 0, 1, 0); // Default case if no curve matches
-    }
-
-    private const string illegalCharacters = ".,?!@#$%^&*()_+-=';:'\"";
-
-    private static string GetNumberlessPlanetName(string planetName)
-    {
-        if (planetName != null)
-            return new string(planetName.SkipWhile(c => !char.IsLetter(c)).ToArray());
-        else
-            return string.Empty;
-    }
-
-    private static string StripSpecialCharacters(string input)
-    {
-        string returnString = string.Empty;
-
-        foreach (char charmander in input)
-            if ((!illegalCharacters.ToCharArray().Contains(charmander) && char.IsLetterOrDigit(charmander)) || charmander.ToString() == " ")
-                returnString += charmander;
-
-        return returnString;
-    }
-
-    internal static string GetLLLNameOfLevel(string levelName)
-    {
-        // -> 10 Example
-        string newName = StripSpecialCharacters(GetNumberlessPlanetName(levelName));
-        // -> Example
-        if (!newName.EndsWith("Level", true, CultureInfo.InvariantCulture))
-            newName += "Level";
-        // -> ExampleLevel
-        newName = newName.ToLowerInvariant();
-        // -> examplelevel
-        return newName;
     }
 }
