@@ -10,7 +10,7 @@ public class CREnemyReference(string name) : CRContentReference<CREnemyDefinitio
     
     public static implicit operator CREnemyDefinition?(CREnemyReference reference)
     {
-        if (CRMod.AllEnemies().TryGetFromEnemyName(reference.entityName, out var obj))
+        if (CRLibContent.AllEnemies().TryGetFromEnemyName(reference.entityName, out var obj))
         {
             return obj;
         }

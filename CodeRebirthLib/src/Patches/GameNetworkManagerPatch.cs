@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
@@ -36,7 +37,6 @@ static class GameNetworkManagerPatch
 
             NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
         }
-        VanillaEnemies.Init();
         _alreadyRegisteredNetworkPrefabs = true;
     }
 

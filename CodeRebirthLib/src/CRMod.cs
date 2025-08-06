@@ -164,10 +164,7 @@ public class CRMod
     {
         return GetRegistryByName<CREnemyDefinition>(CREnemyDefinition.REGISTRY_ID);
     }
-    public static IEnumerable<CREnemyDefinition> AllEnemies()
-    {
-        return AllMods.SelectMany(mod => mod.EnemyRegistry());
-    }
+    
 
     public CRRegistry<CRItemDefinition> ItemRegistry()
     {

@@ -1,61 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Unity.Netcode;
 
 namespace CodeRebirthLib.ContentManagement.Enemies;
-[SuppressMessage("ReSharper", "IdentifierTypo", Justification = "All these variables are named to match the scriptable object name")]
+[Obsolete("Use LethalContent.Enemies instead")]
 public static class VanillaEnemies
 {
-    private static readonly List<EnemyType> _allTypes = new();
-    public static IReadOnlyList<EnemyType> AllEnemyTypes => _allTypes.AsReadOnly();
+    public static IReadOnlyList<EnemyType> AllEnemyTypes => LethalContent.Enemies.All;
 
-    public static EnemyType Flowerman { get; private set; }
-    public static EnemyType Centipede { get; private set; }
-    public static EnemyType MouthDog { get; private set; }
-    public static EnemyType Crawler { get; private set; }
-    public static EnemyType HoarderBug { get; private set; }
-    public static EnemyType SandSpider { get; private set; }
-    public static EnemyType Blob { get; private set; }
-    public static EnemyType ForestGiant { get; private set; }
-    public static EnemyType DressGirl { get; private set; }
-    public static EnemyType SpringMan { get; private set; }
-    public static EnemyType SandWorm { get; private set; }
-    public static EnemyType Jester { get; private set; }
-    public static EnemyType Puffer { get; private set; }
-    public static EnemyType Doublewing { get; private set; }
-    public static EnemyType DocileLocustBees { get; private set; }
-    public static EnemyType RedLocustBees { get; private set; }
-    public static EnemyType BaboonHawk { get; private set; }
-    public static EnemyType Nutcracker { get; private set; }
-    public static EnemyType MaskedPlayerEnemy { get; private set; }
-    public static EnemyType RadMech { get; private set; }
-    public static EnemyType Butler { get; private set; }
-    public static EnemyType ButlerBees { get; private set; }
-    public static EnemyType FlowerSnake { get; private set; }
-    public static EnemyType BushWolf { get; private set; }
-    public static EnemyType ClaySurgeon { get; private set; }
-    public static EnemyType CaveDweller { get; private set; }
-    public static EnemyType GiantKiwi { get; private set; }
-
-    internal static void Init()
-    {
-        List<string> unknownTypes = [];
-
-        for (int i = 0; i < NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs.Count; i++)
-        {
-            NetworkPrefab networkPrefab = NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs[i];
-            if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI) || enemyAI.enemyType == null)
-                continue;
-
-            _allTypes.Add(enemyAI.enemyType);
-            CodeRebirthLibPlugin.ExtendedLogging($"Found enemy: {enemyAI.enemyType.name}");
-
-            PropertyInfo property = typeof(VanillaEnemies).GetProperty(enemyAI.enemyType.name);
-            if (property == null) unknownTypes.Add(enemyAI.enemyType.name);
-            else property.SetValue(null, enemyAI.enemyType);
-        }
-
-        CodeRebirthLibPlugin.ExtendedLogging($"Unknown enemy types: {string.Join(", ", unknownTypes)}");
-    }
+    public static EnemyType Flowerman => LethalContent.Enemies.Flowerman;
+    public static EnemyType Centipede => LethalContent.Enemies.Centipede;
+    public static EnemyType MouthDog => LethalContent.Enemies.MouthDog;
+    public static EnemyType Crawler => LethalContent.Enemies.Crawler;
+    public static EnemyType HoarderBug => LethalContent.Enemies.HoarderBug;
+    public static EnemyType SandSpider => LethalContent.Enemies.SandSpider;
+    public static EnemyType Blob => LethalContent.Enemies.Blob;
+    public static EnemyType ForestGiant => LethalContent.Enemies.ForestGiant;
+    public static EnemyType DressGirl => LethalContent.Enemies.DressGirl;
+    public static EnemyType SpringMan => LethalContent.Enemies.SpringMan;
+    public static EnemyType SandWorm => LethalContent.Enemies.SandWorm;
+    public static EnemyType Jester => LethalContent.Enemies.Jester;
+    public static EnemyType Puffer => LethalContent.Enemies.Puffer;
+    public static EnemyType Doublewing => LethalContent.Enemies.Doublewing;
+    public static EnemyType DocileLocustBees => LethalContent.Enemies.DocileLocustBees;
+    public static EnemyType RedLocustBees => LethalContent.Enemies.RedLocustBees;
+    public static EnemyType BaboonHawk => LethalContent.Enemies.BaboonHawk;
+    public static EnemyType Nutcracker => LethalContent.Enemies.Nutcracker;
+    public static EnemyType MaskedPlayerEnemy => LethalContent.Enemies.MaskedPlayerEnemy;
+    public static EnemyType RadMech => LethalContent.Enemies.RadMech;
+    public static EnemyType Butler => LethalContent.Enemies.Butler;
+    public static EnemyType ButlerBees => LethalContent.Enemies.ButlerBees;
+    public static EnemyType FlowerSnake => LethalContent.Enemies.FlowerSnake;
+    public static EnemyType BushWolf => LethalContent.Enemies.BushWolf;
+    public static EnemyType ClaySurgeon => LethalContent.Enemies.ClaySurgeon;
+    public static EnemyType CaveDweller => LethalContent.Enemies.CaveDweller;
+    public static EnemyType GiantKiwi => LethalContent.Enemies.GiantKiwi;
 }

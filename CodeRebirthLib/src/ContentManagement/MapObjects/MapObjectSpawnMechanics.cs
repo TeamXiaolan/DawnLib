@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.ContentManagement.Levels;
 using CodeRebirthLib.ModCompats;
 using UnityEngine;
 
@@ -51,7 +52,7 @@ public class MapObjectSpawnMechanics
             return AnimationCurve.Linear(0, 0, 1, 0);
 
         string actualLevelName = ConfigManager.GetLLLNameOfLevel(level.name);
-        bool isVanilla = VanillaLevels.IsVanillaLevel(level);
+        bool isVanilla = level.IsVanilla();
         CodeRebirthLibPlugin.ExtendedLogging($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
         if (isVanilla && CurvesByMoonName.TryGetValue(actualLevelName, out AnimationCurve curve))
         {

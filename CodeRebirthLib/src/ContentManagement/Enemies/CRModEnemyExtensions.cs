@@ -17,7 +17,7 @@ public static class CRModEnemyExtensions
 
     public static bool TryGetDefinition(this EnemyType type, [NotNullWhen(true)] out CREnemyDefinition? definition)
     {
-        definition = CRMod.AllEnemies().FirstOrDefault(it => it.EnemyType == type);
+        definition = LethalContent.Enemies.CRLib.FirstOrDefault(it => it.EnemyType == type);
         if (!definition) CodeRebirthLibPlugin.ExtendedLogging($"TryGetDefinition for EnemyDefinition failed with {type.enemyName}");
         return definition; // implict cast
     }

@@ -35,6 +35,8 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
         CodeRebirthLibConfig.Bind(ConfigManager);
         NetcodePatcher();
+        CollectVanillaContentPatch.Init();
+        
         CRItemsPatch.Init();
         CRMapObjectsPatch.Init();
         GameNetworkManagerPatch.Init();

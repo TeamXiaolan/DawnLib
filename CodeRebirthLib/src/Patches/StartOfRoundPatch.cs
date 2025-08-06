@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
@@ -16,16 +17,9 @@ static class StartOfRoundPatch
 
     internal static void Init()
     {
-        On.StartOfRound.Awake += StartOfRound_Awake;
         On.StartOfRound.Start += StartOfRound_Start;
         On.StartOfRound.SetPlanetsWeather += StartOfRound_SetPlanetsWeather;
         On.StartOfRound.AutoSaveShipData += StartOfRound_AutoSaveShipData;
-    }
-
-    private static void StartOfRound_Awake(On.StartOfRound.orig_Awake orig, StartOfRound self)
-    {
-        orig(self);
-        VanillaLevels.Init();
     }
 
     private static void StartOfRound_AutoSaveShipData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
