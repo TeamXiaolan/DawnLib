@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Achievements;
-using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Util;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,7 +9,6 @@ namespace CodeRebirthLib.Patches;
 static class GameNetworkManagerPatch
 {
     internal static List<GameObject> networkPrefabs = new();
-    private static bool _alreadyRegisteredNetworkPrefabs = false;
 
     internal static void Init()
     {
@@ -37,7 +34,6 @@ static class GameNetworkManagerPatch
 
             NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
         }
-        _alreadyRegisteredNetworkPrefabs = true;
     }
 
     private static void GameNetworkManager_SaveItemsInShip(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)

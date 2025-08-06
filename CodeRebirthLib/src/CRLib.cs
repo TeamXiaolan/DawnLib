@@ -48,21 +48,28 @@ public static class CRLib
 
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
-        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        if (!prefab)
+            throw new ArgumentNullException(nameof(prefab));
+
         GameNetworkManagerPatch.networkPrefabs.Add(prefab);
     }
 
     public static void FixMixerGroups(GameObject prefab)
     {
-        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        if (!prefab)
+            throw new ArgumentNullException(nameof(prefab));
+
         MenuManagerPatch.prefabsToFix.Add(prefab);
     }
+
     public static void FixDoorwaySockets(GameObject prefab)
     {
-        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        if (!prefab)
+            throw new ArgumentNullException(nameof(prefab));
+
         TileInjectionPatch.tilesToFixSockets.Add(prefab);
     }
-    
+
     internal static CRMod RegisterNoCodeMod(CRModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
         var plugin = modInfo.CreatePluginMetadata();

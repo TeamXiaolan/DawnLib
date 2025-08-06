@@ -62,7 +62,9 @@ static class TileInjectionPatch
     {
         foreach (DungeonArchetype archetype in flow.GetUsedArchetypes())
         {
-            List<TileInjectionSettings> toInject = setsToInjectToArchetypes[archetype.name];
+            if (!setsToInjectToArchetypes.TryGetValue(archetype.name, out List<TileInjectionSettings> toInject))
+                continue;
+
             CodeRebirthLibPlugin.ExtendedLogging($"Injecting {toInject.Count} tileset(s) into {archetype.name}");
             
             foreach (TileInjectionSettings tileSet in toInject)
@@ -76,7 +78,7 @@ static class TileInjectionPatch
                     archetype.TileSets.Add(tileSet.Set);
                 }
             }
-        
+
             // to prevent injecting tile sets multiple times, clear the list
             setsToInjectToArchetypes[flow.name] = [];
         }
