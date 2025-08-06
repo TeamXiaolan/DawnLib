@@ -8,6 +8,7 @@ using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
+using DunGen;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -56,6 +57,11 @@ public static class CRLib
         if (!prefab) throw new ArgumentNullException(nameof(prefab));
         MenuManagerPatch.prefabsToFix.Add(prefab);
     }
+    public static void FixDoorwaySockets(GameObject prefab)
+    {
+        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        TileInjectionPatch.tilesToFixSockets.Add(prefab);
+    }
     
     internal static CRMod RegisterNoCodeMod(CRModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
@@ -75,5 +81,10 @@ public static class CRLib
     internal static ConfigFile GenerateConfigFile(BepInPlugin plugin)
     {
         return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, plugin.GUID + ".cfg"), false, plugin);
+    }
+
+    public static void InjectTileSetForDungeon(string archetypeName, TileSet tileSet, bool isBranchCap = false)
+    {
+        TileInjectionPatch.AddTileSetForDungeon(archetypeName, new TileInjectionPatch.TileInjectionSettings(tileSet, isBranchCap)); // i want to keep a lot of the public facing methods in the CRLib class
     }
 }

@@ -11,6 +11,7 @@ using CodeRebirthLib.AssetManagement;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Achievements;
+using CodeRebirthLib.ContentManagement.Dungeons;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
@@ -165,11 +166,11 @@ public class CRMod
         return GetRegistryByName<CREnemyDefinition>(CREnemyDefinition.REGISTRY_ID);
     }
     
-
     public CRRegistry<CRItemDefinition> ItemRegistry()
     {
         return GetRegistryByName<CRItemDefinition>(CRItemDefinition.REGISTRY_ID);
     }
+    [Obsolete] // todo: move to LethalContent
     public static IEnumerable<CRItemDefinition> AllItems()
     {
         return AllMods.SelectMany(mod => mod.ItemRegistry());
@@ -179,6 +180,8 @@ public class CRMod
     {
         return GetRegistryByName<CRMapObjectDefinition>(CRMapObjectDefinition.REGISTRY_ID);
     }
+    
+    [Obsolete] // todo: move to LethalContent
     public static IEnumerable<CRMapObjectDefinition> AllMapObjects()
     {
         return AllMods.SelectMany(mod => mod.MapObjectRegistry());
@@ -188,6 +191,7 @@ public class CRMod
     {
         return GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
     }
+    [Obsolete] // todo: move to LethalContent
     public static IEnumerable<CRUnlockableDefinition> AllUnlockables()
     {
         return AllMods.SelectMany(mod => mod.UnlockableRegistry());
@@ -197,10 +201,16 @@ public class CRMod
     {
         return GetRegistryByName<CRAchievementBaseDefinition>(CRAchievementBaseDefinition.REGISTRY_ID);
     }
+    // todo: Obsolete and move to LethalContent??
     public static IEnumerable<CRAchievementBaseDefinition> AllAchievements()
     {
         return AllMods.SelectMany(mod => mod.AchievementRegistry());
     }
+    public CRRegistry<CRAdditionalTilesDefinition> AdditionalTilesRegistry()
+    {
+        return GetRegistryByName<CRAdditionalTilesDefinition>(CRAdditionalTilesDefinition.REGISTRY_ID);
+    }
+    
     public static event Action<CRAchievementBaseDefinition> OnAchievementUnlocked;
 
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
@@ -216,6 +226,7 @@ public class CRMod
         CRItemDefinition.RegisterTo(this);
         CRUnlockableDefinition.RegisterTo(this);
         CRAchievementBaseDefinition.RegisterTo(this);
+        CRAdditionalTilesDefinition.RegisterTo(this);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]

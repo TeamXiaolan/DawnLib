@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CodeRebirthLib.ContentManagement;
+using CodeRebirthLib.ContentManagement.Achievements;
+using CodeRebirthLib.ContentManagement.Dungeons;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
@@ -83,7 +85,9 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             typeof(CRItemDefinition),
             typeof(CRMapObjectDefinition),
             typeof(CRUnlockableDefinition),
-            typeof(CRWeatherDefinition)
+            typeof(CRWeatherDefinition),
+            typeof(CRAchievementBaseDefinition),
+            typeof(CRAdditionalTilesDefinition)
         ];
         Content = Content.OrderBy(it =>
         {
