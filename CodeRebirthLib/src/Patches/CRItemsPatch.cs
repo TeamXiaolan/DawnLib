@@ -1,16 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ConfigManagement.Weights;
 using CodeRebirthLib.ContentManagement.Items;
-using IL.LethalQuantities;
 using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
 
 static class CRItemsPatch
 {
-    private static List<CRItemDefinition> registeredCRItems => CRMod.AllItems().ToList();
+    static readonly Dictionary<SpawnWeightsPreset, List<Item>> itemsToInjectThroughPreset = [];
 
     internal static void Init()
     {
@@ -18,21 +16,42 @@ static class CRItemsPatch
         On.RoundManager.SpawnScrapInLevel += RoundManager_SpawnScrapInLevel;
     }
 
+    internal static void AddItemForLevel(SpawnWeightsPreset spawnWeightsPreset, Item item)
+    {
+        if (!itemsToInjectThroughPreset.TryGetValue(spawnWeightsPreset, out List<Item> items))
+        {
+            items = new();
+        }
+        items.Add(item);
+        itemsToInjectThroughPreset[spawnWeightsPreset] = items;
+    }
+
     private static void StartOfRound_Awake(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         orig(self);
-        foreach (var CRItemDefinition in registeredCRItems)
+        foreach (var spawnPresetsWithItemsIn in itemsToInjectThroughPreset)
         {
-            self.allItemsList.itemsList.Add(CRItemDefinition.Item);
-            foreach (var level in self.levels)
+            /*var level = ConfigManager.GetLevelWithName(spawnPresetsWithItemsIn.Key);
+            if (level == null)
+                continue;
+
+            foreach (Item item in spawnPresetsWithItemsIn.Value)
             {
+                if (!item.TryGetDefinition(out CRItemDefinition? CRItemDefinition))
+                    continue;
+
+                if (!self.allItemsList.itemsList.Contains(CRItemDefinition.Item))
+                {
+                    self.allItemsList.itemsList.Add(CRItemDefinition.Item);
+                }
+
                 var spawnableItemWithRarity = new SpawnableItemWithRarity()
                 {
                     spawnableItem = CRItemDefinition.Item,
                     rarity = 0 // TODO !! get the base weight and put it here by default? update weights on interior change and weather change.
                 };
                 level.spawnableScrap.Add(spawnableItemWithRarity);
-            }
+            }*/
         }
     }
 

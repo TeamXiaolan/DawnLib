@@ -12,7 +12,7 @@ static class GameNetworkManagerPatch
 
     internal static void Init()
     {
-        On.GameNetworkManager.Start += GameNetworkManagerOnStart;
+        On.GameNetworkManager.Start += GameNetworkManager_Start;
         On.GameNetworkManager.SaveLocalPlayerValues += GameNetworkManager_SaveLocalPlayerValues;
         On.GameNetworkManager.SaveItemsInShip += GameNetworkManager_SaveItemsInShip;
         On.GameNetworkManager.ResetSavedGameValues += GameNetworkManager_ResetSavedGameValues;
@@ -24,7 +24,7 @@ static class GameNetworkManagerPatch
         CRAchievementHandler.SaveAll();
     }
 
-    private static void GameNetworkManagerOnStart(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
+    private static void GameNetworkManager_Start(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
     {
         orig(self);
         foreach (GameObject networkPrefab in networkPrefabs)

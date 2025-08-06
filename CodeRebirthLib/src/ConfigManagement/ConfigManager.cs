@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using BepInEx.Configuration;
 using CodeRebirthLib.AssetManagement;
+using CodeRebirthLib.ContentManagement;
 using LethalLib.Modules;
 using UnityEngine;
 
@@ -163,5 +164,17 @@ public class ConfigManager(ConfigFile file)
         newName = newName.ToLowerInvariant();
         // -> examplelevel
         return newName;
+    }
+
+    internal static SelectableLevel? GetLevelWithName(string levelName)
+    {
+        foreach (var level in LethalContent.Levels.All)
+        {
+            if (GetLLLNameOfLevel(level.name) != levelName)
+                continue;
+
+            return level;
+        }
+        return null;
     }
 }

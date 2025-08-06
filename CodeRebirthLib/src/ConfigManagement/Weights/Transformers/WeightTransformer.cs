@@ -1,24 +1,23 @@
 using System;
-using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement.Weights.Transformers;
-public abstract class WeightTransformer : ScriptableObject
+[Serializable]
+public abstract class WeightTransformer
 {
-    public float Value;
     public WeightOperation Operation;
 
     public abstract string ToConfigString();
     public abstract void FromConfigString(string config);
-    public abstract float GetNewWeight(float previousWeight);
-    public float DoOperation(float previousValue)
+    public abstract float GetNewWeight(float currentWeight);
+    public float DoOperation(float currentValue, float previousValue)
     {
         if (Operation == WeightOperation.Additive)
         {
-            return Value + previousValue;
+            return currentValue + previousValue;
         }
         else if (Operation == WeightOperation.Multiplicative)
         {
-            return Value * previousValue;
+            return currentValue * previousValue;
         }
         else
         {

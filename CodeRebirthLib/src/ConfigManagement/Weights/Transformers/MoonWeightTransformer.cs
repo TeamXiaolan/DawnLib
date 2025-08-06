@@ -1,34 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement.Weights.Transformers;
-[CreateAssetMenu(menuName = "CodeRebirthLib/Weights/Moon", order = -20)]
+
+[Serializable]
 public class MoonWeightTransformer : WeightTransformer
 {
-    public List<string> MatchingMoons = new();
+    public MoonWeightTransformer(string moonConfig)
+    {
+        FromConfigString(moonConfig);
+    }
+
+    public Dictionary<string, int> MatchingMoonsWithWeightDict = new();
 
     public override string ToConfigString()
     {
-        string matchingMoons = string.Join(",", MatchingMoons);
-        return $" {matchingMoons} : {Value} : {Operation} |";
+        string MatchingMoonWithWeight = string.Join(",", MatchingMoonsWithWeightDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
+        return $"{MatchingMoonWithWeight} | {Operation}";
     }
 
     public override void FromConfigString(string config)
     {
-        string[] split = config.Split(':');
+        string[] split = config.Split('|');
 
-        MatchingMoons = split[0].Split(',').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).ToList();
-        Value = float.Parse(split[1].Trim());
-        Operation = Enum.Parse<WeightOperation>(split[2].Trim());
+        MatchingMoonsWithWeightDict = split[0].Split(':').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).Select(s => s.Split(',')).Select(s => (s[0], int.Parse(s[1]))).ToDictionary(s => s.Item1, s => s.Item2);
+        Operation = Enum.Parse<WeightOperation>(split[1].Trim());
     }
 
-    public override float GetNewWeight(float previousWeight)
+    public override float GetNewWeight(float currentWeight)
     {
-        if (!MatchingMoons.Contains(ConfigManager.GetLLLNameOfLevel(RoundManager.Instance.currentLevel.name)))
-            return previousWeight;
+        if (!MatchingMoonsWithWeightDict.TryGetValue(ConfigManager.GetLLLNameOfLevel(RoundManager.Instance.currentLevel.name), out int operationWeight))
+            return currentWeight;
 
-        return DoOperation(previousWeight);
+        return DoOperation(currentWeight, operationWeight);
     }
 }

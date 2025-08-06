@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CodeRebirthLib.ConfigManagement.Weights.Transformers;
 using UnityEngine;
 
@@ -8,22 +9,31 @@ namespace CodeRebirthLib.ConfigManagement.Weights;
 public class SpawnWeightsPreset : ScriptableObject
 {
     [field: SerializeField]
-    public int BaseWeight { get; private set; }
+    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set;}
 
     [field: SerializeField]
-    public List<WeightTransformer> SpawnWeightsTransformers { get; private set;} = new();
+    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set;}
 
-    public void SetupSpawnWeightsPreset(int baseWeight, string presetsConfig)
+    [field: SerializeField]
+    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set;}
+
+    private List<WeightTransformer> SpawnWeightsTransformers => new() {MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer};
+
+    public void SetupSpawnWeightsPreset(string moonConfig, string interiorConfig, string weatherConfig)
     {
-        SpawnWeightsTransformers.Clear();
-        BaseWeight = baseWeight;
+        MoonSpawnWeightsTransformer = new MoonWeightTransformer(moonConfig);
+        InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
+        WeatherSpawnWeightsTransformer = new WeatherWeightTransformer(weatherConfig);
+        // `MoonName1:10,MoonName2:20,MoonName3:30 | Additive`
+        // `InteriorName1:-10,InteriorName2:10,InteriorName3:300 | Additive`
+        // `WeatherName1:10,WeatherName2:2.0,WeatherName3:1.5 | Multiplicative`
         // TODO differentiate between the different presets somehow in that one string and recreate all the transformers?
-        // SpawnWeightsTransformers.Add(weightTransformer);
     }
 
     public float GetWeight()
     {
-        float weight = BaseWeight;
+        float weight = 0;
+        SpawnWeightsTransformers.OrderBy(x => x.Operation == WeightOperation.Additive).ToList();
         foreach (var weightTransformer in SpawnWeightsTransformers)
         {
             weight = weightTransformer.GetNewWeight(weight);
@@ -31,5 +41,3 @@ public class SpawnWeightsPreset : ScriptableObject
         return weight;
     }
 }
-
-// my interior weight transformer = facility,manision : 0.3 : mult

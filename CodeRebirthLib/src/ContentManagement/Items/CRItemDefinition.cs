@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ConfigManagement.Weights;
 using CodeRebirthLib.Data;
-using CodeRebirthLib.Patches;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -26,7 +25,6 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public ItemConfig Config { get; private set; }
 
-    // put SpawnWeightsPreset somewhere near here?
     protected override string EntityNameReference => Item.itemName;
 
     public override void Register(CRMod mod, ItemData data)
@@ -60,16 +58,15 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         if (Config.IsShopItem?.Value ?? data.isShopItem)
         {
             // Register our own shop item
-            StartOfRoundPatch.registeredCRItems.Add(this);
             LethalLib.Modules.Items.RegisterShopItem(Item, null, null, TerminalNode, Config.Cost?.Value ?? data.cost);
         }
 
-        if (Config.PresetsBaseWeight != null && Config.PresetsSpawnWeights != null)
+        if (Config.MoonSpawnWeights != null && Config.InteriorSpawnWeights != null && Config.WeatherSpawnWeights != null)
         {
-            // they both wouldnt be null together and atleast presets base weight has to be 0
-            SpawnWeights.SetupSpawnWeightsPreset(Config.PresetsBaseWeight.Value, Config.PresetsSpawnWeights.Value);
+            SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights.Value, Config.InteriorSpawnWeights.Value, Config.WeatherSpawnWeights.Value);
         }
 
+        CRLib.InjectItemIntoLevel(SpawnWeights, Item);
         mod.ItemRegistry().Register(this);
     }
 
@@ -80,29 +77,14 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
         return new ItemConfig
         {
-            PresetsBaseWeight = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Base Weight", $"Base weight of {itemName} before any transformative operations are applied.", spawnWeightsPreset.BaseWeight) : null,
-            PresetsSpawnWeights = data.generateSpawnWeightsConfig ? GenerateSpawnWeightsConfig(section, itemName, spawnWeightsPreset) : null,
+            MoonSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Moon Weights", $"Preset moon weights for {itemName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
             IsScrapItem = isScrapItem,
             Worth = isScrapItem?.Value ?? data.isScrap ? section.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
             IsShopItem = isShopItem,
             Cost = isShopItem?.Value ?? data.isShopItem ? section.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
-    }
-
-    public static ConfigEntry<string> GenerateSpawnWeightsConfig(ConfigContext section, string itemName, SpawnWeightsPreset preset)
-    {
-        string configString = string.Empty;
-        if (preset == null)
-        {
-            return section.Bind($"{itemName} | Preset Spawn Weights", $"Spawn weights for {itemName}.", configString);
-        }
-
-        foreach (var weightTransformer in preset.SpawnWeightsTransformers)
-        {
-            configString += weightTransformer.ToConfigString();
-        }
-
-        return section.Bind($"{itemName} | Preset Spawn Weights", $"Spawn weights for {itemName}.", configString);
     }
 
     public static void RegisterTo(CRMod mod)

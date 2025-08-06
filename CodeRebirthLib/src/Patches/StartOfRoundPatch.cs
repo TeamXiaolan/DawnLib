@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CodeRebirthLib.ContentManagement.Achievements;
+﻿using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
-using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
 using Unity.Netcode;
@@ -12,8 +9,6 @@ using UnityEngine.SceneManagement;
 namespace CodeRebirthLib.Patches;
 static class StartOfRoundPatch
 {
-    internal static List<CRItemDefinition> registeredCRItems => CRMod.AllItems().ToList();
-
     internal static void Init()
     {
         On.StartOfRound.Start += StartOfRound_Start;

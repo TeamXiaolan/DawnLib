@@ -4,14 +4,17 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
+using CodeRebirthLib.ConfigManagement.Weights;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
 using DunGen;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CodeRebirthLib;
+
 public static class CRLib
 {
     public static AssetBundle LoadBundle(Assembly assembly, string filePath)
@@ -28,10 +31,10 @@ public static class CRLib
             {
                 message += $" The bundle was found at the incorrect spot: plugins/{Path.GetRelativePath(Paths.PluginPath, incorrectPath)}. It should be within the Assets/ subfolder";
             }
-            
+
             throw new FileNotFoundException(message);
         }
-        
+
         return AssetBundle.LoadFromFile(correctPath);
     }
 
@@ -93,5 +96,10 @@ public static class CRLib
     public static void InjectTileSetForDungeon(string archetypeName, TileSet tileSet, bool isBranchCap = false)
     {
         TileInjectionPatch.AddTileSetForDungeon(archetypeName, new TileInjectionPatch.TileInjectionSettings(tileSet, isBranchCap)); // i want to keep a lot of the public facing methods in the CRLib class
+    }
+
+    public static void InjectItemIntoLevel(SpawnWeightsPreset spawnWeights, Item item)
+    {
+        CRItemsPatch.AddItemForLevel(spawnWeights, item);
     }
 }

@@ -1,34 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement.Weights.Transformers;
-[CreateAssetMenu(menuName = "CodeRebirthLib/Weights/Interior", order = -20)]
+[Serializable]
 public class InteriorWeightTransformer : WeightTransformer
 {
-    public List<string> MatchingInteriors = new();
+    public InteriorWeightTransformer(string interiorConfig)
+    {
+        FromConfigString(interiorConfig);
+    }
+
+    public Dictionary<string, int> MatchingInteriorsWithWeightDict = new();
 
     public override string ToConfigString()
     {
-        string matchingInteriors = string.Join(",", MatchingInteriors);
-        return $" {matchingInteriors} : {Value} : {Operation} |";
+        string MatchingInteriorWithWeight = string.Join(",", MatchingInteriorsWithWeightDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
+        return $"{MatchingInteriorWithWeight} | {Operation}";
     }
 
     public override void FromConfigString(string config)
     {
-        string[] split = config.Split(':');
+        string[] split = config.Split('|');
 
-        MatchingInteriors = split[0].Split(',').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).ToList();
-        Value = float.Parse(split[1].Trim());
-        Operation = Enum.Parse<WeightOperation>(split[2].Trim());
+        MatchingInteriorsWithWeightDict = split[0].Split(':').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).Select(s => s.Split(',')).Select(s => (s[0], int.Parse(s[1]))).ToDictionary(s => s.Item1, s => s.Item2);
+        Operation = Enum.Parse<WeightOperation>(split[1].Trim());
     }
 
-    public override float GetNewWeight(float previousWeight)
+    public override float GetNewWeight(float currentWeight)
     {
-        if (!MatchingInteriors.Contains(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name))
-            return previousWeight;
+        if (!MatchingInteriorsWithWeightDict.TryGetValue(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name.ToLowerInvariant(), out int operationWeight))
+            return currentWeight;
 
-        return DoOperation(previousWeight);
+        return DoOperation(currentWeight, operationWeight);
     }
 }
