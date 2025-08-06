@@ -29,12 +29,13 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
     public override void Register(CRMod mod, ItemData data)
     {
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        BoundedRange itemWorth = new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f);
         if (SpawnWeights == null)
         {
             SpawnWeights = ScriptableObject.CreateInstance<SpawnWeightsPreset>();
         }
+
+        BoundedRange itemWorth = new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f);
+        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateItemConfig(section, data, itemWorth, SpawnWeights, Item.itemName);
 
         if (Config.Worth != null)
@@ -85,6 +86,17 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             IsShopItem = isShopItem,
             Cost = isShopItem?.Value ?? data.isShopItem ? section.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
+    }
+
+    internal static void UpdateAllWeights()
+    {
+        foreach (var spawnableItemWithRarity in StartOfRound.Instance.currentLevel.spawnableScrap)
+        {
+            if (!spawnableItemWithRarity.spawnableItem.TryGetDefinition(out CRItemDefinition? definition))
+                continue;
+
+            spawnableItemWithRarity.rarity = definition.SpawnWeights.GetWeight();
+        }
     }
 
     public static void RegisterTo(CRMod mod)

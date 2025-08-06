@@ -3,13 +3,12 @@ using System.Linq;
 using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.Exceptions;
-using CodeRebirthLib.Patches;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.MapObjects;
-[CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Definition")]
+[CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Object Definition")]
 public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 {
     public const string REGISTRY_ID = "map_objects";

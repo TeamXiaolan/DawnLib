@@ -16,8 +16,8 @@ static class WeatherRegistryCompatibility
 
     private static void WeatherRegistry_EventManager_WeatherChanged((SelectableLevel selectableLevel, Weather weather) args)
     {
-        CREnemyDefinition.UpdateAllEnemyWeightsForLevel(args.selectableLevel.Enemies, args.selectableLevel);
-        CREnemyDefinition.UpdateAllEnemyWeightsForLevel(args.selectableLevel.OutsideEnemies, args.selectableLevel);
-        CREnemyDefinition.UpdateAllEnemyWeightsForLevel(args.selectableLevel.DaytimeEnemies, args.selectableLevel);
+        CREnemyDefinition.UpdateAllWeights(args.selectableLevel);
+        CREnemyDefinition.UpdateAllWeights(args.selectableLevel);
+        CREnemyDefinition.UpdateAllWeights(args.selectableLevel);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CodeRebirthLib.ContentManagement.Achievements;
 using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.Extensions;
 using CodeRebirthLib.Util;
 using Unity.Netcode;
@@ -27,11 +28,11 @@ static class StartOfRoundPatch
     {
         orig(self, connectedplayersonserver);
         CREnemyDefinition.UpdateAllWeights();
+        CRItemDefinition.UpdateAllWeights();
     }
 
     private static void StartOfRound_Start(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
-        CREnemyDefinition.CreateMoonAttributeStacks();
         orig(self);
         MoreLayerMasks.Init();
 

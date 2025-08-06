@@ -1,12 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.Util.Attributes;
+using CodeRebirthLib.ConfigManagement.Weights;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.Enemies;
+
+[Flags]
+public enum SpawnTable
+{
+    Inside = 1 << 0,
+    Outside = 1 << 1,
+    Daytime = 1 << 2,
+}
+
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Definitions/Enemy Definition")]
 public class CREnemyDefinition : CRContentDefinition<EnemyData>
 {
@@ -15,16 +24,17 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     [field: FormerlySerializedAs("enemyType")] [field: SerializeField]
     public EnemyType EnemyType { get; private set; }
 
+    [field: SerializeField]
+    public SpawnTable SpawnTable { get; private set; }
+
+    [field: SerializeField]
+    public SpawnWeightsPreset SpawnWeights { get; private set; }
+
     [field: FormerlySerializedAs("terminalNode")] [field: SerializeField]
     public TerminalNode? TerminalNode { get; private set; }
 
     [field: FormerlySerializedAs("terminalKeyword")] [field: SerializeField]
     public TerminalKeyword? TerminalKeyword { get; private set; }
-
-    private readonly Dictionary<SelectableLevel, AttributeStack<int>> _moonWeights = new();
-
-    [HideInInspector]
-    public Dictionary<string, float> WeatherMultipliers = new();
 
     public EnemyConfig Config { get; private set; }
 
@@ -32,99 +42,66 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
 
     public override void Register(CRMod mod, EnemyData data)
     {
-        if (string.IsNullOrEmpty(data.weatherMultipliers))
+        if (SpawnWeights == null)
         {
-            data.weatherMultipliers = "None:1";
+            SpawnWeights = ScriptableObject.CreateInstance<SpawnWeightsPreset>();
         }
 
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateEnemyConfig(section, data, EnemyType.enemyName);
-
-        List<string> weatherMultipliersList = Config.WeatherMultipliers.Value.Split(',').ToList();
-        foreach (string[]? weatherMultiplierInList in weatherMultipliersList.Select(s => s.Split(':')))
-        {
-            string weatherName = weatherMultiplierInList[0].Trim();
-            if (weatherMultiplierInList.Count() == 2 && float.TryParse(weatherMultiplierInList[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float multiplier))
-            {
-                WeatherMultipliers.Add(weatherName, multiplier);
-            }
-            else
-            {
-                CodeRebirthLibPlugin.Logger.LogError($"Weather: {weatherName} given invalid or empty multiplier");
-            }
-        }
+        Config = CreateEnemyConfig(section, data, SpawnWeights, EnemyType.enemyName);
 
         EnemyType enemy = EnemyType;
         enemy.MaxCount = Config.MaxSpawnCount.Value;
         enemy.PowerLevel = Config.PowerLevel.Value;
-        (var spawnRateByLevelType, Dictionary<string, int> spawnRateByCustomLevelType) = ConfigManager.ParseMoonsWithRarity(Config.SpawnWeights.Value);
-        LethalLib.Modules.Enemies.RegisterEnemy(enemy, spawnRateByLevelType, spawnRateByCustomLevelType, TerminalNode, TerminalKeyword);
+
+        if (Config.MoonSpawnWeights != null && Config.InteriorSpawnWeights != null && Config.WeatherSpawnWeights != null)
+        {
+            SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights.Value, Config.InteriorSpawnWeights.Value, Config.WeatherSpawnWeights.Value);
+        }
+
+        CRLib.InjectEnemyIntoLevel(SpawnTable, SpawnWeights, EnemyType);
+        // TODO make the bestiaries
+        // LethalLib.Modules.Enemies.RegisterEnemy(enemy, spawnRateByLevelType, spawnRateByCustomLevelType, TerminalNode, TerminalKeyword);
         mod.EnemyRegistry().Register(this);
     }
 
-    internal static void CreateMoonAttributeStacks()
+    internal static void UpdateAllWeights(SelectableLevel? level = null)
     {
-        foreach (SelectableLevel moon in StartOfRound.Instance.levels)
-        {
-            CreateMoonAttributesStackForSetEnemiesInLevel(moon.Enemies, moon);
-            CreateMoonAttributesStackForSetEnemiesInLevel(moon.OutsideEnemies, moon);
-            CreateMoonAttributesStackForSetEnemiesInLevel(moon.DaytimeEnemies, moon);
-        }
-    }
+        SelectableLevel levelToUpdate = level ?? StartOfRound.Instance.currentLevel;
 
-    private static void CreateMoonAttributesStackForSetEnemiesInLevel(List<SpawnableEnemyWithRarity> enemies, SelectableLevel level)
-    {
-        foreach (SpawnableEnemyWithRarity enemyWithRarity in enemies)
+        foreach (var spawnableEnemyWithRarity in levelToUpdate.Enemies)
         {
-            EnemyType enemy = enemyWithRarity.enemyType;
-            if (!enemy.TryGetDefinition(out CREnemyDefinition? definition) || definition._moonWeights.ContainsKey(level))
+            if (!spawnableEnemyWithRarity.enemyType.TryGetDefinition(out CREnemyDefinition? definition))
                 continue;
 
-            AttributeStack<int> stack = new(enemyWithRarity.rarity);
-            stack.Add(input =>
-            { // Handle Weather Multipliers, note that this keeps the reference of 'definition' and 'moon' from the foreach loops
-                string weatherName = level.currentWeather.ToString();
-                if (!definition.WeatherMultipliers.TryGetValue(weatherName, out float multiplier))
-                    return input;
-
-                return Mathf.FloorToInt(multiplier * input);
-            });
-            definition._moonWeights[level] = stack;
+            spawnableEnemyWithRarity.rarity = definition.SpawnWeights.GetWeight();
         }
-    }
 
-
-    internal static void UpdateAllWeights()
-    {
-        if (StartOfRound.Instance == null || StartOfRound.Instance.levels == null)
-            return;
-
-        foreach (SelectableLevel moon in StartOfRound.Instance.levels)
+        foreach (var spawnableEnemyWithRarity in levelToUpdate.OutsideEnemies)
         {
-            UpdateAllEnemyWeightsForLevel(moon.Enemies, moon);
-            UpdateAllEnemyWeightsForLevel(moon.OutsideEnemies, moon);
-            UpdateAllEnemyWeightsForLevel(moon.DaytimeEnemies, moon);
-        }
-    }
-
-    internal static void UpdateAllEnemyWeightsForLevel(List<SpawnableEnemyWithRarity> enemies, SelectableLevel level)
-    {
-        foreach (SpawnableEnemyWithRarity enemyWithRarity in enemies)
-        {
-            EnemyType enemy = enemyWithRarity.enemyType;
-            if (!enemy.TryGetDefinition(out CREnemyDefinition? definition) || !definition._moonWeights.ContainsKey(level))
+            if (!spawnableEnemyWithRarity.enemyType.TryGetDefinition(out CREnemyDefinition? definition))
                 continue;
 
-            enemyWithRarity.rarity = definition._moonWeights[level].Calculate(forceRecalculate: true);
+            spawnableEnemyWithRarity.rarity = definition.SpawnWeights.GetWeight();
+        }
+
+        foreach (var spawnableEnemyWithRarity in levelToUpdate.DaytimeEnemies)
+        {
+            if (!spawnableEnemyWithRarity.enemyType.TryGetDefinition(out CREnemyDefinition? definition))
+                continue;
+
+            spawnableEnemyWithRarity.rarity = definition.SpawnWeights.GetWeight();
         }
     }
 
-    public static EnemyConfig CreateEnemyConfig(ConfigContext section, EnemyData data, string enemyName)
+    public static EnemyConfig CreateEnemyConfig(ConfigContext section, EnemyData data, SpawnWeightsPreset spawnWeightsPreset, string enemyName)
     {
         return new EnemyConfig
         {
-            SpawnWeights = section.Bind($"{enemyName} | Spawn Weights", $"Spawn weights for {enemyName}.", data.spawnWeights),
-            WeatherMultipliers = section.Bind($"{enemyName} | Weather Multipliers", $"Weather * SpawnWeight multipliers for {enemyName}.", data.weatherMultipliers),
+            // todo, take the old weather and moon spawn weights and parse em into
+            MoonSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Moon Weights", $"Preset moon weights for {enemyName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Interior Weights", $"Preset interior weights for {enemyName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Weather Weights", $"Preset weather weights for {enemyName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
             PowerLevel = section.Bind($"{enemyName} | Power Level", $"Power level for {enemyName}.", data.powerLevel),
             MaxSpawnCount = section.Bind($"{enemyName} | Max Spawn Count", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
         };

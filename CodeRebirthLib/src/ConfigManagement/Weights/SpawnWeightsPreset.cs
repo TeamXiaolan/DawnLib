@@ -30,7 +30,7 @@ public class SpawnWeightsPreset : ScriptableObject
         // TODO differentiate between the different presets somehow in that one string and recreate all the transformers?
     }
 
-    public float GetWeight()
+    public int GetWeight()
     {
         float weight = 0;
         SpawnWeightsTransformers.OrderBy(x => x.Operation == WeightOperation.Additive).ToList();
@@ -38,6 +38,8 @@ public class SpawnWeightsPreset : ScriptableObject
         {
             weight = weightTransformer.GetNewWeight(weight);
         }
-        return weight;
+
+        CodeRebirthLibPlugin.ExtendedLogging($"Weight of {this}: {weight}");
+        return Mathf.FloorToInt(weight);
     }
 }

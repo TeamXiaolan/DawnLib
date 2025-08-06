@@ -31,27 +31,26 @@ static class CRItemsPatch
         orig(self);
         foreach (var spawnPresetsWithItemsIn in itemsToInjectThroughPreset)
         {
-            /*var level = ConfigManager.GetLevelWithName(spawnPresetsWithItemsIn.Key);
-            if (level == null)
-                continue;
-
-            foreach (Item item in spawnPresetsWithItemsIn.Value)
+            foreach (SelectableLevel level in StartOfRound.Instance.levels)
             {
-                if (!item.TryGetDefinition(out CRItemDefinition? CRItemDefinition))
-                    continue;
-
-                if (!self.allItemsList.itemsList.Contains(CRItemDefinition.Item))
+                foreach (Item item in spawnPresetsWithItemsIn.Value)
                 {
-                    self.allItemsList.itemsList.Add(CRItemDefinition.Item);
+                    if (!item.TryGetDefinition(out CRItemDefinition? CRItemDefinition))
+                        continue;
+
+                    if (!self.allItemsList.itemsList.Contains(CRItemDefinition.Item))
+                    {
+                        self.allItemsList.itemsList.Add(CRItemDefinition.Item);
+                    }
+
+                    var spawnableItemWithRarity = new SpawnableItemWithRarity()
+                    {
+                        spawnableItem = CRItemDefinition.Item,
+                        rarity = 0
+                    };
+                    level.spawnableScrap.Add(spawnableItemWithRarity);
                 }
-
-                var spawnableItemWithRarity = new SpawnableItemWithRarity()
-                {
-                    spawnableItem = CRItemDefinition.Item,
-                    rarity = 0 // TODO !! get the base weight and put it here by default? update weights on interior change and weather change.
-                };
-                level.spawnableScrap.Add(spawnableItemWithRarity);
-            }*/
+            }
         }
     }
 

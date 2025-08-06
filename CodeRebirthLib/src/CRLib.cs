@@ -6,12 +6,12 @@ using BepInEx.Configuration;
 using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ConfigManagement.Weights;
 using CodeRebirthLib.ContentManagement;
+using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
 using DunGen;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CodeRebirthLib;
 
@@ -101,5 +101,10 @@ public static class CRLib
     public static void InjectItemIntoLevel(SpawnWeightsPreset spawnWeights, Item item)
     {
         CRItemsPatch.AddItemForLevel(spawnWeights, item);
+    }
+
+    public static void InjectEnemyIntoLevel(SpawnTable spawnTable, SpawnWeightsPreset spawnWeights, EnemyType enemyType)
+    {
+        CREnemiesPatch.AddEnemyForLevel(spawnTable, spawnWeights, enemyType);
     }
 }
