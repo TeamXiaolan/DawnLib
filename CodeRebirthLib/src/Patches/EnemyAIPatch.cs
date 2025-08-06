@@ -20,15 +20,22 @@ static class EnemyAIPatch
     private static void EnemyAI_HitEnemy(On.EnemyAI.orig_HitEnemy orig, EnemyAI self, int force, PlayerControllerB? playerWhoHit, bool playHitSFX, int hitID)
     {
         CREnemyAdditionalData data = CREnemyAdditionalData.CreateOrGet(self);
-
+        ExtraEnemyEvents events = null;
+        ExtraEnemyEvents.eventListeners.TryGetValue(self, out events);
+        
         if (playerWhoHit)
         {
             data.PlayerThatLastHit = playerWhoHit;
         }
 
-        if (!self.isEnemyDead && self.enemyHP - force <= 0 && playerWhoHit != null)
+        if (!self.isEnemyDead && self.enemyHP - force <= 0)
         {
-            data.KilledByPlayer = true;
+            if (playerWhoHit != null)
+            {
+                data.KilledByPlayer = true;
+                if(events) events!.onKilledByPlayer.Invoke();
+            }
+            if(events) events!.onKilled.Invoke();
         }
 
         orig(self, force, playerWhoHit, playHitSFX, hitID);

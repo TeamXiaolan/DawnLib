@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.ContentManagement.Achievements;
 
 public class AchievementTriggers : MonoBehaviour
 {
-    [SerializeField]
-    private string _achievementName = string.Empty;
+    [SerializeReference]
+    private CRAchievementReference _achievementReference = new("");
 
     [SerializeField]
     private UnityEvent _onAchievementCompleted = new UnityEvent();
 
     public void TryCompleteAchievement()
     {
-        if (CRMod.AllAchievements().TryTriggerAchievement(_achievementName))
+        if (CRMod.AllAchievements().TryTriggerAchievement(_achievementReference))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -21,7 +22,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryIncrementAchievement(float amountToIncrement)
     {
-        if (CRMod.AllAchievements().TryIncrementAchievement(_achievementName, amountToIncrement))
+        if (CRMod.AllAchievements().TryIncrementAchievement(_achievementReference, amountToIncrement))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -29,7 +30,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryDiscoverMoreProgressAchievement(string uniqueStringID)
     {
-        if (CRMod.AllAchievements().TryDiscoverMoreProgressAchievement(_achievementName, uniqueStringID))
+        if (CRMod.AllAchievements().TryDiscoverMoreProgressAchievement(_achievementReference, uniqueStringID))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -37,6 +38,6 @@ public class AchievementTriggers : MonoBehaviour
 
     public void ResetAllAchievementProgress()
     {
-        CRMod.AllAchievements().ResetAchievementProgress(_achievementName);
+        CRMod.AllAchievements().ResetAchievementProgress(_achievementReference);
     }
 }
