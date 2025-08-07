@@ -1,20 +1,18 @@
 # CodeRebirthLib
 
-A Library to help manage large Lethal Company Mods. Makes registering with LethalLib/WeatherRegistry/etc easier and contains other useful scripts and utilities.
+A Library to help manage large Lethal Company Mods. Makes registering with Scrap/Enemies/Inside and Outside Hazards/Furniture/ShipUpgrades/WeatherRegistry/etc easier and contains other useful scripts and utilities.
 
 Currently supports:
 
-## Lethal Lib
-
-- Enemies
-- Items
-- Inside Map Objects
-- Unlockables
-
 ## Native (CodeRebirthLib)
 
+- Enemies
+- Scraps
+- Shop Items
+- Inside Map Objects
 - Outside Map Objects
 - Achievements
+- Tile Injection
 
 ## PathfindingLib
 
