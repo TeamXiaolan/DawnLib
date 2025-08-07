@@ -29,6 +29,9 @@ public class InteriorWeightTransformer : WeightTransformer
 
     public override float GetNewWeight(float currentWeight)
     {
+        if (!RoundManager.Instance) return currentWeight;
+        if (!RoundManager.Instance.dungeonGenerator) return currentWeight;
+        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return currentWeight;
         if (!MatchingInteriorsWithWeightDict.TryGetValue(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name.ToLowerInvariant(), out int operationWeight))
             return currentWeight;
 

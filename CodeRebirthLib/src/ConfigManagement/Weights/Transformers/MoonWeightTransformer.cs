@@ -30,6 +30,8 @@ public class MoonWeightTransformer : WeightTransformer
 
     public override float GetNewWeight(float currentWeight)
     {
+        if (!RoundManager.Instance) return currentWeight;
+        if (!RoundManager.Instance.currentLevel) return currentWeight;
         if (!MatchingMoonsWithWeightDict.TryGetValue(ConfigManager.GetLLLNameOfLevel(RoundManager.Instance.currentLevel.name), out int operationWeight))
             return currentWeight;
 

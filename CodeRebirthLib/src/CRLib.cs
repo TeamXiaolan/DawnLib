@@ -107,6 +107,11 @@ public static class CRLib
     {
         TileInjectionPatch.AddTileSetForDungeon(archetypeName, new TileInjectionPatch.TileInjectionSettings(tileSet, isBranchCap)); // i want to keep a lot of the public facing methods in the CRLib class
     }
+
+    public static void RegisterItem(Item item)
+    {
+        ItemRegistrationHandler.AddItemToAllList(item);
+    }
     
     public static void RegisterScrap(Item item, string levelName, int rarity)
     {
@@ -125,8 +130,11 @@ public static class CRLib
             RegisterScrap(item, levelName, rarity);
         }
     }
-    
-    // todo: register shop item?
+
+    public static void RegisterShopItem(Item item, int price)
+    {
+        // todo
+    }
 
     public static void RegisterEnemy(EnemyType enemy, string levelName, int rarity)
     {

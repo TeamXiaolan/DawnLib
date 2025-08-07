@@ -28,6 +28,8 @@ public class WeatherWeightTransformer : WeightTransformer
 
     public override float GetNewWeight(float currentWeight)
     {
+        if (!RoundManager.Instance) return currentWeight;
+        if (!RoundManager.Instance.currentLevel) return currentWeight;
         if (!MatchingWeathersWithWeightDict.TryGetValue(RoundManager.Instance.currentLevel.currentWeather.ToString().ToLowerInvariant(), out int operationWeight))
             return currentWeight;
 

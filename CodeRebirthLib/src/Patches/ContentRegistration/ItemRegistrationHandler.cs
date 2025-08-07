@@ -8,8 +8,7 @@ using UnityEngine;
 namespace CodeRebirthLib.Patches;
 static class ItemRegistrationHandler
 {
-    
-    
+    private static readonly List<Item> _allNewItems = [];
     static readonly Dictionary<string, List<RegistrationSettings<Item>>> _itemsToInject = [];
     private static readonly Dictionary<SpawnableItemWithRarity, RegistrationSettings<Item>> _itemSettingsMap = [];
 
@@ -27,6 +26,12 @@ static class ItemRegistrationHandler
         }
         items.Add(settings);
         _itemsToInject[levelName] = items;
+        AddItemToAllList(settings.Value);
+    }
+
+    internal static void AddItemToAllList(Item item)
+    {
+        if(!_allNewItems.Contains(item)) _allNewItems.Add(item);
     }
 
     private static void StartOfRound_Awake(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -57,9 +62,9 @@ static class ItemRegistrationHandler
             }
         }
 
-        foreach (RegistrationSettings<Item> item in _itemsToInject.Values.SelectMany(it => it))
+        foreach (Item item in _allNewItems)
         {
-            self.allItemsList.itemsList.Add(item.Value);
+            self.allItemsList.itemsList.Add(item);
         }
         
         _itemsToInject.Clear();
