@@ -25,16 +25,16 @@ public class SpawnWeightsPreset : ScriptableObject, IWeighted
         MoonSpawnWeightsTransformer = new MoonWeightTransformer(moonConfig);
         InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
         WeatherSpawnWeightsTransformer = new WeatherWeightTransformer(weatherConfig);
-        // `MoonName1:10,MoonName2:20,MoonName3:30 | Additive`
-        // `InteriorName1:-10,InteriorName2:10,InteriorName3:300 | Additive`
-        // `WeatherName1:10,WeatherName2:2.0,WeatherName3:1.5 | Multiplicative`
+        // `MoonName1:+10,MoonName2:-20,MoonName3:*1.5`
+        // `InteriorName1:-10,InteriorName2:+10,InteriorName3:+300`
+        // `WeatherName1:10,WeatherName2:*2.0,WeatherName3:*1.5`
         // TODO differentiate between the different presets somehow in that one string and recreate all the transformers?
     }
 
     public int GetWeight()
     {
         float weight = 0;
-        SpawnWeightsTransformers.OrderBy(x => x.Operation == WeightOperation.Additive).ToList();
+        SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == "+").ToList();
         foreach (var weightTransformer in SpawnWeightsTransformers)
         {
             weight = weightTransformer.GetNewWeight(weight);

@@ -11,20 +11,17 @@ public class InteriorWeightTransformer : WeightTransformer
         FromConfigString(interiorConfig);
     }
 
-    public Dictionary<string, int> MatchingInteriorsWithWeightDict = new();
+    public Dictionary<string, string> MatchingInteriorsWithWeightAndOperationDict = new();
 
     public override string ToConfigString()
     {
-        string MatchingInteriorWithWeight = string.Join(",", MatchingInteriorsWithWeightDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
-        return $"{MatchingInteriorWithWeight} | {Operation}";
+        string MatchingInteriorWithWeight = string.Join(",", MatchingInteriorsWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
+        return $"{MatchingInteriorWithWeight}";
     }
 
     public override void FromConfigString(string config)
     {
-        string[] split = config.Split('|');
-
-        MatchingInteriorsWithWeightDict = split[0].Split(':').Select(s => s.Trim()).Select(s => s.ToLowerInvariant()).Select(s => s.Split(',')).Select(s => (s[0], int.Parse(s[1]))).ToDictionary(s => s.Item1, s => s.Item2);
-        Operation = Enum.Parse<WeightOperation>(split[1].Trim());
+        MatchingInteriorsWithWeightAndOperationDict = config.ToLowerInvariant().Split(':', StringSplitOptions.RemoveEmptyEntries).Select(part => part.Split(',')).ToDictionary(tokens => tokens[0].Trim(), tokens => tokens[1].Trim());
     }
 
     public override float GetNewWeight(float currentWeight)
@@ -32,9 +29,45 @@ public class InteriorWeightTransformer : WeightTransformer
         if (!RoundManager.Instance) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return currentWeight;
-        if (!MatchingInteriorsWithWeightDict.TryGetValue(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name.ToLowerInvariant(), out int operationWeight))
+        if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name.ToLowerInvariant().Trim(), out string operationWithWeight))
             return currentWeight;
 
-        return DoOperation(currentWeight, operationWeight);
+        return DoOperation(currentWeight, operationWithWeight);
+    }
+
+    public override string GetOperation()
+    {
+        if (!RoundManager.Instance) return string.Empty;
+        if (!RoundManager.Instance.dungeonGenerator) return string.Empty;
+        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return string.Empty;
+        if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.name.ToLowerInvariant().Trim(), out string operationWithWeight))
+            return string.Empty;
+
+        // first character is the operation, get that as string?
+        string operation = operationWithWeight[..1];
+        if (int.TryParse(operation, out _)) // if no operation provided, default to `+`
+        {
+            return "+";
+        }
+        else if (operation == "+")
+        {
+            return "+";
+        }
+        else if (operation == "*")
+        {
+            return "*";
+        }
+        else if (operation == "-")
+        {
+            return "-";
+        }
+        else if (operation == "/")
+        {
+            return "/";
+        }
+        else
+        {
+            return string.Empty;
+        }
     }
 }
