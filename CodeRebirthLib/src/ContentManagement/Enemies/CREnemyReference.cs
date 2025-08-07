@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Enemies;
 
@@ -7,7 +6,7 @@ namespace CodeRebirthLib.ContentManagement.Enemies;
 public class CREnemyReference(string name) : CRContentReference<CREnemyDefinition>(name)
 {
     protected override string GetEntityName(CREnemyDefinition obj) => obj.EnemyType.enemyName;
-    
+
     public static implicit operator CREnemyDefinition?(CREnemyReference reference)
     {
         if (CRLibContent.AllEnemies().TryGetFromEnemyName(reference.entityName, out var obj))
@@ -16,7 +15,7 @@ public class CREnemyReference(string name) : CRContentReference<CREnemyDefinitio
         }
         return null;
     }
-    
+
     public static implicit operator CREnemyReference?(CREnemyDefinition? obj)
     {
         if (obj) return new CREnemyReference(obj!.EnemyType.enemyName);

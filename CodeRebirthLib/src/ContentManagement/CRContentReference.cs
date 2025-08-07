@@ -9,18 +9,18 @@ public abstract class CRContentReference(string name) : INetworkSerializable
 {
     [SerializeField]
     internal string entityName = name;
-    
+
     [SerializeField]
     internal string assetGUID = string.Empty;
-    
+
     public abstract Type ContentType { get; }
     abstract internal string GetEntityName(CRContentDefinition obj);
-    
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref entityName);
     }
-    
+
     public static implicit operator string?(CRContentReference reference)
     {
         return reference.entityName;

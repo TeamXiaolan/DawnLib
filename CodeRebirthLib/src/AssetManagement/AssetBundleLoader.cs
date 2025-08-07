@@ -39,7 +39,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
         _bundle = bundle;
 
         CodeRebirthLibPlugin.ExtendedLogging($"[AssetBundle Loading] {bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
-        
+
         Type type = typeof(T);
         foreach (PropertyInfo property in type.GetProperties())
         {
@@ -78,7 +78,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
         }
 
         Content = bundle.LoadAllAssets<CRContentDefinition>();
-        
+
         // Sort content
         List<Type> definitionOrder = [
             typeof(CREnemyDefinition),

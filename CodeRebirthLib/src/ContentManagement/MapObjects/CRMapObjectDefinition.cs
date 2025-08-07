@@ -13,18 +13,22 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 {
     public const string REGISTRY_ID = "map_objects";
 
-    [field: FormerlySerializedAs("gameObject")] [field: SerializeField]
+    [field: FormerlySerializedAs("gameObject")]
+    [field: SerializeField]
     public GameObject GameObject { get; private set; }
 
-    [field: FormerlySerializedAs("objectName")] [field: FormerlySerializedAs("ObjectName")] [field: SerializeField]
+    [field: FormerlySerializedAs("objectName")]
+    [field: FormerlySerializedAs("ObjectName")]
+    [field: SerializeField]
     public string MapObjectName { get; private set; }
 
-    [field: FormerlySerializedAs("alignWithTerrain")] [field: SerializeField]
+    [field: FormerlySerializedAs("alignWithTerrain")]
+    [field: SerializeField]
     public bool AlignWithTerrain { get; private set; }
 
     [field: SerializeField]
     public SpawnableMapObject InsideMapObjectSettings { get; private set; } = new();
-    
+
     public MapObjectConfig Config { get; private set; }
     public MapObjectSpawnMechanics? InsideSpawnMechanics { get; private set; }
     public MapObjectSpawnMechanics? OutsideSpawnMechanics { get; private set; }
@@ -39,7 +43,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
         Config = CreateMapObjectConfig(section, data, EntityNameReference);
 
         HasNetworkObject = GameObject.GetComponent<NetworkObject>();
-        
+
         if (Config.InsideHazard?.Value ?? data.isInsideHazard)
         {
             try

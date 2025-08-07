@@ -22,7 +22,7 @@ static class EnemyAIPatch
         CREnemyAdditionalData data = CREnemyAdditionalData.CreateOrGet(self);
         ExtraEnemyEvents events = null;
         ExtraEnemyEvents.eventListeners.TryGetValue(self, out events);
-        
+
         if (playerWhoHit)
         {
             data.PlayerThatLastHit = playerWhoHit;
@@ -33,9 +33,9 @@ static class EnemyAIPatch
             if (playerWhoHit != null)
             {
                 data.KilledByPlayer = true;
-                if(events) events!.onKilledByPlayer.Invoke();
+                if (events) events!.onKilledByPlayer.Invoke();
             }
-            if(events) events!.onKilled.Invoke();
+            if (events) events!.onKilled.Invoke();
         }
 
         orig(self, force, playerWhoHit, playHitSFX, hitID);

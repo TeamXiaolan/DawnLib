@@ -8,7 +8,8 @@ using UnityEngine.Serialization;
 namespace CodeRebirthLib.ContentManagement.Unlockables.Progressive;
 public class UnlockShipUnlockable : NetworkBehaviour
 {
-    [FormerlySerializedAs("interactTrigger")] [SerializeField]
+    [FormerlySerializedAs("interactTrigger")]
+    [SerializeField]
     private InteractTrigger _interactTrigger = null!;
 
     private void Start()

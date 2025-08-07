@@ -18,7 +18,7 @@ public class SpawnWeightsPreset : ScriptableObject, IWeighted
     [field: SerializeField]
     public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = new(string.Empty);
 
-    private List<WeightTransformer> SpawnWeightsTransformers => new() {MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer};
+    private List<WeightTransformer> SpawnWeightsTransformers => new() { MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer };
 
     public void SetupSpawnWeightsPreset(string moonConfig, string interiorConfig, string weatherConfig)
     {

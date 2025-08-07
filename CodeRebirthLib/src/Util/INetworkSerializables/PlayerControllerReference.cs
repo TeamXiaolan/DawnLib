@@ -11,7 +11,7 @@ public class PlayerControllerReference : INetworkSerializable
     public bool IsLocalClient => StartOfRound.Instance.allPlayerScripts[_playerID].IsLocalPlayer();
     public bool IsAlive => !StartOfRound.Instance.allPlayerScripts[_playerID].isPlayerDead && StartOfRound.Instance.allPlayerScripts[_playerID].isPlayerControlled;
     public bool IsValid => _playerID != -1 && StartOfRound.Instance.allPlayerScripts.Length > _playerID;
-    
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref _playerID);

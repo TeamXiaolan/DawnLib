@@ -20,7 +20,7 @@ static class ExtendedTOML
                 CodeRebirthLibPlugin.ExtendedLogging($"[ExtendedTOML] Skipped converter for '{converter.ConvertingType.Name}' it disabled itself.");
                 continue;
             }
-            
+
             TomlTypeConverter.AddConverter(converter.ConvertingType, WrapCRLibConverter(converter));
             CodeRebirthLibPlugin.Logger.LogInfo($"[ExtendedTOML] Registered converter for '{converter.ConvertingType.Name}'");
         }

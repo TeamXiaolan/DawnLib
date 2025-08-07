@@ -16,7 +16,7 @@ public class CRMapObjectReference(string name) : CRContentReference<CRMapObjectD
         }
         return null;
     }
-    
+
     public static implicit operator CRMapObjectReference?(CRMapObjectDefinition? obj)
     {
         if (obj) return new CRMapObjectReference(obj!.MapObjectName);

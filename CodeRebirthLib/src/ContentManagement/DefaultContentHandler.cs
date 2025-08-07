@@ -11,7 +11,7 @@ public class DefaultContentHandler : ContentHandler
         foreach (AssetBundleData bundleData in mod.Content.assetBundles)
         {
             mod.Logger?.LogDebug($"Trying to register bundle: {bundleData}");
-            
+
             if (!IsContentEnabled(bundleData))
                 continue;
 
@@ -23,10 +23,10 @@ public class DefaultContentHandler : ContentHandler
                 {
                     mod.Logger?.LogError($"The bundle is instead defined at plugins/{Path.GetRelativePath(Paths.PluginPath, incorrectPath)}. It should be in an Assets/ subfolder.");
                 }
-                
+
                 continue;
             }
-            
+
             DefaultBundle bundle = new(AssetBundle.LoadFromFile(path));
             bundle.AssetBundleData = bundleData;
             LoadAllContent(bundle);

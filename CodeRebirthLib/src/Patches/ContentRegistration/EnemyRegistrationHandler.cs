@@ -61,10 +61,10 @@ static class EnemyRegistrationHandler
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
             List<RegistrationSettings<EnemyType>> enemies = [];
-            
+
             if (_enemiesToInject.TryGetValue("All", out List<RegistrationSettings<EnemyType>> global))
                 enemies.AddRange(global);
-            
+
             // todo: is this where the proper GetLLLMoonName should be used?
             if (_enemiesToInject.TryGetValue(ConfigManager.GetLLLNameOfLevel(level.name), out List<RegistrationSettings<EnemyType>> moonSpecific))
                 enemies.AddRange(moonSpecific);
@@ -76,7 +76,7 @@ static class EnemyRegistrationHandler
                     enemyType = enemy.Value,
                     rarity = enemy.RarityProvider.GetWeight() // get an inital weight, incase a mod doesn't use any special code.
                 };
-                
+
                 // todo: xu you talked about wanting to register one enemy as daytime/outside/inside but this only registers as one?
                 if (enemy.Value.isDaytimeEnemy && enemy.Value.isOutsideEnemy)
                 {
@@ -90,7 +90,7 @@ static class EnemyRegistrationHandler
                 {
                     level.Enemies.Add(spawnDef);
                 }
-                
+
                 _enemySettingsMap[spawnDef] = enemy;
             }
         }
@@ -101,7 +101,7 @@ static class EnemyRegistrationHandler
         UpdateAllWeights();
         orig(self);
     }
-    
+
     internal static void UpdateAllWeights(SelectableLevel? level = null)
     {
         level ??= StartOfRound.Instance.currentLevel;

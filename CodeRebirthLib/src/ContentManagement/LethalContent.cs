@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using CodeRebirthLib.ContentManagement.Dungeons;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
 using DunGen;
 using DunGen.Graph;
-using LethalLevelLoader;
 using Unity.Netcode;
 
 namespace CodeRebirthLib.ContentManagement;
@@ -37,13 +37,15 @@ public static class LethalContent
             List<string> unknownTypes = [];
 
             var levels = StartOfRound.Instance.levels;
-            foreach(SelectableLevel level in levels) {
+            foreach (SelectableLevel level in levels)
+            {
                 _allLevels.Add(level);
                 CodeRebirthLibPlugin.ExtendedLogging($"Found level: {level.name}");
 
                 PropertyInfo property = typeof(Levels).GetProperty(level.name);
                 if (property == null) unknownTypes.Add(level.name);
-                else {
+                else
+                {
                     property.SetValue(null, level);
                     _vanillaLevels.Add(level);
                 }
@@ -52,15 +54,15 @@ public static class LethalContent
             CodeRebirthLibPlugin.ExtendedLogging($"Unknown levels: {string.Join(", ", unknownTypes)}");
         }
     }
-    
+
     public static class Enemies
     {
         private static readonly List<EnemyType> _all = [], _vanilla = [];
 
         public static IReadOnlyList<EnemyType> All => _all.AsReadOnly();
-        public static IReadOnlyList<EnemyType> Vanilla => _vanilla.AsReadOnly();   
+        public static IReadOnlyList<EnemyType> Vanilla => _vanilla.AsReadOnly();
         public static IEnumerable<CREnemyDefinition> CRLib => CRMod.AllMods.SelectMany(mod => mod.EnemyRegistry());
-        
+
         public static EnemyType Flowerman { get; private set; }
         public static EnemyType Centipede { get; private set; }
         public static EnemyType MouthDog { get; private set; }
@@ -92,7 +94,7 @@ public static class LethalContent
         internal static void Init()
         {
             List<string> unknownTypes = [];
-            
+
             for (int i = 0; i < NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs.Count; i++)
             {
                 NetworkPrefab networkPrefab = NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs[i];
@@ -115,15 +117,15 @@ public static class LethalContent
             }
         }
     }
-    
+
     public static class Items
     {
         private static readonly List<Item> _all = [], _vanilla = [];
 
         public static IReadOnlyList<Item> All => _all.AsReadOnly();
-        public static IReadOnlyList<Item> Vanilla => _vanilla.AsReadOnly();   
+        public static IReadOnlyList<Item> Vanilla => _vanilla.AsReadOnly();
         public static IEnumerable<CRItemDefinition> CRLib => CRMod.AllMods.SelectMany(mod => mod.ItemRegistry());
-        
+
         public static Item SevenBall { get; private set; }
         public static Item Airhorn { get; private set; }
         public static Item BabyKiwiEgg { get; private set; }
@@ -240,9 +242,11 @@ public static class LethalContent
     public static class Dungeons
     {
         private static readonly List<DungeonFlow> _allFlows = [], _vanillaFlows = [];
-        public static IReadOnlyList<DungeonFlow> AllFlows = _allFlows.AsReadOnly();
-        public static IReadOnlyList<DungeonFlow> VanillaFlows = _vanillaFlows.AsReadOnly();
-        
+
+        public static IReadOnlyList<DungeonFlow> All = _allFlows.AsReadOnly();
+        public static IReadOnlyList<DungeonFlow> Vanilla = _vanillaFlows.AsReadOnly();
+        public static IEnumerable<CRAdditionalTilesDefinition> CRLib => CRMod.AllMods.SelectMany(mod => mod.AdditionalTilesRegistry());
+
         public static DungeonFlow Level1Flow { get; private set; }
         public static DungeonFlow Level1Flow3Exits { get; private set; } // todo: does this get replaced by LLL?
         public static DungeonFlow Level1FlowExtraLarge { get; private set; }
@@ -251,11 +255,11 @@ public static class LethalContent
 
         private static readonly List<DoorwaySocket> _vanillaSockets = [];
         public static IReadOnlyList<DoorwaySocket> VanillaDoorSockets = _vanillaSockets.AsReadOnly();
-        
+
         internal static void Init()
         {
             List<string> unknownTypes = [];
-            
+
             foreach (DungeonFlow flow in RoundManager.Instance.dungeonFlowTypes.Select(i => i.dungeonFlow))
             {
                 _allFlows.Add(flow);
@@ -275,7 +279,7 @@ public static class LethalContent
 
             CodeRebirthLibPlugin.ExtendedLogging($"Unknown dungeon flows: {string.Join(", ", unknownTypes)}");
 
-            foreach (DungeonFlow flow in VanillaFlows)
+            foreach (DungeonFlow flow in Vanilla)
             {
                 foreach (GameObjectChance chance in flow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it))
                 {
@@ -289,7 +293,7 @@ public static class LethalContent
                         _vanillaSockets.Add(doorway.socket);
                     }
                 }
-            }            
+            }
         }
     }
 }

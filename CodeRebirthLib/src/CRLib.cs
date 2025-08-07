@@ -112,7 +112,7 @@ public static class CRLib
     {
         ItemRegistrationHandler.AddItemToAllList(item);
     }
-    
+
     public static void RegisterScrap(Item item, string levelName, int rarity)
     {
         RegisterScrap(item, levelName, new SimpleWeightProvider(rarity));

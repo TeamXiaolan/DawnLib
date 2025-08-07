@@ -30,4 +30,4 @@ public abstract class EntityData<T> : EntityData where T : CRContentReference
             _reference = (T)typeof(T).GetConstructor([typeof(string)]).Invoke([""]);
         }
     }
-} 
+}

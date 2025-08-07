@@ -37,7 +37,7 @@ public class ChanceScript : NetworkBehaviour
 
         _onChance.Invoke();
     }
-    
+
     private IEnumerator DelayRandomThing()
     {
         yield return new WaitUntil(() => CodeRebirthLibNetworker.Instance != null);

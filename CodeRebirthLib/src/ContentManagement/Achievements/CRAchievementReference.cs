@@ -15,7 +15,7 @@ public class CRAchievementReference(string name) : CRContentReference<CRAchievem
         }
         return null;
     }
-    
+
     public static implicit operator CRAchievementReference?(CRAchievementBaseDefinition? obj)
     {
         if (obj) return new CRAchievementReference(obj!.AchievementName);

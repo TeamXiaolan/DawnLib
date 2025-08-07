@@ -12,7 +12,8 @@ namespace CodeRebirthLib.ContentManagement;
 
 public abstract class CRContentDefinition : ScriptableObject
 {
-    [FormerlySerializedAs("ConfigEntries")] [SerializeField]
+    [FormerlySerializedAs("ConfigEntries")]
+    [SerializeField]
     private List<CRDynamicConfig> _configEntries;
 
     protected abstract string EntityNameReference { get; }
@@ -29,7 +30,7 @@ public abstract class CRContentDefinition : ScriptableObject
             mod.Logger?.LogError($"BUG! Tried to register {name} without setting AssetBundleData?");
             return;
         }
-        
+
         Mod = mod;
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (CRDynamicConfig configDefinition in _configEntries)
@@ -76,7 +77,7 @@ public abstract class CRContentDefinition<T> : CRContentDefinition where T : Ent
                         return it.EntityName == EntityNameReference;
                     }
                     return it.entityName == EntityNameReference;
-                    
+
                 }));
         }
         catch (InvalidOperationException ex)

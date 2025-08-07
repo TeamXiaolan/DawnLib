@@ -8,13 +8,13 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
 public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
 {
     private static readonly int SlideOut = Animator.StringToHash("SlideOut");
-    
+
     [SerializeField]
     private GameObject _achievementGetUIElementPrefab = null!;
-    
+
     [SerializeField]
     private GameObject achievementContent = null!;
-    
+
     private Queue<CRAchievementBaseDefinition> achievementQueue = new();
 
     private void Start()

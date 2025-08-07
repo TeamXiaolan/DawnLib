@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Items;
 
@@ -16,7 +15,7 @@ public class CRItemReference(string name) : CRContentReference<CRItemDefinition>
         }
         return null;
     }
-    
+
     public static implicit operator CRItemReference?(CRItemDefinition? obj)
     {
         if (obj) return new CRItemReference(obj!.Item.itemName);

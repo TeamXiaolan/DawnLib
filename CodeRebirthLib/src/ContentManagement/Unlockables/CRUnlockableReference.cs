@@ -15,7 +15,7 @@ public class CRUnlockableReference(string name) : CRContentReference<CRUnlockabl
         }
         return null;
     }
-    
+
     public static implicit operator CRUnlockableReference?(CRUnlockableDefinition? obj)
     {
         if (obj) return new CRUnlockableReference(obj!.UnlockableItem.unlockableName);

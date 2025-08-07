@@ -15,7 +15,7 @@ public class CRWeatherReference(string name) : CRContentReference<CRWeatherDefin
         }
         return null;
     }
-    
+
     public static implicit operator CRWeatherReference?(CRWeatherDefinition? obj)
     {
         if (obj) return new CRWeatherReference(obj!.Weather.Name);

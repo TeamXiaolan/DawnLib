@@ -17,13 +17,13 @@ static class LethalQuantitiesCompatibility
     private static bool _useLQConverter;
     private static TypeConverter _lqConverter;
     private static TypeConverter _crlibConverter;
-    
+
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
         _lqConverter = new AnimationCurveTypeConverter();
         _crlibConverter = ExtendedTOML.WrapCRLibConverter(new AnimationCurveConverter());
-        
+
         On.LethalQuantities.Patches.RoundManagerPatch.onStartPrefix += MarkShouldUseLQConverter;
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += ReplaceAnimationCurveConverter;
     }

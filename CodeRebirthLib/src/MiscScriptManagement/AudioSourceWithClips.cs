@@ -11,7 +11,7 @@ public class AudioSourceWithClips
 
     [Tooltip("List of close audio clips that can be played.")]
     public AudioClip[] nearClips = null!;
-    
+
     [Tooltip("Far AudioSource that will play the clips.")]
     public AudioSource farAudioSource = null!;
 

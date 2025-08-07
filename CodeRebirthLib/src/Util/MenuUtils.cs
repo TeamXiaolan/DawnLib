@@ -17,10 +17,10 @@ public class MenuUtils
         clonedButton.GetComponent<Button>().onClick.AddListener(AchievementUICanvas.Instance._menuManager.PlayConfirmSFX);
         clonedButton.GetComponentInChildren<TextMeshProUGUI>().text = "> Achievements";
         AchievementUICanvas.Instance._achievementsButton = clonedButton.GetComponent<Button>();
-        
+
         var buttonsList = mainButtonsTransform.GetComponentsInChildren<Button>()
             .Select(b => b.gameObject);
-        
+
         var gameObjects = buttonsList.ToList();
         var positions = gameObjects
             .Where(b => b != clonedButton)

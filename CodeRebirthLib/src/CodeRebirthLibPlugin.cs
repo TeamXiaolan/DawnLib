@@ -37,7 +37,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         NetcodePatcher();
         CollectVanillaContentPatch.Init();
         TileInjectionPatch.Init();
-        
+
         ItemRegistrationHandler.Init();
         CRMapObjectsPatch.Init();
         GameNetworkManagerPatch.Init();
@@ -129,7 +129,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
 
         [LoadFromBundle("AchievementUICanvas.prefab")]
         public GameObject AchievementUICanvasPrefab { get; private set; } = null!;
-        
+
         [LoadFromBundle("AchievementGetUICanvas.prefab")]
         public GameObject AchievementGetUICanvasPrefab { get; private set; } = null!;
     }

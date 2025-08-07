@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CodeRebirthLib.ContentManagement.Achievements;
+using CodeRebirthLib.ContentManagement.Dungeons;
 using CodeRebirthLib.ContentManagement.Enemies;
 using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.MapObjects;
@@ -9,12 +11,14 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.AssetManagement;
+
 [Serializable]
 public class AssetBundleData
 {
     public string assetBundleName;
 
-    [field: SerializeField] [field: FormerlySerializedAs("keepLoaded")]
+    [field: SerializeField]
+    [field: FormerlySerializedAs("keepLoaded")]
     public bool AlwaysKeepLoaded { get; private set; }
 
     public string configName;
@@ -23,4 +27,6 @@ public class AssetBundleData
     public List<ItemData> items;
     public List<MapObjectData> mapObjects;
     public List<UnlockableData> unlockables;
+    public List<AchievementData> achievements;
+    public List<DungeonData> dungeons;
 }

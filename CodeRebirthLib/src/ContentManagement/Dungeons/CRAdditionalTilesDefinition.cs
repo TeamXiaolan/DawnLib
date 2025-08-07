@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DunGen;
 using UnityEngine;
 
 namespace CodeRebirthLib.ContentManagement.Dungeons;
+
 [CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = "CodeRebirthLib/Definitions/Additional Tiles Definition")]
-public class CRAdditionalTilesDefinition : CRContentDefinition
+public class CRAdditionalTilesDefinition : CRContentDefinition<DungeonData>
 {
     [Flags]
     public enum BranchCapSetting
@@ -26,7 +29,7 @@ public class CRAdditionalTilesDefinition : CRContentDefinition
     [field: SerializeField]
     public BranchCapSetting BranchCap { get; private set; }
 
-    public override void Register(CRMod mod)
+    public override void Register(CRMod mod, DungeonData data)
     {
         base.Register(mod);
         foreach (GameObjectChance chance in TilesToAdd.TileWeights.Weights)
@@ -44,9 +47,14 @@ public class CRAdditionalTilesDefinition : CRContentDefinition
             CRLib.RegisterTileSetForArchetype(ArchetypeName, TilesToAdd, true);
         }
     }
-    
+
     public static void RegisterTo(CRMod mod)
     {
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRAdditionalTilesDefinition>());
+    }
+
+    public override List<DungeonData> GetEntities(CRMod mod)
+    {
+        return mod.Content.assetBundles.SelectMany(it => it.dungeons).ToList();
     }
 }

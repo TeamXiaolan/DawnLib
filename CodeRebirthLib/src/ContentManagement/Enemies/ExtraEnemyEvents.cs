@@ -10,7 +10,7 @@ public class ExtraEnemyEvents : MonoBehaviour
 
     [SerializeField]
     internal UnityEvent onKilled, onKilledByPlayer;
-    
+
     private void OnEnable()
     {
         eventListeners[GetComponent<EnemyAI>()] = this;

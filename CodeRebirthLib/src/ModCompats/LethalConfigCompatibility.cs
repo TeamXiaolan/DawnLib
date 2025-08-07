@@ -45,9 +45,9 @@ static class LethalConfigCompatibility
 
             // Create a poxy entry to spoof it as a string.
             ConfigEntry<string> proxyEntry = _dummyConfig.Bind(
-                configEntryBase.Definition.Section, 
-                configEntryBase.Definition.Key, 
-                TomlTypeConverter.ConvertToString(configEntryBase.BoxedValue, configEntryBase.SettingType), 
+                configEntryBase.Definition.Section,
+                configEntryBase.Definition.Key,
+                TomlTypeConverter.ConvertToString(configEntryBase.BoxedValue, configEntryBase.SettingType),
                 configEntryBase.Description.Description
             );
 

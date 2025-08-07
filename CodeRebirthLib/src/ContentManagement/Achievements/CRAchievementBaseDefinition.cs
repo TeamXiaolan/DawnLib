@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -7,7 +9,7 @@ namespace CodeRebirthLib.ContentManagement.Achievements;
  * Button to reset specific achievements
  * probably more im forgetting
 */
-public abstract class CRAchievementBaseDefinition : CRContentDefinition
+public abstract class CRAchievementBaseDefinition : CRContentDefinition<AchievementData>
 {
     public const string REGISTRY_ID = "achievements";
 
@@ -74,10 +76,15 @@ public abstract class CRAchievementBaseDefinition : CRContentDefinition
         mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRAchievementBaseDefinition>());
     }
 
-    public override void Register(CRMod mod)
+    public override void Register(CRMod mod, AchievementData data)
     {
         base.Register(mod);
         mod.AchievementRegistry().Register(this);
+    }
+
+    public override List<AchievementData> GetEntities(CRMod mod)
+    {
+        return mod.Content.assetBundles.SelectMany(it => it.achievements).ToList();
     }
 
     public virtual bool IsActive() { return true; }

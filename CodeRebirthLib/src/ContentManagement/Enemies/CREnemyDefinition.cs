@@ -21,7 +21,8 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
 {
     public const string REGISTRY_ID = "enemies";
 
-    [field: FormerlySerializedAs("enemyType")] [field: SerializeField]
+    [field: FormerlySerializedAs("enemyType")]
+    [field: SerializeField]
     public EnemyType EnemyType { get; private set; }
 
     [field: SerializeField]
@@ -30,10 +31,12 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
     [field: SerializeField]
     public SpawnWeightsPreset SpawnWeights { get; private set; }
 
-    [field: FormerlySerializedAs("terminalNode")] [field: SerializeField]
+    [field: FormerlySerializedAs("terminalNode")]
+    [field: SerializeField]
     public TerminalNode? TerminalNode { get; private set; }
 
-    [field: FormerlySerializedAs("terminalKeyword")] [field: SerializeField]
+    [field: FormerlySerializedAs("terminalKeyword")]
+    [field: SerializeField]
     public TerminalKeyword? TerminalKeyword { get; private set; }
 
     public EnemyConfig Config { get; private set; }

@@ -38,10 +38,10 @@ static class ItemRegistrationHandler
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
             List<RegistrationSettings<Item>> items = [];
-            
+
             if (_itemsToInject.TryGetValue("All", out List<RegistrationSettings<Item>> globalItems))
                 items.AddRange(globalItems);
-            
+
             if (_itemsToInject.TryGetValue(ConfigManager.GetLLLNameOfLevel(level.name), out List<RegistrationSettings<Item>> moonSpecificItems))
                 items.AddRange(moonSpecificItems);
 
@@ -61,7 +61,7 @@ static class ItemRegistrationHandler
         {
             self.allItemsList.itemsList.Add(item);
         }
-        
+
         _itemsToInject.Clear();
     }
 
@@ -69,7 +69,7 @@ static class ItemRegistrationHandler
     {
         foreach (SpawnableItemWithRarity scrapWithRarity in self.currentLevel.spawnableScrap)
         {
-            if(!_itemSettingsMap.TryGetValue(scrapWithRarity, out RegistrationSettings<Item> settings))
+            if (!_itemSettingsMap.TryGetValue(scrapWithRarity, out RegistrationSettings<Item> settings))
                 continue;
 
             // update weights just before spawning scrap

@@ -61,7 +61,7 @@ public class AmbientNoisePlayer : MonoBehaviour
     {
         _idleTimer = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
     }
-    
+
     public void ForcePlayAmbientSound()
     {
         PlayRandomAmbientSound();

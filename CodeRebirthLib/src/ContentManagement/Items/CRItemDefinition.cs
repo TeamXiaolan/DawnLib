@@ -14,13 +14,15 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 {
     public const string REGISTRY_ID = "items";
 
-    [field: FormerlySerializedAs("item")] [field: SerializeField]
+    [field: FormerlySerializedAs("item")]
+    [field: SerializeField]
     public Item Item { get; private set; }
 
     [field: SerializeField]
     public SpawnWeightsPreset SpawnWeights { get; private set; }
 
-    [field: FormerlySerializedAs("terminalNode")] [field: SerializeField]
+    [field: FormerlySerializedAs("terminalNode")]
+    [field: SerializeField]
     public TerminalNode? TerminalNode { get; private set; }
 
     public ItemConfig Config { get; private set; }

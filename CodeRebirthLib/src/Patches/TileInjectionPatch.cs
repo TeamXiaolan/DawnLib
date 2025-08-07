@@ -13,10 +13,10 @@ static class TileInjectionPatch
         public TileSet Set { get; } = set;
         public bool IsBranchCap { get; } = isBranchCap;
     }
-    
+
     internal static readonly List<GameObject> tilesToFixSockets = [];
     static readonly Dictionary<string, List<TileInjectionSettings>> setsToInjectToArchetypes = [];
-    
+
     internal static void Init()
     {
         On.DunGen.RuntimeDungeon.Generate += (orig, self) =>
@@ -34,7 +34,7 @@ static class TileInjectionPatch
         {
             mapped[socket.name] = socket;
         }
-        
+
         foreach (GameObject tile in tilesToFixSockets)
         {
             Doorway[] doorways = tile.GetComponentsInChildren<Doorway>();

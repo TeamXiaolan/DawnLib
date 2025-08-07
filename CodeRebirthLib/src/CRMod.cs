@@ -63,7 +63,7 @@ public class CRMod
         var manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
         string manifestContents = File.ReadAllText(manifestPath);
         ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
-        
+
         ModInformation.ModDescription = manifest.description;
         ModInformation.ModName = manifest.name;
         ModInformation.AuthorName = manifest.author_name;
@@ -117,6 +117,8 @@ public class CRMod
             entities.AddRange(content.mapObjects);
             entities.AddRange(content.unlockables);
             entities.AddRange(content.weathers);
+            entities.AddRange(content.achievements);
+            entities.AddRange(content.dungeons);
         }
 
         foreach (var entity in entities)
@@ -165,7 +167,7 @@ public class CRMod
     {
         return GetRegistryByName<CREnemyDefinition>(CREnemyDefinition.REGISTRY_ID);
     }
-    
+
     public CRRegistry<CRItemDefinition> ItemRegistry()
     {
         return GetRegistryByName<CRItemDefinition>(CRItemDefinition.REGISTRY_ID);
@@ -180,7 +182,7 @@ public class CRMod
     {
         return GetRegistryByName<CRMapObjectDefinition>(CRMapObjectDefinition.REGISTRY_ID);
     }
-    
+
     [Obsolete] // todo: move to LethalContent
     public static IEnumerable<CRMapObjectDefinition> AllMapObjects()
     {
@@ -210,7 +212,7 @@ public class CRMod
     {
         return GetRegistryByName<CRAdditionalTilesDefinition>(CRAdditionalTilesDefinition.REGISTRY_ID);
     }
-    
+
     public static event Action<CRAchievementBaseDefinition> OnAchievementUnlocked;
 
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)

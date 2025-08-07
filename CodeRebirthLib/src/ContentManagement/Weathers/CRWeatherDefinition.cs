@@ -11,7 +11,8 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 {
     public const string REGISTRY_ID = "weathers";
 
-    [field: FormerlySerializedAs("Weather")] [field: SerializeField]
+    [field: FormerlySerializedAs("Weather")]
+    [field: SerializeField]
     public Weather Weather { get; private set; }
 
     protected override string EntityNameReference => Weather.Name;

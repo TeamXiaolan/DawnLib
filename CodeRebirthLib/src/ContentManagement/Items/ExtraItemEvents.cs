@@ -9,7 +9,7 @@ namespace CodeRebirthLib.ContentManagement.Items;
 public class ExtraItemEvents : MonoBehaviour
 {
     internal static Dictionary<GrabbableObject, ExtraItemEvents> eventListeners = [];
-    
+
     [SerializeField]
     internal UnityEvent onCollectInShip;
 

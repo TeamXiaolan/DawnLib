@@ -15,7 +15,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
     [field: SerializeField]
     public UnlockableItem UnlockableItem { get; private set; }
 
-    [field: FormerlySerializedAs("DenyPurchaseNode")] [field: SerializeField]
+    [field: FormerlySerializedAs("DenyPurchaseNode")]
+    [field: SerializeField]
     public TerminalNode? ProgressiveDenyNode { get; private set; }
 
     public UnlockableConfig Config { get; private set; }
