@@ -58,7 +58,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
 
         if (Config.IsShopItem?.Value ?? data.isShopItem)
         {
-            // Register our own shop item
+            // TODO Register our own shop item
             LethalLib.Modules.Items.RegisterShopItem(Item, null, null, TerminalNode, Config.Cost?.Value ?? data.cost);
         }
 
@@ -67,7 +67,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights.Value, Config.InteriorSpawnWeights.Value, Config.WeatherSpawnWeights.Value);
         }
 
-        CRLib.RegisterScrap(Item, "*", SpawnWeights);
+        CRLib.RegisterScrap(Item, "All", SpawnWeights);
         mod.ItemRegistry().Register(this);
     }
 

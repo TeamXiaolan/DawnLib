@@ -120,6 +120,7 @@ public static class CRLib
 
     public static void RegisterScrap(Item item, string levelName, IWeighted provider)
     {
+        levelName = ConfigManager.GetLLLNameOfLevel(levelName); // I think this is fine to have here, its either this or we sort of assume that the levelName is already parsed fine by now.
         ItemRegistrationHandler.AddItemForLevel(levelName, new RegistrationSettings<Item>(item, provider));
     }
 
@@ -143,6 +144,7 @@ public static class CRLib
 
     public static void RegisterEnemy(EnemyType enemy, string levelName, IWeighted provider)
     {
+        levelName = ConfigManager.GetLLLNameOfLevel(levelName); // I think this is fine to have here, its either this or we sort of assume that the levelName is already parsed fine by now.
         EnemyRegistrationHandler.AddEnemyForLevel(levelName, new RegistrationSettings<EnemyType>(enemy, provider));
     }
 

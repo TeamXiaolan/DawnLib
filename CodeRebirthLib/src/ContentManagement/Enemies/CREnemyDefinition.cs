@@ -59,9 +59,8 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
             SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights.Value, Config.InteriorSpawnWeights.Value, Config.WeatherSpawnWeights.Value);
         }
 
-        CRLib.RegisterEnemy(EnemyType, "*", SpawnWeights);
+        CRLib.RegisterEnemy(EnemyType, "All", SpawnWeights);
         // TODO make the bestiaries
-        // LethalLib.Modules.Enemies.RegisterEnemy(enemy, spawnRateByLevelType, spawnRateByCustomLevelType, TerminalNode, TerminalKeyword);
         mod.EnemyRegistry().Register(this);
     }
 

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using CodeRebirthLib.ConfigManagement.Weights;
+using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Enemies;
-using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.ContentManagement.Levels;
 using CodeRebirthLib.Data;
 
@@ -20,7 +19,6 @@ static class EnemyRegistrationHandler
         On.QuickMenuManager.Start += QuickMenuManager_Start;
     }
 
-    // todo: i have no idea what this is?
     private static void QuickMenuManager_Start(On.QuickMenuManager.orig_Start orig, QuickMenuManager self) // Make sure you foolproof reloading lobby
     {
         foreach (CREnemyDefinition enemyDefinition in LethalContent.Enemies.CRLib)
@@ -64,13 +62,11 @@ static class EnemyRegistrationHandler
         {
             List<RegistrationSettings<EnemyType>> enemies = [];
             
-            // todo: should this actually be "All" instead of "*"? All i think is better for configs, but by having * here, it could mean new mods using
-            // just the CRLib public methods start using *:30 instead of All:30?
-            if(_enemiesToInject.TryGetValue("*", out List<RegistrationSettings<EnemyType>> global))
+            if (_enemiesToInject.TryGetValue("All", out List<RegistrationSettings<EnemyType>> global))
                 enemies.AddRange(global);
             
             // todo: is this where the proper GetLLLMoonName should be used?
-            if(_enemiesToInject.TryGetValue(level.name, out List<RegistrationSettings<EnemyType>> moonSpecific))
+            if (_enemiesToInject.TryGetValue(ConfigManager.GetLLLNameOfLevel(level.name), out List<RegistrationSettings<EnemyType>> moonSpecific))
                 enemies.AddRange(moonSpecific);
 
             foreach (RegistrationSettings<EnemyType> enemy in enemies)

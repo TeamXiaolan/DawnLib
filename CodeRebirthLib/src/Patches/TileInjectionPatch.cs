@@ -66,7 +66,7 @@ static class TileInjectionPatch
                 continue;
 
             CodeRebirthLibPlugin.ExtendedLogging($"Injecting {toInject.Count} tileset(s) into {archetype.name}");
-            
+
             foreach (TileInjectionSettings tileSet in toInject)
             {
                 if (tileSet.IsBranchCap)
@@ -80,7 +80,8 @@ static class TileInjectionPatch
             }
 
             // to prevent injecting tile sets multiple times, clear the list
-            setsToInjectToArchetypes[flow.name] = [];
+            setsToInjectToArchetypes[archetype.name].Clear();
+            setsToInjectToArchetypes[archetype.name].Capacity = 0;
         }
     }
 }

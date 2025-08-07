@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.ContentManagement.Items;
 using CodeRebirthLib.Data;
-using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
 static class ItemRegistrationHandler
@@ -31,7 +28,8 @@ static class ItemRegistrationHandler
 
     internal static void AddItemToAllList(Item item)
     {
-        if(!_allNewItems.Contains(item)) _allNewItems.Add(item);
+        if (!_allNewItems.Contains(item))
+            _allNewItems.Add(item);
     }
 
     private static void StartOfRound_Awake(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -41,13 +39,10 @@ static class ItemRegistrationHandler
         {
             List<RegistrationSettings<Item>> items = [];
             
-            // todo: should this actually be "All" instead of "*"? All i think is better for configs, but by having * here, it could mean new mods using
-            // just the CRLib public methods start using *:30 instead of All:30?
-            if(_itemsToInject.TryGetValue("*", out List<RegistrationSettings<Item>> globalItems))
+            if (_itemsToInject.TryGetValue("All", out List<RegistrationSettings<Item>> globalItems))
                 items.AddRange(globalItems);
             
-            // todo: is this where the proper GetLLLMoonName should be used?
-            if(_itemsToInject.TryGetValue(level.name, out List<RegistrationSettings<Item>> moonSpecificItems))
+            if (_itemsToInject.TryGetValue(ConfigManager.GetLLLNameOfLevel(level.name), out List<RegistrationSettings<Item>> moonSpecificItems))
                 items.AddRange(moonSpecificItems);
 
             foreach (RegistrationSettings<Item> item in items)
