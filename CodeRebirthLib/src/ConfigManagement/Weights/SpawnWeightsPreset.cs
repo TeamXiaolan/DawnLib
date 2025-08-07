@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.ConfigManagement.Weights.Transformers;
+using CodeRebirthLib.Data;
 using UnityEngine;
 
 namespace CodeRebirthLib.ConfigManagement.Weights;
 // todo: better name
 [CreateAssetMenu(menuName = "CodeRebirthLib/Weights/Preset", order = -20)]
-public class SpawnWeightsPreset : ScriptableObject, IWeightProvider
+public class SpawnWeightsPreset : ScriptableObject, IWeighted
 {
     [field: SerializeField]
     public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set;}

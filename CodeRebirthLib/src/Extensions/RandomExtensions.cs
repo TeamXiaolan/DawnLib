@@ -53,14 +53,14 @@ public static class RandomExtensions
 
     public static T NextWeighted<T>(this Random random, IList<T> list) where T : IWeighted
     {
-        int totalWeight = list.Sum(it => it.Weight);
+        int totalWeight = list.Sum(it => it.GetWeight());
         int chosenWeight = random.Next(0, totalWeight + 1);
 
         T chosen = list.First();
         foreach (T weighted in list)
         {
             chosen = weighted;
-            chosenWeight -= weighted.Weight;
+            chosenWeight -= weighted.GetWeight();
             if (chosenWeight <= 0)
                 break;
         }

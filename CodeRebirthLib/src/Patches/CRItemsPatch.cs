@@ -1,22 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.ConfigManagement;
-using CodeRebirthLib.ConfigManagement.Weights;
 using CodeRebirthLib.ContentManagement.Items;
 using UnityEngine;
 
 namespace CodeRebirthLib.Patches;
-
 static class CRItemsPatch
 {
-    internal class ItemInjectionSettings(Item item, IWeightProvider rarityProvider)
-    {
-        public Item Item { get; } = item;
-        public IWeightProvider RarityProvider { get; } = rarityProvider;
-    }
     
-    static readonly Dictionary<string, List<ItemInjectionSettings>> _itemsToInject = [];
-    private static readonly Dictionary<SpawnableItemWithRarity, ItemInjectionSettings> _itemSettingsMap = [];
+    
+    static readonly Dictionary<string, List<InjectionSettings<Item>>> _itemsToInject = [];
+    private static readonly Dictionary<SpawnableItemWithRarity, InjectionSettings<Item>> _itemSettingsMap = [];
 
     internal static void Init()
     {
@@ -24,9 +18,9 @@ static class CRItemsPatch
         On.RoundManager.SpawnScrapInLevel += RoundManager_SpawnScrapInLevel;
     }
 
-    internal static void AddItemForLevel(string levelName, ItemInjectionSettings settings)
+    internal static void AddItemForLevel(string levelName, InjectionSettings<Item> settings)
     {
-        if (!_itemsToInject.TryGetValue(levelName, out List<ItemInjectionSettings> items))
+        if (!_itemsToInject.TryGetValue(levelName, out List<InjectionSettings<Item>> items))
         {
             items = new();
         }
@@ -39,22 +33,22 @@ static class CRItemsPatch
         orig(self);
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
-            List<ItemInjectionSettings> items = [];
+            List<InjectionSettings<Item>> items = [];
             
             // todo: should this actually be "All" instead of "*"? All i think is better for configs, but by having * here, it could mean new mods using
             // just the CRLib public methods start using *:30 instead of All:30?
-            if(_itemsToInject.TryGetValue("*", out List<ItemInjectionSettings> globalItems))
+            if(_itemsToInject.TryGetValue("*", out List<InjectionSettings<Item>> globalItems))
                 items.AddRange(globalItems);
             
             // todo: is this where the proper GetLLLMoonName should be used?
-            if(_itemsToInject.TryGetValue(level.name, out List<ItemInjectionSettings> moonSpecificItems))
+            if(_itemsToInject.TryGetValue(level.name, out List<InjectionSettings<Item>> moonSpecificItems))
                 items.AddRange(moonSpecificItems);
 
-            foreach (ItemInjectionSettings item in items)
+            foreach (InjectionSettings<Item> item in items)
             {
                 SpawnableItemWithRarity spawnDef = new SpawnableItemWithRarity
                 {
-                    spawnableItem = item.Item,
+                    spawnableItem = item.Value,
                     rarity = item.RarityProvider.GetWeight() // get an inital weight, incase a mod doesn't use any special code.
                 };
                 level.spawnableScrap.Add(spawnDef);
@@ -62,9 +56,9 @@ static class CRItemsPatch
             }
         }
 
-        foreach (ItemInjectionSettings item in _itemsToInject.Values.SelectMany(it => it))
+        foreach (InjectionSettings<Item> item in _itemsToInject.Values.SelectMany(it => it))
         {
-            self.allItemsList.itemsList.Add(item.Item);
+            self.allItemsList.itemsList.Add(item.Value);
         }
         
         _itemsToInject.Clear();
@@ -74,7 +68,7 @@ static class CRItemsPatch
     {
         foreach (SpawnableItemWithRarity scrapWithRarity in self.currentLevel.spawnableScrap)
         {
-            if(!_itemSettingsMap.TryGetValue(scrapWithRarity, out ItemInjectionSettings settings))
+            if(!_itemSettingsMap.TryGetValue(scrapWithRarity, out InjectionSettings<Item> settings))
                 continue;
 
             // update weights just before spawning scrap

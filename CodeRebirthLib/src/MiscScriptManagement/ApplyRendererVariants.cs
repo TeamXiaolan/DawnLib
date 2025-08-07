@@ -19,7 +19,9 @@ public class MaterialRendererVariantWithWeight : IWeighted
     public MaterialsWithRenderer materialsWithRenderer = new();
 
     [field: SerializeField]
-    public int Weight { get; set; } = 1;
+    int _weight { get; set; } = 1;
+
+    public int GetWeight() => _weight;
 }
 
 public class ApplyRendererVariants : NetworkBehaviour

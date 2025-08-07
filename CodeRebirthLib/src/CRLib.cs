@@ -8,6 +8,7 @@ using CodeRebirthLib.ConfigManagement;
 using CodeRebirthLib.ConfigManagement.Weights;
 using CodeRebirthLib.ContentManagement;
 using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.Data;
 using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
@@ -112,9 +113,9 @@ public static class CRLib
         RegisterScrap(item, levelName, new SimpleWeightProvider(rarity));
     }
 
-    public static void RegisterScrap(Item item, string levelName, IWeightProvider provider)
+    public static void RegisterScrap(Item item, string levelName, IWeighted provider)
     {
-        CRItemsPatch.AddItemForLevel(levelName, new CRItemsPatch.ItemInjectionSettings(item, provider));
+        CRItemsPatch.AddItemForLevel(levelName, new InjectionSettings<Item>(item, provider));
     }
 
     public static void RegisterScrap(Item item, Dictionary<string, int> levelRarities)
