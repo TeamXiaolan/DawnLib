@@ -36,12 +36,12 @@ public class CRAdditionalTilesDefinition : CRContentDefinition
 
         if (BranchCap.HasFlag(BranchCapSetting.Regular))
         {
-            CRLib.InjectTileSetForDungeon(ArchetypeName, TilesToAdd);
+            CRLib.RegisterTileSetForArchetype(ArchetypeName, TilesToAdd);
         }
 
         if (BranchCap.HasFlag(BranchCapSetting.BranchCap))
         {
-            CRLib.InjectTileSetForDungeon(ArchetypeName, TilesToAdd, true);
+            CRLib.RegisterTileSetForArchetype(ArchetypeName, TilesToAdd, true);
         }
     }
     

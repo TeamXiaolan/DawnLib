@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using BepInEx;
@@ -11,6 +12,7 @@ using CodeRebirthLib.Patches;
 using CodeRebirthLib.Util;
 using CodeRebirthLib.Util.INetworkSerializables;
 using DunGen;
+using Steamworks.Data;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -93,15 +95,37 @@ public static class CRLib
         return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, plugin.GUID + ".cfg"), false, plugin);
     }
 
-    public static void InjectTileSetForDungeon(string archetypeName, TileSet tileSet, bool isBranchCap = false)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="archetypeName">Name of the archetype SciptableObject, like Level1ArchetypeMaze</param>
+    /// <param name="tileSet">TileSet to add</param>
+    /// <param name="isBranchCap">Should this tileset be valid to spawn at the end of a corridor?</param>
+    /// <remarks>You should also call <see cref="FixDoorwaySockets"/> on your tile prefabs</remarks>
+    public static void RegisterTileSetForArchetype(string archetypeName, TileSet tileSet, bool isBranchCap = false)
     {
         TileInjectionPatch.AddTileSetForDungeon(archetypeName, new TileInjectionPatch.TileInjectionSettings(tileSet, isBranchCap)); // i want to keep a lot of the public facing methods in the CRLib class
     }
-
-    public static void InjectItemIntoLevel(SpawnWeightsPreset spawnWeights, Item item)
+    
+    public static void RegisterScrap(Item item, string levelName, int rarity)
     {
-        CRItemsPatch.AddItemForLevel(spawnWeights, item);
+        RegisterScrap(item, levelName, new SimpleWeightProvider(rarity));
     }
+
+    public static void RegisterScrap(Item item, string levelName, IWeightProvider provider)
+    {
+        CRItemsPatch.AddItemForLevel(levelName, new CRItemsPatch.ItemInjectionSettings(item, provider));
+    }
+
+    public static void RegisterScrap(Item item, Dictionary<string, int> levelRarities)
+    {
+        foreach ((string levelName, int rarity) in levelRarities)
+        {
+            RegisterScrap(item, levelName, rarity);
+        }
+    }
+    
+    // todo: register shop item?
 
     public static void InjectEnemyIntoLevel(SpawnTable spawnTable, SpawnWeightsPreset spawnWeights, EnemyType enemyType)
     {

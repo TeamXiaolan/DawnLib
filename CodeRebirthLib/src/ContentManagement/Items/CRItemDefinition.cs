@@ -67,7 +67,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights.Value, Config.InteriorSpawnWeights.Value, Config.WeatherSpawnWeights.Value);
         }
 
-        CRLib.InjectItemIntoLevel(SpawnWeights, Item);
+        CRLib.RegisterScrap(Item, "*", SpawnWeights);
         mod.ItemRegistry().Register(this);
     }
 

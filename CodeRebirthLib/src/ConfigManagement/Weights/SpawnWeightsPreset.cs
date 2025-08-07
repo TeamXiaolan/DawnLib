@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CodeRebirthLib.ConfigManagement.Weights;
 // todo: better name
 [CreateAssetMenu(menuName = "CodeRebirthLib/Weights/Preset", order = -20)]
-public class SpawnWeightsPreset : ScriptableObject
+public class SpawnWeightsPreset : ScriptableObject, IWeightProvider
 {
     [field: SerializeField]
     public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set;}
