@@ -1,6 +1,4 @@
-﻿using CodeRebirthLib.Data;
-
-namespace CodeRebirthLib.ConfigManagement.Weights;
+﻿namespace CodeRebirthLib.Data;
 public class SimpleWeightProvider(int weight) : IWeighted
 {
     public int GetWeight() => weight;

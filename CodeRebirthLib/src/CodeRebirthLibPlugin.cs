@@ -38,7 +38,7 @@ class CodeRebirthLibPlugin : BaseUnityPlugin
         CollectVanillaContentPatch.Init();
         TileInjectionPatch.Init();
         
-        CRItemsPatch.Init();
+        ItemRegistrationHandler.Init();
         CRMapObjectsPatch.Init();
         GameNetworkManagerPatch.Init();
         EnemyAIPatch.Init();

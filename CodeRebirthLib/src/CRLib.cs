@@ -115,7 +115,7 @@ public static class CRLib
 
     public static void RegisterScrap(Item item, string levelName, IWeighted provider)
     {
-        CRItemsPatch.AddItemForLevel(levelName, new InjectionSettings<Item>(item, provider));
+        ItemRegistrationHandler.AddItemForLevel(levelName, new RegistrationSettings<Item>(item, provider));
     }
 
     public static void RegisterScrap(Item item, Dictionary<string, int> levelRarities)
@@ -128,8 +128,21 @@ public static class CRLib
     
     // todo: register shop item?
 
-    public static void InjectEnemyIntoLevel(SpawnTable spawnTable, SpawnWeightsPreset spawnWeights, EnemyType enemyType)
+    public static void RegisterEnemy(EnemyType enemy, string levelName, int rarity)
     {
-        CREnemiesPatch.AddEnemyForLevel(spawnTable, spawnWeights, enemyType);
+        RegisterEnemy(enemy, levelName, new SimpleWeightProvider(rarity));
+    }
+
+    public static void RegisterEnemy(EnemyType enemy, string levelName, IWeighted provider)
+    {
+        EnemyRegistrationHandler.AddEnemyForLevel(levelName, new RegistrationSettings<EnemyType>(enemy, provider));
+    }
+
+    public static void RegisterEnemy(EnemyType enemy, Dictionary<string, int> levelRarities)
+    {
+        foreach ((string levelName, int rarity) in levelRarities)
+        {
+            RegisterEnemy(enemy, levelName, rarity);
+        }
     }
 }
