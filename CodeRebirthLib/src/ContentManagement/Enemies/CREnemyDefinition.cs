@@ -66,6 +66,9 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
 
     internal static void UpdateAllWeights(SelectableLevel? level = null)
     {
+        if (!StartOfRound.Instance)
+            return;
+
         SelectableLevel levelToUpdate = level ?? StartOfRound.Instance.currentLevel;
 
         foreach (var spawnableEnemyWithRarity in levelToUpdate.Enemies)

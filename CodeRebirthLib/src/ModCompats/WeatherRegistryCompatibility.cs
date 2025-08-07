@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using CodeRebirthLib.ContentManagement.Enemies;
+using CodeRebirthLib.ContentManagement.Items;
 using WeatherRegistry;
 
 namespace CodeRebirthLib.ModCompats;
@@ -17,7 +18,6 @@ static class WeatherRegistryCompatibility
     private static void WeatherRegistry_EventManager_WeatherChanged((SelectableLevel selectableLevel, Weather weather) args)
     {
         CREnemyDefinition.UpdateAllWeights(args.selectableLevel);
-        CREnemyDefinition.UpdateAllWeights(args.selectableLevel);
-        CREnemyDefinition.UpdateAllWeights(args.selectableLevel);
+        CRItemDefinition.UpdateAllWeights(args.selectableLevel);
     }
 }

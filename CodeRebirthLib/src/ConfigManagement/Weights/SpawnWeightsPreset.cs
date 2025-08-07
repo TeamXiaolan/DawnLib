@@ -10,13 +10,13 @@ namespace CodeRebirthLib.ConfigManagement.Weights;
 public class SpawnWeightsPreset : ScriptableObject, IWeighted
 {
     [field: SerializeField]
-    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set;}
+    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = new(string.Empty);
 
     [field: SerializeField]
-    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set;}
+    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = new(string.Empty);
 
     [field: SerializeField]
-    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set;}
+    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = new(string.Empty);
 
     private List<WeightTransformer> SpawnWeightsTransformers => new() {MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer};
 

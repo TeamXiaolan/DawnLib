@@ -88,9 +88,14 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         };
     }
 
-    internal static void UpdateAllWeights()
+    internal static void UpdateAllWeights(SelectableLevel? level = null)
     {
-        foreach (var spawnableItemWithRarity in StartOfRound.Instance.currentLevel.spawnableScrap)
+        if (!StartOfRound.Instance)
+            return;
+
+        SelectableLevel levelToUpdate = level ?? StartOfRound.Instance.currentLevel;
+
+        foreach (var spawnableItemWithRarity in levelToUpdate.spawnableScrap)
         {
             if (!spawnableItemWithRarity.spawnableItem.TryGetDefinition(out CRItemDefinition? definition))
                 continue;

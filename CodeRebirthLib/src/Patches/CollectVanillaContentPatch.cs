@@ -1,6 +1,8 @@
-﻿using CodeRebirthLib.ContentManagement;
+﻿using System.Collections;
+using CodeRebirthLib.ContentManagement;
 
 namespace CodeRebirthLib.Patches;
+
 static class CollectVanillaContentPatch
 {
     internal static void Init()
@@ -25,6 +27,13 @@ static class CollectVanillaContentPatch
     private static void GameNetworkManagerOnStart(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
     {
         orig(self);
+        // delay by a frame because stuff wasnt getting picked up.
+        self.StartCoroutine(GrabReferencesDelayed());
+    }
+
+    private static IEnumerator GrabReferencesDelayed()
+    {
+        yield return null;
         LethalContent.Enemies.Init();
         LethalContent.Items.Init();
     }

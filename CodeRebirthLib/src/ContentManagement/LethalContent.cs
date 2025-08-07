@@ -103,7 +103,10 @@ public static class LethalContent
                 CodeRebirthLibPlugin.ExtendedLogging($"Found enemy: {enemyAI.enemyType.name}");
 
                 PropertyInfo property = typeof(Enemies).GetProperty(enemyAI.enemyType.name);
-                if (property == null) unknownTypes.Add(enemyAI.enemyType.name);
+                if (property == null)
+                {
+                    unknownTypes.Add(enemyAI.enemyType.name);
+                }
                 else
                 {
                     property.SetValue(null, enemyAI.enemyType);
