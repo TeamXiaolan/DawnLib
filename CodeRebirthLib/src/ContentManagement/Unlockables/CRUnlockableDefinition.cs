@@ -12,6 +12,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
 {
     public const string REGISTRY_ID = "unlockables";
 
+    [field: SerializeField]
     public UnlockableItem UnlockableItem { get; private set; }
 
     [field: FormerlySerializedAs("DenyPurchaseNode")] [field: SerializeField]
