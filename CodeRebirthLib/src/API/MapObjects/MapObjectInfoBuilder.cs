@@ -9,6 +9,7 @@ public class MapObjectInfoBuilder
     {
         private MapObjectInfoBuilder _parentBuilder;
 
+        // maybe replace this (vvv) with a SpawnableMapObject Builder?
         private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances; // this feels like it should be one SO or some data thing instead of a million bools
 
         internal InsideBuilder(MapObjectInfoBuilder parent)
