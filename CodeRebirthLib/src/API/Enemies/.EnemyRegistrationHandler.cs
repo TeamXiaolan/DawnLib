@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
 namespace CodeRebirthLib;
+
 static class EnemyRegistrationHandler
 {
     internal static void Init()
@@ -22,7 +19,7 @@ static class EnemyRegistrationHandler
                 SpawnableEnemyWithRarity spawnDef = new()
                 {
                     enemyType = enemyInfo.Enemy,
-                    rarity = 0 // is 0 right?
+                    rarity = 0 // todo: probably replace this with the preset later on an update cycle with weather or spawning enemies or smthn
                 };
 
                 // todo: xu you talked about wanting to register one enemy as daytime/outside/inside but this only registers as one?

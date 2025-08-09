@@ -4,6 +4,7 @@ public static class LethalContent
 {
     public static Registry<CRItemInfo> Items = new();
     public static Registry<CREnemyInfo> Enemies = new();
+    public static Registry<CRMapObjectInfo> MapObjects = new();
 }
 
 public static class ItemKeys
