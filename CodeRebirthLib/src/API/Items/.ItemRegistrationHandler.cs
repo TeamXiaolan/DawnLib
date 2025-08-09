@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Analytics;
 
 namespace CodeRebirthLib;
 static class ItemRegistrationHandler
@@ -10,6 +9,7 @@ static class ItemRegistrationHandler
     {
         On.Terminal.Awake += RegisterShopItems;
     }
+
     private static void RegisterShopItems(On.Terminal.orig_Awake orig, Terminal self)
     {
         TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
@@ -17,7 +17,7 @@ static class ItemRegistrationHandler
         TerminalKeyword confirmPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "confirm");
         TerminalKeyword denyPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "deny");
         TerminalNode cancelPurchaseNode = buyKeyword.compatibleNouns[0].result.terminalOptions[1].result;
-        
+
         // first add modded content
         List<Item> newBuyableList = self.buyableItemsList.ToList();
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
@@ -26,16 +26,18 @@ static class ItemRegistrationHandler
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if(shopInfo == null && itemInfo.Key.IsModded()) continue; // also ensure not to register vanilla stuff again
+            if (shopInfo == null || itemInfo.Key.IsVanilla())
+                continue; // also ensure not to register vanilla stuff again
+
             string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-");
-            
+
             newBuyableList.Add(itemInfo.Item);
             TerminalNode receiptNode = shopInfo!.ReceiptNode;
             TerminalNode requestNode = shopInfo.RequestNode;
-            
+
             receiptNode.buyItemIndex = newBuyableList.Count - 1;
             receiptNode.itemCost = shopInfo.Cost;
-            
+
             requestNode.buyItemIndex = newBuyableList.Count - 1;
             requestNode.isConfirmationNode = true;
             requestNode.overrideOptions = true;
@@ -53,7 +55,7 @@ static class ItemRegistrationHandler
                     result = cancelPurchaseNode
                 }
             ];
-            
+
             TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
             buyItemKeyword.name = simplifiedItemName.ToLowerInvariant();
             buyItemKeyword.word = simplifiedItemName.ToLowerInvariant();
@@ -63,7 +65,7 @@ static class ItemRegistrationHandler
             buyItemKeyword.defaultVerb = buyKeyword;
             buyItemKeyword.accessTerminalObjects = false;
             newTerminalKeywords.Add(buyItemKeyword);
-            
+
             newBuyCompatibleNouns.Add(new CompatibleNoun()
             {
                 noun = buyItemKeyword,
@@ -75,7 +77,7 @@ static class ItemRegistrationHandler
                 result = shopInfo.InfoNode
             });
         }
-        
+
         // then, before freezing registry, add vanilla content
         if (!LethalContent.Items.IsFrozen) // effectively check for a lobby reload
         {
@@ -90,7 +92,7 @@ static class ItemRegistrationHandler
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray();
         self.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
-        
+
         LethalContent.Items.Freeze();
         orig(self);
     }

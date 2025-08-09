@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 
 namespace CodeRebirthLib;
 public class TerminalNodeBuilder
@@ -27,12 +26,6 @@ public class TerminalNodeBuilder
     public TerminalNodeBuilder SetMaxCharactersToType(int maxCharacters)
     {
         _node.maxCharactersToType = maxCharacters;
-        return this;
-    }
-
-    public TerminalNodeBuilder SetBuyItemIndex(int buyItemIndex)
-    {
-        _node.buyItemIndex = buyItemIndex;
         return this;
     }
     

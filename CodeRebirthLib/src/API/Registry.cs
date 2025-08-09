@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Rendering.HighDefinition.LTC;
 
 namespace CodeRebirthLib;
 public class Registry<T> : IReadOnlyDictionary<NamespacedKey, T> where T : INamespaced
@@ -13,16 +12,22 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey, T> where T : IName
 
     internal void Freeze()
     {
-        if(IsFrozen) return;
+        if (IsFrozen)
+            return;
+
         IsFrozen = true;
         OnFreeze();
     }
 
     internal void Register(T value)
     {
-        if (IsFrozen) throw new Exception("Registry is frozen");
+        if (IsFrozen)
+            throw new Exception("Registry is frozen");
+
         NamespacedKey key = value.Key;
-        if (ContainsKey(key)) throw new ArgumentException($"'{key}' has already been added to this registry.");
+        if (ContainsKey(key))
+            throw new ArgumentException($"'{key}' has already been added to this registry.");
+
         _dictionary[key] = value;
     }
 
@@ -30,10 +35,12 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey, T> where T : IName
     {
         return _dictionary.GetEnumerator();
     }
+
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
+
     public int Count => _dictionary.Count;
     public bool ContainsKey(NamespacedKey key) => _dictionary.ContainsKey(key);
     public bool TryGetValue(NamespacedKey key, out T value)
