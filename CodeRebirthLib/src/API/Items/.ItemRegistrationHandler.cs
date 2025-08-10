@@ -8,7 +8,45 @@ static class ItemRegistrationHandler
 {
     internal static void Init()
     {
+        On.StartOfRound.Awake += RegisterScrapItems;
+        On.StartOfRound.Start += FreezeItemContent;
         On.Terminal.Awake += RegisterShopItems;
+    }
+
+    private static void FreezeItemContent(On.StartOfRound.orig_Start orig, StartOfRound self)
+    {
+        orig(self);
+        LethalContent.Items.Freeze();
+    }
+
+    private static void RegisterScrapItems(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        orig(self);
+        if (LethalContent.Items.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+        
+        foreach (SelectableLevel level in self.levels)
+        {
+            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
+
+            foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
+            {
+                CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
+                if (scrapInfo == null || itemInfo.Key.IsVanilla())
+                    continue; // also ensure not to register vanilla stuff again
+
+                SpawnableItemWithRarity spawnDef = new()
+                {
+                    spawnableItem = itemInfo.Item,
+                    rarity = 0 // todo: dynamic update
+                };
+                level.spawnableScrap.Add(spawnDef);
+                self.allItemsList.itemsList.Add(itemInfo.Item);
+            }
+        }
     }
 
     private static void RegisterShopItems(On.Terminal.orig_Awake orig, Terminal self)
@@ -87,6 +125,7 @@ static class ItemRegistrationHandler
                 noun = buyItemKeyword,
                 result = shopInfo.InfoNode
             });
+            RoundManager.Instance.playersManager.allItemsList.itemsList.Add(itemInfo.Item);
         }
 
         // then, before freezing registry, add vanilla content
@@ -103,8 +142,6 @@ static class ItemRegistrationHandler
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray(); // SO so it sticks
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray(); // SO so it sticks
         self.terminalNodes.allKeywords = newTerminalKeywords.ToArray(); // SO so it sticks
-
-        LethalContent.Items.Freeze();
         orig(self);
     }
 }

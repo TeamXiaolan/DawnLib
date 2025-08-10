@@ -1,16 +1,9 @@
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 namespace CodeRebirthLib;
 
 static class EnemyRegistrationHandler
-{
-    static NamespacedKey<CRMoonInfo> ToNamespacedKey(this SelectableLevel level)
-    {
-        return NamespacedKey<CRMoonInfo>.Vanilla(new string(level.PlanetName.SkipWhile(c => !char.IsLetter(c)).ToArray()).Replace(" ", "_").ToLower(CultureInfo.InvariantCulture));
-    }
-    
+{   
     internal static void Init()
     {
         On.StartOfRound.Awake += CollectLevels;
@@ -48,21 +41,24 @@ static class EnemyRegistrationHandler
         {
             NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
             
-            List<SpawnableEnemyWithRarity> levelEnemies = new List<SpawnableEnemyWithRarity>();
-            levelEnemies.AddRange(level.Enemies);
-            levelEnemies.AddRange(level.OutsideEnemies);
-            levelEnemies.AddRange(level.DaytimeEnemies);
+            List<SpawnableEnemyWithRarity> levelEnemies =
+            [
+                .. level.Enemies,
+                .. level.OutsideEnemies,
+                .. level.DaytimeEnemies,
+            ];
+
             foreach (SpawnableEnemyWithRarity enemy in levelEnemies)
             {
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?) typeof(EnemyKeys).GetField(enemy.enemyType.enemyName.Replace(" ", ""))?.GetValue(null);
-                if(key == null)
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemy.enemyType.enemyName.Replace(" ", ""))?.GetValue(null);
+                if (key == null)
                     continue;
-                
-                if(LethalContent.Enemies.ContainsKey(key))
+
+                if (LethalContent.Enemies.ContainsKey(key))
                     continue;
-                
+
                 // todo: do weight calculation stuff
-                CREnemyInfo enemyInfo = new CREnemyInfo(key, enemy.enemyType, null, null, null);
+                CREnemyInfo enemyInfo = new(key, enemy.enemyType, null, null, null);
                 LethalContent.Enemies.Register(enemyInfo);
             }
             
@@ -84,7 +80,7 @@ static class EnemyRegistrationHandler
     {
         if (weights == null) return;
         
-        SpawnableEnemyWithRarity spawnDef = new SpawnableEnemyWithRarity()
+        SpawnableEnemyWithRarity spawnDef = new()
         {
             enemyType = enemyInfo.Enemy,
             rarity = 0 // todo: dynamic update
