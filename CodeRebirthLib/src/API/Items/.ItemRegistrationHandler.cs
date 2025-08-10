@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 namespace CodeRebirthLib;
+
 static class ItemRegistrationHandler
 {
     internal static void Init()
@@ -23,16 +24,36 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
+
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRShopItemInfo? shopInfo = itemInfo.ShopInfo;
             if (shopInfo == null || itemInfo.Key.IsVanilla())
                 continue; // also ensure not to register vanilla stuff again
 
-            string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-");
+            string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();
 
             newBuyableList.Add(itemInfo.Item);
-            TerminalNode receiptNode = shopInfo!.ReceiptNode;
+
+            foreach (var TerminalKeyword in newTerminalKeywords)
+            {
+                if (TerminalKeyword.word == simplifiedItemName)
+                {
+                    continue;
+                }
+            }
+
+            TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
+            buyItemKeyword.name = simplifiedItemName;
+            buyItemKeyword.word = simplifiedItemName;
+            buyItemKeyword.isVerb = false;
+            buyItemKeyword.compatibleNouns = null;
+            buyItemKeyword.specialKeywordResult = null;
+            buyItemKeyword.defaultVerb = buyKeyword;
+            buyItemKeyword.accessTerminalObjects = false;
+            newTerminalKeywords.Add(buyItemKeyword);
+
+            TerminalNode receiptNode = shopInfo.ReceiptNode;
             TerminalNode requestNode = shopInfo.RequestNode;
 
             receiptNode.buyItemIndex = newBuyableList.Count - 1;
@@ -56,16 +77,6 @@ static class ItemRegistrationHandler
                 }
             ];
 
-            TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-            buyItemKeyword.name = simplifiedItemName.ToLowerInvariant();
-            buyItemKeyword.word = simplifiedItemName.ToLowerInvariant();
-            buyItemKeyword.isVerb = false;
-            buyItemKeyword.compatibleNouns = null;
-            buyItemKeyword.specialKeywordResult = null;
-            buyItemKeyword.defaultVerb = buyKeyword;
-            buyItemKeyword.accessTerminalObjects = false;
-            newTerminalKeywords.Add(buyItemKeyword);
-
             newBuyCompatibleNouns.Add(new CompatibleNoun()
             {
                 noun = buyItemKeyword,
@@ -88,10 +99,10 @@ static class ItemRegistrationHandler
         }
 
         // update terminal references to include new stuff
-        self.buyableItemsList = newBuyableList.ToArray();
-        infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
-        buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray();
-        self.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
+        self.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
+        infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray(); // SO so it sticks
+        buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray(); // SO so it sticks
+        self.terminalNodes.allKeywords = newTerminalKeywords.ToArray(); // SO so it sticks
 
         LethalContent.Items.Freeze();
         orig(self);
