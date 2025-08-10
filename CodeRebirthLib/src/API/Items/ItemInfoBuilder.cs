@@ -6,20 +6,30 @@ public class ItemInfoBuilder
     public class ScrapBuilder
     {
         private ItemInfoBuilder _parentBuilder;
+
+        private WeightTable<CRMoonInfo>? _weights;
         
         internal ScrapBuilder(ItemInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
-        public ScrapBuilder AddMoonWeight(NamespacedKey<CRMoonInfo> moon, int weight)
+        public ScrapBuilder SetWeights(Action<WeightTableBuilder<CRMoonInfo>> callback)
         {
+            WeightTableBuilder<CRMoonInfo> builder = new WeightTableBuilder<CRMoonInfo>();
+            callback(builder);
+            _weights = builder.Build();
             return this;
         }
         
         internal CRScrapItemInfo Build()
         {
-            return new CRScrapItemInfo();
+            if (_weights == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder._item.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = WeightTable<CRMoonInfo>.Empty();
+            }
+            return new CRScrapItemInfo(_weights);
         }
     }
 

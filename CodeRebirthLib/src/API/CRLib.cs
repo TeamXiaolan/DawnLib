@@ -3,6 +3,8 @@
 namespace CodeRebirthLib;
 public static class CRLib
 {
+    public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
+    
     public static void DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
     {
         ItemInfoBuilder builder = new ItemInfoBuilder(key, item);

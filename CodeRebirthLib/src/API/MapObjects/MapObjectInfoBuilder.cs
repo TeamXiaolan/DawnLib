@@ -19,11 +19,11 @@ public class MapObjectInfoBuilder
 
         public InsideBuilder AddMoonAnimationCurve(NamespacedKey<CRMoonInfo> moon, AnimationCurve animationCurve)
         {
-            if (_parentBuilder._animationCurveToLevelDict.TryGetValue(moon.ToString(), out _)) // TODO i really dont know how to get moon name from CRMoonInfo
+            if (_parentBuilder._animationCurveToLevelDict.TryGetValue(moon, out _)) // TODO i really dont know how to get moon name from CRMoonInfo
             {
-                _parentBuilder._animationCurveToLevelDict[moon.ToString()] = animationCurve;
+                _parentBuilder._animationCurveToLevelDict[moon] = animationCurve;
             }
-            _parentBuilder._animationCurveToLevelDict.Add(moon.ToString(), animationCurve);
+            _parentBuilder._animationCurveToLevelDict.Add(moon, animationCurve);
             return this;
         }
 
@@ -82,11 +82,11 @@ public class MapObjectInfoBuilder
 
         public OutsideBuilder AddMoonAnimationCurve(NamespacedKey<CRMoonInfo> moon, AnimationCurve animationCurve)
         {
-            if (_parentBuilder._animationCurveToLevelDict.TryGetValue(moon.ToString(), out _)) // TODO i really dont know how to get moon name from CRMoonInfo
+            if (_parentBuilder._animationCurveToLevelDict.TryGetValue(moon, out _))
             {
-                _parentBuilder._animationCurveToLevelDict[moon.ToString()] = animationCurve;
+                _parentBuilder._animationCurveToLevelDict[moon] = animationCurve;
             }
-            _parentBuilder._animationCurveToLevelDict.Add(moon.ToString(), animationCurve);
+            _parentBuilder._animationCurveToLevelDict.Add(moon, animationCurve);
             return this;
         }
 
@@ -104,12 +104,12 @@ public class MapObjectInfoBuilder
 
     private NamespacedKey<CRMapObjectInfo> _key;
     private GameObject _mapObject;
-    private Dictionary<string, AnimationCurve> _animationCurveToLevelDict = new();
+    private Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> _animationCurveToLevelDict = new();
 
     private CRInsideMapObjectInfo? _insideInfo;
     private CROutsideMapObjectInfo? _outsideInfo;
 
-    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Dictionary<string, AnimationCurve> animationCurveToLevelDict)
+    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> animationCurveToLevelDict)
     {
         _key = key;
         _mapObject = mapObject;

@@ -19,7 +19,10 @@ static class MapObjectRegistrationHandler
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla())
                     continue;
 
-                AnimationCurve animationCurve = mapObjectInfo.AnimationCurveToLevelDict[level.name]; // convert to the LLL format
+                NamespacedKey<CRMoonInfo> moonKey = null!; // todo
+                if(!mapObjectInfo.AnimationCurveToLevelDict.TryGetValue(moonKey, out AnimationCurve animationCurve))
+                    continue;
+                
                 if (animationCurve == AnimationCurve.Linear(0, 0, 1, 0))
                     continue;
 

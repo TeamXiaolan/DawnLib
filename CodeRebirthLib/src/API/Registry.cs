@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace CodeRebirthLib;
-public class Registry<T> : IReadOnlyDictionary<NamespacedKey, T> where T : INamespaced
+public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : INamespaced<T>
 {
-    private readonly Dictionary<NamespacedKey, T> _dictionary = [];
+    private readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
     
     public bool IsFrozen { get; private set; }
     public event Action OnFreeze = delegate { };
@@ -24,14 +24,14 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey, T> where T : IName
         if (IsFrozen)
             throw new Exception("Registry is frozen");
 
-        NamespacedKey key = value.Key;
+        NamespacedKey<T> key = value.TypedKey;
         if (ContainsKey(key))
             throw new ArgumentException($"'{key}' has already been added to this registry.");
 
         _dictionary[key] = value;
     }
 
-    public IEnumerator<KeyValuePair<NamespacedKey, T>> GetEnumerator()
+    public IEnumerator<KeyValuePair<NamespacedKey<T>, T>> GetEnumerator()
     {
         return _dictionary.GetEnumerator();
     }
@@ -42,14 +42,14 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey, T> where T : IName
     }
 
     public int Count => _dictionary.Count;
-    public bool ContainsKey(NamespacedKey key) => _dictionary.ContainsKey(key);
-    public bool TryGetValue(NamespacedKey key, out T value)
+    public bool ContainsKey(NamespacedKey<T> key) => _dictionary.ContainsKey(key);
+    public bool TryGetValue(NamespacedKey<T> key, out T value)
     {
         return _dictionary.TryGetValue(key, out value);
     }
 
-    public T this[NamespacedKey key] => _dictionary[key];
+    public T this[NamespacedKey<T> key] => _dictionary[key];
 
-    public IEnumerable<NamespacedKey> Keys => _dictionary.Keys;
+    public IEnumerable<NamespacedKey<T>> Keys => _dictionary.Keys;
     public IEnumerable<T> Values => _dictionary.Values;
 }

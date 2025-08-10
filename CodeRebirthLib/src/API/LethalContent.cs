@@ -5,6 +5,7 @@ public static class LethalContent
     public static Registry<CRItemInfo> Items = new();
     public static Registry<CREnemyInfo> Enemies = new();
     public static Registry<CRMapObjectInfo> MapObjects = new();
+    public static Registry<CRMoonInfo> Moons = new();
 }
 
 public static class ItemKeys
@@ -23,6 +24,17 @@ public static class MoonKeys
 
 public static class EnemyKeys
 {
+    public static readonly NamespacedKey<CREnemyInfo> Centipede = NamespacedKey<CREnemyInfo>.Vanilla("centipede");
+    public static readonly NamespacedKey<CREnemyInfo> BunkerSpider = NamespacedKey<CREnemyInfo>.Vanilla("bunker_spider");
+    public static readonly NamespacedKey<CREnemyInfo> Hoardingbug = NamespacedKey<CREnemyInfo>.Vanilla("hoarding_bug");
+    public static readonly NamespacedKey<CREnemyInfo> Flowerman = NamespacedKey<CREnemyInfo>.Vanilla("flowerman");
     public static readonly NamespacedKey<CREnemyInfo> Crawler = NamespacedKey<CREnemyInfo>.Vanilla("crawler");
-    public static readonly NamespacedKey<CREnemyInfo> Spider = NamespacedKey<CREnemyInfo>.Vanilla("sand_spider");
+    public static readonly NamespacedKey<CREnemyInfo> Blob = NamespacedKey<CREnemyInfo>.Vanilla("blob");
+    public static readonly NamespacedKey<CREnemyInfo> Bwaaaa = NamespacedKey<CREnemyInfo>.Vanilla("bwaaaa");
+    public static readonly NamespacedKey<CREnemyInfo> GiantKiwi = NamespacedKey<CREnemyInfo>.Vanilla("giant_kiwi");
+}
+
+public static class Tags
+{
+    public static readonly NamespacedKey ForestTag = NamespacedKey.Vanilla("forest");
 }

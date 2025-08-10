@@ -1,4 +1,6 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 
 namespace CodeRebirthLib;
@@ -11,5 +13,38 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
     {
         Logger = base.Logger;
         ItemRegistrationHandler.Init();
+        EnemyRegistrationHandler.Init();
+        
+        /*CRLib.DefineEnemy(NamespacedKey<CREnemyInfo>.From("code_rebirth", "duck"), new EnemyType(), enemyInfo => enemyInfo
+            .DefineInside(weights => weights
+                .AddTagWeight(Tags.ForestTag, 400)
+                .AddWeight(MoonKeys.March, 10)
+                .SetGlobalWeight(300)
+            )
+        );*/
+
+        TomlTypeConverter.AddConverter(typeof(NamespacedKey<CRMoonInfo>),
+            new TypeConverter()
+            {
+                ConvertToObject = (str, type) => NamespacedKey<CRMoonInfo>.Parse(str),
+                ConvertToString = (obj, type) => obj.ToString()
+            }
+        );
+        Config.Bind("bwaa", "bwa", NamespacedKey<CRMoonInfo>.From("bwaa", "bwaa"), "bwaaa");
+        
+        DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.Enemy.enemyName);
+        DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
+    }
+
+    static void DebugPrintRegistryResult<T>(string name, Registry<T> registry, Func<T, string> nameGetter) where T : INamespaced<T>
+    {
+        registry.OnFreeze += () =>
+        {
+            Logger.LogDebug($"Registry '{name}' ({typeof(T).Name}) contains '{registry.Count}' entries.");
+            foreach ((NamespacedKey<T> key, T value) in registry)
+            {
+                Logger.LogDebug($"{key} -> {nameGetter(value)}");
+            }
+        };
     }
 }
