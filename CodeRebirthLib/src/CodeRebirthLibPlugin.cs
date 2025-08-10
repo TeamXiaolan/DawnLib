@@ -14,7 +14,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         Logger = base.Logger;
         ItemRegistrationHandler.Init();
         EnemyRegistrationHandler.Init();
-        
+
         /*CRLib.DefineEnemy(NamespacedKey<CREnemyInfo>.From("code_rebirth", "duck"), new EnemyType(), enemyInfo => enemyInfo
             .DefineInside(weights => weights
                 .AddTagWeight(Tags.ForestTag, 400)
@@ -31,9 +31,11 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
             }
         );
         Config.Bind("bwaa", "bwa", NamespacedKey<CRMoonInfo>.From("bwaa", "bwaa"), "bwaaa");
-        
+
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.Enemy.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
+
+        AutoCRModHandler.AutoRegisterMods();
     }
 
     static void DebugPrintRegistryResult<T>(string name, Registry<T> registry, Func<T, string> nameGetter) where T : INamespaced<T>
