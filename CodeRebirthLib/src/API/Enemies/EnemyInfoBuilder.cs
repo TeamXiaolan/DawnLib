@@ -8,7 +8,7 @@ public class EnemyInfoBuilder
     private NamespacedKey<CREnemyInfo> _key;
     private EnemyType _enemy;
 
-    private Table<int?,CRMoonInfo>? _insideWeights, _outsideWeights, _daytimeWeights;
+    private ProviderTable<int?,CRMoonInfo>? _insideWeights, _outsideWeights, _daytimeWeights;
     
     internal EnemyInfoBuilder(NamespacedKey<CREnemyInfo> key, EnemyType enemy)
     {

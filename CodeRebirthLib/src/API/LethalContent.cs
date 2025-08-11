@@ -10,6 +10,23 @@ public static class LethalContent
     public static Registry<CRMoonInfo> Moons = new();
     public static Registry<CRTileSetInfo> TileSets = new();
     public static Registry<CRDungeonInfo> Dungeons = new();
+    public static Registry<CRUnlockableItemInfo> Unlockables = new();
+    public static Registry<CRWeatherInfo> Weathers = new();
+}
+
+public static class CRLibContent
+{
+    public static Registry<CRAchievementInfo> Achievements = new();
+}
+
+public static class WeatherKeys
+{
+    public static readonly NamespacedKey<CRWeatherInfo> Rainy = NamespacedKey<CRWeatherInfo>.Vanilla("rainy");
+}
+
+public static class UnlockableItemKeys
+{
+    public static readonly NamespacedKey<CRUnlockableItemInfo> Teleporter = NamespacedKey<CRUnlockableItemInfo>.Vanilla("teleporter");
 }
 
 public static class ItemKeys
@@ -49,4 +66,9 @@ public static class DungeonKeys
 public static class Tags
 {
     public static readonly NamespacedKey ForestTag = NamespacedKey.Vanilla("forest");
+}
+
+public static class AchievementKeys
+{
+    
 }

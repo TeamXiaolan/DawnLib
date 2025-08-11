@@ -37,7 +37,7 @@ public static class CRLib
     {
         AchievementInfoBuilder builder = new AchievementInfoBuilder(key);
         callback(builder);
-        LethalContent.Achievements.Register(builder.Build());
+        CRLibContent.Achievements.Register(builder.Build());
     }
 
     public static void DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
@@ -54,18 +54,11 @@ public static class CRLib
         LethalContent.MapObjects.Register(builder.Build());
     }
 
-    public static void DefineUnlockable(NamespacedKey<CRUnlockableInfo> key, Action<UnlockableInfoBuilder> callback)
+    public static void DefineUnlockable(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem, Action<UnlockableInfoBuilder> callback)
     {
-        UnlockableInfoBuilder builder = new UnlockableInfoBuilder(key);
+        UnlockableInfoBuilder builder = new(key, unlockableItem);
         callback(builder);
         LethalContent.Unlockables.Register(builder.Build());
-    }
-
-    public static void DefineWeather(NamespacedKey<CRWeatherInfo> key, Action<WeatherInfoBuilder> callback)
-    {
-        WeatherInfoBuilder builder = new WeatherInfoBuilder(key);
-        callback(builder);
-        LethalContent.Weather.Register(builder.Build());
     }
 
     public static void DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
@@ -77,7 +70,7 @@ public static class CRLib
 
     public static void DefineEnemy(NamespacedKey<CREnemyInfo> key, EnemyType enemy, Action<EnemyInfoBuilder> callback)
     {
-        EnemyInfoBuilder builder = new EnemyInfoBuilder(key, enemy);
+        EnemyInfoBuilder builder = new(key, enemy);
         callback(builder);
         LethalContent.Enemies.Register(builder.Build());
     }

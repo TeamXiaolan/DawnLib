@@ -37,20 +37,12 @@ public class CRAdditionalTilesDefinition : CRContentDefinition<DungeonData>
             CRLib.FixDoorwaySockets(chance.Value);
         }
 
-        if (BranchCap.HasFlag(BranchCapSetting.Regular))
+        CRLib.DefineTileSet(null, TilesToAdd, builder =>
         {
-            CRLib.RegisterTileSetForArchetype(ArchetypeName, TilesToAdd);
-        }
-
-        if (BranchCap.HasFlag(BranchCapSetting.BranchCap))
-        {
-            CRLib.RegisterTileSetForArchetype(ArchetypeName, TilesToAdd, true);
-        }
-    }
-
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRAdditionalTilesDefinition>());
+            builder.AddToDungeon(null);
+            builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
+            builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
+        });
     }
 
     public override List<DungeonData> GetEntities(CRMod mod)

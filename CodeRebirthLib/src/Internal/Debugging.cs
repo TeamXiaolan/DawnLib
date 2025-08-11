@@ -7,8 +7,7 @@ namespace CodeRebirthLib;
 [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
 internal static class Debuggers
 {
-    internal static DebugLogSource ExtendedLogging;
-    internal static DebugLogSource ReplaceThis;
+    internal static DebugLogSource? ReplaceThis;
 
     internal static void Bind(ConfigFile file)
     {

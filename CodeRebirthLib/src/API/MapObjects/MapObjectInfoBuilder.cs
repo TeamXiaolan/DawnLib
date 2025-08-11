@@ -12,7 +12,7 @@ public class MapObjectInfoBuilder
 
         // maybe replace this (vvv) with a SpawnableMapObject Builder?
         private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances; // this feels like it should be one SO or some data thing instead of a million bools
-        private Table<AnimationCurve?,CRMoonInfo>? _weights;
+        private ProviderTable<AnimationCurve?,CRMoonInfo>? _weights;
         
         internal InsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -31,7 +31,7 @@ public class MapObjectInfoBuilder
             return this;
         }
 
-        public InsideBuilder OverrideSpawnWWithBackToWall(bool spawnWWithBackToWall)
+        public InsideBuilder OverrideSpawnWithBackToWall(bool spawnWWithBackToWall)
         {
             _spawnWWithBackToWall = spawnWWithBackToWall;
             return this;
@@ -68,7 +68,7 @@ public class MapObjectInfoBuilder
             if (_weights == null)
             {
                 CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder._key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = Table<AnimationCurve?,CRMoonInfo>.Empty();
+                _weights = ProviderTable<AnimationCurve?,CRMoonInfo>.Empty();
             }
             return new CRInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
         }
@@ -79,7 +79,7 @@ public class MapObjectInfoBuilder
         private MapObjectInfoBuilder _parentBuilder;
 
         private bool _alignWithTerrain;
-        private Table<AnimationCurve?,CRMoonInfo>? _weights;
+        private ProviderTable<AnimationCurve?,CRMoonInfo>? _weights;
         
         internal OutsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -106,7 +106,7 @@ public class MapObjectInfoBuilder
             if (_weights == null)
             {
                 CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder._key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = Table<AnimationCurve?,CRMoonInfo>.Empty();
+                _weights = ProviderTable<AnimationCurve?,CRMoonInfo>.Empty();
             }
             return new CROutsideMapObjectInfo(_weights, _alignWithTerrain);
         }

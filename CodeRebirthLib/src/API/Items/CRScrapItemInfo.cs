@@ -3,10 +3,10 @@ public sealed class CRScrapItemInfo
 {
     public CRItemInfo ParentInfo { get; internal set; }
 
-    internal CRScrapItemInfo(Table<int?, CRMoonInfo> weights)
+    internal CRScrapItemInfo(ProviderTable<int?, CRMoonInfo> weights)
     {
         Weights = weights;
     }
     
-    public Table<int?, CRMoonInfo> Weights { get; private set; }
+    public ProviderTable<int?, CRMoonInfo> Weights { get; }
 }

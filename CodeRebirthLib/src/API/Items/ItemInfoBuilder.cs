@@ -7,7 +7,7 @@ public class ItemInfoBuilder
     {
         private ItemInfoBuilder _parentBuilder;
 
-        private Table<int?,CRMoonInfo>? _weights;
+        private ProviderTable<int?,CRMoonInfo>? _weights;
         
         internal ScrapBuilder(ItemInfoBuilder parent)
         {
@@ -27,7 +27,7 @@ public class ItemInfoBuilder
             if (_weights == null)
             {
                 CodeRebirthLibPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder._item.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = Table<int?,CRMoonInfo>.Empty();
+                _weights = ProviderTable<int?,CRMoonInfo>.Empty();
             }
             return new CRScrapItemInfo(_weights);
         }

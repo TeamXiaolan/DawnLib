@@ -30,13 +30,13 @@ public class CurveTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggabl
         return this;
     }
 
-    public Table<AnimationCurve?,TBase> Build()
+    public ProviderTable<AnimationCurve?,TBase> Build()
     {
         List<IProvider<AnimationCurve?, TBase>> compiled = [.._baseProviders, .._tagProviders];
         if (_global != null)
         {
             compiled.Add(_global);
         }
-        return new Table<AnimationCurve?,TBase>(compiled);
+        return new ProviderTable<AnimationCurve?,TBase>(compiled);
     }
 }

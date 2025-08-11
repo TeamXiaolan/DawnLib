@@ -20,10 +20,6 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
     [field: SerializeField]
     public string MapObjectName { get; private set; }
 
-    [field: FormerlySerializedAs("alignWithTerrain")]
-    [field: SerializeField]
-    public bool AlignWithTerrain { get; private set; } // todo: migrate to outsidemapobjectsettings
-
     [field: SerializeField]
     public InsideMapObjectSettings InsideMapObjectSettings { get; private set; }
     [field: SerializeField]
@@ -44,33 +40,31 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
 
         HasNetworkObject = GameObject.GetComponent<NetworkObject>();
 
-        if (Config.InsideHazard?.Value ?? data.isInsideHazard)
+        CRLib.DefineMapObject(null, GameObject, builder =>
         {
-            try
+            builder.DefineInside(insideBuilder =>
             {
-                InsideSpawnMechanics = new MapObjectSpawnMechanics(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
-            }
-            catch (MalformedAnimationCurveConfigException exception)
-            {
-                mod.Logger?.LogError($"Failed to parse inside curve for map object: {EntityNameReference}");
-                exception.LogNicely(mod.Logger);
-            }
-        }
+                insideBuilder.OverrideSpawnFacingWall(InsideMapObjectSettings.spawnFacingWall);
+                insideBuilder.OverrideSpawnFacingAwayFromWall(InsideMapObjectSettings.spawnFacingAwayFromWall);
+                insideBuilder.OverrideRequireDistanceBetweenSpawns(InsideMapObjectSettings.requireDistanceBetweenSpawns);
+                insideBuilder.OverrideDisallowSpawningNearEntrances(InsideMapObjectSettings.disallowSpawningNearEntrances);
+                insideBuilder.OverrideSpawnWithBackToWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
+                insideBuilder.OverrideSpawnWithBackFlushAgainstWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
+                insideBuilder.SetWeights(weightBuilder =>
+                {
 
-        if (Config.OutsideHazard?.Value ?? data.isOutsideHazard)
-        {
-            try
-            {
-                OutsideSpawnMechanics = new MapObjectSpawnMechanics(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
-            }
-            catch (MalformedAnimationCurveConfigException exception)
-            {
-                mod.Logger?.LogError($"Failed to parse outside curve for map object: {EntityNameReference}");
-                exception.LogNicely(mod.Logger);
-            }
-        }
+                });
+            });
 
-        mod.MapObjectRegistry().Register(this);
+            builder.DefineOutside(outsideBuilder =>
+            {
+                outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
+                outsideBuilder.SetWeights(weightBuilder =>
+                {
+
+                });
+            });
+        });
     }
 
     public static MapObjectConfig CreateMapObjectConfig(ConfigContext section, MapObjectData data, string objectName)
@@ -96,11 +90,6 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
             InsideCurveSpawnWeights = insideCurves,
             OutsideCurveSpawnWeights = outsideCurves,
         };
-    }
-
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRMapObjectDefinition>());
     }
 
     public override List<MapObjectData> GetEntities(CRMod mod)

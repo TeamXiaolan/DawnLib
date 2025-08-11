@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Discord;
 using DunGen;
 
 namespace CodeRebirthLib.Dungeons;
@@ -8,7 +7,8 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
     private List<NamespacedKey<CRDungeonInfo>> _appliedTo = [];
     private bool _branchCap, _regular = true;
     
-    internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value) {
+    internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
+    {
     }
 
     public TilesetInfoBuilder AddToDungeon(NamespacedKey<CRDungeonInfo> dungeonKey)

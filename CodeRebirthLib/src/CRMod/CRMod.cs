@@ -18,8 +18,6 @@ public class CRMod
 
     private readonly string _basePath;
 
-    private readonly Dictionary<string, CRRegistry> _registries = new();
-
     // todo: i dont like how many arguments are here lmao
     internal CRMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)
     {
@@ -37,7 +35,7 @@ public class CRMod
     {
         var plugin = modInfo.CreatePluginMetadata();
         Debuggers.ReplaceThis?.Log("Registering no-code mod!");
-        ConfigManager configManager = new(GenerateConfigFile(plugin));
+        ConfigManager configManager = new(ConfigManager.GenerateConfigFile(plugin));
         CRMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
         noCodeMod.ModInformation = modInfo;
         noCodeMod.Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID);
@@ -110,11 +108,6 @@ public class CRMod
         }
 
         Content = containers[0];
-        AddDefaultRegistries();
-        if (WeatherRegistryCompatibility.Enabled)
-        {
-            AddWeatherRegistry();
-        }
 
         List<EntityData> entities = new();
         foreach (var content in Content.assetBundles)
@@ -161,99 +154,12 @@ public class CRMod
         return File.Exists(fullPath);
     }
 
-    public void CreateRegistry<T>(string name, CRRegistry<T> registry) where T : CRContentDefinition
-    {
-        _registries[name] = registry;
-        CodeRebirthLibPlugin.ExtendedLogging($"Created Registry: {name}");
-    }
-
-    public CRRegistry<T> GetRegistryByName<T>(string name) where T : CRContentDefinition
-    {
-        return (CRRegistry<T>)_registries[name];
-    }
-
-    public CRRegistry<CREnemyDefinition> EnemyRegistry()
-    {
-        return GetRegistryByName<CREnemyDefinition>(CREnemyDefinition.REGISTRY_ID);
-    }
-
-    public CRRegistry<CRItemDefinition> ItemRegistry()
-    {
-        return GetRegistryByName<CRItemDefinition>(CRItemDefinition.REGISTRY_ID);
-    }
-
-    [Obsolete("Use LethalContent.Items.CRLib instead.")]
-    public static IEnumerable<CRItemDefinition> AllItems()
-    {
-        return AllMods.SelectMany(mod => mod.ItemRegistry());
-    }
-
-    public CRRegistry<CRMapObjectDefinition> MapObjectRegistry()
-    {
-        return GetRegistryByName<CRMapObjectDefinition>(CRMapObjectDefinition.REGISTRY_ID);
-    }
-
-    [Obsolete("Use LethalContent.MapObjects.CRLib instead.")]
-    public static IEnumerable<CRMapObjectDefinition> AllMapObjects()
-    {
-        return AllMods.SelectMany(mod => mod.MapObjectRegistry());
-    }
-
-    public CRRegistry<CRUnlockableDefinition> UnlockableRegistry()
-    {
-        return GetRegistryByName<CRUnlockableDefinition>(CRUnlockableDefinition.REGISTRY_ID);
-    }
-
-    [Obsolete("Use LethalContent.Unlockables.CRLib instead.")]
-    public static IEnumerable<CRUnlockableDefinition> AllUnlockables()
-    {
-        return AllMods.SelectMany(mod => mod.UnlockableRegistry());
-    }
-
-    public CRRegistry<CRAchievementDefinition> AchievementRegistry()
-    {
-        return GetRegistryByName<CRAchievementDefinition>(CRAchievementDefinition.REGISTRY_ID);
-    }
-
-    // todo: Obsolete and move to LethalContent??
-    public static IEnumerable<CRAchievementDefinition> AllAchievements()
-    {
-        return AllMods.SelectMany(mod => mod.AchievementRegistry());
-    }
-
-    public CRRegistry<CRAdditionalTilesDefinition> AdditionalTilesRegistry()
-    {
-        return GetRegistryByName<CRAdditionalTilesDefinition>(CRAdditionalTilesDefinition.REGISTRY_ID);
-    }
-
-    [Obsolete("Use LethalContent.Dungeons.CRLib instead.")]
-    public static IEnumerable<CRAdditionalTilesDefinition> AllAdditionalTiles()
-    {
-        return AllMods.SelectMany(mod => mod.AdditionalTilesRegistry());
-    }
-
     public static event Action<CRAchievementDefinition> OnAchievementUnlocked;
 
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
     {
         data = Content.assetBundles.FirstOrDefault(it => it.assetBundleName == bundleName);
         return data != null;
-    }
-
-    private void AddDefaultRegistries()
-    {
-        CREnemyDefinition.RegisterTo(this);
-        CRMapObjectDefinition.RegisterTo(this);
-        CRItemDefinition.RegisterTo(this);
-        CRUnlockableDefinition.RegisterTo(this);
-        CRAchievementDefinition.RegisterTo(this);
-        CRAdditionalTilesDefinition.RegisterTo(this);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    private void AddWeatherRegistry()
-    {
-        CRWeatherDefinition.RegisterTo(this);
     }
 
     public void RegisterContentHandlers()

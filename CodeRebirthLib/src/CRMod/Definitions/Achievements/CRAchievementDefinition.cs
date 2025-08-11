@@ -71,15 +71,9 @@ public abstract class CRAchievementDefinition : CRContentDefinition<AchievementD
         Completed = false;
     }
 
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRAchievementDefinition>());
-    }
-
     public override void Register(CRMod mod, AchievementData data)
     {
         base.Register(mod);
-        mod.AchievementRegistry().Register(this);
     }
 
     public override List<AchievementData> GetEntities(CRMod mod)

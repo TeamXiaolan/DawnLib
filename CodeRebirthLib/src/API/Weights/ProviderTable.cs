@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
 namespace CodeRebirthLib;
-public class Table<T, TBase> where TBase : INamespaced<TBase>
+public class ProviderTable<T, TBase> where TBase : INamespaced<TBase>
 {
     private List<IProvider<T, TBase>> _providers;
     
-    internal Table(List<IProvider<T, TBase>> providers)
+    internal ProviderTable(List<IProvider<T, TBase>> providers)
     {
         _providers = providers;
     }
@@ -15,12 +15,13 @@ public class Table<T, TBase> where TBase : INamespaced<TBase>
         foreach (IProvider<T?, TBase> provider in _providers)
         {
             T? value = provider.Provide(info);
-            if(value == null) continue;
+            if (value == null)
+                continue;
             return value;
         }
         
         return default;
     }
 
-    public static Table<T, TBase> Empty() => new Table<T, TBase>([]);
+    public static ProviderTable<T, TBase> Empty() => new([]);
 }

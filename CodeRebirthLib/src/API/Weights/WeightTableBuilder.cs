@@ -33,23 +33,25 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
     {
         return SetGlobalWeight(new SimpleWeighted(weight));
     }
+
     public WeightTableBuilder<TBase> SetGlobalWeight(IWeighted weight)
     {
         return SetGlobalWeight(new SimpleWeightProvider<TBase>(weight));
     }
+
     public WeightTableBuilder<TBase> SetGlobalWeight(IProvider<int?, TBase> provider)
     {
         _global = provider;
         return this;
     }
 
-    public Table<int?,TBase> Build()
+    public ProviderTable<int?,TBase> Build()
     {
         List<IProvider<int?, TBase>> compiled = [.._baseProviders, .._tagProviders];
         if (_global != null)
         {
             compiled.Add(_global);
         }
-        return new Table<int?,TBase>(compiled);
+        return new ProviderTable<int?,TBase>(compiled);
     }
 }

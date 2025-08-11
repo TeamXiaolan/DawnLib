@@ -50,7 +50,7 @@ public abstract class CRContentDefinition : ScriptableObject
             return true;
         }
 
-        if (CodeRebirthLibConfig.ExtendedLogging)
+        if (Debuggers.ReplaceThis != null)
         {
             Mod.Logger?.LogWarning($"TryGetGeneralConfig: '{configName}' does not exist on '{name}', returning false and entry will be null");
         }

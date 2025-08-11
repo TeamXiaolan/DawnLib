@@ -27,7 +27,23 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateUnlockableConfig(section, data, UnlockableItem.unlockableName);
 
-        CRLib.RegisterPlaceableUnlockableItem(UnlockableItem, Config.Cost.Value, Config.IsShipUpgrade.Value, Config.IsDecor.Value); // Placeable because i dont support suits yet, but that'd be fun to do too!
+        if (Config.IsShipUpgrade.Value)
+        {
+            UnlockableItem.alwaysInStock = true;
+        }
+        else if (Config.IsDecor.Value)
+        {
+            UnlockableItem.alwaysInStock = false;
+        }
+
+        CRLib.DefineUnlockable(null, UnlockableItem, builder =>
+        {
+            builder.SetCost(Config.Cost.Value);
+            builder.DefineShop(shopBuilder =>
+            {
+                shopBuilder.Build();
+            });
+        });
 
         if (Config.IsProgressive?.Value ?? data.isProgressive)
         {
@@ -39,8 +55,6 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
             Debuggers.ReplaceThis?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
             ProgressiveData = new ProgressiveUnlockData(this);
         }
-
-        mod.UnlockableRegistry().Register(this);
     }
 
     public static UnlockableConfig CreateUnlockableConfig(ConfigContext context, UnlockableData data, string unlockableName)
@@ -59,11 +73,6 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
         TerminalNode node = CreateInstance<TerminalNode>();
         node.displayText = "Ship Upgrade or Decor is not unlocked";
         return node;
-    }
-
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRUnlockableDefinition>());
     }
 
     public override List<UnlockableData> GetEntities(CRMod mod)

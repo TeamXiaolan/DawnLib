@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -13,11 +13,13 @@ public sealed class CRMapObjectInfo : INamespaced<CRMapObjectInfo>
         OutsideInfo = outsideInfo;
         if (OutsideInfo != null) OutsideInfo.ParentInfo = this;
         TypedKey = key;
+        HasNetworkObject = mapObject.GetComponent<NetworkObject>() != null;
     }
     
     public GameObject MapObject { get; }
     public CRInsideMapObjectInfo? InsideInfo { get; }
     public CROutsideMapObjectInfo? OutsideInfo { get; }
+    public bool HasNetworkObject { get; }
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<CRMapObjectInfo> TypedKey { get; }
 }

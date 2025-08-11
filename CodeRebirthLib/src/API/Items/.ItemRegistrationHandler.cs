@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,9 +9,35 @@ static class ItemRegistrationHandler
 {
     internal static void Init()
     {
+        On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
+        On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.StartOfRound.Awake += RegisterScrapItems;
         On.StartOfRound.Start += FreezeItemContent;
         On.Terminal.Awake += RegisterShopItems;
+    }
+
+    private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
+    {
+        UpdateItemWeightsOnLevel(self.currentLevel);
+        orig(self);
+    }
+
+    private static void UpdateItemWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
+    {
+        orig(self, connectedPlayersOnServer);
+        UpdateItemWeightsOnLevel(self.currentLevel);
+    }
+
+    internal static void UpdateItemWeightsOnLevel(SelectableLevel level)
+    {
+        foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
+            if (scrapInfo == null || itemInfo.Key.IsVanilla())
+                continue;
+
+            level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+        }
     }
 
     private static void FreezeItemContent(On.StartOfRound.orig_Start orig, StartOfRound self)

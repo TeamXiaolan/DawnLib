@@ -50,41 +50,33 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
 
         SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
 
-        CRLib.RegisterEnemy(EnemyType, "All", SpawnWeights);
+        CRLib.DefineEnemy(null, EnemyType, builder =>
+        {
+            if (SpawnTable.HasFlag(SpawnTable.Daytime))
+            {
+                builder.DefineDaytime(daytimeBuilder =>
+                {
+                    daytimeBuilder.SetGlobalWeight(SpawnWeights);
+                });
+            }
+
+            if (SpawnTable.HasFlag(SpawnTable.Outside))
+            {
+                builder.DefineOutside(outsideBuilder =>
+                {
+                    outsideBuilder.SetGlobalWeight(SpawnWeights);
+                });
+            }
+
+            if (SpawnTable.HasFlag(SpawnTable.Inside))
+            {
+                builder.DefineInside(insideBuilder =>
+                {
+                    insideBuilder.SetGlobalWeight(SpawnWeights);
+                });
+            }
+        });
         // TODO make the bestiaries
-        mod.EnemyRegistry().Register(this);
-    }
-
-    internal static void UpdateAllWeights(SelectableLevel? level = null)
-    {
-        if (!StartOfRound.Instance)
-            return;
-
-        SelectableLevel levelToUpdate = level ?? StartOfRound.Instance.currentLevel;
-
-        foreach (var spawnableEnemyWithRarity in levelToUpdate.Enemies)
-        {
-            if (!spawnableEnemyWithRarity.enemyType.TryGetDefinition(out CREnemyDefinition? definition))
-                continue;
-
-            spawnableEnemyWithRarity.rarity = definition.SpawnWeights.GetWeight();
-        }
-
-        foreach (var spawnableEnemyWithRarity in levelToUpdate.OutsideEnemies)
-        {
-            if (!spawnableEnemyWithRarity.enemyType.TryGetDefinition(out CREnemyDefinition? definition))
-                continue;
-
-            spawnableEnemyWithRarity.rarity = definition.SpawnWeights.GetWeight();
-        }
-
-        foreach (var spawnableEnemyWithRarity in levelToUpdate.DaytimeEnemies)
-        {
-            if (!spawnableEnemyWithRarity.enemyType.TryGetDefinition(out CREnemyDefinition? definition))
-                continue;
-
-            spawnableEnemyWithRarity.rarity = definition.SpawnWeights.GetWeight();
-        }
     }
 
     public static EnemyConfig CreateEnemyConfig(ConfigContext section, EnemyData data, SpawnWeightsPreset spawnWeightsPreset, string enemyName)
@@ -98,11 +90,6 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData>
             PowerLevel = section.Bind($"{enemyName} | Power Level", $"Power level for {enemyName}.", data.powerLevel),
             MaxSpawnCount = section.Bind($"{enemyName} | Max Spawn Count", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
         };
-    }
-
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CREnemyDefinition>());
     }
 
     public override List<EnemyData> GetEntities(CRMod mod)

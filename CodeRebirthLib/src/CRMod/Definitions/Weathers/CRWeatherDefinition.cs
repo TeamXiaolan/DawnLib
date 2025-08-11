@@ -61,12 +61,6 @@ public class CRWeatherDefinition : CRContentDefinition<WeatherData>
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
-        mod.WeatherRegistry().Register(this);
-    }
-
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRWeatherDefinition>());
     }
 
     public override List<WeatherData> GetEntities(CRMod mod)

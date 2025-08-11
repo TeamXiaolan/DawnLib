@@ -47,19 +47,29 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
-        if (Config.IsShopItem?.Value ?? data.isShopItem)
-        {
-            // TODO we probably need to duplicate the items whenever we do something like this?
-            CRLib.RegisterShopItem(Item, Config.Cost?.Value ?? data.cost, ShopItemPreset.OrderRequestNode, ShopItemPreset.OrderedItemNode, ShopItemPreset.ItemInfoNode);
-        }
-
-        if (Config.IsScrapItem?.Value ?? data.isScrap)
-        {
-            CRLib.RegisterScrap(Item, "All", SpawnWeights);
-        }
-
         SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
-        mod.ItemRegistry().Register(this);
+
+        CRLib.DefineItem(null, Item, builder =>
+        {
+            if (Config.IsScrapItem?.Value ?? data.isScrap)
+            {
+                builder.DefineScrap(scrapBuilder =>
+                {
+                    scrapBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                });
+            }
+
+            if (Config.IsShopItem?.Value ?? data.isShopItem)
+            {
+                builder.DefineShop(shopItemBuilder =>
+                {
+                    shopItemBuilder.OverrideRequestNode(ShopItemPreset.OrderRequestNode);
+                    shopItemBuilder.OverrideReceiptNode(ShopItemPreset.OrderReceiptNode);
+                    shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
+                    shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
+                });
+            }
+        });
     }
 
     public static ItemConfig CreateItemConfig(ConfigContext section, ItemData data, BoundedRange defaultScrapValue, SpawnWeightsPreset spawnWeightsPreset, string itemName)
@@ -77,27 +87,6 @@ public class CRItemDefinition : CRContentDefinition<ItemData>
             IsShopItem = isShopItem,
             Cost = isShopItem?.Value ?? data.isShopItem ? section.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
-    }
-
-    internal static void UpdateAllWeights(SelectableLevel? level = null)
-    {
-        if (!StartOfRound.Instance)
-            return;
-
-        SelectableLevel levelToUpdate = level ?? StartOfRound.Instance.currentLevel;
-
-        foreach (var spawnableItemWithRarity in levelToUpdate.spawnableScrap)
-        {
-            if (!spawnableItemWithRarity.spawnableItem.TryGetDefinition(out CRItemDefinition? definition))
-                continue;
-
-            spawnableItemWithRarity.rarity = definition.SpawnWeights.GetWeight();
-        }
-    }
-
-    public static void RegisterTo(CRMod mod)
-    {
-        mod.CreateRegistry(REGISTRY_ID, new CRRegistry<CRItemDefinition>());
     }
 
     public override List<ItemData> GetEntities(CRMod mod)
