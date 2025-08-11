@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,20 +12,11 @@ public class MapObjectInfoBuilder
 
         // maybe replace this (vvv) with a SpawnableMapObject Builder?
         private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances; // this feels like it should be one SO or some data thing instead of a million bools
-
+        private Table<AnimationCurve?,CRMoonInfo>? _weights;
+        
         internal InsideBuilder(MapObjectInfoBuilder parent)
         {
             _parentBuilder = parent;
-        }
-
-        public InsideBuilder AddMoonAnimationCurve(NamespacedKey<CRMoonInfo> moon, AnimationCurve animationCurve)
-        {
-            if (_parentBuilder._animationCurveToLevelDict.TryGetValue(moon, out _)) // TODO i really dont know how to get moon name from CRMoonInfo
-            {
-                _parentBuilder._animationCurveToLevelDict[moon] = animationCurve;
-            }
-            _parentBuilder._animationCurveToLevelDict.Add(moon, animationCurve);
-            return this;
         }
 
         public InsideBuilder OverrideSpawnFacingAwayFromWall(bool spawnFacingAwayFromWall)
@@ -63,9 +55,22 @@ public class MapObjectInfoBuilder
             return this;
         }
 
+        public InsideBuilder SetWeights(Action<CurveTableBuilder<CRMoonInfo>> callback)
+        {
+            CurveTableBuilder<CRMoonInfo> builder = new CurveTableBuilder<CRMoonInfo>();
+            callback(builder);
+            _weights = builder.Build();
+            return this;
+        }
+        
         internal CRInsideMapObjectInfo Build()
         {
-            return new CRInsideMapObjectInfo(_spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
+            if (_weights == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder._key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = Table<AnimationCurve?,CRMoonInfo>.Empty();
+            }
+            return new CRInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
         }
     }
 
@@ -74,21 +79,13 @@ public class MapObjectInfoBuilder
         private MapObjectInfoBuilder _parentBuilder;
 
         private bool _alignWithTerrain;
-
+        private Table<AnimationCurve?,CRMoonInfo>? _weights;
+        
         internal OutsideBuilder(MapObjectInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
-        public OutsideBuilder AddMoonAnimationCurve(NamespacedKey<CRMoonInfo> moon, AnimationCurve animationCurve)
-        {
-            if (_parentBuilder._animationCurveToLevelDict.TryGetValue(moon, out _))
-            {
-                _parentBuilder._animationCurveToLevelDict[moon] = animationCurve;
-            }
-            _parentBuilder._animationCurveToLevelDict.Add(moon, animationCurve);
-            return this;
-        }
 
         public OutsideBuilder OverrideAlignWithTerrain(bool alignWithTerrain)
         {
@@ -96,28 +93,55 @@ public class MapObjectInfoBuilder
             return this;
         }
 
+        public OutsideBuilder SetWeights(Action<CurveTableBuilder<CRMoonInfo>> callback)
+        {
+            CurveTableBuilder<CRMoonInfo> builder = new CurveTableBuilder<CRMoonInfo>();
+            callback(builder);
+            _weights = builder.Build();
+            return this;
+        }
+        
         internal CROutsideMapObjectInfo Build()
         {
-            return new CROutsideMapObjectInfo(_alignWithTerrain);
+            if (_weights == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder._key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = Table<AnimationCurve?,CRMoonInfo>.Empty();
+            }
+            return new CROutsideMapObjectInfo(_weights, _alignWithTerrain);
         }
     }
 
     private NamespacedKey<CRMapObjectInfo> _key;
     private GameObject _mapObject;
-    private Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> _animationCurveToLevelDict = new();
 
     private CRInsideMapObjectInfo? _insideInfo;
     private CROutsideMapObjectInfo? _outsideInfo;
 
-    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> animationCurveToLevelDict)
+    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject)
     {
         _key = key;
         _mapObject = mapObject;
-        _animationCurveToLevelDict = animationCurveToLevelDict;
     }
 
+    public MapObjectInfoBuilder DefineInside(Action<InsideBuilder> callback)
+    {
+        InsideBuilder builder = new(this);
+        callback(builder);
+        _insideInfo = builder.Build();
+        return this;
+    }
+    
+    public MapObjectInfoBuilder DefineOutside(Action<OutsideBuilder> callback)
+    {
+        OutsideBuilder builder = new(this);
+        callback(builder);
+        _outsideInfo = builder.Build();
+        return this;
+    }
+    
     internal CRMapObjectInfo Build()
     {
-        return new CRMapObjectInfo(_key, _mapObject, _animationCurveToLevelDict, _insideInfo, _outsideInfo);
+        return new CRMapObjectInfo(_key, _mapObject, _insideInfo, _outsideInfo);
     }
 }

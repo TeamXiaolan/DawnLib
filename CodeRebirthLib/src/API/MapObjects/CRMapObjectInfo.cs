@@ -5,10 +5,9 @@ namespace CodeRebirthLib;
 
 public sealed class CRMapObjectInfo : INamespaced<CRMapObjectInfo>
 {
-    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> animationCurveToLevelDict, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo)
+    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo)
     {
         MapObject = mapObject;
-        AnimationCurveToLevelDict = animationCurveToLevelDict;
         InsideInfo = insideInfo;
         if (InsideInfo != null) InsideInfo.ParentInfo = this;
         OutsideInfo = outsideInfo;
@@ -17,7 +16,6 @@ public sealed class CRMapObjectInfo : INamespaced<CRMapObjectInfo>
     }
     
     public GameObject MapObject { get; }
-    public Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> AnimationCurveToLevelDict { get; } = new();
     public CRInsideMapObjectInfo? InsideInfo { get; }
     public CROutsideMapObjectInfo? OutsideInfo { get; }
     public NamespacedKey Key => TypedKey;

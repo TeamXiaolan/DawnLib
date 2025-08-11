@@ -3,9 +3,9 @@
 namespace CodeRebirthLib;
 public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggable
 {
-    private List<IWeightProvider<TBase>> _baseProviders = [];
-    private List<IWeightProvider<TBase>> _tagProviders = [];
-    private IWeightProvider<TBase>? _global;
+    private List<IProvider<int?, TBase>> _baseProviders = [];
+    private List<IProvider<int?, TBase>> _tagProviders = [];
+    private IProvider<int?, TBase>? _global;
     
     public WeightTableBuilder<TBase> AddWeight(NamespacedKey<TBase> key, int weight)
     {
@@ -37,19 +37,19 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
     {
         return SetGlobalWeight(new SimpleWeightProvider<TBase>(weight));
     }
-    public WeightTableBuilder<TBase> SetGlobalWeight(IWeightProvider<TBase> provider)
+    public WeightTableBuilder<TBase> SetGlobalWeight(IProvider<int?, TBase> provider)
     {
         _global = provider;
         return this;
     }
 
-    public WeightTable<TBase> Build()
+    public Table<int?,TBase> Build()
     {
-        List<IWeightProvider<TBase>> compiled = [.._baseProviders, .._tagProviders];
+        List<IProvider<int?, TBase>> compiled = [.._baseProviders, .._tagProviders];
         if (_global != null)
         {
             compiled.Add(_global);
         }
-        return new WeightTable<TBase>(compiled);
+        return new Table<int?,TBase>(compiled);
     }
 }

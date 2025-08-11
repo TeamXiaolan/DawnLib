@@ -67,19 +67,20 @@ static class EnemyRegistrationHandler
                 if (enemyInfo.Key.IsVanilla())
                     continue; // also ensure not to register vanilla stuff again
 
-                TryAddToEnemyList(enemyInfo, enemyInfo.OutsideWeights, moonKey, level.OutsideEnemies);
-                TryAddToEnemyList(enemyInfo, enemyInfo.DaytimeWeights, moonKey, level.DaytimeEnemies);
-                TryAddToEnemyList(enemyInfo, enemyInfo.InsideWeights, moonKey, level.Enemies);
+                if(enemyInfo.OutsideWeights != null)
+                    TryAddToEnemyList(enemyInfo, level.OutsideEnemies);
+                if(enemyInfo.DaytimeWeights != null)
+                    TryAddToEnemyList(enemyInfo, level.DaytimeEnemies);
+                if(enemyInfo.InsideWeights != null)
+                    TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }
         
         LethalContent.Enemies.Freeze();
         orig(self);
     }
-    private static void TryAddToEnemyList(CREnemyInfo enemyInfo, WeightTable<CRMoonInfo>? weights, NamespacedKey<CRMoonInfo> moonKey, List<SpawnableEnemyWithRarity> list)
+    private static void TryAddToEnemyList(CREnemyInfo enemyInfo, List<SpawnableEnemyWithRarity> list)
     {
-        if (weights == null) return;
-        
         SpawnableEnemyWithRarity spawnDef = new()
         {
             enemyType = enemyInfo.Enemy,

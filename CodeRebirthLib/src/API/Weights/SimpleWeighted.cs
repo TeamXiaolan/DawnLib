@@ -4,33 +4,47 @@ public class SimpleWeighted(int weight) : IWeighted
     public int GetWeight() => weight;
 }
 
-public class SimpleWeightProvider<TBase>(IWeighted weight) : IWeightProvider<TBase> where TBase : INamespaced<TBase>
+public class SimpleWeightProvider<TBase>(IWeighted weight) : IProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
 
-    public bool IsActive(TBase info) => true;
-    public int GetWeight(TBase key) => weight.GetWeight();
+    public int? Provide(TBase info) => weight.GetWeight();
 }
 
-public class MatchingKeyWeightProvider<TBase>(NamespacedKey<TBase> targetKey, IWeighted weight) : IWeightProvider<TBase> where TBase : INamespaced<TBase>
+public class SimpleProvider<T, TBase>(T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
 {
-
-    public bool IsActive(TBase info) => Equals(targetKey, info);
-    public int GetWeight(TBase key)
-    {
-        return weight.GetWeight();
+    public T Provide(TBase info) => value;
+}
+public class MatchingKeyProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
+{
+    public T? Provide(TBase info) {
+        return Equals(targetKey) ? value : default;
     }
 }
 
-public class HasTagWeightProvider<TBase>(NamespacedKey tag, IWeighted weight) : IWeightProvider<TBase> where TBase : INamespaced<TBase>
+public class HasTagProvider<T, TBase>(NamespacedKey tag, T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
+{
+    public T? Provide(TBase info) {
+        if (info is not ITaggable taggable) return default;
+        if (!taggable.HasTag(tag)) return default;
+        return value;
+    }
+}
+
+public class MatchingKeyWeightProvider<TBase>(NamespacedKey<TBase> targetKey, IWeighted weight) : IProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
 
-    public bool IsActive(TBase info)
+    public int? Provide(TBase info)
     {
-        if (info is not ITaggable taggable) return false;
-        return taggable.HasTag(tag);
+        return Equals(targetKey) ? weight.GetWeight() : null;
     }
-    public int GetWeight(TBase key)
+}
+
+public class HasTagWeightProvider<TBase>(NamespacedKey tag, IWeighted weight) : IProvider<int?, TBase> where TBase : INamespaced<TBase>
+{
+    public int? Provide(TBase info)
     {
+        if (info is not ITaggable taggable) return null;
+        if (!taggable.HasTag(tag)) return null;
         return weight.GetWeight();
     }
 }

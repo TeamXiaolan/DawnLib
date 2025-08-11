@@ -2,6 +2,8 @@
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using CodeRebirthLib.Dungeons;
+using UnityEngine;
 
 namespace CodeRebirthLib;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
@@ -14,15 +16,13 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         Logger = base.Logger;
         ItemRegistrationHandler.Init();
         EnemyRegistrationHandler.Init();
-
-        /*CRLib.DefineEnemy(NamespacedKey<CREnemyInfo>.From("code_rebirth", "duck"), new EnemyType(), enemyInfo => enemyInfo
-            .DefineInside(weights => weights
-                .AddTagWeight(Tags.ForestTag, 400)
-                .AddWeight(MoonKeys.March, 10)
-                .SetGlobalWeight(300)
-            )
-        );*/
-
+        
+        CRLib.DefineTileSet(NamespacedKey<CRTileSetInfo>.From("code_rebirth", "extra_facility_tiles"), builder => builder
+            .AddToDungeon(DungeonKeys.Facility)
+            .SetIsRegular(false)
+            .SetIsBranchCap(true)
+        );
+        
         TomlTypeConverter.AddConverter(typeof(NamespacedKey<CRMoonInfo>),
             new TypeConverter()
             {

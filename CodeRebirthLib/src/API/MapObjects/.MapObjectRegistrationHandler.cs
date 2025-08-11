@@ -19,13 +19,6 @@ static class MapObjectRegistrationHandler
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla())
                     continue;
 
-                NamespacedKey<CRMoonInfo> moonKey = null!; // todo
-                if(!mapObjectInfo.AnimationCurveToLevelDict.TryGetValue(moonKey, out AnimationCurve animationCurve))
-                    continue;
-                
-                if (animationCurve == AnimationCurve.Linear(0, 0, 1, 0))
-                    continue;
-
                 SpawnableMapObject spawnableMapObject = new()
                 {
                     prefabToSpawn = mapObjectInfo.MapObject,
@@ -35,7 +28,7 @@ static class MapObjectRegistrationHandler
                     spawnWithBackToWall = mapObjectInfo.InsideInfo.SpawnWithBackToWall,
                     requireDistanceBetweenSpawns = mapObjectInfo.InsideInfo.RequireDistanceBetweenSpawns,
                     disallowSpawningNearEntrances = mapObjectInfo.InsideInfo.DisallowSpawningNearEntrances,
-                    numberToSpawn = animationCurve
+                    numberToSpawn = AnimationCurve.Constant(0, 1, 0) // todo: dynamiclly update 
                 };
 
                 level.spawnableMapObjects = level.spawnableMapObjects.Append(spawnableMapObject).ToArray();

@@ -1,11 +1,14 @@
+using UnityEngine;
+
 namespace CodeRebirthLib;
 
 public sealed class CRInsideMapObjectInfo
 {
     public CRMapObjectInfo ParentInfo { get; internal set; }
 
-    internal CRInsideMapObjectInfo(bool spawnFacingAwayFromWall, bool spawnFacingWall, bool spawnWithBackToWall, bool spawnWithBackFlushAgainstWall, bool requireDistanceBetweenSpawns, bool disallowSpawningNearEntrances)
+    internal CRInsideMapObjectInfo(Table<AnimationCurve?, CRMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, bool spawnFacingWall, bool spawnWithBackToWall, bool spawnWithBackFlushAgainstWall, bool requireDistanceBetweenSpawns, bool disallowSpawningNearEntrances)
     {
+        SpawnWeights = spawnWeights;
         SpawnFacingAwayFromWall = spawnFacingAwayFromWall;
         SpawnFacingWall = spawnFacingWall;
         SpawnWithBackToWall = spawnWithBackToWall;
@@ -14,6 +17,7 @@ public sealed class CRInsideMapObjectInfo
         DisallowSpawningNearEntrances = disallowSpawningNearEntrances;
     }
 
+    public Table<AnimationCurve?, CRMoonInfo> SpawnWeights { get; }
     public bool SpawnFacingAwayFromWall { get; }
     public bool SpawnFacingWall { get; }
     public bool SpawnWithBackToWall { get; }

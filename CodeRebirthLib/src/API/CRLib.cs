@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using CodeRebirthLib.Dungeons;
+using DunGen;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -38,16 +40,16 @@ public static class CRLib
         LethalContent.Achievements.Register(builder.Build());
     }
 
-    public static void DefineAdditionalTiles(NamespacedKey<CRAdditionalTileInfo> key, Action<AdditionalTileInfoBuilder> callback)
+    public static void DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
     {
-        AdditionalTileInfoBuilder builder = new AdditionalTileInfoBuilder(key);
+        TilesetInfoBuilder builder = new TilesetInfoBuilder(key, tileSet);
         callback(builder);
-        LethalContent.AdditionalTiles.Register(builder.Build());
+        LethalContent.TileSets.Register(builder.Build());
     }
 
-    public static void DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Dictionary<NamespacedKey<CRMoonInfo>, AnimationCurve> animationCurveToLevelDict, Action<MapObjectInfoBuilder> callback)
+    public static void DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
     {
-        MapObjectInfoBuilder builder = new MapObjectInfoBuilder(key, mapObject, animationCurveToLevelDict);
+        MapObjectInfoBuilder builder = new MapObjectInfoBuilder(key, mapObject);
         callback(builder);
         LethalContent.MapObjects.Register(builder.Build());
     }
