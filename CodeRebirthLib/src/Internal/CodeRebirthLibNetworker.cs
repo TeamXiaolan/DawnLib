@@ -37,9 +37,8 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         {
             RequestProgressiveUnlockableStatesServerRpc(
                 GameNetworkManager.Instance.localPlayerController,
-                LethalContent.Unlockables.Values
-                    .Where(it => it.ProgressiveData != null)
-                    .Select(it => it.ProgressiveData!.NetworkID)
+                ProgressiveUnlockableHandler.AllProgressiveUnlockables
+                    .Select(it => it.NetworkID)
                     .ToArray()
             );
         }
@@ -56,7 +55,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < expectedOrder.Length; i++)
         {
             uint unlockableNetworkId = expectedOrder[i];
-            CRUnlockableDefinition? definition = LethalContent.Unlockables.Values.FirstOrDefault(it => { return it.ProgressiveData != null && it.ProgressiveData.NetworkID == unlockableNetworkId; });
+            CRUnlockableDefinition? definition = ProgressiveUnlockableHandler.AllProgressiveUnlockables.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; })?.Definition;
             if (definition)
             {
                 values[i] = definition.ProgressiveData!.IsUnlocked;
@@ -82,7 +81,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     [ClientRpc]
     private void ProgressiveUnlockableStateResponseClientRpc(bool[] states, ClientRpcParams rpcParams = default)
     {
-        CRUnlockableDefinition[] definitions = LethalContent.Unlockables.Values.Where(it => it.ProgressiveData != null).ToArray();
+        CRUnlockableDefinition[] definitions = ProgressiveUnlockableHandler.AllProgressiveUnlockables.Select(it => it.Definition).ToArray();
         for (int i = 0; i < definitions.Length; i++)
         {
             CRUnlockableDefinition definition = definitions[i];
