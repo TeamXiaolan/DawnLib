@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib;
 
-static class AchievementRegistrationHandler
+static class AchievementRegistrationPatch
 {
     internal static void Init()
     {

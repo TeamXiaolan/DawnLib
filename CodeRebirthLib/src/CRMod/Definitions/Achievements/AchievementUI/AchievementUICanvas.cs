@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib.CRMod.AchievementUI;
+namespace CodeRebirthLib.CRMod;
 
 public class AchievementUICanvas : Singleton<AchievementUICanvas>
 {
@@ -39,7 +40,7 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
         foreach (var crMod in CRMod.AllMods)
         {
             // instantiate a mod element if it has ANY achievements
-            if (crMod.AchievementRegistry().Count() > 0)
+            if (CRModContent.Achievements.Values.Where(a => a.Mod == crMod).Count() > 0)
             {
                 var uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
                 AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();

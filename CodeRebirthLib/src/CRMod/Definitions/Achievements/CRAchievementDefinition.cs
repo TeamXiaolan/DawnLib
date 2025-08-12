@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.CRMod.AchievementUI;
 using TMPro;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace CodeRebirthLib.CRMod;
  * Button to reset specific achievements
  * probably more im forgetting
 */
-public abstract class CRAchievementDefinition : CRContentDefinition<AchievementData, CRAchievementInfo>
+public abstract class CRAchievementDefinition : CRContentDefinition<AchievementData, CRAchievementDefinition>, INamespaced<CRAchievementDefinition>
 {
     public const string REGISTRY_ID = "achievements";
 
@@ -42,6 +41,8 @@ public abstract class CRAchievementDefinition : CRContentDefinition<AchievementD
     public bool Completed { get; protected set; } = false;
 
     protected override string EntityNameReference => AchievementName;
+
+    NamespacedKey<CRAchievementDefinition> INamespaced<CRAchievementDefinition>.TypedKey => TypedKey;
 
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {

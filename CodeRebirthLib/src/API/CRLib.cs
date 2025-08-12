@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using CodeRebirthLib.CRMod;
 using CodeRebirthLib.Dungeons;
 using DunGen;
 using UnityEngine;
@@ -14,7 +14,7 @@ public static class CRLib
         if (!prefab)
             throw new ArgumentNullException(nameof(prefab));
 
-        GameNetworkManagerPatch.networkPrefabs.Add(prefab); // TODO maybe make a GameObjectFixesHandler or smthn
+        MiscFixesPatch.networkPrefabsToAdd.Add(prefab);
     }
 
     public static void FixMixerGroups(GameObject prefab)
@@ -22,7 +22,7 @@ public static class CRLib
         if (!prefab)
             throw new ArgumentNullException(nameof(prefab));
 
-        MenuManagerPatch.prefabsToFix.Add(prefab); // TODO maybe make a GameObjectFixesHandler or smthn
+        MiscFixesPatch.soundPrefabsToFix.Add(prefab);
     }
 
     public static void FixDoorwaySockets(GameObject prefab)
@@ -30,14 +30,7 @@ public static class CRLib
         if (!prefab)
             throw new ArgumentNullException(nameof(prefab));
 
-        AdditionalTilesRegistrationHandler.tilesToFixSockets.Add(prefab); // TODO: make a method for this in the handler instead?
-    }
-
-    public static void DefineAchievement(NamespacedKey<CRAchievementInfo> key, Action<AchievementInfoBuilder> callback)
-    {
-        AchievementInfoBuilder builder = new AchievementInfoBuilder(key);
-        callback(builder);
-        CRLibContent.Achievements.Register(builder.Build());
+        AdditionalTilesRegistrationHandler.tilesToFixSockets.Add(prefab);
     }
 
     public static void DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)

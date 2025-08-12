@@ -1,23 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
 public class CRParentAchievement : CRAchievementDefinition, IProgress
 {
-    [field: SerializeReference]
-    public List<CRAchievementReference> ChildrenAchievementNames { get; private set; } = new();
+    [field: SerializeReference] [field: FormerlySerializedAs("ChildrenAchievementNames")]
+    public List<CRAchievementReference> ChildrenAchievementReferences { get; private set; } = new();
 
     public override void Register(CRMod mod)
     {
         base.Register(mod);
-        CRMod.OnAchievementUnlocked += definition =>
+        CRAchievementHandler.OnAchievementUnlocked += definition =>
         {
             if (definition.Mod != mod)
                 return;
 
-            if (CountCompleted() >= ChildrenAchievementNames.Count)
+            if (CountCompleted() >= ChildrenAchievementReferences.Count)
             {
                 TryCompleteAchievement();
             }
@@ -27,14 +28,14 @@ public class CRParentAchievement : CRAchievementDefinition, IProgress
     int CountCompleted()
     {
         int counter = 0;
-        foreach (var achievement in Mod.AchievementRegistry())
+        foreach (var achievement in CRModContent.Achievements.Values)
         {
             if (!achievement.Completed)
                 continue;
 
-            foreach (var achievementName in ChildrenAchievementNames)
+            foreach (var achievementReference in ChildrenAchievementReferences)
             {
-                if (achievementName == achievement.AchievementName)
+                if (achievementReference.Resolve().AchievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
@@ -47,7 +48,7 @@ public class CRParentAchievement : CRAchievementDefinition, IProgress
     public override bool IsActive()
     {
         int counter = 0;
-        foreach (var achievement in Mod.AchievementRegistry())
+        foreach (var achievement in CRModContent.Achievements.Values)
         {
             if (achievement == this)
                 continue;
@@ -55,18 +56,18 @@ public class CRParentAchievement : CRAchievementDefinition, IProgress
             if (!achievement.IsActive())
                 continue;
 
-            foreach (var achievementName in ChildrenAchievementNames)
+            foreach (var achievementReference in ChildrenAchievementReferences)
             {
-                if (achievementName == achievement.AchievementName)
+                if (achievementReference.Resolve().AchievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
                 }
             }
         }
-        return counter == ChildrenAchievementNames.Count;
+        return counter == ChildrenAchievementReferences.Count;
     }
 
-    public float MaxProgress => ChildrenAchievementNames.Count;
+    public float MaxProgress => ChildrenAchievementReferences.Count;
     public float CurrentProgress => CountCompleted();
 }

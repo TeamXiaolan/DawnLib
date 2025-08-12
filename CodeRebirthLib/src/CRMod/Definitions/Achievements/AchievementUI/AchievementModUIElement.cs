@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib.CRMod.AchievementUI;
+namespace CodeRebirthLib.CRMod;
 
 public class AchievementModUIElement : MonoBehaviour
 {
@@ -32,14 +32,14 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        var sortedAchievements = CRLibContent.Achievements.Values
+        var sortedAchievements = CRModContent.Achievements.Values
             .Where(it => true)
-            .OrderByDescending(a => a.Name)
+            .OrderByDescending(a => a.AchievementName)
             .ToList();
 
         foreach (var achievement in sortedAchievements)
         {
-            Debuggers.ReplaceThis?.Log($"Adding achievement: {achievement.Name}");
+            Debuggers.ReplaceThis?.Log($"Adding achievement: {achievement.AchievementName}");
 
             var go = GameObject.Instantiate(_achievementUIElementPrefab, _achievementsContainer.transform);
             go.SetActive(false);
@@ -47,7 +47,7 @@ public class AchievementModUIElement : MonoBehaviour
             var ui = go.GetComponent<AchievementUIElement>();
             ui.SetupAchievementUI(achievement);
 
-            go.name = $"CodeRebirthLib Achievement UI - {achievement.Name} - {mod.Plugin.GUID}";
+            go.name = $"CodeRebirthLib Achievement UI - {achievement.AchievementName} - {mod.Plugin.GUID}";
             _achievementsContainerList.Add(go);
         }
 

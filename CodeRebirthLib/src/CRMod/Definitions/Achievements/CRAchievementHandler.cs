@@ -10,17 +10,17 @@ static class CRAchievementHandler
 
     internal static void LoadAll()
     {
-        foreach (CRAchievementInfo achievementInfo in CRLibContent.Achievements.Values)
+        foreach (CRAchievementDefinition achievementDefinition in CRModContent.Achievements.Values)
         {
-            achievementInfo.LoadAchievementState(globalSettings);
+            achievementDefinition.LoadAchievementState(globalSettings);
         }
     }
 
     internal static void SaveAll()
     {
-        foreach (CRAchievementInfo achievementInfo in CRLibContent.Achievements.Values)
+        foreach (CRAchievementDefinition achievementDefinition in CRModContent.Achievements.Values)
         {
-            achievementInfo.SaveAchievementState(globalSettings);
+            achievementDefinition.SaveAchievementState(globalSettings);
         }
     }
 }

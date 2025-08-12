@@ -10,7 +10,7 @@ using UnityEngine;
 using TomlTypeConverter = On.BepInEx.Configuration.TomlTypeConverter;
 
 namespace CodeRebirthLib;
-static class LethalQuantitiesCompatibility
+static class LethalQuantitiesCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(LethalQuantities.PluginInfo.PLUGIN_GUID);
 

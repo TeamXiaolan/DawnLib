@@ -14,11 +14,6 @@ public static class LethalContent
     public static Registry<CRWeatherInfo> Weathers = new();
 }
 
-public static class CRLibContent
-{
-    public static Registry<CRAchievementInfo> Achievements = new();
-}
-
 public static class WeatherKeys
 {
     public static readonly NamespacedKey<CRWeatherInfo> Rainy = NamespacedKey<CRWeatherInfo>.Vanilla("rainy");
@@ -66,9 +61,4 @@ public static class DungeonKeys
 public static class Tags
 {
     public static readonly NamespacedKey ForestTag = NamespacedKey.Vanilla("forest");
-}
-
-public static class AchievementKeys
-{
-    
 }

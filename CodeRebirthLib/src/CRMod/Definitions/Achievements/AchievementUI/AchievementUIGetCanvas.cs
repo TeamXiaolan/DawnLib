@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeRebirthLib.CRMod.AchievementUI;
+namespace CodeRebirthLib.CRMod;
 
 public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
 {
@@ -18,12 +18,12 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
 
     private void Start()
     {
-        CRMod.OnAchievementUnlocked += QueuePopup;
+        CRAchievementHandler.OnAchievementUnlocked += QueuePopup;
     }
 
     private void OnDestroy()
     {
-        CRMod.OnAchievementUnlocked -= QueuePopup;
+        CRAchievementHandler.OnAchievementUnlocked -= QueuePopup;
     }
 
     internal void QueuePopup(CRAchievementDefinition achievement)
