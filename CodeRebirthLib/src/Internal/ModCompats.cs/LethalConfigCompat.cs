@@ -28,7 +28,7 @@ static class LethalConfigCompat
         AutoConfigGenerator.GenerateConfigForEntry += ExtendGenerateConfigForEntry;
     }
 
-    private static BaseConfigItem ExtendGenerateConfigForEntry(AutoConfigGenerator.orig_GenerateConfigForEntry orig, ConfigEntryBase configEntryBase)
+    private static BaseConfigItem? ExtendGenerateConfigForEntry(AutoConfigGenerator.orig_GenerateConfigForEntry orig, ConfigEntryBase configEntryBase)
     {
         try
         {
@@ -39,7 +39,7 @@ static class LethalConfigCompat
             if (result != null) return result;
 
             // Check if BepInEx still can actually support this type
-            if (!TomlTypeConverter.CanConvert(configEntryBase.SettingType)) return result;
+            if (!TomlTypeConverter.CanConvert(configEntryBase.SettingType)) return null;
             Debuggers.ReplaceThis?.Log($"[LethalConfigPatch] toml type converter can actually support: {configEntryBase.SettingType}");
 
             // Create a poxy entry to spoof it as a string.

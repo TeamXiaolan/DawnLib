@@ -9,7 +9,7 @@ public abstract class EntityData
 {
     public abstract NamespacedKey Key { get; }
 
-    [Obsolete("Use EntityName instead")]
+    [Obsolete("Use Key instead")]
     [HideInInspector]
     [SerializeField]
     public string entityName;

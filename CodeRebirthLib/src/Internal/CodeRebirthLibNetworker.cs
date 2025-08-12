@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.CRMod;
 using CodeRebirthLib.CRMod.Progressive;
 using GameNetcodeStuff;
 using Unity.Netcode;
@@ -36,7 +37,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         {
             RequestProgressiveUnlockableStatesServerRpc(
                 GameNetworkManager.Instance.localPlayerController,
-                LethalContent.Unlockables.CRLib
+                LethalContent.Unlockables.Values
                     .Where(it => it.ProgressiveData != null)
                     .Select(it => it.ProgressiveData!.NetworkID)
                     .ToArray()
@@ -55,7 +56,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < expectedOrder.Length; i++)
         {
             uint unlockableNetworkId = expectedOrder[i];
-            CRUnlockableDefinition? definition = LethalContent.Unlockables.CRLib.FirstOrDefault(it => { return it.ProgressiveData != null && it.ProgressiveData.NetworkID == unlockableNetworkId; });
+            CRUnlockableDefinition? definition = LethalContent.Unlockables.Values.FirstOrDefault(it => { return it.ProgressiveData != null && it.ProgressiveData.NetworkID == unlockableNetworkId; });
             if (definition)
             {
                 values[i] = definition.ProgressiveData!.IsUnlocked;
@@ -81,7 +82,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     [ClientRpc]
     private void ProgressiveUnlockableStateResponseClientRpc(bool[] states, ClientRpcParams rpcParams = default)
     {
-        CRUnlockableDefinition[] definitions = LethalContent.Unlockables.CRLib.Where(it => it.ProgressiveData != null).ToArray();
+        CRUnlockableDefinition[] definitions = LethalContent.Unlockables.Values.Where(it => it.ProgressiveData != null).ToArray();
         for (int i = 0; i < definitions.Length; i++)
         {
             CRUnlockableDefinition definition = definitions[i];

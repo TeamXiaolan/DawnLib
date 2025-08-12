@@ -57,7 +57,7 @@ public class AchievementModUIElement : MonoBehaviour
     public void OnButtonClick()
     {
         // loop through all moduielements and disable all of em
-        foreach (var modUIElement in AchievementUICanvas.Instance._modUIElements)
+        foreach (var modUIElement in AchievementUICanvas.Instance!._modUIElements)
         {
             if (modUIElement == this)
                 continue;
