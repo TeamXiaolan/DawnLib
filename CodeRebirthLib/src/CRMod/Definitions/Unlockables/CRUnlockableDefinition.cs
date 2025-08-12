@@ -36,16 +36,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
         {
             UnlockableItem.alwaysInStock = false;
         }
-
-        CRLib.DefineUnlockable(null, UnlockableItem, builder =>
-        {
-            builder.SetCost(Config.Cost.Value);
-            builder.DefineShop(shopBuilder =>
-            {
-                shopBuilder.Build();
-            });
-        });
-
+        
         if (Config.IsProgressive?.Value ?? data.isProgressive)
         {
             if (!ProgressiveDenyNode)
@@ -56,6 +47,20 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
             Debuggers.ReplaceThis?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
             ProgressiveData = new ProgressiveUnlockData(this);
         }
+
+        CRLib.DefineUnlockable(null, UnlockableItem, builder =>
+        {
+            builder.SetCost(Config.Cost.Value);
+            builder.DefineShop(shopBuilder =>
+            {
+                shopBuilder.Build();
+            });
+
+            if (ProgressiveData != null)
+            {
+                builder.SetPurchasePredicate(new ProgressiveUnlockablePredicate(ProgressiveData));
+            }
+        });
     }
 
     public static UnlockableConfig CreateUnlockableConfig(ConfigContext context, UnlockableData data, string unlockableName)
