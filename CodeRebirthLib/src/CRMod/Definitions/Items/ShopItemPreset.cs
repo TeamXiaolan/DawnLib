@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
+[Serializable]
 public class ShopItemPreset
 {
     [field: SerializeField]
