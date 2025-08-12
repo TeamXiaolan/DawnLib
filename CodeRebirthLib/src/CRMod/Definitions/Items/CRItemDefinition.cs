@@ -19,8 +19,12 @@ public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
     [field: SerializeField]
     public ShopItemPreset ShopItemPreset { get; private set; } = new();
 
+    [field: SerializeField]
+    public ProgressiveObject ProgressiveObject { get; private set; }
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
+    public ProgressiveItemData? ProgressiveData { get; private set; }
 
     protected override string EntityNameReference => Item.itemName;
 
@@ -50,7 +54,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
 
         SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
 
-        CRLib.DefineItem(null, Item, builder =>
+        CRLib.DefineItem(TypedKey, Item, builder =>
         {
             if (Config.IsScrapItem?.Value ?? data.isScrap)
             {
@@ -68,25 +72,36 @@ public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
                     shopItemBuilder.OverrideReceiptNode(ShopItemPreset.OrderReceiptNode);
                     shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
                     shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
+                    if (Config.IsProgressive?.Value ?? data.isProgressive)
+                    {
+                        Debuggers.ReplaceThis?.Log($"Creating ProgressiveItemData for {Item.itemName}");
+                        if (!ProgressiveObject)
+                            ProgressiveObject = ScriptableObject.CreateInstance<ProgressiveObject>();
+
+                        ProgressiveData = new ProgressiveItemData(this);
+                        shopItemBuilder.SetPurchasePredicate(new ProgressiveItemPredicate(ProgressiveData));
+                    }
                 });
             }
         });
     }
 
-    public static ItemConfig CreateItemConfig(ConfigContext section, ItemData data, BoundedRange defaultScrapValue, SpawnWeightsPreset spawnWeightsPreset, string itemName)
+    public static ItemConfig CreateItemConfig(ConfigContext context, ItemData data, BoundedRange defaultScrapValue, SpawnWeightsPreset spawnWeightsPreset, string itemName)
     {
-        ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? section.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
-        ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? section.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
+        ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? context.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
+        ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? context.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
 
         return new ItemConfig
         {
-            MoonSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Moon Weights", $"Preset moon weights for {itemName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
-            InteriorSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
-            WeatherSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
+            MoonSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Moon Weights", $"Preset moon weights for {itemName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
             IsScrapItem = isScrapItem,
-            Worth = isScrapItem?.Value ?? data.isScrap ? section.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
+            IsProgressive = data.generateProgressiveConfig ? context.Bind($"{itemName} | Is Progressive", $"Whether {itemName} is considered a progressive purchase.", data.isProgressive) : null,
+            Worth = isScrapItem?.Value ?? data.isScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
             IsShopItem = isShopItem,
-            Cost = isShopItem?.Value ?? data.isShopItem ? section.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
+            
+            Cost = isShopItem?.Value ?? data.isShopItem ? context.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
     }
 

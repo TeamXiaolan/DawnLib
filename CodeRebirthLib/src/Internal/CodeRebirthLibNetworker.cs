@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.CRMod;
-using CodeRebirthLib.CRMod.Progressive;
 using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;

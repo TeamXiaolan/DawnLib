@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using CodeRebirthLib.CRMod;
 using PathfindingLib;
@@ -69,7 +68,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(UnlockShipUnlockable), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
+        var types = new Type[] { typeof(UnlockableUpgradeScrap), typeof(UnlockProgressiveObject), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
         foreach (var type in types)
         {
             try

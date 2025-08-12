@@ -2,22 +2,22 @@ using System;
 using System.Text;
 
 namespace CodeRebirthLib.CRMod;
-public class ProgressiveUnlockData
+public class ProgressiveItemData
 {
     public const string LOCKED_NAME = "???";
 
-    public ProgressiveUnlockData(CRUnlockableDefinition definition)
+    public ProgressiveItemData(CRItemDefinition definition)
     {
         Definition = definition;
-        OriginalName = Unlockable.unlockableName;
-        ProgressiveUnlockableHandler.AllProgressiveUnlockables.Add(this);
+        OriginalName = Item.itemName;
+        ProgressiveItemHandler.AllProgressiveItems.Add(this);
     }
 
-    public CRUnlockableDefinition Definition { get; }
+    public CRItemDefinition Definition { get; }
     public bool IsUnlocked { get; private set; }
     public string OriginalName { get; }
 
-    private UnlockableItem Unlockable => Definition.UnlockableItem;
+    private Item Item => Definition.Item;
 
     private string SaveID => OriginalName;
     internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(SaveID), 0);
@@ -40,12 +40,12 @@ public class ProgressiveUnlockData
     {
         IsUnlocked = ES3.Load(SaveID, false, settings);
         UpdateName();
-        Debuggers.ReplaceThis?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {Unlockable.unlockableName} with saveID: {SaveID}");
+        Debuggers.ReplaceThis?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {Item.itemName} with saveID: {SaveID}");
     }
 
     public void Save(ES3Settings settings)
     {
-        Debuggers.ReplaceThis?.Log($"Saving unlockable: {Unlockable.unlockableName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {SaveID}");
+        Debuggers.ReplaceThis?.Log($"Saving unlockable: {Item.itemName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {SaveID}");
         ES3.Save(SaveID, IsUnlocked, settings);
     }
 
@@ -58,6 +58,6 @@ public class ProgressiveUnlockData
 
     private void UpdateName()
     {
-        Unlockable.unlockableName = IsUnlocked ? OriginalName : LOCKED_NAME;
+        Item.itemName = IsUnlocked ? OriginalName : LOCKED_NAME;
     }
 }

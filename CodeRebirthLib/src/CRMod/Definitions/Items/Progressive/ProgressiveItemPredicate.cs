@@ -1,5 +1,5 @@
-﻿namespace CodeRebirthLib.CRMod;
-internal class ProgressiveUnlockablePredicate(ProgressiveUnlockData data) : ITerminalPurchasePredicate
+namespace CodeRebirthLib.CRMod;
+internal class ProgressiveItemPredicate(ProgressiveItemData data) : ITerminalPurchasePredicate
 {
     public TerminalPurchaseResult CanPurchase()
     {

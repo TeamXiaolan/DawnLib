@@ -51,7 +51,7 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData, CREnemyInfo>
 
         SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
 
-        CRLib.DefineEnemy(null, EnemyType, builder =>
+        CRLib.DefineEnemy(TypedKey, EnemyType, builder =>
         {
             if (SpawnTable.HasFlag(SpawnTable.Daytime))
             {

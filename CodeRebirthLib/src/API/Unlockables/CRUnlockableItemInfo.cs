@@ -21,5 +21,4 @@ public sealed class CRUnlockableItemInfo : INamespaced<CRUnlockableItemInfo>, IT
     public CRPlaceableObjectInfo? PlaceableObjectInfo { get; }
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<CRUnlockableItemInfo> TypedKey { get; }
-
 }

@@ -13,5 +13,7 @@ public class ItemData : EntityData<CRItemReference>
     public bool generateScrapConfig;
     public bool isShopItem;
     public bool generateShopItemConfig;
+    public bool isProgressive;
+    public bool generateProgressiveConfig;
     public int cost;
 }

@@ -1,5 +1,5 @@
 using System.Linq;
-using CodeRebirthLib.CRMod.Progressive;
+using CodeRebirthLib.CRMod;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -95,7 +95,20 @@ static class UnlockableRegistrationHandler
 
             if (unlockData != null && !unlockData.IsUnlocked)
             {
-                orig(self, unlockData.Definition.ProgressiveDenyNode);
+                orig(self, unlockData.Definition.ProgressiveObject.ProgressiveDenyNode);
+                return;
+            }
+        }
+
+        if (node.buyItemIndex != -1)
+        {
+            Item item = self.buyableItemsList[node.buyItemIndex];
+            ProgressiveItemData? itemData = ProgressiveItemHandler.AllProgressiveItems
+                .FirstOrDefault(it => it.Definition.Item == item);
+
+            if (itemData != null && !itemData.IsUnlocked)
+            {
+                orig(self, itemData.Definition.ProgressiveObject.ProgressiveDenyNode);
                 return;
             }
         }

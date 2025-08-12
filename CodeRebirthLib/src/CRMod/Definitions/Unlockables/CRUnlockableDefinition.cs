@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.CRMod.Progressive;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
@@ -13,9 +11,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
     [field: SerializeField]
     public UnlockableItem UnlockableItem { get; private set; }
 
-    [field: FormerlySerializedAs("DenyPurchaseNode")]
     [field: SerializeField]
-    public TerminalNode? ProgressiveDenyNode { get; private set; }
+    public ProgressiveObject ProgressiveObject { get; private set; }
 
     public UnlockableConfig Config { get; private set; }
 
@@ -36,19 +33,8 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
         {
             UnlockableItem.alwaysInStock = false;
         }
-        
-        if (Config.IsProgressive?.Value ?? data.isProgressive)
-        {
-            if (!ProgressiveDenyNode)
-            {
-                ProgressiveDenyNode = CreateDefaultProgressiveDenyNode();
-            }
 
-            Debuggers.ReplaceThis?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
-            ProgressiveData = new ProgressiveUnlockData(this);
-        }
-
-        CRLib.DefineUnlockable(null, UnlockableItem, builder =>
+        CRLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
             builder.SetCost(Config.Cost.Value);
             builder.DefineShop(shopBuilder =>
@@ -56,8 +42,13 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
                 shopBuilder.Build();
             });
 
-            if (ProgressiveData != null)
+            if (Config.IsProgressive?.Value ?? data.isProgressive)
             {
+                Debuggers.ReplaceThis?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
+                if (!ProgressiveObject)
+                    ProgressiveObject = ScriptableObject.CreateInstance<ProgressiveObject>();
+
+                ProgressiveData = new ProgressiveUnlockData(this);
                 builder.SetPurchasePredicate(new ProgressiveUnlockablePredicate(ProgressiveData));
             }
         });
@@ -72,13 +63,6 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
             IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
             Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", data.cost),
         };
-    }
-
-    private static TerminalNode CreateDefaultProgressiveDenyNode()
-    {
-        TerminalNode node = CreateInstance<TerminalNode>();
-        node.displayText = "Ship Upgrade or Decor is not unlocked";
-        return node;
     }
 
     public override List<UnlockableData> GetEntities(CRMod mod)

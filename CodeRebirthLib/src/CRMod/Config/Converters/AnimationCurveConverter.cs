@@ -61,6 +61,6 @@ public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 
     public override bool IsEnabled()
     {
-        return !LethalQuantitiesCompatibility.Enabled;
+        return !LethalQuantitiesCompat.Enabled;
     }
 }
