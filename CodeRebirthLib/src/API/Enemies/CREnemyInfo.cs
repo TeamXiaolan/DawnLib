@@ -2,7 +2,7 @@ namespace CodeRebirthLib;
 
 public sealed class CREnemyInfo : INamespaced<CREnemyInfo>
 {
-    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, EnemyType enemy, ProviderTable<int?,CRMoonInfo>? outsideWeights, ProviderTable<int?,CRMoonInfo>? insideWeights, ProviderTable<int?,CRMoonInfo>? daytimeWeights)
+    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, EnemyType enemy, ProviderTable<int?, CRMoonInfo>? outsideWeights, ProviderTable<int?, CRMoonInfo>? insideWeights, ProviderTable<int?, CRMoonInfo>? daytimeWeights)
     {
         Enemy = enemy;
         TypedKey = key;

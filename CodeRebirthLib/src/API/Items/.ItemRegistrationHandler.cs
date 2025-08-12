@@ -12,8 +12,8 @@ static class ItemRegistrationHandler
         On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.StartOfRound.Awake += RegisterScrapItems;
-        On.StartOfRound.Start += FreezeItemContent;
         On.Terminal.Awake += RegisterShopItems;
+        On.StartOfRound.Start += FreezeItemContent;
     }
 
     private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
@@ -43,6 +43,11 @@ static class ItemRegistrationHandler
     private static void FreezeItemContent(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         orig(self);
+        if (LethalContent.Items.IsFrozen)
+        {
+            return;
+        }
+
         LethalContent.Items.Freeze();
     }
 
@@ -54,7 +59,7 @@ static class ItemRegistrationHandler
             orig(self);
             return;
         }
-        
+
         foreach (SelectableLevel level in self.levels)
         {
             NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();

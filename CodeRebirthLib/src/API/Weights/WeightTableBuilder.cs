@@ -45,7 +45,7 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
         return this;
     }
 
-    public ProviderTable<int?,TBase> Build()
+    public ProviderTable<int?, TBase> Build()
     {
         List<IProvider<int?, TBase>> compiled = [.._baseProviders, .._tagProviders];
         if (_global != null)

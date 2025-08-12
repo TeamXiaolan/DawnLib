@@ -17,6 +17,7 @@ public class ProviderTable<T, TBase> where TBase : INamespaced<TBase>
             T? value = provider.Provide(info);
             if (value == null)
                 continue;
+
             return value;
         }
         
