@@ -6,16 +6,14 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using Mono.Cecil;
 
-namespace ReXuvination.Preloader.src;
-internal class ReXuvination
+namespace CodeRebirthLib.Preloader;
+class CodeRebirthLibPreloader
 {
     public const string GUID = MyPluginInfo.PLUGIN_GUID;
     public const string NAME = MyPluginInfo.PLUGIN_NAME;
     public const string VERSION = MyPluginInfo.PLUGIN_VERSION;
     
-    internal static readonly BepInPlugin Plugin = new BepInPlugin(GUID, NAME, VERSION);
-    
-    internal static ManualLogSource Log { get; } = Logger.CreateLogSource(nameof(ReXuvination));
+    internal static ManualLogSource Log { get; } = Logger.CreateLogSource("CodeRebirthLib.Preloader");
     
     public static IEnumerable<string> TargetDLLs { get; } = new string[] { "Assembly-CSharp.dll" };
 
