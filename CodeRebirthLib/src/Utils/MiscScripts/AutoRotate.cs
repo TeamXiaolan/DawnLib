@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public class AutoRotate : MonoBehaviour
 {
     [SerializeField]

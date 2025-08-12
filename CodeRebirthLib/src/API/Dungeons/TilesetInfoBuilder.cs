@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DunGen;
 
-namespace CodeRebirthLib.Dungeons;
+namespace CodeRebirthLib;
 public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 {
     private List<NamespacedKey<CRDungeonInfo>> _appliedTo = [];

@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 
 [Serializable]
 public class MaterialsWithRenderer

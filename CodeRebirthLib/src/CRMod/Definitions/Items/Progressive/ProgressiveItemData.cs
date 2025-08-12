@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using CodeRebirthLib.Utils;
 
 namespace CodeRebirthLib.CRMod;
 public class ProgressiveItemData

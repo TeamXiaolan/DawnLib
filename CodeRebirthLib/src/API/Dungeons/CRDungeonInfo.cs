@@ -1,6 +1,6 @@
 ﻿using DunGen.Graph;
 
-namespace CodeRebirthLib.Dungeons;
+namespace CodeRebirthLib;
 public class CRDungeonInfo : INamespaced<CRDungeonInfo>, ITaggable
 {
     internal CRDungeonInfo(NamespacedKey<CRDungeonInfo> key, DungeonFlow flow)

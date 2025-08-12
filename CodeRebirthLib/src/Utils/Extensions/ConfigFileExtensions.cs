@@ -3,7 +3,7 @@ using System.Reflection;
 using BepInEx.Configuration;
 using CodeRebirthLib.CRMod;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public static class ConfigFileExtensions
 {
     public static void ClearUnusedEntries(this ConfigFile configFile)

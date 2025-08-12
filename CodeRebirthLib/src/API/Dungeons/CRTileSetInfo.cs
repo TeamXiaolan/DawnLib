@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DunGen;
 
-namespace CodeRebirthLib.Dungeons;
+namespace CodeRebirthLib;
 public class CRTileSetInfo : INamespaced<CRTileSetInfo>
 {
     internal CRTileSetInfo(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, IReadOnlyList<NamespacedKey<CRDungeonInfo>> appliedTo, bool isBranchCap, bool isRegular)

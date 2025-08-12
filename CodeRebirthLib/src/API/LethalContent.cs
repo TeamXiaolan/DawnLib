@@ -1,6 +1,4 @@
-﻿using CodeRebirthLib.Dungeons;
-
-namespace CodeRebirthLib;
+﻿namespace CodeRebirthLib;
 
 public static class LethalContent
 {

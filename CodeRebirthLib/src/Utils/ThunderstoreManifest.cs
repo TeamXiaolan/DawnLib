@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 
 public class ThunderstoreManifest()
 {

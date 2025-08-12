@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using CodeRebirthLib.Utils;
 
 namespace CodeRebirthLib.CRMod;
 public class ItemConfig : EntityConfig

@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 
 [DefaultExecutionOrder(-999)]
 public class ChanceScript : NetworkBehaviour

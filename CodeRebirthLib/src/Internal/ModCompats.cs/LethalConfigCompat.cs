@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using CodeRebirthLib.Utils;
 using LethalConfig;
 using LethalConfig.ConfigItems;
 using On.LethalConfig.AutoConfig;

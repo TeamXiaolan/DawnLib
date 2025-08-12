@@ -1,4 +1,4 @@
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public interface IProgress
 {
     float MaxProgress { get; }

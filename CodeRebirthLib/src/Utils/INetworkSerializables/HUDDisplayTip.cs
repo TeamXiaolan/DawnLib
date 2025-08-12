@@ -1,6 +1,6 @@
 using Unity.Netcode;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 // todo: add other things that are used in a hud display tip.
 public class HUDDisplayTip(string header, string body, HUDDisplayTip.AlertType type = HUDDisplayTip.AlertType.Hint) : INetworkSerializable
 {

@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 
 public struct GenericPath<T>(T generic, float pathLength)
 {

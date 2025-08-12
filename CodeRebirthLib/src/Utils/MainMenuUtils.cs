@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public class MenuUtils
 {
     //Thanks to LethalConfig and LethalPhones

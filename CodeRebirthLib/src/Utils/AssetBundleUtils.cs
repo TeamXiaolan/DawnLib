@@ -3,7 +3,7 @@ using System.Reflection;
 using BepInEx;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 
 public class AssetBundleUtils
 {

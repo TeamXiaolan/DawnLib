@@ -1,4 +1,5 @@
 using CodeRebirthLib.CRMod;
+using CodeRebirthLib.Utils;
 
 namespace CodeRebirthLib;
 static class CodeRebirthLibConfig

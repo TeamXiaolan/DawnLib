@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public class ScanNodeAdditionalData
 {
     private static readonly Dictionary<RectTransform, ScanNodeAdditionalData> _additionalData = new(); // TODO preloader stuff

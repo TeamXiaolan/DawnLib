@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 [Serializable]
 public class BoundedRange
 {

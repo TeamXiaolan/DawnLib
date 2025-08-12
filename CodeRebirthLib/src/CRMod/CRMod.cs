@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
+using CodeRebirthLib.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
 

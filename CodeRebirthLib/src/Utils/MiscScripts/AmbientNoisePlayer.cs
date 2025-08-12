@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public class AmbientNoisePlayer : MonoBehaviour
 {
     [Header("Audio")]

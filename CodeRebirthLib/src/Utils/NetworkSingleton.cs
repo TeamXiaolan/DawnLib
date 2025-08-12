@@ -1,6 +1,6 @@
 using Unity.Netcode;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSingleton<T>
 {
     public static T? Instance { get; private set; }

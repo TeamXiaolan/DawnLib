@@ -1,6 +1,6 @@
 using GameNetcodeStuff;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 
 public static class PlayerControllerBExtensions
 {

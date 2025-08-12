@@ -3,7 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Utils;
 public static class IEnumerableExtensions
 {
     public static VertexGradient ToVertexGradient(this IEnumerable<Color> colors)

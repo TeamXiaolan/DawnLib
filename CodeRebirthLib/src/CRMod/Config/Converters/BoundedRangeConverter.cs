@@ -1,4 +1,6 @@
 ﻿
+using CodeRebirthLib.Utils;
+
 namespace CodeRebirthLib.CRMod.Converters;
 public class BoundedRangeConverter : TOMLConverter<BoundedRange>
 {
