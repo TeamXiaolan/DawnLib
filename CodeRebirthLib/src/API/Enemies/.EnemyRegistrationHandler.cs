@@ -49,6 +49,7 @@ static class EnemyRegistrationHandler
         }
     }
 
+    // todo: move this
     private static void CollectLevels(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         if (LethalContent.Moons.IsFrozen)
@@ -62,6 +63,7 @@ static class EnemyRegistrationHandler
             NamespacedKey<CRMoonInfo> key = level.ToNamespacedKey();
             CRMoonInfo moonInfo = new CRMoonInfo(key, level);
             LethalContent.Moons.Register(moonInfo);
+            level.SetCRInfo(moonInfo);
         }
 
         LethalContent.Moons.Freeze();
