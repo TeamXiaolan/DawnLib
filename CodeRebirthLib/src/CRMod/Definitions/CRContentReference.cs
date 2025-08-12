@@ -11,6 +11,15 @@ public abstract class CRContentReference
 [Serializable]
 public abstract class CRContentReference<TDef, TInfo> : CRContentReference where TInfo : INamespaced<TInfo> where TDef : CRContentDefinition
 {
+    public CRContentReference()
+    {
+        TypedKey = NamespacedKey<TInfo>.From("", "");
+    }
+    protected CRContentReference(NamespacedKey<TInfo> key)
+    {
+        TypedKey = key;
+    }
+    
     public NamespacedKey<TInfo> TypedKey { get; private set; }
     public override NamespacedKey Key => TypedKey;
     public override Type Type => typeof(TInfo);
