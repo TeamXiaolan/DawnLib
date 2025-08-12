@@ -154,8 +154,6 @@ public class CRMod
         return File.Exists(fullPath);
     }
 
-    public static event Action<CRAchievementDefinition> OnAchievementUnlocked;
-
     public bool TryGetBundleDataFromName(string bundleName, [NotNullWhen(true)] out AssetBundleData? data)
     {
         data = Content.assetBundles.FirstOrDefault(it => it.assetBundleName == bundleName);
