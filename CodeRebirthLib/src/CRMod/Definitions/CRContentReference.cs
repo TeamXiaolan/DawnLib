@@ -19,10 +19,11 @@ public abstract class CRContentReference<TDef, TInfo> : CRContentReference where
     {
         TypedKey = key;
     }
-    
+
     public NamespacedKey<TInfo> TypedKey { get; private set; }
     public override NamespacedKey Key => TypedKey;
     public override Type Type => typeof(TInfo);
 
     public abstract bool TryResolve(out TInfo info);
+    public abstract TInfo Resolve();
 }

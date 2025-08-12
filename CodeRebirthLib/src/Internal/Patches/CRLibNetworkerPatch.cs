@@ -1,4 +1,4 @@
-using CodeRebirthLib.CRMod.AchievementUI;
+using CodeRebirthLib.CRMod;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;

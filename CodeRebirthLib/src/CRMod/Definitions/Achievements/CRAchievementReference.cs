@@ -15,7 +15,7 @@ public class CRAchievementReference : CRContentReference<CRAchievementDefinition
         return CRModContent.Achievements.TryGetValue(TypedKey, out info);
     }
 
-    public CRAchievementDefinition Resolve()
+    public override CRAchievementDefinition Resolve()
     {
         return CRModContent.Achievements[TypedKey];
     }

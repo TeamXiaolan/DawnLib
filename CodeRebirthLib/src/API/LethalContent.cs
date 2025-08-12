@@ -49,6 +49,11 @@ public static class EnemyKeys
     public static readonly NamespacedKey<CREnemyInfo> GiantKiwi = NamespacedKey<CREnemyInfo>.Vanilla("giant_kiwi");
 }
 
+public static class TileSetKeys
+{
+
+}
+
 public static class DungeonKeys
 {
     public static readonly NamespacedKey<CRDungeonInfo> Facility = NamespacedKey<CRDungeonInfo>.Vanilla("facility");
