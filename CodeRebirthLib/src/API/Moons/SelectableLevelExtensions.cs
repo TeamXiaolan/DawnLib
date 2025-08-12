@@ -16,6 +16,7 @@ public static class SelectableLevelExtensions
     {
         return (CRMoonInfo)_infoField.GetValue(level);
     }
+
     internal static void SetCRInfo(this SelectableLevel level, CRMoonInfo info)
     {
         _infoField.SetValue(level, info);

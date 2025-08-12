@@ -13,7 +13,6 @@ public interface ITerminalPurchasePredicate
 
 public class AlwaysAvaliableTerminalPredicate : ITerminalPurchasePredicate
 {
-
     public TerminalPurchaseResult CanPurchase()
     {
         return TerminalPurchaseResult.Success();

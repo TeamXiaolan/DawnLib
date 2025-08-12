@@ -48,6 +48,69 @@ static class ItemRegistrationHandler
             return;
         }
 
+        Dictionary<Item, WeightTableBuilder<CRMoonInfo>> itemWeightBuilder = new();
+        Dictionary<Item, CRShopItemInfo> itemsWithShopInfo = new();
+        foreach (var level in self.levels)
+        {
+            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
+
+            foreach (var itemWithRarity in level.spawnableScrap)
+            {
+                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
+                {
+                    weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
+                    itemWeightBuilder[itemWithRarity.spawnableItem] = weightTableBuilder;
+                }
+                weightTableBuilder.AddWeight(moonKey, itemWithRarity.rarity);
+            }
+        }
+
+        Terminal terminal = GameObject.FindObjectOfType<Terminal>();
+
+        TerminalKeyword buyKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
+        TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
+
+        List<CompatibleNoun> buyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
+        List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
+        List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
+
+        foreach (var buyableItem in terminal.buyableItemsList)
+        {
+            TerminalNode infoNode;
+            TerminalNode requestNode;
+            TerminalNode receiptNode;
+
+            string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
+            TerminalKeyword buyKeywordOfSignificance = terminalKeywords.First(keyword => keyword.word == simplifiedItemName);
+
+            infoNode = infoKeyword.compatibleNouns.First(node => node.noun == buyKeywordOfSignificance).result;
+            requestNode = buyKeyword.compatibleNouns.First(node => node.noun == buyKeywordOfSignificance).result;
+            receiptNode = requestNode.terminalOptions[0].result;
+            CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, buyableItem.creditsWorth);
+            itemsWithShopInfo[buyableItem] = shopInfo;
+        }
+
+        foreach (var item in self.allItemsList.itemsList)
+        {
+            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(item.itemName.Replace(" ", ""))?.GetValue(null);
+            if (key == null)
+                continue;
+
+            if (LethalContent.Items.ContainsKey(key))
+                continue;
+
+            itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<CRMoonInfo>? weightTableBuilder);
+            CRScrapItemInfo? scrapInfo = null;
+            itemsWithShopInfo.TryGetValue(item, out CRShopItemInfo? shopInfo);
+
+            if (weightTableBuilder != null)
+            {
+                scrapInfo = new(weightTableBuilder.Build());
+            }
+
+            CRItemInfo itemInfo = new(key, item, scrapInfo, shopInfo);
+            LethalContent.Items.Register(itemInfo);
+        }
         LethalContent.Items.Freeze();
     }
 
@@ -62,8 +125,6 @@ static class ItemRegistrationHandler
 
         foreach (SelectableLevel level in self.levels)
         {
-            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
-
             foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
             {
                 CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
@@ -166,6 +227,7 @@ static class ItemRegistrationHandler
             foreach (TerminalNode vanillaItemResultNode in buyKeyword.compatibleNouns.Select(it => it.result))
             {
                 // todo
+                // ??? what's the goal here
             }
         }
 
