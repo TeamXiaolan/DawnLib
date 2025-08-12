@@ -39,6 +39,7 @@ public class ItemInfoBuilder
         
         private TerminalNode? _infoNode, _requestNode, _receiptNode;
         private int? _costOverride;
+        private ITerminalPurchasePredicate? _purchasePredicate;
 
         internal ShopBuilder(ItemInfoBuilder parent)
         {
@@ -51,6 +52,12 @@ public class ItemInfoBuilder
             return this;
         }
 
+        public ShopBuilder SetPurchasePredicate(ITerminalPurchasePredicate predicate)
+        {
+            _purchasePredicate = predicate;
+            return this;
+        }
+        
         public ShopBuilder OverrideInfoNode(TerminalNode infoNode)
         {
             _infoNode = infoNode;
@@ -97,8 +104,10 @@ public class ItemInfoBuilder
                     .SetMaxCharactersToType(25)
                     .Build();
             }
+
+            _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
             
-            return new CRShopItemInfo(_infoNode, _requestNode, _receiptNode, _costOverride ?? _parentBuilder._item.creditsWorth);
+            return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride ?? _parentBuilder._item.creditsWorth);
         }
     }
     

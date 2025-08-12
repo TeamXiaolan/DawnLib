@@ -39,6 +39,7 @@ public class UnlockableInfoBuilder
     private int? _cost;
     private CRSuitInfo? _suitInfo;
     private CRPlaceableObjectInfo? _placeableObjectInfo;
+    private ITerminalPurchasePredicate? _purchasePredicate;
     
     internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem)
     {
@@ -68,6 +69,12 @@ public class UnlockableInfoBuilder
         return this;
     }
 
+    public UnlockableInfoBuilder SetPurchasePredicate(ITerminalPurchasePredicate predicate)
+    {
+        _purchasePredicate = predicate;
+        return this;
+    }
+    
     internal CRUnlockableItemInfo Build()
     {
         int cost = 0;
@@ -79,6 +86,8 @@ public class UnlockableInfoBuilder
         {
             cost = _unlockableItem.shopSelectionNode.itemCost;
         }
-        return new CRUnlockableItemInfo(_key, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
+        
+        _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
+        return new CRUnlockableItemInfo(_purchasePredicate, _key, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
     }
 }

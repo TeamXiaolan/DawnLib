@@ -1,10 +1,11 @@
 ﻿namespace CodeRebirthLib;
-public sealed class CRShopItemInfo
+public sealed class CRShopItemInfo : ITerminalPurchase
 {
     public CRItemInfo ParentInfo { get; internal set; }
     
-    internal CRShopItemInfo(TerminalNode infoNode, TerminalNode requestNode, TerminalNode receiptNode, int cost)
+    internal CRShopItemInfo(ITerminalPurchasePredicate predicate, TerminalNode infoNode, TerminalNode requestNode, TerminalNode receiptNode, int cost)
     {
+        PurchasePredicate = predicate;
         InfoNode = infoNode;
         RequestNode = requestNode;
         ReceiptNode = receiptNode;
@@ -15,4 +16,5 @@ public sealed class CRShopItemInfo
     public TerminalNode RequestNode { get; }
     public TerminalNode ReceiptNode { get; }
     public int Cost { get; }
+    public ITerminalPurchasePredicate PurchasePredicate { get; }
 }
