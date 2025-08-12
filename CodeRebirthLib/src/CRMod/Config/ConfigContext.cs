@@ -1,7 +1,7 @@
 ﻿using System;
 using BepInEx.Configuration;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 public class ConfigContext(ConfigFile file, string heading) : IDisposable
 {
 

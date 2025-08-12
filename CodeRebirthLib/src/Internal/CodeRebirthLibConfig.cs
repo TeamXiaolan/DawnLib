@@ -1,3 +1,5 @@
+using CodeRebirthLib.CRMod;
+
 namespace CodeRebirthLib;
 static class CodeRebirthLibConfig
 {

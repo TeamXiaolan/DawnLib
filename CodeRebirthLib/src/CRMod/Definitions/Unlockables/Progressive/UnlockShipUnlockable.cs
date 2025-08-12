@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Progressive;
 public class UnlockShipUnlockable : NetworkBehaviour
 {
     [FormerlySerializedAs("interactTrigger")]

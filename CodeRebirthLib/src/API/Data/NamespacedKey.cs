@@ -1,19 +1,22 @@
 ﻿using System;
 using BepInEx;
+using Unity.Netcode;
 
 namespace CodeRebirthLib;
-public class NamespacedKey
+public class NamespacedKey : INetworkSerializable
 {
     public const char Separator = ':';
     public const string VanillaNamespace = "lethal_company";
-    
-    public string Namespace { get; }
-    public string Key { get; }
+
+    private string _namespace, _key;
+
+    public string Namespace => _namespace;
+    public string Key => _key;
 
     protected NamespacedKey(string @namespace, string key)
     {
-        Namespace = @namespace;
-        Key = key;
+        _namespace = @namespace;
+        _key = key;
     }
 
     public static NamespacedKey From(string @namespace, string key)
@@ -42,7 +45,12 @@ public class NamespacedKey
     {
         return $"{Namespace}{Separator}{Key}";
     }
-
+    
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+    {
+        serializer.SerializeValue(ref _namespace);
+        serializer.SerializeValue(ref _key);
+    }
     public override bool Equals(object? obj)
     {
         if (obj == null || GetType() != obj.GetType()) return false;

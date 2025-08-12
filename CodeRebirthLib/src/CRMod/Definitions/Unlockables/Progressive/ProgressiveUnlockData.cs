@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Progressive;
 public class ProgressiveUnlockData
 {
 

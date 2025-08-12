@@ -1,5 +1,5 @@
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 public interface IAssetBundleLoader
 {
     CRContentDefinition[] Content { get; }

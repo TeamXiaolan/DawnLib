@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 [Serializable]
 public class EnemyData : EntityData<CREnemyReference>
 {

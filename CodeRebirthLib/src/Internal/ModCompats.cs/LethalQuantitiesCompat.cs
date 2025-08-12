@@ -2,6 +2,8 @@ using System;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using CodeRebirthLib.CRMod;
+using CodeRebirthLib.CRMod.Converters;
 using LethalQuantities.Objects;
 using On.LethalQuantities.Patches;
 using UnityEngine;

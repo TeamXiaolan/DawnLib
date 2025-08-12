@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using BepInEx;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "Mod Information", menuName = "CodeRebirthLib/Mod Information", order = -11)]
 public class CRModInformation : ScriptableObject
 {

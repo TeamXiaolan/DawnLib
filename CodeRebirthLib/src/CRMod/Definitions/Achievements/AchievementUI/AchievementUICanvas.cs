@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.AchievementUI;
 
 public class AchievementUICanvas : Singleton<AchievementUICanvas>
 {

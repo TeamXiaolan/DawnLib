@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using BepInEx.Configuration;
+using CodeRebirthLib.CRMod.Converters;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 static class ExtendedTOML
 {
     private static readonly List<TOMLConverter> _converters =

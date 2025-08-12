@@ -5,9 +5,9 @@ using UnityEngine.Serialization;
 using WeatherRegistry;
 using WeatherRegistry.Modules;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Definitions/Weather Definition")]
-public class CRWeatherDefinition : CRContentDefinition<WeatherData>
+public class CRWeatherDefinition : CRContentDefinition<WeatherData, CRWeatherInfo>
 {
     public const string REGISTRY_ID = "weathers";
 

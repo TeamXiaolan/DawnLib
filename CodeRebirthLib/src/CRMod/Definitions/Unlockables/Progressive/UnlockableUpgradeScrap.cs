@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Progressive;
 public class UnlockableUpgradeScrap : GrabbableObject
 {
     [field: SerializeField]

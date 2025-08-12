@@ -4,13 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Logging;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 public class CRMod
 {
@@ -123,7 +122,7 @@ public class CRMod
 
         foreach (var entity in entities)
         {
-            if (string.IsNullOrEmpty(entity.EntityName))
+            if (entity.Key == null)
             {
 #pragma warning disable CS0618 // Type or member is obsolete
                 CodeRebirthLibPlugin.Logger.LogWarning($"Defaulting to old entity name: {entity.entityName} for comparison, please update your mod to use the new references in ContentContainer.");

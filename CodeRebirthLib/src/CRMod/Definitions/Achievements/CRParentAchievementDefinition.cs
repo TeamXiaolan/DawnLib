@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
 public class CRParentAchievement : CRAchievementDefinition, IProgress

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetBundleLoader<T>
 {
     private readonly bool _hasNonPreloadAudioClips;

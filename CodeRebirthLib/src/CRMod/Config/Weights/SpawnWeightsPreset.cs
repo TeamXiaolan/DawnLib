@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.CRMod.Weights.Transformers;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Weights;
 // todo: better name
 public class SpawnWeightsPreset : IWeighted
 {

@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.CRMod.Progressive;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
-public class CRUnlockableDefinition : CRContentDefinition<UnlockableData>
+public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlockableItemInfo>
 {
     public const string REGISTRY_ID = "unlockables";
 

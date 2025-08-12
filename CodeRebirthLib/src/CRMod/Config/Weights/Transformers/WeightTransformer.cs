@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Weights.Transformers;
 [Serializable]
 public abstract class WeightTransformer
 {

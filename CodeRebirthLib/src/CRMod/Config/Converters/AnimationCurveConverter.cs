@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Converters;
 public class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)

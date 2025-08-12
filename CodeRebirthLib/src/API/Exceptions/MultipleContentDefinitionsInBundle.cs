@@ -1,3 +1,4 @@
+using CodeRebirthLib.CRMod;
 using UnityEngine;
 
 namespace CodeRebirthLib;

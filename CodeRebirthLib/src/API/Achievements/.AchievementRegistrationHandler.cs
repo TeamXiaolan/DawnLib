@@ -1,3 +1,5 @@
+using CodeRebirthLib.CRMod;
+using CodeRebirthLib.CRMod.AchievementUI;
 using UnityEngine;
 
 namespace CodeRebirthLib;

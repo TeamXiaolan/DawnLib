@@ -1,6 +1,6 @@
 using BepInEx.Configuration;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 public class MapObjectConfig : EntityConfig
 {

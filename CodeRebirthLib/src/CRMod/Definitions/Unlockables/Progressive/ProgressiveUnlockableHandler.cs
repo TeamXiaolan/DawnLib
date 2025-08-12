@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Progressive;
 static class ProgressiveUnlockableHandler
 {
     internal static List<ProgressiveUnlockData> AllProgressiveUnlockables = new();

@@ -8,6 +8,7 @@ namespace CodeRebirthLib;
 internal static class Debuggers
 {
     internal static DebugLogSource? ReplaceThis;
+    internal static DebugLogSource? CRContentDefinition;
 
     internal static void Bind(ConfigFile file)
     {

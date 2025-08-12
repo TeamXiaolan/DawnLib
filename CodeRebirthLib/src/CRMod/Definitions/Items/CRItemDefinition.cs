@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using CodeRebirthLib.CRMod.Weights;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Definitions/Item Definition")]
-public class CRItemDefinition : CRContentDefinition<ItemData>
+public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
 {
     public const string REGISTRY_ID = "items";
 

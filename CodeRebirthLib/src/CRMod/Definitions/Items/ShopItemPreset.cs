@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 public class ShopItemPreset
 {

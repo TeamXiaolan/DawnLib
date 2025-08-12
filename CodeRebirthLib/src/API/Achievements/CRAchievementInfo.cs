@@ -8,4 +8,6 @@ public sealed class CRAchievementInfo : INamespaced<CRAchievementInfo>
     
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<CRAchievementInfo> TypedKey { get; }
+    
+    public string Name { get; }
 }

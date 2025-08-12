@@ -1,7 +1,7 @@
 
 using System;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 static class CRAchievementHandler
 {

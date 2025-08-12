@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.AchievementUI;
 
 public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
 {

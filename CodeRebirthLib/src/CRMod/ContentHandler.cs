@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 public abstract class ContentHandler(CRMod mod)
 {
     [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]

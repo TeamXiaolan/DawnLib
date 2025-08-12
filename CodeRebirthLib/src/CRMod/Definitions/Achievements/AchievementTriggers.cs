@@ -1,42 +1,45 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 public class AchievementTriggers : MonoBehaviour
 {
     [SerializeField]
-    private NamespacedKey<CRAchievementInfo> _namedSpacedKey = default!;
+    private CRContentReference<CRAchievementDefinition, CRAchievementInfo> _reference = default!;
 
     [SerializeField]
     private UnityEvent _onAchievementCompleted = new UnityEvent();
 
     public void TryCompleteAchievement()
     {
-        if (CRLibContent.Achievements[_namedSpacedKey].TryTriggerAchievement(_achievementReference))
+        if (_reference.TryResolve(out CRAchievementInfo info))
         {
+            // todo: something with CRAchievementInfo
             _onAchievementCompleted.Invoke();
         }
     }
 
     public void TryIncrementAchievement(float amountToIncrement)
     {
-        if (CRLibContent.Achievements[_namedSpacedKey].TryIncrementAchievement(_achievementReference, amountToIncrement))
+        if (_reference.TryResolve(out CRAchievementInfo info))
         {
+            // todo: something with CRAchievementInfo
             _onAchievementCompleted.Invoke();
         }
     }
 
     public void TryDiscoverMoreProgressAchievement(string uniqueStringID)
     {
-        if (CRLibContent.Achievements[_namedSpacedKey].TryDiscoverMoreProgressAchievement(_achievementReference, uniqueStringID))
+        if (_reference.TryResolve(out CRAchievementInfo info))
         {
+            // todo: something with CRAchievementInfo
             _onAchievementCompleted.Invoke();
         }
     }
 
     public void ResetAllAchievementProgress()
     {
-        CRLibContent.Achievements[_namedSpacedKey].ResetAchievementProgress(_achievementReference);
+        
     }
 }

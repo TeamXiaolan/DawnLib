@@ -1,4 +1,5 @@
 using System.Linq;
+using CodeRebirthLib.CRMod.Progressive;
 using UnityEngine;
 
 namespace CodeRebirthLib;

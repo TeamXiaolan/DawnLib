@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.CRMod.AchievementUI;
 using TMPro;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 /* TODOs
  * Button to reset specific achievements
  * probably more im forgetting
 */
-public abstract class CRAchievementDefinition : CRContentDefinition<AchievementData>
+public abstract class CRAchievementDefinition : CRContentDefinition<AchievementData, CRAchievementInfo>
 {
     public const string REGISTRY_ID = "achievements";
 

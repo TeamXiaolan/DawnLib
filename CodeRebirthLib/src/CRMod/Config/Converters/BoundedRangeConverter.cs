@@ -1,5 +1,5 @@
 ﻿
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Converters;
 public class BoundedRangeConverter : TOMLConverter<BoundedRange>
 {
     protected override string ConvertToString(BoundedRange range)

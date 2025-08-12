@@ -2,7 +2,7 @@ using System.IO;
 using BepInEx;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 public class AutoCRModHandler
 {

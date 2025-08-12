@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Instant Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Instant Definition")]
 public class CRInstantAchievement : CRAchievementDefinition

@@ -1,4 +1,4 @@
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Weights;
 
 public enum WeightOperation
 {

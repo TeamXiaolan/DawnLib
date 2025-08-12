@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace CodeRebirthLib.CRMod;
 public enum CRDynamicConfigType
 {
     String,

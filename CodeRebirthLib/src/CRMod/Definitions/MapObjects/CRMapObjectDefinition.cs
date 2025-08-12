@@ -5,9 +5,9 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Object Definition")]
-public class CRMapObjectDefinition : CRContentDefinition<MapObjectData>
+public class CRMapObjectDefinition : CRContentDefinition<MapObjectData, CRMapObjectInfo>
 {
     public const string REGISTRY_ID = "map_objects";
 

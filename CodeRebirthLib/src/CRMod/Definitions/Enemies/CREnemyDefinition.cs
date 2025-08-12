@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.CRMod.Weights;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 [Flags]
 public enum SpawnTable
@@ -15,7 +16,7 @@ public enum SpawnTable
 }
 
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Definitions/Enemy Definition")]
-public class CREnemyDefinition : CRContentDefinition<EnemyData>
+public class CREnemyDefinition : CRContentDefinition<EnemyData, CREnemyInfo>
 {
     public const string REGISTRY_ID = "enemies";
 

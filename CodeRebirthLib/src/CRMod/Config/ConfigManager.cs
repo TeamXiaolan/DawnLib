@@ -7,7 +7,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 // todo: look over this again and see how much can become toml types?
 public class ConfigManager(ConfigFile file)
 {

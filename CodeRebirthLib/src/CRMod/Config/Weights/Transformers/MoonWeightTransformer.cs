@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.Weights.Transformers;
 
 [Serializable]
 public class MoonWeightTransformer : WeightTransformer

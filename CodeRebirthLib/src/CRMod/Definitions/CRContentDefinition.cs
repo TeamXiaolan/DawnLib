@@ -6,10 +6,12 @@ using BepInEx.Configuration;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 public abstract class CRContentDefinition : ScriptableObject
 {
+    public abstract NamespacedKey Key { get; }
+    
     [FormerlySerializedAs("ConfigEntries")]
     [SerializeField]
     private List<CRDynamicConfig> _configEntries;
@@ -60,8 +62,13 @@ public abstract class CRContentDefinition : ScriptableObject
     }
 }
 
-public abstract class CRContentDefinition<T> : CRContentDefinition where T : EntityData
+public abstract class CRContentDefinition<T, TInfo> : CRContentDefinition where T : EntityData where TInfo : INamespaced<TInfo>
 {
+    [field: SerializeField, InspectorName("Key")]
+    public NamespacedKey<TInfo> TypedKey { get; private set; }
+
+    public override NamespacedKey Key => TypedKey;
+
     public override void Register(CRMod mod)
     {
         try
@@ -69,10 +76,10 @@ public abstract class CRContentDefinition<T> : CRContentDefinition where T : Ent
             Register(mod,
                 GetEntities(mod).First(it =>
                 {
-                    if (!string.IsNullOrEmpty(it.EntityName))
+                    if (it.Key != null)
                     {
-                        Debuggers.ReplaceThis?.Log($"{this} | Comparing {EntityNameReference} with {it.EntityName}.");
-                        return it.EntityName == EntityNameReference;
+                        Debuggers.CRContentDefinition?.Log($"{this} | Comparing {Key} with {it.Key}.");
+                        return Equals(it.Key, Key);
                     }
                     return it.entityName == EntityNameReference;
 

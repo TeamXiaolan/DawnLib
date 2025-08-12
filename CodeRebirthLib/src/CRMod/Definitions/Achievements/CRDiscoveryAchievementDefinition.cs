@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Discovery Definition")]
 public class CRDiscoveryAchievement : CRAchievementDefinition, IProgress

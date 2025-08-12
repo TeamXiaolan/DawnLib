@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Dungeons;
 using DunGen;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = "CodeRebirthLib/Definitions/Additional Tiles Definition")]
-public class CRAdditionalTilesDefinition : CRContentDefinition<DungeonData>
+public class CRAdditionalTilesDefinition : CRContentDefinition<DungeonData, CRTileSetInfo>
 {
     [Flags]
     public enum BranchCapSetting

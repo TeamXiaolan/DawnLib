@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Configuration;
+using CodeRebirthLib.CRMod;
 
 namespace CodeRebirthLib;
 public static class ConfigFileExtensions

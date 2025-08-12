@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod;
 [AttributeUsage(AttributeTargets.Property)]
 public class LoadFromBundleAttribute(string bundleFile) : Attribute
 {

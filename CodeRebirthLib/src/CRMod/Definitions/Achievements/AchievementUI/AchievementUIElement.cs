@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.CRMod.AchievementUI;
 
 public class AchievementUIElement : MonoBehaviour
 {
@@ -27,9 +27,9 @@ public class AchievementUIElement : MonoBehaviour
     [SerializeField]
     private Image _backgroundImage = null!;
 
-    public void SetupAchievementUI(CRAchievementDefinition definition)
+    public void SetupAchievementUI(CRAchievementInfo definition)
     {
-        _achievementNameTMP.text = definition.AchievementName;
+        _achievementNameTMP.text = definition.Name;
         _achievementDescriptionTMP.text = definition.AchievementDescription;
         _achievementIcon.sprite = definition.AchievementIcon;
         if (!definition.IsHidden)
