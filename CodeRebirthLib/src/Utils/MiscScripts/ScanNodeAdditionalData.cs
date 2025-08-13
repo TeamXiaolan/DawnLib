@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CodeRebirthLib.Internal.ModCompats.cs;
+using CodeRebirthLib.Internal.ModCompats;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,4 +1,4 @@
-using CodeRebirthLib.Internal.ModCompats.cs;
+using CodeRebirthLib.Internal.ModCompats;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

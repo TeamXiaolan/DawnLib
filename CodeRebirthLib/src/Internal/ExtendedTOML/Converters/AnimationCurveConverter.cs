@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using CodeRebirthLib.Internal.ModCompats.cs;
+using CodeRebirthLib.Internal.ModCompats;
 using UnityEngine;
 
 namespace CodeRebirthLib.Internal;

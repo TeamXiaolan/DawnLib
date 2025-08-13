@@ -1,5 +1,5 @@
 using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Internal.ModCompats.cs;
+using CodeRebirthLib.Internal.ModCompats;
 using CodeRebirthLib.Utils;
 
 namespace CodeRebirthLib.Internal;

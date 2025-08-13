@@ -4,7 +4,7 @@ using BepInEx;
 using BepInEx.Logging;
 using CodeRebirthLib.CRMod;
 using CodeRebirthLib.Internal;
-using CodeRebirthLib.Internal.ModCompats.cs;
+using CodeRebirthLib.Internal.ModCompats;
 using CodeRebirthLib.Utils;
 using PathfindingLib;
 using UnityEngine;

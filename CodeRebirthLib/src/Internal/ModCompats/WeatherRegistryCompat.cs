@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using WeatherRegistry;
 
-namespace CodeRebirthLib.Internal.ModCompats.cs;
+namespace CodeRebirthLib.Internal.ModCompats;
 static class WeatherRegistryCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(PluginInfo.PLUGIN_GUID);

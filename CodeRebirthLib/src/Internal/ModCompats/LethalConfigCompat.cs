@@ -10,7 +10,7 @@ using LethalConfig.ConfigItems;
 using On.LethalConfig.AutoConfig;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal.ModCompats.cs;
+namespace CodeRebirthLib.Internal.ModCompats;
 static class LethalConfigCompat
 {
     internal const string VERSION = "1.4.6";

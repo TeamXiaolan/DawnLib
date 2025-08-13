@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal.ModCompats.cs;
+namespace CodeRebirthLib.Internal.ModCompats;
 
 static class GoodItemScanCompat
 {
