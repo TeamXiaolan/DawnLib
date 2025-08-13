@@ -39,7 +39,7 @@ public class SpawnWeightsPreset : IWeighted
             weight = weightTransformer.GetNewWeight(weight);
         }
 
-        Debuggers.ReplaceThis?.Log($"Weight of {this}: {weight}");
+        Debuggers.Weights?.Log($"Weight of {this}: {weight}");
         return Mathf.FloorToInt(weight);
     }
 }

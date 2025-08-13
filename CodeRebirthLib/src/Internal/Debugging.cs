@@ -8,7 +8,17 @@ namespace CodeRebirthLib.Internal;
 internal static class Debuggers
 {
     internal static DebugLogSource? ReplaceThis;
+    internal static DebugLogSource? Items;
+    internal static DebugLogSource? MapObjects;
+    internal static DebugLogSource? Unlockables;
+    internal static DebugLogSource? AssetLoading;
+    internal static DebugLogSource? Weights;
+    internal static DebugLogSource? Achievements;
     internal static DebugLogSource? CRContentDefinition;
+    internal static DebugLogSource? Progressive;
+    internal static DebugLogSource? ExtendedTOML;
+    internal static DebugLogSource? LethalConfig;
+    internal static DebugLogSource? Pathfinding;
 
     internal static void Bind(ConfigFile file)
     {

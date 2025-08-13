@@ -12,7 +12,7 @@ public class AutoCRModHandler
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.crmod", SearchOption.AllDirectories))
         {
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);
-            Debuggers.ReplaceThis?.Log($"[AssetBundle Loading] {mainBundle.name} contains these objects: {string.Join(",", mainBundle.GetAllAssetNames())}");
+            Debuggers.AssetLoading?.Log($"{mainBundle.name} contains these objects: {string.Join(",", mainBundle.GetAllAssetNames())}");
 
             CRModInformation[] modInformation = mainBundle.LoadAllAssets<CRModInformation>();
             if (modInformation.Length == 0)

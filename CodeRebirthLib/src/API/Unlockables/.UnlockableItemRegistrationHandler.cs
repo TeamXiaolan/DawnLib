@@ -28,7 +28,7 @@ static class UnlockableRegistrationHandler
 
         UnlockableItem latestValidUnlockable = StartOfRound.Instance.unlockablesList.unlockables.Where(unlockable => unlockable.shopSelectionNode != null).OrderBy(x => x.shopSelectionNode.shipUnlockableID).FirstOrDefault();
         int latestUnlockableID = latestValidUnlockable.shopSelectionNode.shipUnlockableID;
-        Debuggers.ReplaceThis?.Log($"latestUnlockableID = {latestUnlockableID}");
+        Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
         foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {

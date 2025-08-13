@@ -31,7 +31,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
     {
         _bundle = bundle;
 
-        Debuggers.ReplaceThis?.Log($"[AssetBundle Loading] {bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
+        Debuggers.AssetLoading?.Log($"{bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
 
         Type type = typeof(T);
         foreach (PropertyInfo property in type.GetProperties())
@@ -48,13 +48,13 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             {
                 case GameObject gameObject:
                     CRLib.FixMixerGroups(gameObject);
-                    Debuggers.ReplaceThis?.Log($"[AssetBundle Loading] Fixed Mixer Groups: {gameObject.name}");
+                    Debuggers.AssetLoading?.Log($"Fixed Mixer Groups: {gameObject.name}");
 
                     if (gameObject.GetComponent<NetworkObject>() == null)
                         continue;
 
                     CRLib.RegisterNetworkPrefab(gameObject);
-                    Debuggers.ReplaceThis?.Log($"[AssetBundle Loading] Registered Network Prefab: {gameObject.name}");
+                    Debuggers.AssetLoading?.Log($"Registered Network Prefab: {gameObject.name}");
                     break;
                 case VideoClip videoClip:
                     _videoClipNames.Add(videoClip.name);
@@ -109,7 +109,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this from happening.");
             foreach (string videoClipName in _videoClipNames)
             {
-                Debuggers.ReplaceThis?.Log($"VideoClip Name: {videoClipName}");
+                Debuggers.AssetLoading?.Log($"VideoClip Name: {videoClipName}");
             }
         }
 
@@ -118,7 +118,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip.");
             foreach (string audioClipName in _audioClipNames)
             {
-                Debuggers.ReplaceThis?.Log($"AudioClip Name: {audioClipName}");
+                Debuggers.AssetLoading?.Log($"AudioClip Name: {audioClipName}");
             }
         }
 

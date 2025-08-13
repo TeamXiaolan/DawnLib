@@ -76,7 +76,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
                     shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
                     if (Config.IsProgressive?.Value ?? data.isProgressive)
                     {
-                        Debuggers.ReplaceThis?.Log($"Creating ProgressiveItemData for {Item.itemName}");
+                        Debuggers.Progressive?.Log($"Creating ProgressiveItemData for {Item.itemName}");
                         if (!ProgressiveObject)
                             ProgressiveObject = ScriptableObject.CreateInstance<ProgressiveObject>();
 

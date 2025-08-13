@@ -75,7 +75,7 @@ static class ItemRegistrationHandler
 
         foreach (var terminalKeyword in terminalKeywords) // todo i probably shouldnt be modifying these
         {
-            Debuggers.ReplaceThis?.Log($"TerminalKeyword.word for {terminalKeyword.name}: {terminalKeyword.word}");
+            Debuggers.Items?.Log($"TerminalKeyword.word for {terminalKeyword.name}: {terminalKeyword.word}");
             if (terminalKeyword.word.Equals("stun", StringComparison.OrdinalIgnoreCase))
             {
                 terminalKeyword.word = "stun-grenade";
@@ -100,7 +100,7 @@ static class ItemRegistrationHandler
             TerminalNode requestNode = null!;
             TerminalNode receiptNode = null!;
 
-            Debuggers.ReplaceThis?.Log($"Processing {buyableItem.itemName}");
+            Debuggers.Items?.Log($"Processing {buyableItem.itemName}");
             string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
             TerminalKeyword buyKeywordOfSignificance = terminalKeywords.First(keyword => keyword.word == simplifiedItemName);
 
@@ -111,7 +111,7 @@ static class ItemRegistrationHandler
                     infoNode = compatibleNouns.result;
                     break;
                 }
-                Debuggers.ReplaceThis?.Log($"Checking compatible nouns for info node: {compatibleNouns.noun.word}");
+                Debuggers.Items?.Log($"Checking compatible nouns for info node: {compatibleNouns.noun.word}");
             }
 
             if (infoNode == null)
@@ -139,7 +139,7 @@ static class ItemRegistrationHandler
                     requestNode = compatibleNouns.result;
                     break;
                 }
-                Debuggers.ReplaceThis?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
+                Debuggers.Items?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
             }
 
             /*if (requestNode == null) i dont think this can happen so commented out 

@@ -40,7 +40,7 @@ public class AchievementModUIElement : MonoBehaviour
 
         foreach (var achievement in sortedAchievements)
         {
-            Debuggers.ReplaceThis?.Log($"Adding achievement: {achievement.AchievementName}");
+            Debuggers.Achievements?.Log($"Adding achievement: {achievement.AchievementName}");
 
             var go = GameObject.Instantiate(_achievementUIElementPrefab, _achievementsContainer.transform);
             go.SetActive(false);

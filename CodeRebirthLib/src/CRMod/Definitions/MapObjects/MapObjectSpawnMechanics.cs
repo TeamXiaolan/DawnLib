@@ -46,7 +46,7 @@ public class MapObjectSpawnMechanics
 
         string actualLevelName = ConfigManager.GetLLLNameOfLevel(level.name);
         bool isVanilla = level.ToNamespacedKey().IsVanilla();
-        Debuggers.ReplaceThis?.Log($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
+        Debuggers.MapObjects?.Log($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
         if (CurvesByMoonName.TryGetValue(actualLevelName, out AnimationCurve curve))
         {
             return curve;
@@ -67,7 +67,7 @@ public class MapObjectSpawnMechanics
         {
             return AllCurve;
         }
-        Debuggers.ReplaceThis?.Log($"Failed to find curve for level: {level}");
+        Debuggers.MapObjects?.Log($"Failed to find curve for level: {level}");
         return AnimationCurve.Constant(0, 1, 0); // Default case if no curve matches
     }
 }

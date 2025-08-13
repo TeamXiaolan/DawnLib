@@ -48,13 +48,13 @@ public abstract class CRAchievementDefinition : CRContentDefinition<AchievementD
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {
         Completed = ES3.Load(Mod.Plugin.GUID + "." + AchievementName, false, globalSettings);
-        Debuggers.ReplaceThis?.Log($"Loaded Achievement: {AchievementName} with value: {Completed}");
+        Debuggers.Achievements?.Log($"Loaded Achievement: {AchievementName} with value: {Completed}");
     }
 
     public virtual void SaveAchievementState(ES3Settings globalSettings)
     {
         ES3.Save(Mod.Plugin.GUID + "." + AchievementName, Completed, globalSettings);
-        Debuggers.ReplaceThis?.Log($"Saving Achievement: {AchievementName} with value: {Completed}");
+        Debuggers.Achievements?.Log($"Saving Achievement: {AchievementName} with value: {Completed}");
     }
 
     protected bool TryCompleteAchievement()
@@ -77,6 +77,7 @@ public abstract class CRAchievementDefinition : CRContentDefinition<AchievementD
     public override void Register(CRMod mod, AchievementData data)
     {
         base.Register(mod);
+        CRModContent.Achievements.Register(this);
     }
 
     public override List<AchievementData> GetEntities(CRMod mod)

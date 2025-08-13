@@ -34,7 +34,6 @@ static class SaveDataPatch
     private static void SaveCRLibData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
     {
         orig(self);
-        Debuggers.ReplaceThis?.Log("Saving CodeRebirthLibData");
         CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
     }
 

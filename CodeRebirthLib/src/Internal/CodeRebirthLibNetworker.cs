@@ -59,7 +59,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
             if (definition)
             {
                 values[i] = definition.ProgressiveData!.IsUnlocked;
-                Debuggers.ReplaceThis?.Log($"set values[{i}] = {values[i]}");
+                Debuggers.Progressive?.Log($"set values[{i}] = {values[i]}");
             }
             else
             {
@@ -85,7 +85,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < definitions.Length; i++)
         {
             CRUnlockableDefinition definition = definitions[i];
-            Debuggers.ReplaceThis?.Log($"setting state of {definition.UnlockableItem.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
+            Debuggers.Progressive?.Log($"setting state of {definition.UnlockableItem.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
             definition.ProgressiveData!.SetFromServer(states[i]);
         }
     }
@@ -93,7 +93,6 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     internal void SaveCodeRebirthLibData()
     {
         if (!NetworkManager.Singleton.IsHost) return;
-        Debuggers.ReplaceThis?.Log("Running SaveAll");
         ProgressiveUnlockableHandler.SaveAll(SaveSettings);
     }
 

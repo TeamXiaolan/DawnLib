@@ -40,7 +40,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData, CRMapObj
 
         HasNetworkObject = GameObject.GetComponent<NetworkObject>();
 
-        CRLib.DefineMapObject(null, GameObject, builder =>
+        CRLib.DefineMapObject(TypedKey, GameObject, builder =>
         {
             builder.DefineInside(insideBuilder =>
             {

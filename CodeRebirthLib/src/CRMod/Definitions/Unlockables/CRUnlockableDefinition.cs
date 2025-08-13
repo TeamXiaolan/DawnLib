@@ -45,7 +45,7 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
 
             if (Config.IsProgressive?.Value ?? data.isProgressive)
             {
-                Debuggers.ReplaceThis?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
+                Debuggers.Progressive?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
                 if (!ProgressiveObject)
                     ProgressiveObject = ScriptableObject.CreateInstance<ProgressiveObject>();
 

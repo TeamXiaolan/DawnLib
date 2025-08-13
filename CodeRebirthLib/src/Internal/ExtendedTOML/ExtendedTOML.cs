@@ -22,7 +22,7 @@ static class ExtendedTOML
         {
             if (!converter.IsEnabled())
             {
-                Debuggers.ReplaceThis?.Log($"[ExtendedTOML] Skipped converter for '{converter.ConvertingType.Name}' it disabled itself.");
+                Debuggers.ExtendedTOML?.Log($"[ExtendedTOML] Skipped converter for '{converter.ConvertingType.Name}' it disabled itself.");
                 continue;
             }
 

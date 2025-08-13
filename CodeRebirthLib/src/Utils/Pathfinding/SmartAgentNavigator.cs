@@ -234,7 +234,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
         List<T> pointsTList = points.Select(x => x.Item1).ToList();
         checkPathsTask.StartPathTask(this.agent, this.transform.position, pointsVectorList, GetAllowedPathLinks());
         int listSize = pointsVectorList.Count;
-        Debuggers.ReplaceThis?.Log($"Checking paths for {listSize} objects");
+        Debuggers.Pathfinding?.Log($"Checking paths for {listSize} objects");
         yield return new WaitUntil(() => checkPathsTask.IsComplete);
         for (int i = 0; i < listSize; i++)
         {
@@ -243,7 +243,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
                 CodeRebirthLibPlugin.Logger.LogError($"Result for task index: {i} on {this.gameObject.name} is not ready");
                 continue;
             }
-            Debuggers.ReplaceThis?.Log($"Checking result for task index: {i}, is result ready: {checkPathsTask.IsResultReady(i)}, result: {checkPathsTask.GetResult(i)}");
+            Debuggers.Pathfinding?.Log($"Checking result for task index: {i}, is result ready: {checkPathsTask.IsResultReady(i)}, result: {checkPathsTask.GetResult(i)}");
             if (checkPathsTask.GetResult(i) is not SmartPathDestination destination)
                 continue;
 
@@ -312,7 +312,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
             pointToGo = hit.position;
             OnEnableOrDisableAgent.Invoke(false);
             agent.enabled = false;
-            Debuggers.ReplaceThis?.Log($"Pathing to initial destination {destination} failed, going to fallback position {hit.position} instead.");
+            Debuggers.Pathfinding?.Log($"Pathing to initial destination {destination} failed, going to fallback position {hit.position} instead.");
             return true;
         }
 
@@ -337,7 +337,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
                 pathDistance += Vector3.Distance(path.corners[i - 1], path.corners[i]);
             }
         }
-        // Debuggers.ReplaceThis?.Log($"[{this.gameObject.name}] Path distance: {pathDistance}");
+        // Debuggers.Pathfinding?.Log($"[{this.gameObject.name}] Path distance: {pathDistance}");
 
         return pathDistance;
     }
@@ -407,7 +407,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
     private IEnumerator SearchAlgorithm(float radius)
     {
         yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 3f));
-        Debuggers.ReplaceThis?.Log($"Starting search routine for {this.gameObject.name} at {this.transform.position} with radius {radius}");
+        Debuggers.Pathfinding?.Log($"Starting search routine for {this.gameObject.name} at {this.transform.position} with radius {radius}");
         _positionsToSearch.Clear();
         yield return StartCoroutine(GetSetOfAcceptableNodesForRoaming(radius));
         while (true)
@@ -423,7 +423,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
             bool reachedDestination = false;
             while (!reachedDestination)
             {
-                Debuggers.ReplaceThis?.Log($"{this.gameObject.name} Search: {positionToTravel}");
+                Debuggers.Pathfinding?.Log($"{this.gameObject.name} Search: {positionToTravel}");
                 GoToDestination(positionToTravel);
                 yield return new WaitForSeconds(0.5f);
 
@@ -463,7 +463,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
         roamingTask ??= new SmartPathTask();
         roamingTask.StartPathTask(this.agent, this.transform.position, _roamingPointsVectorList, GetAllowedPathLinks());
         int listSize = _roamingPointsVectorList.Count;
-        Debuggers.ReplaceThis?.Log($"Checking paths for {listSize} objects");
+        Debuggers.Pathfinding?.Log($"Checking paths for {listSize} objects");
         yield return new WaitUntil(() => roamingTask.IsComplete);
         for (int i = 0; i < listSize; i++)
         {
@@ -476,7 +476,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
             if (roamingTask.GetResult(i) is not SmartPathDestination destination)
                 continue;
 
-            // Debuggers.ReplaceThis?.Log($"Checking result for task index: {i}, pathLength: {roamingTask.GetPathLength(i)}, position: {destination.Position} with type: {destination.Type}");
+            // Debuggers.Pathfinding?.Log($"Checking result for task index: {i}, pathLength: {roamingTask.GetPathLength(i)}, position: {destination.Position} with type: {destination.Type}");
             if (roamingTask.GetPathLength(i) > radius)
                 continue;
 

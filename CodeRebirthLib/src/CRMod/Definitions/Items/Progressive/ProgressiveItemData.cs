@@ -42,18 +42,18 @@ public class ProgressiveItemData
     {
         IsUnlocked = ES3.Load(SaveID, false, settings);
         UpdateName();
-        Debuggers.ReplaceThis?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {Item.itemName} with saveID: {SaveID}");
+        Debuggers.Progressive?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {Item.itemName} with saveID: {SaveID}");
     }
 
     public void Save(ES3Settings settings)
     {
-        Debuggers.ReplaceThis?.Log($"Saving unlockable: {Item.itemName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {SaveID}");
+        Debuggers.Progressive?.Log($"Saving unlockable: {Item.itemName} with original name: {OriginalName} that is unlocked: {IsUnlocked} with saveID: {SaveID}");
         ES3.Save(SaveID, IsUnlocked, settings);
     }
 
     internal void SetFromServer(bool isUnlocked)
     {
-        Debuggers.ReplaceThis?.Log($"{OriginalName} is being set from the server; unlocked = {isUnlocked}");
+        Debuggers.Progressive?.Log($"{OriginalName} is being set from the server; unlocked = {isUnlocked}");
         IsUnlocked = isUnlocked;
         UpdateName();
     }

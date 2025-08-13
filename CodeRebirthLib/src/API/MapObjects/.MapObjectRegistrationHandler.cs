@@ -125,17 +125,17 @@ static class MapObjectRegistrationHandler
                 return;
 
             float number = animationCurve.Evaluate(serverOnlyRandom.NextFloat(0f, 1f)) + 0.5f;
-            Debuggers.ReplaceThis?.Log($"number generated for host only: {number}");
+            Debuggers.MapObjects?.Log($"number generated for host only: {number}");
             randomNumberToSpawn = Mathf.FloorToInt(number);
         }
         else
         {
             float number = animationCurve.Evaluate(everyoneRandom.NextFloat(0f, 1f)) + 0.5f;
-            Debuggers.ReplaceThis?.Log("number generated for everyone: " + number);
+            Debuggers.MapObjects?.Log("number generated for everyone: " + number);
             randomNumberToSpawn = Mathf.FloorToInt(number);
         }
 
-        Debuggers.ReplaceThis?.Log($"Spawning {randomNumberToSpawn} of {prefabToSpawn.name} for level {level}");
+        Debuggers.MapObjects?.Log($"Spawning {randomNumberToSpawn} of {prefabToSpawn.name} for level {level}");
         for (int i = 0; i < randomNumberToSpawn; i++)
         {
             Vector3 spawnPos;
@@ -157,7 +157,7 @@ static class MapObjectRegistrationHandler
                 continue;
 
             GameObject spawnedPrefab = Object.Instantiate(prefabToSpawn, hit.point, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
-            Debuggers.ReplaceThis?.Log($"Spawning {spawnedPrefab.name} at {hit.point}");
+            Debuggers.MapObjects?.Log($"Spawning {spawnedPrefab.name} at {hit.point}");
             if (outsideInfo.AlignWithTerrain)
             {
                 spawnedPrefab.transform.up = hit.normal;
