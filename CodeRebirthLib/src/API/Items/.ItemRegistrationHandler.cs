@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -74,17 +75,65 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
 
+        foreach (var terminalKeyword in terminalKeywords)
+        {
+            Debuggers.ReplaceThis?.Log($"TerminalKeyword.word for {terminalKeyword.name}: {terminalKeyword.word}");
+            if (terminalKeyword.word.Equals("stun", StringComparison.OrdinalIgnoreCase))
+            {
+                terminalKeyword.word = "stun-grenade";
+            }
+            else if (terminalKeyword.word.Equals("tzp", StringComparison.OrdinalIgnoreCase))
+            {
+                terminalKeyword.word = "tzp-inhalant";
+            }
+            else if (terminalKeyword.word.Equals("radar", StringComparison.OrdinalIgnoreCase))
+            {
+                terminalKeyword.word = "radar-booster";
+            }
+            else
+            {
+                terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
+            }
+        }
+
         foreach (var buyableItem in terminal.buyableItemsList)
         {
-            TerminalNode infoNode;
-            TerminalNode requestNode;
-            TerminalNode receiptNode;
+            TerminalNode? infoNode = null;
+            TerminalNode? requestNode = null;
+            TerminalNode? receiptNode = null;
 
+            Debuggers.ReplaceThis?.Log($"Processing {buyableItem.itemName}");
             string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
             TerminalKeyword buyKeywordOfSignificance = terminalKeywords.First(keyword => keyword.word == simplifiedItemName);
 
-            infoNode = infoKeyword.compatibleNouns.First(node => node.noun == buyKeywordOfSignificance).result;
-            requestNode = buyKeyword.compatibleNouns.First(node => node.noun == buyKeywordOfSignificance).result;
+            foreach (var compatibleNouns in infoKeyword.compatibleNouns)
+            {
+                if (compatibleNouns.noun == buyKeywordOfSignificance)
+                {
+                    infoNode = compatibleNouns.result;
+                    break;
+                }
+                Debuggers.ReplaceThis?.Log($"Checking compatible nouns for info node: {compatibleNouns.noun.word}");
+            }
+
+            if (infoNode == null)
+            { // TODO CREATE IT
+            }
+
+            foreach (var compatibleNouns in buyKeyword.compatibleNouns)
+            {
+                if (compatibleNouns.noun == buyKeywordOfSignificance)
+                {
+                    requestNode = compatibleNouns.result;
+                    break;
+                }
+                Debuggers.ReplaceThis?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
+            }
+
+            if (requestNode == null)
+            { // TODO CREATE IT
+            }
+
             receiptNode = requestNode.terminalOptions[0].result;
             CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, buyableItem.creditsWorth);
             itemsWithShopInfo[buyableItem] = shopInfo;

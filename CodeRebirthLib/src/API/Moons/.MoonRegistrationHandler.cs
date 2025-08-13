@@ -18,9 +18,9 @@ static class MoonRegistrationHandler
         foreach (SelectableLevel level in self.levels)
         {
             NamespacedKey<CRMoonInfo> key = level.ToNamespacedKey();
-            CRMoonInfo moonInfo = new CRMoonInfo(key, level);
+
+            CRMoonInfo moonInfo = new(key, level);
             LethalContent.Moons.Register(moonInfo);
-            level.SetCRInfo(moonInfo);
         }
 
         LethalContent.Moons.Freeze();

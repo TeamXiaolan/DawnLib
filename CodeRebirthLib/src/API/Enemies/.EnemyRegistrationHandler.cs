@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace CodeRebirthLib;
@@ -66,6 +67,9 @@ static class EnemyRegistrationHandler
 
             foreach (var enemyWithRarity in level.Enemies)
             {
+                if (enemyWithRarity.enemyType == null)
+                    continue;
+
                 if (!enemyInsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
@@ -76,6 +80,9 @@ static class EnemyRegistrationHandler
 
             foreach (var enemyWithRarity in level.OutsideEnemies)
             {
+                if (enemyWithRarity.enemyType == null)
+                    continue;
+
                 if (!enemyOutsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
@@ -86,6 +93,9 @@ static class EnemyRegistrationHandler
 
             foreach (var enemyWithRarity in level.DaytimeEnemies)
             {
+                if (enemyWithRarity.enemyType == null)
+                    continue;
+
                 if (!enemyDaytimeWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
@@ -106,6 +116,9 @@ static class EnemyRegistrationHandler
 
             foreach (SpawnableEnemyWithRarity enemy in levelEnemies)
             {
+                if (enemy.enemyType == null)
+                    continue;
+
                 NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemy.enemyType.enemyName.Replace(" ", ""))?.GetValue(null);
                 if (key == null)
                     continue;
@@ -113,7 +126,24 @@ static class EnemyRegistrationHandler
                 if (LethalContent.Enemies.ContainsKey(key))
                     continue;
 
-                CREnemyInfo enemyInfo = new(key, enemy.enemyType, enemyInsideWeightBuilder[enemy.enemyType].Build(), enemyOutsideWeightBuilder[enemy.enemyType].Build(), enemyDaytimeWeightBuilder[enemy.enemyType].Build());
+                WeightTableBuilder<CRMoonInfo> insideWeightBuilder = new();
+                WeightTableBuilder<CRMoonInfo> outsideWeightBuilder = new();
+                WeightTableBuilder<CRMoonInfo> daytimeWeightBuilder = new();
+
+                if (enemyInsideWeightBuilder.ContainsKey(enemy.enemyType))
+                {
+                    insideWeightBuilder = enemyInsideWeightBuilder[enemy.enemyType];
+                }
+                if (enemyOutsideWeightBuilder.ContainsKey(enemy.enemyType))
+                {
+                    outsideWeightBuilder = enemyOutsideWeightBuilder[enemy.enemyType];
+                }
+                if (enemyDaytimeWeightBuilder.ContainsKey(enemy.enemyType))
+                {
+                    daytimeWeightBuilder = enemyDaytimeWeightBuilder[enemy.enemyType];
+                }
+
+                CREnemyInfo enemyInfo = new(key, enemy.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
                 LethalContent.Enemies.Register(enemyInfo);
             }
 
