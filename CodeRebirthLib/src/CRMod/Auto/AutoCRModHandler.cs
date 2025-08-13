@@ -1,5 +1,6 @@
 using System.IO;
 using BepInEx;
+using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;

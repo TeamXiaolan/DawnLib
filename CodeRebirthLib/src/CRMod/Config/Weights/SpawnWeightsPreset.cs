@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.CRMod.Weights.Transformers;
+using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod.Weights;

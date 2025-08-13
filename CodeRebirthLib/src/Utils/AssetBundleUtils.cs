@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.Utils;
 
-public class AssetBundleUtils
+public static class AssetBundleUtils
 {
     public static AssetBundle LoadBundle(Assembly assembly, string filePath)
     {

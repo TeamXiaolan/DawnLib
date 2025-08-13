@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 
 static class CRLibNetworkerPatch
 {

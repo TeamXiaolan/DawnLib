@@ -7,7 +7,7 @@ using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {
     internal static EntranceTeleport[] _entrancePoints = [];

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using LethalLevelLoader;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal.ModCompats.cs;
 static class LLLCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(Plugin.ModGUID);

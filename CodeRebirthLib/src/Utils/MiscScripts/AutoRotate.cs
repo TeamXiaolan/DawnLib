@@ -1,3 +1,4 @@
+using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib.Utils;

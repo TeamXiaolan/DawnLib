@@ -2,7 +2,7 @@ using CodeRebirthLib.CRMod;
 using CodeRebirthLib.Utils;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 
 static class AchievementRegistrationPatch
 {

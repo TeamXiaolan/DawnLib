@@ -1,6 +1,4 @@
-using System;
-
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 
 static class SaveDataPatch
 {

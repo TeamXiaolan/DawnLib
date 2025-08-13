@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
 
 namespace CodeRebirthLib.CRMod;

@@ -3,6 +3,8 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using CodeRebirthLib.CRMod;
+using CodeRebirthLib.Internal;
+using CodeRebirthLib.Internal.ModCompats.cs;
 using CodeRebirthLib.Utils;
 using PathfindingLib;
 using UnityEngine;
@@ -45,6 +47,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         }
 
         ExtendedTOML.Init();
+        Config.Bind("bwaa", "bwaa", MoonKeys.March, "asdasd");
 
         AdditionalTilesRegistrationHandler.Init();
         ItemRegistrationHandler.Init();
@@ -62,7 +65,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.Enemy.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
 
-        Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
+        //Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
 
         AutoCRModHandler.AutoRegisterMods();
     }

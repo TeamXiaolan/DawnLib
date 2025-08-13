@@ -1,7 +1,8 @@
 using CodeRebirthLib.CRMod;
+using CodeRebirthLib.Internal.ModCompats.cs;
 using CodeRebirthLib.Utils;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 static class CodeRebirthLibConfig
 {
     public static CompatibilityBool LethalConfigCompatibility;

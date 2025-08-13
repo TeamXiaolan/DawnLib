@@ -1,8 +1,8 @@
 ﻿
 using CodeRebirthLib.Utils;
 
-namespace CodeRebirthLib.CRMod.Converters;
-public class BoundedRangeConverter : TOMLConverter<BoundedRange>
+namespace CodeRebirthLib.Internal;
+class BoundedRangeConverter : TOMLConverter<BoundedRange>
 {
     protected override string ConvertToString(BoundedRange range)
     {

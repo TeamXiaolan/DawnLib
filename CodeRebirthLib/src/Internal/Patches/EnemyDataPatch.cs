@@ -1,7 +1,6 @@
-using System;
 using GameNetcodeStuff;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 
 static class EnemyDataPatch
 {

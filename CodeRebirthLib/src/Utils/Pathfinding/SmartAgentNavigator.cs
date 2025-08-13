@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Internal;
 using PathfindingLib.API.SmartPathfinding;
 using Unity.Netcode;
 using UnityEngine;

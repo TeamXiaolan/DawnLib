@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace CodeRebirthLib.Utils;
-public class MenuUtils
+static class MenuUtils
 {
     //Thanks to LethalConfig and LethalPhones
     internal static void InjectMenu(Transform mainButtonsTransform, GameObject quitButton)

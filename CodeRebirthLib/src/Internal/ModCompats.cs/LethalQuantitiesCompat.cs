@@ -2,14 +2,12 @@ using System;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.CRMod.Converters;
 using LethalQuantities.Objects;
 using On.LethalQuantities.Patches;
 using UnityEngine;
 using TomlTypeConverter = On.BepInEx.Configuration.TomlTypeConverter;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal.ModCompats.cs;
 static class LethalQuantitiesCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(LethalQuantities.PluginInfo.PLUGIN_GUID);

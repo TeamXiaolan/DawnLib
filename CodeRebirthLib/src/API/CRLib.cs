@@ -1,5 +1,6 @@
 ﻿using System;
 using CodeRebirthLib.CRMod;
+using CodeRebirthLib.Internal;
 using DunGen;
 using UnityEngine;
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace CodeRebirthLib;
+namespace CodeRebirthLib.Internal;
 static class TerminalPredicatePatch
 {
     internal static void Init()
