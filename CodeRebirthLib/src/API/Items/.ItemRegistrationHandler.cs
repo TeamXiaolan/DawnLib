@@ -141,7 +141,7 @@ static class ItemRegistrationHandler
 
         foreach (var item in self.allItemsList.itemsList)
         {
-            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(item.itemName.Replace(" ", ""))?.GetValue(null);
+            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(item.itemName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
             if (key == null)
                 continue;
 
