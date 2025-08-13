@@ -96,7 +96,7 @@ public class ItemInfoBuilder
                     .Build();
             }
 
-            if (_infoNode == null)
+            if (_infoNode == null) // this can be null in vanilla, should we really be creating this?
             {
                 _infoNode = new TerminalNodeBuilder($"{_parentBuilder._item.itemName}InfoNode")
                     .SetDisplayText($"[No information about this object was found.]\n\n")

@@ -3,7 +3,7 @@ public sealed class CRShopItemInfo : ITerminalPurchase
 {
     public CRItemInfo ParentInfo { get; internal set; }
     
-    internal CRShopItemInfo(ITerminalPurchasePredicate predicate, TerminalNode infoNode, TerminalNode requestNode, TerminalNode receiptNode, int cost)
+    internal CRShopItemInfo(ITerminalPurchasePredicate predicate, TerminalNode? infoNode, TerminalNode requestNode, TerminalNode receiptNode, int cost)
     {
         PurchasePredicate = predicate;
         InfoNode = infoNode;
@@ -12,7 +12,7 @@ public sealed class CRShopItemInfo : ITerminalPurchase
         Cost = cost;
     }
     
-    public TerminalNode InfoNode { get; }
+    public TerminalNode? InfoNode { get; }
     public TerminalNode RequestNode { get; }
     public TerminalNode ReceiptNode { get; }
     public int Cost { get; }

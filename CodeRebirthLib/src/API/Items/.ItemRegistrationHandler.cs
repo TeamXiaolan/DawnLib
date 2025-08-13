@@ -76,7 +76,7 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
 
-        foreach (var terminalKeyword in terminalKeywords)
+        foreach (var terminalKeyword in terminalKeywords) // todo i probably shouldnt be modifying these
         {
             Debuggers.ReplaceThis?.Log($"TerminalKeyword.word for {terminalKeyword.name}: {terminalKeyword.word}");
             if (terminalKeyword.word.Equals("stun", StringComparison.OrdinalIgnoreCase))
@@ -101,7 +101,7 @@ static class ItemRegistrationHandler
         {
             TerminalNode? infoNode = null;
             TerminalNode requestNode = null!;
-            TerminalNode? receiptNode = null;
+            TerminalNode receiptNode = null!;
 
             Debuggers.ReplaceThis?.Log($"Processing {buyableItem.itemName}");
             string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
@@ -119,7 +119,7 @@ static class ItemRegistrationHandler
 
             if (infoNode == null)
             {
-                infoNode = new TerminalNodeBuilder($"{simplifiedItemName}InfoNode")
+                /*infoNode = new TerminalNodeBuilder($"{simplifiedItemName}InfoNode")
                     .SetDisplayText($"[No information about this object was found.]\n\n")
                     .SetClearPreviousText(true)
                     .SetMaxCharactersToType(25)
@@ -132,7 +132,7 @@ static class ItemRegistrationHandler
                 };
                 List<CompatibleNoun> newCompatibleNouns = infoKeyword.compatibleNouns.ToList();
                 newCompatibleNouns.Add(compatibleNounMissing);
-                infoKeyword.compatibleNouns = newCompatibleNouns.ToArray();
+                infoKeyword.compatibleNouns = newCompatibleNouns.ToArray();*/ //
             }
 
             foreach (var compatibleNouns in buyKeyword.compatibleNouns)
