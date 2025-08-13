@@ -65,7 +65,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.Enemy.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
 
-        //Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
+        Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
 
         AutoCRModHandler.AutoRegisterMods();
     }
