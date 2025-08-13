@@ -114,12 +114,12 @@ static class EnemyRegistrationHandler
                 .. level.DaytimeEnemies,
             ];
 
-            foreach (SpawnableEnemyWithRarity enemy in levelEnemies)
+            foreach (SpawnableEnemyWithRarity enemyWithRarity in levelEnemies)
             {
-                if (enemy.enemyType == null)
+                if (enemyWithRarity.enemyType == null)
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemy.enemyType.enemyName.Replace(" ", ""))?.GetValue(null);
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
                 if (key == null)
                     continue;
 
@@ -130,20 +130,20 @@ static class EnemyRegistrationHandler
                 WeightTableBuilder<CRMoonInfo> outsideWeightBuilder = new();
                 WeightTableBuilder<CRMoonInfo> daytimeWeightBuilder = new();
 
-                if (enemyInsideWeightBuilder.ContainsKey(enemy.enemyType))
+                if (enemyInsideWeightBuilder.ContainsKey(enemyWithRarity.enemyType))
                 {
-                    insideWeightBuilder = enemyInsideWeightBuilder[enemy.enemyType];
+                    insideWeightBuilder = enemyInsideWeightBuilder[enemyWithRarity.enemyType];
                 }
-                if (enemyOutsideWeightBuilder.ContainsKey(enemy.enemyType))
+                if (enemyOutsideWeightBuilder.ContainsKey(enemyWithRarity.enemyType))
                 {
-                    outsideWeightBuilder = enemyOutsideWeightBuilder[enemy.enemyType];
+                    outsideWeightBuilder = enemyOutsideWeightBuilder[enemyWithRarity.enemyType];
                 }
-                if (enemyDaytimeWeightBuilder.ContainsKey(enemy.enemyType))
+                if (enemyDaytimeWeightBuilder.ContainsKey(enemyWithRarity.enemyType))
                 {
-                    daytimeWeightBuilder = enemyDaytimeWeightBuilder[enemy.enemyType];
+                    daytimeWeightBuilder = enemyDaytimeWeightBuilder[enemyWithRarity.enemyType];
                 }
 
-                CREnemyInfo enemyInfo = new(key, enemy.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
+                CREnemyInfo enemyInfo = new(key, enemyWithRarity.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
                 LethalContent.Enemies.Register(enemyInfo);
             }
 

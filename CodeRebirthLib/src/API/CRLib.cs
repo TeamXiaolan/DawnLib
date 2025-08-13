@@ -35,14 +35,14 @@ public static class CRLib
 
     public static void DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
     {
-        TilesetInfoBuilder builder = new TilesetInfoBuilder(key, tileSet);
+        TilesetInfoBuilder builder = new(key, tileSet);
         callback(builder);
         LethalContent.TileSets.Register(builder.Build());
     }
 
     public static void DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
     {
-        MapObjectInfoBuilder builder = new MapObjectInfoBuilder(key, mapObject);
+        MapObjectInfoBuilder builder = new(key, mapObject);
         callback(builder);
         LethalContent.MapObjects.Register(builder.Build());
     }
@@ -56,7 +56,7 @@ public static class CRLib
 
     public static void DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
     {
-        ItemInfoBuilder builder = new ItemInfoBuilder(key, item);
+        ItemInfoBuilder builder = new(key, item);
         callback(builder);
         LethalContent.Items.Register(builder.Build());
     }

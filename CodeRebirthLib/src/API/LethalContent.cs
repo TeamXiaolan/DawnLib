@@ -12,6 +12,11 @@ public static class LethalContent
     public static Registry<CRWeatherInfo> Weathers = new();
 }
 
+public static class MapObjectKeys
+{
+
+}
+
 public static class WeatherKeys
 {
     public static readonly NamespacedKey<CRWeatherInfo> Rainy = NamespacedKey<CRWeatherInfo>.Vanilla("rainy");

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.Internal;
 using UnityEngine;
-using UnityEngine.ProBuilder;
 
 namespace CodeRebirthLib;
 
@@ -46,9 +45,7 @@ static class ItemRegistrationHandler
     {
         orig(self);
         if (LethalContent.Items.IsFrozen)
-        {
             return;
-        }
 
         Dictionary<Item, WeightTableBuilder<CRMoonInfo>> itemWeightBuilder = new();
         Dictionary<Item, CRShopItemInfo> itemsWithShopInfo = new();
@@ -67,7 +64,7 @@ static class ItemRegistrationHandler
             }
         }
 
-        Terminal terminal = GameObject.FindObjectOfType<Terminal>();
+        Terminal terminal = GameObject.FindObjectOfType<Terminal>(); // TODO switch this to smthn else
 
         TerminalKeyword buyKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
         TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
@@ -312,16 +309,6 @@ static class ItemRegistrationHandler
                 result = shopInfo.InfoNode
             });
             RoundManager.Instance.playersManager.allItemsList.itemsList.Add(itemInfo.Item);
-        }
-
-        // then, before freezing registry, add vanilla content
-        if (!LethalContent.Items.IsFrozen) // effectively check for a lobby reload
-        {
-            foreach (TerminalNode vanillaItemResultNode in buyKeyword.compatibleNouns.Select(it => it.result))
-            {
-                // todo
-                // ??? what's the goal here
-            }
         }
 
         // update terminal references to include new stuff

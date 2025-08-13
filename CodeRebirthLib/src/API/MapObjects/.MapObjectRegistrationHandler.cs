@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
@@ -14,6 +15,79 @@ static class MapObjectRegistrationHandler
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
         On.StartOfRound.Awake += RegisterMapObjects;
+        On.StartOfRound.Start += FreezeMapObjectContents;
+    }
+
+    private static void FreezeMapObjectContents(On.StartOfRound.orig_Start orig, StartOfRound self)
+    {
+        orig(self);
+        if (LethalContent.MapObjects.IsFrozen) // effectively check for a lobby reload
+            return;
+        // todo?
+
+        Dictionary<SpawnableMapObject, CurveTableBuilder<CRMoonInfo>> vanillaInsideWeights = new();
+        Dictionary<SpawnableOutsideObject, CurveTableBuilder<CRMoonInfo>> vanillaOutsideWeights = new();
+
+        foreach (var level in self.levels)
+        {
+            foreach (var mapObject in level.spawnableMapObjects)
+            {
+                if (mapObject.prefabToSpawn != null && !vanillaInsideWeights.ContainsKey(mapObject))
+                {
+                    vanillaInsideWeights.Add(mapObject, new CurveTableBuilder<CRMoonInfo>());
+                }
+                vanillaInsideWeights[mapObject].AddCurve(level.ToNamespacedKey(), mapObject.numberToSpawn);
+            }
+
+            foreach (var mapObject in level.spawnableOutsideObjects)
+            {
+                if (mapObject.spawnableObject.prefabToSpawn != null && !vanillaOutsideWeights.ContainsKey(mapObject.spawnableObject))
+                {
+                    vanillaOutsideWeights.Add(mapObject.spawnableObject, new CurveTableBuilder<CRMoonInfo>());
+                }
+                vanillaOutsideWeights[mapObject.spawnableObject].AddCurve(level.ToNamespacedKey(), mapObject.randomAmount);
+            }
+        }
+
+        Dictionary<GameObject, CRInsideMapObjectInfo> vanillaInsideMapObjectsDict = new();
+        Dictionary<GameObject, CROutsideMapObjectInfo> vanillaOutsideMapObjectsDict = new();
+
+        foreach (var mapObjectWithCurveTableDict in vanillaInsideWeights)
+        {
+            var spawnableMapObject = mapObjectWithCurveTableDict.Value.Build();
+            CRInsideMapObjectInfo insideMapObjectInfo = new(mapObjectWithCurveTableDict.Value.Build(), mapObjectWithCurveTableDict.Key.spawnFacingAwayFromWall, mapObjectWithCurveTableDict.Key.spawnFacingWall, mapObjectWithCurveTableDict.Key.spawnWithBackToWall, mapObjectWithCurveTableDict.Key.spawnWithBackFlushAgainstWall, mapObjectWithCurveTableDict.Key.requireDistanceBetweenSpawns, mapObjectWithCurveTableDict.Key.disallowSpawningNearEntrances);
+            vanillaInsideMapObjectsDict.Add(mapObjectWithCurveTableDict.Key.prefabToSpawn, insideMapObjectInfo);
+        }
+
+        foreach (var mapObjectWithCurveTableDict in vanillaOutsideWeights)
+        {
+            var spawnableMapObject = mapObjectWithCurveTableDict.Value.Build();
+            CROutsideMapObjectInfo outsideMapObjectInfo = new(mapObjectWithCurveTableDict.Value.Build(), false); // TODO, look into the align stuff? iunno
+            vanillaOutsideMapObjectsDict.Add(mapObjectWithCurveTableDict.Key.prefabToSpawn, outsideMapObjectInfo);
+        }
+
+        List<GameObject> vanillaMapObjects =
+        [
+            .. vanillaInsideWeights.Keys.Select(x => x.prefabToSpawn),
+            .. vanillaOutsideWeights.Keys.Select(x => x.prefabToSpawn)
+        ];
+
+        foreach (var mapObject in vanillaMapObjects)
+        {
+            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(mapObject.name.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
+            if (key == null)
+                continue;
+
+            if (LethalContent.MapObjects.ContainsKey(key))
+                continue;
+
+            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo? insideMapObjectInfo);
+            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo? outsideMapObjectInfo);
+
+            CRMapObjectInfo mapObjectInfo = new(key, mapObject, insideMapObjectInfo, outsideMapObjectInfo);
+            LethalContent.MapObjects.Register(mapObjectInfo);
+        }
+        LethalContent.MapObjects.Freeze();
     }
 
     private static void UpdateMapObjectSpawnWeights(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
@@ -33,6 +107,7 @@ static class MapObjectRegistrationHandler
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
+            // TODO how do i even register this shit if im not putting it inside vanilla fields??
             // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
     }
@@ -117,6 +192,7 @@ static class MapObjectRegistrationHandler
     {
         foreach (var level in self.levels)
         {
+            var newSpawnableMapObjects = level.spawnableMapObjects.ToList();
             foreach (var mapObjectInfo in LethalContent.MapObjects.Values) // TODO, do registration for outside map objects as well
             {
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla())
@@ -134,17 +210,11 @@ static class MapObjectRegistrationHandler
                     numberToSpawn = AnimationCurve.Constant(0, 1, 0) // todo: dynamiclly update 
                 };
 
-                level.spawnableMapObjects = level.spawnableMapObjects.Append(spawnableMapObject).ToArray();
+                newSpawnableMapObjects.Add(spawnableMapObject);
             }
-        }
 
-        // then, before freezing registry, add vanilla content
-        if (!LethalContent.MapObjects.IsFrozen) // effectively check for a lobby reload
-        {
-            // todo?
+            level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
         }
-
-        LethalContent.MapObjects.Freeze();
         orig(self);
     }
 }

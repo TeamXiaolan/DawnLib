@@ -72,7 +72,7 @@ public class ConfigManager(ConfigFile file)
             {
                 name = "modded";
             }
-            // Try appending "Level" to the name and re-attempt parsing
+
             spawnRateByMoonName[name] = entryParts[1];
             spawnRateByMoonName[name + "level"] = entryParts[1];
         }
