@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.Internal;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 namespace CodeRebirthLib;
 
@@ -99,7 +100,7 @@ static class ItemRegistrationHandler
         foreach (var buyableItem in terminal.buyableItemsList)
         {
             TerminalNode? infoNode = null;
-            TerminalNode? requestNode = null;
+            TerminalNode requestNode = null!;
             TerminalNode? receiptNode = null;
 
             Debuggers.ReplaceThis?.Log($"Processing {buyableItem.itemName}");
@@ -117,7 +118,21 @@ static class ItemRegistrationHandler
             }
 
             if (infoNode == null)
-            { // TODO CREATE IT
+            {
+                infoNode = new TerminalNodeBuilder($"{simplifiedItemName}InfoNode")
+                    .SetDisplayText($"[No information about this object was found.]\n\n")
+                    .SetClearPreviousText(true)
+                    .SetMaxCharactersToType(25)
+                    .Build();
+
+                var compatibleNounMissing = new CompatibleNoun()
+                {
+                    noun = buyKeywordOfSignificance,
+                    result = infoNode
+                };
+                List<CompatibleNoun> newCompatibleNouns = infoKeyword.compatibleNouns.ToList();
+                newCompatibleNouns.Add(compatibleNounMissing);
+                infoKeyword.compatibleNouns = newCompatibleNouns.ToArray();
             }
 
             foreach (var compatibleNouns in buyKeyword.compatibleNouns)
@@ -130,9 +145,38 @@ static class ItemRegistrationHandler
                 Debuggers.ReplaceThis?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
             }
 
-            if (requestNode == null)
-            { // TODO CREATE IT
-            }
+            /*if (requestNode == null) i dont think this can happen so commented out 
+            {
+                requestNode = new TerminalNodeBuilder($"{simplifiedItemName}RequestNode")
+                    .SetDisplayText($"You have requested to order {simplifiedItemName}. Amount: [variableAmount].\nTotal cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\r\n\r\n")
+                    .SetClearPreviousText(true)
+                    .SetMaxCharactersToType(35)
+                    .Build();
+
+                requestNode.buyItemIndex = newBuyableList.Count - 1;
+                requestNode.isConfirmationNode = true;
+                requestNode.overrideOptions = true;
+                requestNode.itemCost = shopInfo.Cost;
+                requestNode.terminalOptions =
+                [
+                    new CompatibleNoun()
+                    {
+                        noun = confirmPurchaseKeyword,
+                        result = receiptNode
+                    },
+                    new CompatibleNoun()
+                    {
+                        noun = denyPurchaseKeyword,
+                        result = cancelPurchaseNode
+                    }
+                ];
+
+                newBuyCompatibleNouns.Add(new CompatibleNoun()
+                {
+                    noun = buyItemKeyword,
+                    result = requestNode
+                });
+            }*/
 
             receiptNode = requestNode.terminalOptions[0].result;
             CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, buyableItem.creditsWorth);
