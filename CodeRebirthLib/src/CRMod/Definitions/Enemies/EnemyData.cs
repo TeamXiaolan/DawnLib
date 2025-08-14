@@ -4,7 +4,9 @@ namespace CodeRebirthLib.CRMod;
 [Serializable]
 public class EnemyData : EntityData<CREnemyReference>
 {
+    [Obsolete]
     public string spawnWeights; // to be gotten rid of
+    [Obsolete]
     public string weatherMultipliers; // to be gotten rid of
     public string moonSpawnWeights;
     public string interiorSpawnWeights;

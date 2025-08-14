@@ -12,7 +12,7 @@ public class AssetBundleData
 
     [field: SerializeField]
     [field: FormerlySerializedAs("keepLoaded")]
-    public bool AlwaysKeepLoaded { get; private set; } // TODO : make it automatic
+    public bool AlwaysKeepLoaded { get; private set; }
 
     public string configName;
     public List<WeatherData> weathers;

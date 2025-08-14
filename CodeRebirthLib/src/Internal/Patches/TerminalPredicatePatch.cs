@@ -18,7 +18,7 @@ static class TerminalPredicatePatch
                 .Select(it => it.ShopInfo!)
                 .FirstOrDefault(it => it.RequestNode.buyItemIndex == node.buyItemIndex);
 
-            if(shopItemInfo != null)
+            if (shopItemInfo != null)
                 predicate = shopItemInfo.PurchasePredicate;
         }
         if (node.shipUnlockableID != -1)

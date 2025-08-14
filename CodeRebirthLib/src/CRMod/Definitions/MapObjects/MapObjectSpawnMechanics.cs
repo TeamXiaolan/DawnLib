@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-public class MapObjectSpawnMechanics
+public class MapObjectSpawnMechanics : IProvider<AnimationCurve?, CRMoonInfo>
 {
     public MapObjectSpawnMechanics(string configString)
     {
@@ -69,5 +69,10 @@ public class MapObjectSpawnMechanics
         }
         Debuggers.MapObjects?.Log($"Failed to find curve for level: {level}");
         return AnimationCurve.Constant(0, 1, 0); // Default case if no curve matches
+    }
+
+    public AnimationCurve? Provide(CRMoonInfo info)
+    {
+        return CurveFunction(info.Level);
     }
 }

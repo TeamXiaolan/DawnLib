@@ -18,17 +18,16 @@ public struct GenericPath<T>(T generic, float pathLength)
 }
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a network behaviour, maybe just have the few rpc's be in a network manager instead
+public class SmartAgentNavigator : NetworkBehaviour
 {
-    [HideInInspector] public bool cantMove = false;
-    [HideInInspector] public UnityEvent<bool> OnUseEntranceTeleport = new();
-    [HideInInspector] public UnityEvent<bool> OnEnableOrDisableAgent = new();
-    [HideInInspector] public UnityEvent<bool> OnEnterOrExitElevator = new();
-    [HideInInspector] public EntranceTeleport? lastUsedEntranceTeleport = null;
+    public UnityEvent<bool> OnUseEntranceTeleport = new();
+    public UnityEvent<bool> OnEnableOrDisableAgent = new();
 
+    private EntranceTeleport? lastUsedEntranceTeleport = null;
     private Vector3 pointToGo = Vector3.zero;
     private Coroutine? searchRoutine = null;
 
+    private bool cantMove = false;
     private SmartPathTask? pathingTask = null;
     private SmartPathTask? checkPathsTask = null;
     private SmartPathTask? roamingTask = null;
@@ -80,6 +79,11 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
         _agentState = isOutside ? AgentState.Outside : AgentState.Inside;
     }
 
+    public void DisableMovement(bool disableMovement)
+    {
+        cantMove = disableMovement;
+    }
+
     private SmartPathfindingLinkFlags GetAllowedPathLinks()
     {
         return _allowedLinks;
@@ -91,7 +95,7 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
             return;
 
         agent.Warp(teleport.exitPoint.position);
-        SetThingOutsideServerRpc(new NetworkBehaviourReference(teleport));
+        SetSmartAgentOutsideServerRpc(new NetworkBehaviourReference(teleport));
     }
 
     public bool DoPathingToDestination(Vector3 destination)
@@ -343,13 +347,13 @@ public class SmartAgentNavigator : NetworkBehaviour // TODO: make this not a net
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SetThingOutsideServerRpc(NetworkBehaviourReference entranceTeleportReference)
+    public void SetSmartAgentOutsideServerRpc(NetworkBehaviourReference entranceTeleportReference)
     {
-        SetThingOutsideClientRpc(entranceTeleportReference);
+        SetSmartAgentOutsideClientRpc(entranceTeleportReference);
     }
 
     [ClientRpc]
-    public void SetThingOutsideClientRpc(NetworkBehaviourReference entranceTeleportReference)
+    public void SetSmartAgentOutsideClientRpc(NetworkBehaviourReference entranceTeleportReference)
     {
         lastUsedEntranceTeleport = (EntranceTeleport)entranceTeleportReference;
         _agentState = !lastUsedEntranceTeleport.isEntranceToBuilding ? AgentState.Outside : AgentState.Inside;

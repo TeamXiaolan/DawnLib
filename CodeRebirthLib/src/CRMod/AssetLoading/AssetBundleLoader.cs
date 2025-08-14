@@ -106,20 +106,22 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
         if (_hasVideoClips)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this from happening.");
+            CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this warning from happening, unloading stopped.");
             foreach (string videoClipName in _videoClipNames)
             {
                 Debuggers.AssetLoading?.Log($"VideoClip Name: {videoClipName}");
             }
+            return;
         }
 
         if (_hasNonPreloadAudioClips)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip.");
+            CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip, unloading stopped.");
             foreach (string audioClipName in _audioClipNames)
             {
                 Debuggers.AssetLoading?.Log($"AudioClip Name: {audioClipName}");
             }
+            return;
         }
 
         _bundle.Unload(false);

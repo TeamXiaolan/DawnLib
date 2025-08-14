@@ -4,8 +4,7 @@ using CodeRebirthLib.CRMod.Weights.Transformers;
 using CodeRebirthLib.Internal;
 using UnityEngine;
 
-namespace CodeRebirthLib.CRMod.Weights;
-// todo: better name
+namespace CodeRebirthLib.CRMod;
 public class SpawnWeightsPreset : IWeighted
 {
     [field: SerializeField]
@@ -27,7 +26,6 @@ public class SpawnWeightsPreset : IWeighted
         // `MoonName1:+10,MoonName2:-20,MoonName3:*1.5`
         // `InteriorName1:-10,InteriorName2:+10,InteriorName3:+300`
         // `WeatherName1:10,WeatherName2:*2.0,WeatherName3:*1.5`
-        // TODO differentiate between the different presets somehow in that one string and recreate all the transformers?
     }
 
     public int GetWeight()

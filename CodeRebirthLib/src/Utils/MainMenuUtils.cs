@@ -24,7 +24,7 @@ static class MenuUtils
 
         // wtf is going on down here
         List<GameObject> buttonsList = mainButtonsTransform.GetComponentsInChildren<Button>().Select(b => b.gameObject).ToList();
-        List<float> positions = buttonsList.Where(b => b != clonedButton).Select(b => b.transform as RectTransform).Select(t => t!.anchoredPosition.y).ToList(); // TODO combine the two select's
+        List<float> positions = buttonsList.Where(b => b != clonedButton).Select(b => ((RectTransform)b.transform).anchoredPosition.y).ToList();
         var offsets = positions.Zip(positions.Skip(1), (y1, y2) => Mathf.Abs(y2 - y1));
         float offset = offsets.Min();
 

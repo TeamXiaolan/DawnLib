@@ -25,11 +25,7 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData, CRMapObj
     [field: SerializeField]
     public OutsideMapObjectSettings OutsideMapObjectSettings { get; private set; }
 
-    public MapObjectSpawnMechanics? InsideSpawnMechanics { get; private set; }
-    public MapObjectSpawnMechanics? OutsideSpawnMechanics { get; private set; }
     public MapObjectConfig Config { get; private set; }
-
-    public bool HasNetworkObject { get; private set; }  // todo: migrate to outsidemapobjectsettings?
 
     protected override string EntityNameReference => MapObjectName;
 
@@ -38,30 +34,34 @@ public class CRMapObjectDefinition : CRContentDefinition<MapObjectData, CRMapObj
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMapObjectConfig(section, data, EntityNameReference);
 
-        HasNetworkObject = GameObject.GetComponent<NetworkObject>();
-
         CRLib.DefineMapObject(TypedKey, GameObject, builder =>
         {
-            builder.DefineInside(insideBuilder =>
+            if (Config.InsideHazard?.Value ?? data.isInsideHazard)
             {
-                insideBuilder.OverrideSpawnFacingWall(InsideMapObjectSettings.spawnFacingWall);
-                insideBuilder.OverrideSpawnFacingAwayFromWall(InsideMapObjectSettings.spawnFacingAwayFromWall);
-                insideBuilder.OverrideRequireDistanceBetweenSpawns(InsideMapObjectSettings.requireDistanceBetweenSpawns);
-                insideBuilder.OverrideDisallowSpawningNearEntrances(InsideMapObjectSettings.disallowSpawningNearEntrances);
-                insideBuilder.OverrideSpawnWithBackToWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
-                insideBuilder.OverrideSpawnWithBackFlushAgainstWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
-                insideBuilder.SetWeights(weightBuilder =>
+                MapObjectSpawnMechanics InsideSpawnMechanics = new(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
+                builder.DefineInside(insideBuilder =>
                 {
-
+                    insideBuilder.OverrideSpawnFacingWall(InsideMapObjectSettings.spawnFacingWall);
+                    insideBuilder.OverrideSpawnFacingAwayFromWall(InsideMapObjectSettings.spawnFacingAwayFromWall);
+                    insideBuilder.OverrideRequireDistanceBetweenSpawns(InsideMapObjectSettings.requireDistanceBetweenSpawns);
+                    insideBuilder.OverrideDisallowSpawningNearEntrances(InsideMapObjectSettings.disallowSpawningNearEntrances);
+                    insideBuilder.OverrideSpawnWithBackToWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
+                    insideBuilder.OverrideSpawnWithBackFlushAgainstWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
+                    insideBuilder.SetWeights(weightBuilder =>
+                    {
+                        weightBuilder.SetGlobalCurve(InsideSpawnMechanics);
+                    });
                 });
-            });
+            }
+
 
             builder.DefineOutside(outsideBuilder =>
             {
+                MapObjectSpawnMechanics OutsideSpawnMechanics = new(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
                 outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
                 outsideBuilder.SetWeights(weightBuilder =>
                 {
-
+                    weightBuilder.SetGlobalCurve(OutsideSpawnMechanics);
                 });
             });
         });

@@ -84,7 +84,6 @@ public class CREnemyDefinition : CRContentDefinition<EnemyData, CREnemyInfo>
     {
         return new EnemyConfig
         {
-            // todo, take the old weather and moon spawn weights and parse em into
             MoonSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Moon Weights", $"Preset moon weights for {enemyName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
             InteriorSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Interior Weights", $"Preset interior weights for {enemyName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
             WeatherSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Weather Weights", $"Preset weather weights for {enemyName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
