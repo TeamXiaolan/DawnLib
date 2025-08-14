@@ -100,6 +100,6 @@ public class UnlockableInfoBuilder
         }
 
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-        return new CRUnlockableItemInfo(_purchasePredicate, _key, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
+        return new CRUnlockableItemInfo(_purchasePredicate, _key, false, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
     }
 }

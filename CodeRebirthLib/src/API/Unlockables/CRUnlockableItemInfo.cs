@@ -1,8 +1,8 @@
 namespace CodeRebirthLib;
 
-public sealed class CRUnlockableItemInfo : INamespaced<CRUnlockableItemInfo>, ITerminalPurchase
+public sealed class CRUnlockableItemInfo : CRBaseInfo<CRUnlockableItemInfo>, ITerminalPurchase
 {
-    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem, int cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo)
+    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, bool isExternal, UnlockableItem unlockableItem, int cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo) : base(key, isExternal)
     {
         PurchasePredicate = predicate;
         UnlockableItem = unlockableItem;
@@ -11,7 +11,6 @@ public sealed class CRUnlockableItemInfo : INamespaced<CRUnlockableItemInfo>, IT
         PlaceableObjectInfo = placeableObjectInfo;
         if (PlaceableObjectInfo != null) PlaceableObjectInfo.ParentInfo = this;
         Cost = cost;
-        TypedKey = key;
     }
 
     public UnlockableItem UnlockableItem { get; }
@@ -19,6 +18,4 @@ public sealed class CRUnlockableItemInfo : INamespaced<CRUnlockableItemInfo>, IT
     public ITerminalPurchasePredicate PurchasePredicate { get; }
     public CRSuitInfo? SuitInfo { get; }
     public CRPlaceableObjectInfo? PlaceableObjectInfo { get; }
-    public NamespacedKey Key => TypedKey;
-    public NamespacedKey<CRUnlockableItemInfo> TypedKey { get; }
 }

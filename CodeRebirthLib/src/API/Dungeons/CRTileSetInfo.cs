@@ -2,20 +2,17 @@
 using DunGen;
 
 namespace CodeRebirthLib;
-public class CRTileSetInfo : INamespaced<CRTileSetInfo>
+public class CRTileSetInfo : CRBaseInfo<CRTileSetInfo>
 {
-    internal CRTileSetInfo(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, IReadOnlyList<NamespacedKey<CRDungeonInfo>> appliedTo, bool isBranchCap, bool isRegular)
+    internal CRTileSetInfo(NamespacedKey<CRTileSetInfo> key, bool isExternal, TileSet tileSet, IReadOnlyList<NamespacedKey<CRDungeonInfo>> appliedTo, bool isBranchCap, bool isRegular) : base(key, isExternal)
     {
-        AppliedTo = appliedTo;
-        TypedKey = key;
         TileSet = tileSet;
+        AppliedTo = appliedTo;
         IsBranchCap = isBranchCap;
         IsRegular = isRegular;
     }
 
     public TileSet TileSet { get; }
-    public NamespacedKey Key => TypedKey;
-    public NamespacedKey<CRTileSetInfo> TypedKey { get; }
     public IReadOnlyList<NamespacedKey<CRDungeonInfo>> AppliedTo { get; }
 
     public bool IsBranchCap { get; }

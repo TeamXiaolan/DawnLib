@@ -33,7 +33,7 @@ static class UnlockableRegistrationHandler
         foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
             CRPlaceableObjectInfo? placeableObjectInfo = unlockableInfo.PlaceableObjectInfo;
-            if (placeableObjectInfo == null || unlockableInfo.Key.IsVanilla())
+            if (placeableObjectInfo == null || unlockableInfo.Key.IsVanilla() || unlockableInfo.IsExternal)
                 continue; // also ensure not to register vanilla stuff again
 
             StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);

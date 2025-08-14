@@ -29,22 +29,22 @@ static class EnemyRegistrationHandler
     {
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.Key.IsVanilla())
+            if (enemyInfo.Key.IsVanilla() || enemyInfo.IsExternal)
                 continue;
 
             if (enemyInfo.OutsideWeights != null)
             {
-                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.Enemy).First().rarity = enemyInfo.OutsideWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.OutsideWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
             }
 
             if (enemyInfo.InsideWeights != null)
             {
-                level.Enemies.Where(x => x.enemyType == enemyInfo.Enemy).First().rarity = enemyInfo.InsideWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.Enemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.InsideWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
             }
 
             if (enemyInfo.DaytimeWeights != null)
             {
-                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.Enemy).First().rarity = enemyInfo.DaytimeWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.DaytimeWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
             }
         }
     }
@@ -170,7 +170,7 @@ static class EnemyRegistrationHandler
     {
         SpawnableEnemyWithRarity spawnDef = new()
         {
-            enemyType = enemyInfo.Enemy,
+            enemyType = enemyInfo.EnemyType,
             rarity = 0
         };
         list.Add(spawnDef);

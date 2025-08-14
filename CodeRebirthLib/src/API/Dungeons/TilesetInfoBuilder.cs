@@ -31,6 +31,6 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 
     override internal CRTileSetInfo Build()
     {
-        return new CRTileSetInfo(_key, _value, _appliedTo, _branchCap, _regular);
+        return new CRTileSetInfo(_key, false, _value, _appliedTo, _branchCap, _regular);
     }
 }

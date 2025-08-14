@@ -1,19 +1,18 @@
 using System;
-using Unity.Burst;
 
 namespace CodeRebirthLib;
 
 public class EnemyInfoBuilder
 {
     private NamespacedKey<CREnemyInfo> _key;
-    private EnemyType _enemy;
+    private EnemyType _enemyType;
 
     private ProviderTable<int?, CRMoonInfo>? _insideWeights, _outsideWeights, _daytimeWeights;
 
-    internal EnemyInfoBuilder(NamespacedKey<CREnemyInfo> key, EnemyType enemy)
+    internal EnemyInfoBuilder(NamespacedKey<CREnemyInfo> key, EnemyType enemyType)
     {
         _key = key;
-        _enemy = enemy;
+        _enemyType = enemyType;
     }
 
     public EnemyInfoBuilder DefineOutside(Action<WeightTableBuilder<CRMoonInfo>> callback)
@@ -42,6 +41,6 @@ public class EnemyInfoBuilder
 
     internal CREnemyInfo Build()
     {
-        return new CREnemyInfo(_key, false, _enemy, _outsideWeights, _insideWeights, _daytimeWeights);
+        return new CREnemyInfo(_key, false, _enemyType, _outsideWeights, _insideWeights, _daytimeWeights);
     }
 }

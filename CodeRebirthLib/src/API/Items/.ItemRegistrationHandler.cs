@@ -34,7 +34,7 @@ static class ItemRegistrationHandler
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.Key.IsVanilla())
+            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.IsExternal)
                 continue;
 
             level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;

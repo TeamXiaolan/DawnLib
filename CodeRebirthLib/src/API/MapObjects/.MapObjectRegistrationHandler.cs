@@ -180,7 +180,7 @@ static class MapObjectRegistrationHandler
         foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var insideInfo = mapObjectInfo.InsideInfo;
-            if (insideInfo == null || mapObjectInfo.Key.IsVanilla())
+            if (insideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.IsExternal)
                 continue;
 
             level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]);
