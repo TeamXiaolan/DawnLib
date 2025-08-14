@@ -84,7 +84,7 @@ static class MapObjectRegistrationHandler
             vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo? insideMapObjectInfo);
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo? outsideMapObjectInfo);
 
-            CRMapObjectInfo mapObjectInfo = new(key, mapObject, insideMapObjectInfo, outsideMapObjectInfo);
+            CRMapObjectInfo mapObjectInfo = new(key, true, mapObject, insideMapObjectInfo, outsideMapObjectInfo);
             LethalContent.MapObjects.Register(mapObjectInfo);
         }
         LethalContent.MapObjects.Freeze();
@@ -103,7 +103,7 @@ static class MapObjectRegistrationHandler
         foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla())
+            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.IsExternal)
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);

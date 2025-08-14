@@ -198,7 +198,7 @@ static class ItemRegistrationHandler
                 scrapInfo = new(weightTableBuilder.Build());
             }
 
-            CRItemInfo itemInfo = new(key, item, scrapInfo, shopInfo);
+            CRItemInfo itemInfo = new(key, true, item, scrapInfo, shopInfo);
             LethalContent.Items.Register(itemInfo);
         }
         LethalContent.Items.Freeze();

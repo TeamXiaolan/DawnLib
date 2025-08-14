@@ -3,16 +3,15 @@ using UnityEngine;
 
 namespace CodeRebirthLib;
 
-public sealed class CRMapObjectInfo : INamespaced<CRMapObjectInfo>
+public sealed class CRMapObjectInfo : CRBaseInfo<CRMapObjectInfo>
 {
-    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo)
+    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, bool isExternal, GameObject mapObject, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo) : base(key, isExternal)
     {
         MapObject = mapObject;
         InsideInfo = insideInfo;
         if (InsideInfo != null) InsideInfo.ParentInfo = this;
         OutsideInfo = outsideInfo;
         if (OutsideInfo != null) OutsideInfo.ParentInfo = this;
-        TypedKey = key;
         HasNetworkObject = mapObject.GetComponent<NetworkObject>() != null;
     }
     
@@ -20,6 +19,4 @@ public sealed class CRMapObjectInfo : INamespaced<CRMapObjectInfo>
     public CRInsideMapObjectInfo? InsideInfo { get; }
     public CROutsideMapObjectInfo? OutsideInfo { get; }
     public bool HasNetworkObject { get; }
-    public NamespacedKey Key => TypedKey;
-    public NamespacedKey<CRMapObjectInfo> TypedKey { get; }
 }

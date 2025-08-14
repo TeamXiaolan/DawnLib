@@ -140,6 +140,6 @@ public class ItemInfoBuilder
 
     internal CRItemInfo Build()
     {
-        return new CRItemInfo(_key, _item, _scrapInfo, _shopInfo);
+        return new CRItemInfo(_key, false, _item, _scrapInfo, _shopInfo);
     }
 }

@@ -1,11 +1,10 @@
 namespace CodeRebirthLib;
 
-public sealed class CREnemyInfo : INamespaced<CREnemyInfo>
+public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
 {
-    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, EnemyType enemy, ProviderTable<int?, CRMoonInfo>? outsideWeights, ProviderTable<int?, CRMoonInfo>? insideWeights, ProviderTable<int?, CRMoonInfo>? daytimeWeights)
+    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, bool isExternal, EnemyType enemy, ProviderTable<int?, CRMoonInfo>? outsideWeights, ProviderTable<int?, CRMoonInfo>? insideWeights, ProviderTable<int?, CRMoonInfo>? daytimeWeights) : base(key, isExternal)
     {
         Enemy = enemy;
-        TypedKey = key;
         OutsideWeights = outsideWeights;
         InsideWeights = insideWeights;
         DaytimeWeights = daytimeWeights;
@@ -16,7 +15,4 @@ public sealed class CREnemyInfo : INamespaced<CREnemyInfo>
     public ProviderTable<int?, CRMoonInfo>? OutsideWeights { get; }
     public ProviderTable<int?, CRMoonInfo>? InsideWeights { get; }
     public ProviderTable<int?, CRMoonInfo>? DaytimeWeights { get; }
-    
-    public NamespacedKey Key => TypedKey;
-    public NamespacedKey<CREnemyInfo> TypedKey { get; }
 }

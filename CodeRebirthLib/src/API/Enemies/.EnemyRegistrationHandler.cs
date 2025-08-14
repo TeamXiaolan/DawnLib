@@ -143,7 +143,7 @@ static class EnemyRegistrationHandler
                     daytimeWeightBuilder = enemyDaytimeWeightBuilder[enemyWithRarity.enemyType];
                 }
 
-                CREnemyInfo enemyInfo = new(key, enemyWithRarity.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
+                CREnemyInfo enemyInfo = new(key, true, enemyWithRarity.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
                 LethalContent.Enemies.Register(enemyInfo);
             }
 

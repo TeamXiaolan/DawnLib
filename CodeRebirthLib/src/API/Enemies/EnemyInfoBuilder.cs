@@ -42,6 +42,6 @@ public class EnemyInfoBuilder
     
     internal CREnemyInfo Build()
     {
-        return new CREnemyInfo(_key, _enemy, _outsideWeights, _insideWeights, _daytimeWeights);
+        return new CREnemyInfo(_key, false, _enemy, _outsideWeights, _insideWeights, _daytimeWeights);
     }
 }

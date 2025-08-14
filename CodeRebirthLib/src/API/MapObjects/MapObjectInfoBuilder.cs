@@ -142,6 +142,6 @@ public class MapObjectInfoBuilder
     
     internal CRMapObjectInfo Build()
     {
-        return new CRMapObjectInfo(_key, _mapObject, _insideInfo, _outsideInfo);
+        return new CRMapObjectInfo(_key, false, _mapObject, _insideInfo, _outsideInfo);
     }
 }
