@@ -14,7 +14,7 @@ static class ItemRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.StartOfRound.Awake += RegisterScrapItems;
         On.Terminal.Awake += RegisterShopItems;
-        On.StartOfRound.Start += FreezeItemContent;
+        On.Terminal.Start += FreezeItemContent;
     }
 
     private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
@@ -41,7 +41,7 @@ static class ItemRegistrationHandler
         }
     }
 
-    private static void FreezeItemContent(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void FreezeItemContent(On.Terminal.orig_Start orig, Terminal self)
     {
         orig(self);
         if (LethalContent.Items.IsFrozen)
@@ -49,7 +49,7 @@ static class ItemRegistrationHandler
 
         Dictionary<Item, WeightTableBuilder<CRMoonInfo>> itemWeightBuilder = new();
         Dictionary<Item, CRShopItemInfo> itemsWithShopInfo = new();
-        foreach (var level in self.levels)
+        foreach (var level in StartOfRound.Instance.levels)
         {
             NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
 
@@ -64,37 +64,20 @@ static class ItemRegistrationHandler
             }
         }
 
-        Terminal terminal = GameObject.FindObjectOfType<Terminal>(); // TODO switch this to smthn else
-
-        TerminalKeyword buyKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
-        TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
+        TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
+        TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
 
         List<CompatibleNoun> buyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
-        List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
+        List<TerminalKeyword> terminalKeywords = self.terminalNodes.allKeywords.ToList();
 
-        foreach (var terminalKeyword in terminalKeywords) // todo i probably shouldnt be modifying these
+        foreach (var terminalKeyword in terminalKeywords)
         {
             Debuggers.Items?.Log($"TerminalKeyword.word for {terminalKeyword.name}: {terminalKeyword.word}");
-            if (terminalKeyword.word.Equals("stun", StringComparison.OrdinalIgnoreCase))
-            {
-                terminalKeyword.word = "stun-grenade";
-            }
-            else if (terminalKeyword.word.Equals("tzp", StringComparison.OrdinalIgnoreCase))
-            {
-                terminalKeyword.word = "tzp-inhalant";
-            }
-            else if (terminalKeyword.word.Equals("radar", StringComparison.OrdinalIgnoreCase))
-            {
-                terminalKeyword.word = "radar-booster";
-            }
-            else
-            {
-                terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
-            }
+            terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
         }
 
-        foreach (var buyableItem in terminal.buyableItemsList)
+        foreach (var buyableItem in self.buyableItemsList)
         {
             TerminalNode? infoNode = null;
             TerminalNode requestNode = null!;
@@ -102,6 +85,18 @@ static class ItemRegistrationHandler
 
             Debuggers.Items?.Log($"Processing {buyableItem.itemName}");
             string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
+            if (simplifiedItemName.Equals("stun-grenade"))
+            {
+                simplifiedItemName = "stun";
+            }
+            else if (simplifiedItemName.Equals("tzp-inhalant"))
+            {
+                simplifiedItemName = "tzp";
+            }
+            else if (simplifiedItemName.Equals("radar-booster"))
+            {
+                simplifiedItemName = "radar";
+            }
             TerminalKeyword buyKeywordOfSignificance = terminalKeywords.First(keyword => keyword.word == simplifiedItemName);
 
             foreach (var compatibleNouns in infoKeyword.compatibleNouns)
@@ -142,45 +137,12 @@ static class ItemRegistrationHandler
                 Debuggers.Items?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
             }
 
-            /*if (requestNode == null) i dont think this can happen so commented out 
-            {
-                requestNode = new TerminalNodeBuilder($"{simplifiedItemName}RequestNode")
-                    .SetDisplayText($"You have requested to order {simplifiedItemName}. Amount: [variableAmount].\nTotal cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\r\n\r\n")
-                    .SetClearPreviousText(true)
-                    .SetMaxCharactersToType(35)
-                    .Build();
-
-                requestNode.buyItemIndex = newBuyableList.Count - 1;
-                requestNode.isConfirmationNode = true;
-                requestNode.overrideOptions = true;
-                requestNode.itemCost = shopInfo.Cost;
-                requestNode.terminalOptions =
-                [
-                    new CompatibleNoun()
-                    {
-                        noun = confirmPurchaseKeyword,
-                        result = receiptNode
-                    },
-                    new CompatibleNoun()
-                    {
-                        noun = denyPurchaseKeyword,
-                        result = cancelPurchaseNode
-                    }
-                ];
-
-                newBuyCompatibleNouns.Add(new CompatibleNoun()
-                {
-                    noun = buyItemKeyword,
-                    result = requestNode
-                });
-            }*/
-
             receiptNode = requestNode.terminalOptions[0].result;
             CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, buyableItem.creditsWorth);
             itemsWithShopInfo[buyableItem] = shopInfo;
         }
 
-        foreach (var item in self.allItemsList.itemsList)
+        foreach (var item in StartOfRound.Instance.allItemsList.itemsList)
         {
             NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(item.itemName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
             if (key == null)
@@ -224,7 +186,7 @@ static class ItemRegistrationHandler
                 SpawnableItemWithRarity spawnDef = new()
                 {
                     spawnableItem = itemInfo.Item,
-                    rarity = 0 // todo: dynamic update
+                    rarity = 0
                 };
                 level.spawnableScrap.Add(spawnDef);
                 self.allItemsList.itemsList.Add(itemInfo.Item);

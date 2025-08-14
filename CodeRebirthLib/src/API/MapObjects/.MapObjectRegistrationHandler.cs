@@ -23,7 +23,6 @@ static class MapObjectRegistrationHandler
         orig(self);
         if (LethalContent.MapObjects.IsFrozen) // effectively check for a lobby reload
             return;
-        // todo?
 
         Dictionary<SpawnableMapObject, CurveTableBuilder<CRMoonInfo>> vanillaInsideWeights = new();
         Dictionary<SpawnableOutsideObject, CurveTableBuilder<CRMoonInfo>> vanillaOutsideWeights = new();
@@ -103,7 +102,7 @@ static class MapObjectRegistrationHandler
         foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.IsExternal)
+            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla())
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
@@ -178,7 +177,7 @@ static class MapObjectRegistrationHandler
 
     internal static void UpdateInsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
     {
-        foreach (var mapObjectInfo in LethalContent.MapObjects.Values) // TODO, do registration for outside map objects as well
+        foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var insideInfo = mapObjectInfo.InsideInfo;
             if (insideInfo == null || mapObjectInfo.Key.IsVanilla())
@@ -193,7 +192,7 @@ static class MapObjectRegistrationHandler
         foreach (var level in self.levels)
         {
             var newSpawnableMapObjects = level.spawnableMapObjects.ToList();
-            foreach (var mapObjectInfo in LethalContent.MapObjects.Values) // TODO, do registration for outside map objects as well
+            foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
             {
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla())
                     continue;
@@ -207,7 +206,7 @@ static class MapObjectRegistrationHandler
                     spawnWithBackToWall = mapObjectInfo.InsideInfo.SpawnWithBackToWall,
                     requireDistanceBetweenSpawns = mapObjectInfo.InsideInfo.RequireDistanceBetweenSpawns,
                     disallowSpawningNearEntrances = mapObjectInfo.InsideInfo.DisallowSpawningNearEntrances,
-                    numberToSpawn = AnimationCurve.Constant(0, 1, 0) // todo: dynamiclly update 
+                    numberToSpawn = AnimationCurve.Constant(0, 1, 0)
                 };
 
                 newSpawnableMapObjects.Add(spawnableMapObject);
