@@ -23,7 +23,9 @@ public class SmartAgentNavigator : NetworkBehaviour
     public UnityEvent<bool> OnUseEntranceTeleport = new();
     public UnityEvent<bool> OnEnableOrDisableAgent = new();
 
-    private EntranceTeleport? lastUsedEntranceTeleport = null;
+    [HideInInspector]
+    public EntranceTeleport? lastUsedEntranceTeleport = null;
+
     private Vector3 pointToGo = Vector3.zero;
     private Coroutine? searchRoutine = null;
 

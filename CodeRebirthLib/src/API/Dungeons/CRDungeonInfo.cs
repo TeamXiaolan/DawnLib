@@ -3,13 +3,13 @@
 namespace CodeRebirthLib;
 public class CRDungeonInfo : INamespaced<CRDungeonInfo>, ITaggable
 {
-    internal CRDungeonInfo(NamespacedKey<CRDungeonInfo> key, DungeonFlow flow)
+    internal CRDungeonInfo(NamespacedKey<CRDungeonInfo> key, DungeonFlow dungeonFlow)
     {
         TypedKey = key;
-        Flow = flow;
+        DungeonFlow = dungeonFlow;
     }
 
-    public DungeonFlow Flow { get; }
+    public DungeonFlow DungeonFlow { get; }
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<CRDungeonInfo> TypedKey { get; }
 

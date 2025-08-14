@@ -63,8 +63,14 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         MiscFixesPatch.Init();
         SaveDataPatch.Init();
 
-        DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.Enemy.enemyName);
+        DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
+        DebugPrintRegistryResult("Items", LethalContent.Items, itemInfo => itemInfo.Item.itemName);
+        DebugPrintRegistryResult("Unlockables", LethalContent.Unlockables, unlockableInfo => unlockableInfo.UnlockableItem.unlockableName);
+        DebugPrintRegistryResult("MapObjects", LethalContent.MapObjects, mapObjectInfo => mapObjectInfo.MapObject.name);
+        // DebugPrintRegistryResult("Weathers", LethalContent.Weathers, weatherInfo => weatherInfo);
+        DebugPrintRegistryResult("AdditionalTiles", LethalContent.TileSets, additionalTileInfo => additionalTileInfo.TileSet.name);
+        DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
 
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
 
