@@ -3,7 +3,7 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRUnlockableReference : CRContentReference<CRItemDefinition, CRUnlockableItemInfo>
+public class CRUnlockableReference : CRContentReference<CRUnlockableDefinition, CRUnlockableItemInfo>
 {
     public CRUnlockableReference() : base()
     { }

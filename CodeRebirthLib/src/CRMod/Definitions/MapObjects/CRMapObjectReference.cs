@@ -3,7 +3,7 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRMapObjectReference : CRContentReference<CRItemDefinition, CRMapObjectInfo>
+public class CRMapObjectReference : CRContentReference<CRMapObjectDefinition, CRMapObjectInfo>
 {
     public CRMapObjectReference() : base()
     { }

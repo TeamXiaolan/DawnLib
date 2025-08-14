@@ -3,7 +3,7 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRWeatherReference : CRContentReference<CRItemDefinition, CRWeatherInfo>
+public class CRWeatherReference : CRContentReference<CRWeatherDefinition, CRWeatherInfo>
 {
     public CRWeatherReference() : base()
     { }

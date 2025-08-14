@@ -2,7 +2,7 @@ using System;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class WeatherData : EntityData<CRContentReference<CRWeatherDefinition, CRWeatherInfo>>
+public class WeatherData : EntityData<CRWeatherReference>
 {
     public int spawnWeight;
     public float scrapMultiplier;

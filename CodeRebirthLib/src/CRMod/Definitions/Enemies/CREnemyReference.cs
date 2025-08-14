@@ -3,7 +3,7 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CREnemyReference : CRContentReference<CRItemDefinition, CREnemyInfo>
+public class CREnemyReference : CRContentReference<CREnemyDefinition, CREnemyInfo>
 {
     public CREnemyReference() : base()
     { }

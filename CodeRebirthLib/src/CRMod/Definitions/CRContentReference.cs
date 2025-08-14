@@ -5,7 +5,9 @@ namespace CodeRebirthLib.CRMod;
 public abstract class CRContentReference
 {
     public abstract Type Type { get; }
-    public abstract NamespacedKey Key { get; }
+    public abstract NamespacedKey Key { get; protected set; }
+
+    private string assetGUID;
 }
 
 [Serializable]
@@ -13,15 +15,15 @@ public abstract class CRContentReference<TDef, TInfo> : CRContentReference where
 {
     public CRContentReference()
     {
-        TypedKey = NamespacedKey<TInfo>.From("", "");
+        Key = NamespacedKey<TInfo>.From("", "");
     }
     protected CRContentReference(NamespacedKey<TInfo> key)
     {
-        TypedKey = key;
+        Key = key;
     }
 
-    public NamespacedKey<TInfo> TypedKey { get; private set; }
-    public override NamespacedKey Key => TypedKey;
+    public NamespacedKey<TInfo> TypedKey => Key.AsTyped<TInfo>();
+    public override NamespacedKey Key { get; protected set; }
     public override Type Type => typeof(TInfo);
 
     public abstract bool TryResolve(out TInfo info);
