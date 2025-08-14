@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CodeRebirthLib.CRMod.Weights.Transformers;
+namespace CodeRebirthLib.CRMod;
 
 [Serializable]
 public class WeatherWeightTransformer : WeightTransformer

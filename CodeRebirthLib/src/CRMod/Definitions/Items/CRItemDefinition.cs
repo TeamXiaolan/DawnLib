@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
-using CodeRebirthLib.CRMod.Weights;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
 using UnityEngine;
