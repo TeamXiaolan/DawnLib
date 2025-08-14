@@ -3,11 +3,11 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRUnlockableReference : CRContentReference<CRUnlockableDefinition, CRUnlockableItemInfo>
+public class CRMUnlockableReference : CRMContentReference<CRMUnlockableDefinition, CRUnlockableItemInfo>
 {
-    public CRUnlockableReference() : base()
+    public CRMUnlockableReference() : base()
     { }
-    public CRUnlockableReference(NamespacedKey<CRUnlockableItemInfo> key) : base(key)
+    public CRMUnlockableReference(NamespacedKey<CRUnlockableItemInfo> key) : base(key)
     { }
     public override bool TryResolve(out CRUnlockableItemInfo info)
     {

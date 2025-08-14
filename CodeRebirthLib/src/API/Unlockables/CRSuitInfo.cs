@@ -6,5 +6,5 @@ public sealed class CRSuitInfo
     internal CRSuitInfo()
     {
     }
-    
+
 }

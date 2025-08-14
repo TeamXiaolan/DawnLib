@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Definitions/Item Definition")]
-public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
+public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
 {
     public const string REGISTRY_ID = "items";
 
@@ -101,7 +101,7 @@ public class CRItemDefinition : CRContentDefinition<ItemData, CRItemInfo>
             IsProgressive = data.generateProgressiveConfig ? context.Bind($"{itemName} | Is Progressive", $"Whether {itemName} is considered a progressive purchase.", data.isProgressive) : null,
             Worth = isScrapItem?.Value ?? data.isScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
             IsShopItem = isShopItem,
-            
+
             Cost = isShopItem?.Value ?? data.isShopItem ? context.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
         };
     }

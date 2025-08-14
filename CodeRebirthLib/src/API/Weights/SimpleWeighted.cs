@@ -16,14 +16,16 @@ public class SimpleProvider<T, TBase>(T value) : IProvider<T, TBase> where TBase
 }
 public class MatchingKeyProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
 {
-    public T? Provide(TBase info) {
+    public T? Provide(TBase info)
+    {
         return Equals(targetKey) ? value : default;
     }
 }
 
 public class HasTagProvider<T, TBase>(NamespacedKey tag, T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
 {
-    public T? Provide(TBase info) {
+    public T? Provide(TBase info)
+    {
         if (info is not ITaggable taggable) return default;
         if (!taggable.HasTag(tag)) return default;
         return value;

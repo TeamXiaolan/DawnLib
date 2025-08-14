@@ -15,7 +15,7 @@ public enum SpawnTable
 }
 
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Definitions/Enemy Definition")]
-public class CREnemyDefinition : CRContentDefinition<EnemyData, CREnemyInfo>
+public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
 {
     public const string REGISTRY_ID = "enemies";
 

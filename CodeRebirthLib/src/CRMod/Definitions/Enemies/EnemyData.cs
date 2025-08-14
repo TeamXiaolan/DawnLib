@@ -2,7 +2,7 @@ using System;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class EnemyData : EntityData<CREnemyReference>
+public class EnemyData : EntityData<CRMEnemyReference>
 {
     [Obsolete]
     public string spawnWeights; // to be gotten rid of

@@ -2,7 +2,7 @@ using System;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class ItemData : EntityData<CRItemReference>
+public class ItemData : EntityData<CRMItemReference>
 {
     public string spawnWeights; // keep this here temporarily or somehow port stuff over from it?
     public string moonSpawnWeights;

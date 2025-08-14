@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
-public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlockableItemInfo>
+public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUnlockableItemInfo>
 {
     public const string REGISTRY_ID = "unlockables";
 
@@ -26,21 +26,22 @@ public class CRUnlockableDefinition : CRContentDefinition<UnlockableData, CRUnlo
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateUnlockableConfig(section, data, UnlockableItem.unlockableName);
 
-        if (Config.IsShipUpgrade.Value)
-        {
-            UnlockableItem.alwaysInStock = true;
-        }
-        else if (Config.IsDecor.Value)
-        {
-            UnlockableItem.alwaysInStock = false;
-        }
-
         CRLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
             builder.SetCost(Config.Cost.Value);
             builder.DefineShop(shopBuilder =>
             {
                 shopBuilder.Build();
+                if (Config.IsShipUpgrade?.Value ?? data.isShipUpgrade)
+                {
+                    Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Ship Upgrade");
+                    shopBuilder.SetShipUpgrade();
+                }
+                else if (Config.IsDecor?.Value ?? data.isDecor)
+                {
+                    Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Decor");
+                    shopBuilder.SetDecor();
+                }
             });
 
             if (Config.IsProgressive?.Value ?? data.isProgressive)

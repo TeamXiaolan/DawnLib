@@ -56,7 +56,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < expectedOrder.Length; i++)
         {
             uint unlockableNetworkId = expectedOrder[i];
-            CRUnlockableDefinition? definition = ProgressiveUnlockableHandler.AllProgressiveUnlockables.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; })?.Definition;
+            CRMUnlockableDefinition? definition = ProgressiveUnlockableHandler.AllProgressiveUnlockables.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; })?.Definition;
             if (definition)
             {
                 values[i] = definition.ProgressiveData!.IsUnlocked;
@@ -82,10 +82,10 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     [ClientRpc]
     private void ProgressiveUnlockableStateResponseClientRpc(bool[] states, ClientRpcParams rpcParams = default)
     {
-        CRUnlockableDefinition[] definitions = ProgressiveUnlockableHandler.AllProgressiveUnlockables.Select(it => it.Definition).ToArray();
+        CRMUnlockableDefinition[] definitions = ProgressiveUnlockableHandler.AllProgressiveUnlockables.Select(it => it.Definition).ToArray();
         for (int i = 0; i < definitions.Length; i++)
         {
-            CRUnlockableDefinition definition = definitions[i];
+            CRMUnlockableDefinition definition = definitions[i];
             Debuggers.Progressive?.Log($"setting state of {definition.UnlockableItem.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
             definition.ProgressiveData!.SetFromServer(states[i]);
         }

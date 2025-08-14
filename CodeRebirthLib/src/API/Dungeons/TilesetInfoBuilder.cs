@@ -6,7 +6,7 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 {
     private List<NamespacedKey<CRDungeonInfo>> _appliedTo = [];
     private bool _branchCap, _regular = true;
-    
+
     internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
     {
     }
@@ -22,13 +22,13 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
         _branchCap = value;
         return this;
     }
-    
+
     public TilesetInfoBuilder SetIsRegular(bool value)
     {
         _regular = value;
         return this;
     }
-    
+
     override internal CRTileSetInfo Build()
     {
         return new CRTileSetInfo(_key, _value, _appliedTo, _branchCap, _regular);

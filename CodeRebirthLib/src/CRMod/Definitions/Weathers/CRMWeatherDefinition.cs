@@ -7,7 +7,7 @@ using WeatherRegistry.Modules;
 
 namespace CodeRebirthLib.CRMod;
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Definitions/Weather Definition")]
-public class CRWeatherDefinition : CRContentDefinition<WeatherData, CRWeatherInfo>
+public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherInfo>
 {
     public const string REGISTRY_ID = "weathers";
 

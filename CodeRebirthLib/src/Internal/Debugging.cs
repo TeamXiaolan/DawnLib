@@ -14,7 +14,7 @@ internal static class Debuggers
     internal static DebugLogSource? AssetLoading;
     internal static DebugLogSource? Weights;
     internal static DebugLogSource? Achievements;
-    internal static DebugLogSource? CRContentDefinition;
+    internal static DebugLogSource? CRMContentDefinition;
     internal static DebugLogSource? Progressive;
     internal static DebugLogSource? ExtendedTOML;
     internal static DebugLogSource? LethalConfig;
@@ -40,8 +40,8 @@ internal static class Debuggers
 
 internal class DebugLogSource(string title)
 {
-	internal void Log(object message)
+    internal void Log(object message)
     {
-		CodeRebirthLibPlugin.Logger.LogDebug($"[Debug-{title}] {message}");
-	}
+        CodeRebirthLibPlugin.Logger.LogDebug($"[Debug-{title}] {message}");
+    }
 }

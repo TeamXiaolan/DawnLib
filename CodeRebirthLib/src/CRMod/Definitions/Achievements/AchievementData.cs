@@ -1,6 +1,6 @@
 namespace CodeRebirthLib.CRMod;
 
-public class AchievementData : EntityData<CRAchievementReference>
+public class AchievementData : EntityData<CRMAchievementReference>
 {
-    
+
 }

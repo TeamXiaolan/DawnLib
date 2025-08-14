@@ -44,7 +44,7 @@ public class NamespacedKey : INetworkSerializable
     {
         return $"{Namespace}{Separator}{Key}";
     }
-    
+
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref _namespace);
@@ -76,7 +76,7 @@ public class NamespacedKey : INetworkSerializable
 public class NamespacedKey<T> : NamespacedKey where T : INamespaced
 {
     protected NamespacedKey(string @namespace, string key) : base(@namespace, key) { }
-    
+
     public new static NamespacedKey<T> From(string @namespace, string key)
     {
         return new NamespacedKey<T>(@namespace, key);

@@ -9,9 +9,9 @@ public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
         InsideWeights = insideWeights;
         DaytimeWeights = daytimeWeights;
     }
-    
+
     public EnemyType Enemy { get; }
-    
+
     public ProviderTable<int?, CRMoonInfo>? OutsideWeights { get; }
     public ProviderTable<int?, CRMoonInfo>? InsideWeights { get; }
     public ProviderTable<int?, CRMoonInfo>? DaytimeWeights { get; }

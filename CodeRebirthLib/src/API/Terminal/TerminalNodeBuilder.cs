@@ -4,7 +4,7 @@ namespace CodeRebirthLib;
 public class TerminalNodeBuilder
 {
     private TerminalNode _node;
-    
+
     internal TerminalNodeBuilder(string name)
     {
         _node = ScriptableObject.CreateInstance<TerminalNode>();
@@ -28,7 +28,7 @@ public class TerminalNodeBuilder
         _node.maxCharactersToType = maxCharacters;
         return this;
     }
-    
+
     public TerminalNode Build()
     {
         return _node;

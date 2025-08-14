@@ -8,11 +8,11 @@ public class CRDungeonInfo : INamespaced<CRDungeonInfo>, ITaggable
         TypedKey = key;
         Flow = flow;
     }
-    
+
     public DungeonFlow Flow { get; }
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<CRDungeonInfo> TypedKey { get; }
-    
+
     public bool HasTag(NamespacedKey tag)
     {
         return false; // todo

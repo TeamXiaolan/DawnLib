@@ -6,7 +6,7 @@ namespace CodeRebirthLib.CRMod;
 public class AchievementTriggers : MonoBehaviour
 {
     [SerializeField]
-    private CRAchievementReference _reference = default!;
+    private CRMAchievementReference _reference = default!;
 
     [SerializeField]
     private UnityEvent _onAchievementCompleted = new UnityEvent();
@@ -37,6 +37,6 @@ public class AchievementTriggers : MonoBehaviour
 
     public void ResetAllAchievementProgress()
     {
-        
+
     }
 }

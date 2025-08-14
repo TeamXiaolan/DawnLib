@@ -6,7 +6,7 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
     private List<IProvider<int?, TBase>> _baseProviders = [];
     private List<IProvider<int?, TBase>> _tagProviders = [];
     private IProvider<int?, TBase>? _global;
-    
+
     public WeightTableBuilder<TBase> AddWeight(NamespacedKey<TBase> key, int weight)
     {
         return AddWeight(key, new SimpleWeighted(weight));
@@ -28,7 +28,7 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
         _tagProviders.Add(new HasTagWeightProvider<TBase>(tag, weight));
         return this;
     }
-    
+
     public WeightTableBuilder<TBase> SetGlobalWeight(int weight)
     {
         return SetGlobalWeight(new SimpleWeighted(weight));
@@ -47,11 +47,11 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
 
     public ProviderTable<int?, TBase> Build()
     {
-        List<IProvider<int?, TBase>> compiled = [.._baseProviders, .._tagProviders];
+        List<IProvider<int?, TBase>> compiled = [.. _baseProviders, .. _tagProviders];
         if (_global != null)
         {
             compiled.Add(_global);
         }
-        return new ProviderTable<int?,TBase>(compiled);
+        return new ProviderTable<int?, TBase>(compiled);
     }
 }

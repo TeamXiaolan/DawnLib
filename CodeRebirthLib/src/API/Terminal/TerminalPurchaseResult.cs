@@ -7,7 +7,7 @@ public abstract class TerminalPurchaseResult
     {
         return SuccessPurchaseResult.Instance;
     }
-    
+
     public static TerminalPurchaseResult Fail(TerminalNode node)
     {
         return new FailedPurchaseResult(node);
@@ -16,9 +16,9 @@ public abstract class TerminalPurchaseResult
     public class SuccessPurchaseResult : TerminalPurchaseResult
     {
         internal static SuccessPurchaseResult Instance { get; } = new SuccessPurchaseResult();
-        private SuccessPurchaseResult() {}
+        private SuccessPurchaseResult() { }
     }
-    
+
     public class FailedPurchaseResult : TerminalPurchaseResult
     {
         internal FailedPurchaseResult(TerminalNode node)

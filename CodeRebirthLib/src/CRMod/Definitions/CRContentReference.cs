@@ -2,7 +2,7 @@
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public abstract class CRContentReference
+public abstract class CRMContentReference
 {
     public abstract Type Type { get; }
     public abstract NamespacedKey Key { get; protected set; }
@@ -11,13 +11,13 @@ public abstract class CRContentReference
 }
 
 [Serializable]
-public abstract class CRContentReference<TDef, TInfo> : CRContentReference where TInfo : INamespaced<TInfo> where TDef : CRContentDefinition
+public abstract class CRMContentReference<TDef, TInfo> : CRMContentReference where TInfo : INamespaced<TInfo> where TDef : CRMContentDefinition
 {
-    public CRContentReference()
+    public CRMContentReference()
     {
         Key = NamespacedKey<TInfo>.From("", "");
     }
-    protected CRContentReference(NamespacedKey<TInfo> key)
+    protected CRMContentReference(NamespacedKey<TInfo> key)
     {
         Key = key;
     }

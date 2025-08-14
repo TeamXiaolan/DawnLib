@@ -2,7 +2,7 @@ using System;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class MapObjectData : EntityData<CRMapObjectReference>
+public class MapObjectData : EntityData<CRMMapObjectReference>
 {
     public bool isInsideHazard;
     public bool createInsideHazardConfig;

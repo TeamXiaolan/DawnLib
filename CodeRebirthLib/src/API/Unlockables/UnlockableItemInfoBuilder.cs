@@ -11,7 +11,7 @@ public class UnlockableInfoBuilder
         {
             _parentBuilder = parent;
         }
-        
+
         internal CRSuitInfo Build()
         {
             return new CRSuitInfo();
@@ -26,13 +26,25 @@ public class UnlockableInfoBuilder
         {
             _parentBuilder = parent;
         }
-        
+
+        internal PlaceableObjectBuilder SetDecor()
+        {
+            _parentBuilder._unlockableItem.alwaysInStock = false;
+            return this;
+        }
+
+        internal PlaceableObjectBuilder SetShipUpgrade()
+        {
+            _parentBuilder._unlockableItem.alwaysInStock = true;
+            return this;
+        }
+
         internal CRPlaceableObjectInfo Build()
         {
             return new CRPlaceableObjectInfo();
         }
     }
-    
+
     private NamespacedKey<CRUnlockableItemInfo> _key;
     private UnlockableItem _unlockableItem;
 
@@ -40,7 +52,7 @@ public class UnlockableInfoBuilder
     private CRSuitInfo? _suitInfo;
     private CRPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
-    
+
     internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem)
     {
         _key = key;
@@ -74,7 +86,7 @@ public class UnlockableInfoBuilder
         _purchasePredicate = predicate;
         return this;
     }
-    
+
     internal CRUnlockableItemInfo Build()
     {
         int cost = 0;
@@ -86,7 +98,7 @@ public class UnlockableInfoBuilder
         {
             cost = _unlockableItem.shopSelectionNode.itemCost;
         }
-        
+
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
         return new CRUnlockableItemInfo(_purchasePredicate, _key, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
     }

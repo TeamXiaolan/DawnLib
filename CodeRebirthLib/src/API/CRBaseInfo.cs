@@ -6,7 +6,7 @@ public abstract class CRBaseInfo<T> : INamespaced<T> where T : CRBaseInfo<T>
         TypedKey = key;
         IsExternal = isExternal;
     }
-    
+
     internal bool IsExternal { get; }
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<T> TypedKey { get; }

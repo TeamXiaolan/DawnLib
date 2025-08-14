@@ -8,7 +8,7 @@ public static class SelectableLevelExtensions
 {
     // todo: reference stripped patched assembly??
     private static FieldInfo _infoField = typeof(SelectableLevel).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
-    
+
     public static NamespacedKey<CRMoonInfo> ToNamespacedKey(this SelectableLevel level)
     {
         if (!level.HasCRInfo())

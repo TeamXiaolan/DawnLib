@@ -3,11 +3,11 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRAdditionalTilesReference : CRContentReference<CRAdditionalTilesDefinition, CRTileSetInfo>
+public class CRMAdditionalTilesReference : CRMContentReference<CRAdditionalTilesDefinition, CRTileSetInfo>
 {
-    public CRAdditionalTilesReference() : base()
+    public CRMAdditionalTilesReference() : base()
     { }
-    public CRAdditionalTilesReference(NamespacedKey<CRTileSetInfo> key) : base(key)
+    public CRMAdditionalTilesReference(NamespacedKey<CRTileSetInfo> key) : base(key)
     { }
 
     public override bool TryResolve(out CRTileSetInfo info)

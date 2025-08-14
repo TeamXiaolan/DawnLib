@@ -15,7 +15,7 @@ static class ExtendedTOML
         new AnimationCurveConverter(),
         new NamespacedKeyConverter()
     ];
-    
+
     internal static void Init()
     {
         foreach (TOMLConverter converter in _converters)
@@ -31,7 +31,7 @@ static class ExtendedTOML
         }
 
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += SupplyNamespacedKeyConverter;
-        
+
         // untested and should probably be behind a config option
         // IL.BepInEx.Configuration.ConfigEntryBase.WriteDescription += PrettyPrintConfigSettingType;
     }
@@ -67,7 +67,7 @@ static class ExtendedTOML
 
         return t.Name;
     }
-    
+
     // this automatically handles generic types of NamespacedKey eg. NamespacedKey<MyCustomInfo> is handled automatically properly.
     private static TypeConverter SupplyNamespacedKeyConverter(On.BepInEx.Configuration.TomlTypeConverter.orig_GetConverter orig, Type valuetype)
     {

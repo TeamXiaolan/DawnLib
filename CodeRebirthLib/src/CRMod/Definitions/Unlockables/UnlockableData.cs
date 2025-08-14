@@ -2,7 +2,7 @@ using System;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class UnlockableData : EntityData<CRUnlockableReference>
+public class UnlockableData : EntityData<CRMUnlockableReference>
 {
     public int cost;
     public bool isShipUpgrade;

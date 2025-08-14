@@ -8,14 +8,14 @@ public class ProgressiveItemData
 {
     public const string LOCKED_NAME = "???";
 
-    public ProgressiveItemData(CRItemDefinition definition)
+    public ProgressiveItemData(CRMItemDefinition definition)
     {
         Definition = definition;
         OriginalName = Item.itemName;
         ProgressiveItemHandler.AllProgressiveItems.Add(this);
     }
 
-    public CRItemDefinition Definition { get; }
+    public CRMItemDefinition Definition { get; }
     public bool IsUnlocked { get; private set; }
     public string OriginalName { get; }
 

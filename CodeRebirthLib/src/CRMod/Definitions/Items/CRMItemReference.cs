@@ -3,11 +3,11 @@
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRItemReference : CRContentReference<CRItemDefinition, CRItemInfo>
+public class CRMItemReference : CRMContentReference<CRMItemDefinition, CRItemInfo>
 {
-    public CRItemReference() : base()
+    public CRMItemReference() : base()
     { }
-    public CRItemReference(NamespacedKey<CRItemInfo> key) : base(key)
+    public CRMItemReference(NamespacedKey<CRItemInfo> key) : base(key)
     { }
     public override bool TryResolve(out CRItemInfo info)
     {

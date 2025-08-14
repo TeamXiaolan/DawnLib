@@ -8,14 +8,14 @@ public class ProgressiveUnlockData
 {
     public const string LOCKED_NAME = "???";
 
-    public ProgressiveUnlockData(CRUnlockableDefinition definition)
+    public ProgressiveUnlockData(CRMUnlockableDefinition definition)
     {
         Definition = definition;
         OriginalName = Unlockable.unlockableName;
         ProgressiveUnlockableHandler.AllProgressiveUnlockables.Add(this);
     }
 
-    public CRUnlockableDefinition Definition { get; }
+    public CRMUnlockableDefinition Definition { get; }
     public bool IsUnlocked { get; private set; }
     public string OriginalName { get; }
 

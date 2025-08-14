@@ -1,6 +1,6 @@
 namespace CodeRebirthLib.CRMod;
 
-public class DungeonData : EntityData<CRAdditionalTilesReference>
+public class DungeonData : EntityData<CRMAdditionalTilesReference>
 {
-    
+
 }

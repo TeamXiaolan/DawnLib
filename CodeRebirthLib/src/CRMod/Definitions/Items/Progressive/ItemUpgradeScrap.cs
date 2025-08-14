@@ -4,5 +4,5 @@ namespace CodeRebirthLib.CRMod;
 public class ItemUpgradeScrap : GrabbableObject
 {
     [field: SerializeField]
-    public CRItemReference CRItemReference { get; private set; } = null!;
+    public CRMItemReference CRItemReference { get; private set; } = null!;
 }

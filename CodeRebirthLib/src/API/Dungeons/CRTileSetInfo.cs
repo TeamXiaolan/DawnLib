@@ -17,7 +17,7 @@ public class CRTileSetInfo : INamespaced<CRTileSetInfo>
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<CRTileSetInfo> TypedKey { get; }
     public IReadOnlyList<NamespacedKey<CRDungeonInfo>> AppliedTo { get; }
-    
+
     public bool IsBranchCap { get; }
     public bool IsRegular { get; }
 }

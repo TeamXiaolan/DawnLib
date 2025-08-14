@@ -1,7 +1,7 @@
 namespace CodeRebirthLib;
 
 static class MoonRegistrationHandler
-{   
+{
     internal static void Init()
     {
         On.StartOfRound.Awake += CollectLevels;

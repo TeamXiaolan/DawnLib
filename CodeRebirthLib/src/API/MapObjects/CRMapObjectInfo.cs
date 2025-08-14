@@ -14,7 +14,7 @@ public sealed class CRMapObjectInfo : CRBaseInfo<CRMapObjectInfo>
         if (OutsideInfo != null) OutsideInfo.ParentInfo = this;
         HasNetworkObject = mapObject.GetComponent<NetworkObject>() != null;
     }
-    
+
     public GameObject MapObject { get; }
     public CRInsideMapObjectInfo? InsideInfo { get; }
     public CROutsideMapObjectInfo? OutsideInfo { get; }

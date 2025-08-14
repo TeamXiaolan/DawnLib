@@ -11,6 +11,9 @@ Currently supports:
 - Shop Items
 - Inside Map Objects
 - Outside Map Objects
+- Ship Upgrades
+- Decors
+- Skins (TODO)
 - Achievements
 - Tile Injection
 
@@ -87,7 +90,7 @@ public class DuckContentHandler : ContentHandler<DuckContentHandler>
 After running `Mod.RegisterContentHandlers();` the registries in your `CRMod` will be populated. You can then get access to your content by running
 
 ```cs
-if (mod.WeatherRegistry().TryGetFromWeatherName("Meteor Shower", out CRWeatherDefinition? definition))
+if (mod.WeatherRegistry().TryGetFromWeatherName("Meteor Shower", out CRMWeatherDefinition? definition))
 {
     // do something with the Meteor Shower definition.
     // i.e. grabbing the prefab.

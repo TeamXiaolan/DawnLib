@@ -70,16 +70,16 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
             }
         }
 
-        Content = bundle.LoadAllAssets<CRContentDefinition>();
+        Content = bundle.LoadAllAssets<CRMContentDefinition>();
 
         // Sort content
         List<Type> definitionOrder = [
-            typeof(CREnemyDefinition),
-            typeof(CRItemDefinition),
-            typeof(CRMapObjectDefinition),
-            typeof(CRUnlockableDefinition),
-            typeof(CRWeatherDefinition),
-            typeof(CRAchievementDefinition),
+            typeof(CRMEnemyDefinition),
+            typeof(CRMItemDefinition),
+            typeof(CRMMapObjectDefinition),
+            typeof(CRMUnlockableDefinition),
+            typeof(CRMWeatherDefinition),
+            typeof(CRMAchievementDefinition),
             typeof(CRAdditionalTilesDefinition)
         ];
         Content = Content.OrderBy(it =>
@@ -91,7 +91,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
     }
 
     public AssetBundleData? AssetBundleData { get; set; } = null;
-    public CRContentDefinition[] Content { get; }
+    public CRMContentDefinition[] Content { get; }
 
     internal void TryUnload()
     {

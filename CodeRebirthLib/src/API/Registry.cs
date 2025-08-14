@@ -6,7 +6,7 @@ namespace CodeRebirthLib;
 public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : INamespaced<T>
 {
     private readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
-    
+
     public bool IsFrozen { get; private set; }
     public event Action OnFreeze = delegate { };
 

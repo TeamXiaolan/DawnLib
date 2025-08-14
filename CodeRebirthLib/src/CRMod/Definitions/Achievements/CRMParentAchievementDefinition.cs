@@ -6,10 +6,11 @@ using UnityEngine.Serialization;
 namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
-public class CRParentAchievement : CRAchievementDefinition, IProgress
+public class CRMParentAchievement : CRMAchievementDefinition, IProgress
 {
-    [field: SerializeReference] [field: FormerlySerializedAs("ChildrenAchievementNames")]
-    public List<CRAchievementReference> ChildrenAchievementReferences { get; private set; } = new();
+    [field: SerializeReference]
+    [field: FormerlySerializedAs("ChildrenAchievementNames")]
+    public List<CRMAchievementReference> ChildrenAchievementReferences { get; private set; } = new();
 
     public override void Register(CRMod mod)
     {

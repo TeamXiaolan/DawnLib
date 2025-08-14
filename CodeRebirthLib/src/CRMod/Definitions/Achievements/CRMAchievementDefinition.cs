@@ -10,7 +10,7 @@ namespace CodeRebirthLib.CRMod;
  * Button to reset specific achievements
  * probably more im forgetting
 */
-public abstract class CRAchievementDefinition : CRContentDefinition<AchievementData, CRAchievementDefinition>, INamespaced<CRAchievementDefinition>
+public abstract class CRMAchievementDefinition : CRMContentDefinition<AchievementData, CRMAchievementDefinition>, INamespaced<CRMAchievementDefinition>
 {
     public const string REGISTRY_ID = "achievements";
 
@@ -43,7 +43,7 @@ public abstract class CRAchievementDefinition : CRContentDefinition<AchievementD
 
     protected override string EntityNameReference => AchievementName;
 
-    NamespacedKey<CRAchievementDefinition> INamespaced<CRAchievementDefinition>.TypedKey => TypedKey;
+    NamespacedKey<CRMAchievementDefinition> INamespaced<CRMAchievementDefinition>.TypedKey => TypedKey;
 
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {
@@ -69,7 +69,7 @@ public abstract class CRAchievementDefinition : CRContentDefinition<AchievementD
         return Completed;
     }
 
-    public virtual void ResetProgress() // do i need to reload all achievements after this so that parent achievement actually updates for this same with the UI?
+    public virtual void ResetProgress() // TODO do i need to reload all achievements after this so that parent achievement actually updates for this same with the UI?
     {
         Completed = false;
     }

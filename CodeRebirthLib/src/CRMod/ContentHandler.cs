@@ -57,8 +57,8 @@ public abstract class ContentHandler(CRMod mod)
 
     protected void LoadAllContent(IAssetBundleLoader bundle)
     {
-        CRContentDefinition[] definitions = bundle.Content;
-        foreach (CRContentDefinition definition in definitions)
+        CRMContentDefinition[] definitions = bundle.Content;
+        foreach (CRMContentDefinition definition in definitions)
         {
             definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(mod);

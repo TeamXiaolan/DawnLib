@@ -15,7 +15,7 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
     [SerializeField]
     private GameObject achievementContent = null!;
 
-    private Queue<CRAchievementDefinition> achievementQueue = new();
+    private Queue<CRMAchievementDefinition> achievementQueue = new();
 
     private void Start()
     {
@@ -27,7 +27,7 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
         CRAchievementHandler.OnAchievementUnlocked -= QueuePopup;
     }
 
-    internal void QueuePopup(CRAchievementDefinition achievement)
+    internal void QueuePopup(CRMAchievementDefinition achievement)
     {
         achievementQueue.Enqueue(achievement);
         if (achievementContent.transform.childCount == 0)

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Stat Definition")]
-public class CRStatAchievement : CRAchievementDefinition, IProgress
+public class CRMStatAchievement : CRMAchievementDefinition, IProgress
 {
 
     [field: SerializeField]

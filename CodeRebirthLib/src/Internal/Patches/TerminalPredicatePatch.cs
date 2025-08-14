@@ -27,10 +27,10 @@ static class TerminalPredicatePatch
             CRUnlockableItemInfo? unlockableItemInfo = LethalContent.Unlockables.Values
                 .FirstOrDefault(it => it.UnlockableItem == unlockableItem);
 
-            if(unlockableItemInfo != null)
+            if (unlockableItemInfo != null)
                 predicate = unlockableItemInfo.PurchasePredicate;
         }
-        
+
         // preform predicate
         if (predicate != null)
         {
@@ -41,7 +41,7 @@ static class TerminalPredicatePatch
                 return;
             }
         }
-        
+
         orig(self, node);
     }
 }

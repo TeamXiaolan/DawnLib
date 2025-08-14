@@ -7,6 +7,6 @@ public sealed class CRScrapItemInfo
     {
         Weights = weights;
     }
-    
+
     public ProviderTable<int?, CRMoonInfo> Weights { get; }
 }

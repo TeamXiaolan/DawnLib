@@ -7,5 +7,5 @@ public sealed class CRPlaceableObjectInfo
     internal CRPlaceableObjectInfo()
     {
     }
-    
+
 }

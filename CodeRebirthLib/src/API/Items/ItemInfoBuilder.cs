@@ -7,8 +7,8 @@ public class ItemInfoBuilder
     {
         private ItemInfoBuilder _parentBuilder;
 
-        private ProviderTable<int?,CRMoonInfo>? _weights;
-        
+        private ProviderTable<int?, CRMoonInfo>? _weights;
+
         internal ScrapBuilder(ItemInfoBuilder parent)
         {
             _parentBuilder = parent;
@@ -21,13 +21,13 @@ public class ItemInfoBuilder
             _weights = builder.Build();
             return this;
         }
-        
+
         internal CRScrapItemInfo Build()
         {
             if (_weights == null)
             {
                 CodeRebirthLibPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder._item.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<int?,CRMoonInfo>.Empty();
+                _weights = ProviderTable<int?, CRMoonInfo>.Empty();
             }
             return new CRScrapItemInfo(_weights);
         }
@@ -36,7 +36,7 @@ public class ItemInfoBuilder
     public class ShopBuilder
     {
         private ItemInfoBuilder _parentBuilder;
-        
+
         private TerminalNode? _infoNode, _requestNode, _receiptNode;
         private int? _costOverride;
         private ITerminalPurchasePredicate? _purchasePredicate;
@@ -45,7 +45,7 @@ public class ItemInfoBuilder
         {
             _parentBuilder = parent;
         }
-        
+
         public ShopBuilder OverrideCost(int cost)
         {
             _costOverride = cost;
@@ -57,7 +57,7 @@ public class ItemInfoBuilder
             _purchasePredicate = predicate;
             return this;
         }
-        
+
         public ShopBuilder OverrideInfoNode(TerminalNode infoNode)
         {
             _infoNode = infoNode;
@@ -75,7 +75,7 @@ public class ItemInfoBuilder
             _receiptNode = receiptNode;
             return this;
         }
-        
+
         internal CRShopItemInfo Build()
         {
             if (_receiptNode == null)
@@ -86,7 +86,7 @@ public class ItemInfoBuilder
                     .SetMaxCharactersToType(15)
                     .Build();
             }
-            
+
             if (_requestNode == null)
             {
                 _requestNode = new TerminalNodeBuilder($"{_parentBuilder._item.itemName}RequestNode")
@@ -106,17 +106,17 @@ public class ItemInfoBuilder
             }
 
             _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-            
+
             return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride ?? _parentBuilder._item.creditsWorth);
         }
     }
-    
+
     private NamespacedKey<CRItemInfo> _key;
     private Item _item;
 
     private CRScrapItemInfo? _scrapInfo;
     private CRShopItemInfo? _shopInfo;
-    
+
     internal ItemInfoBuilder(NamespacedKey<CRItemInfo> key, Item item)
     {
         _key = key;

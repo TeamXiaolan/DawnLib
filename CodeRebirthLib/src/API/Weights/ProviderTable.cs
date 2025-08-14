@@ -4,7 +4,7 @@ namespace CodeRebirthLib;
 public class ProviderTable<T, TBase> where TBase : INamespaced<TBase>
 {
     private List<IProvider<T, TBase>> _providers;
-    
+
     internal ProviderTable(List<IProvider<T, TBase>> providers)
     {
         _providers = providers;
@@ -20,7 +20,7 @@ public class ProviderTable<T, TBase> where TBase : INamespaced<TBase>
 
             return value;
         }
-        
+
         return default;
     }
 

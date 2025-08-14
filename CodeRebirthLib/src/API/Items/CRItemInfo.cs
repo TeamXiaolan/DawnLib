@@ -9,7 +9,7 @@ public sealed class CRItemInfo : CRBaseInfo<CRItemInfo>
         ShopInfo = shopItemInfo;
         if (ShopInfo != null) ShopInfo.ParentInfo = this;
     }
-    
+
     public Item Item { get; }
     public CRScrapItemInfo? ScrapInfo { get; }
     public CRShopItemInfo? ShopInfo { get; }

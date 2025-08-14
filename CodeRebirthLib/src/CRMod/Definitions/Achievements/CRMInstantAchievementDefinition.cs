@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Instant Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Instant Definition")]
-public class CRInstantAchievement : CRAchievementDefinition
+public class CRMInstantAchievement : CRMAchievementDefinition
 {
     public bool TriggerAchievement()
     {

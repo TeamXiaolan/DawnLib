@@ -5,7 +5,7 @@ using System.Linq;
 namespace CodeRebirthLib;
 
 static class EnemyRegistrationHandler
-{   
+{
     internal static void Init()
     {
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
@@ -48,7 +48,7 @@ static class EnemyRegistrationHandler
             }
         }
     }
-    
+
     private static void RegisterEnemies(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         if (LethalContent.Enemies.IsFrozen)
@@ -162,7 +162,7 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }
-        
+
         LethalContent.Enemies.Freeze();
         orig(self);
     }
@@ -173,6 +173,6 @@ static class EnemyRegistrationHandler
             enemyType = enemyInfo.Enemy,
             rarity = 0
         };
-        list.Add(spawnDef);        
+        list.Add(spawnDef);
     }
 }

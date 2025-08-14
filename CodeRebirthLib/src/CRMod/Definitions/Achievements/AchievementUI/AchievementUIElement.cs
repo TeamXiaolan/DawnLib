@@ -28,7 +28,7 @@ public class AchievementUIElement : MonoBehaviour
     [SerializeField]
     private Image _backgroundImage = null!;
 
-    public void SetupAchievementUI(CRAchievementDefinition definition)
+    public void SetupAchievementUI(CRMAchievementDefinition definition)
     {
         _achievementNameTMP.text = definition.AchievementName;
         _achievementDescriptionTMP.text = definition.AchievementDescription;

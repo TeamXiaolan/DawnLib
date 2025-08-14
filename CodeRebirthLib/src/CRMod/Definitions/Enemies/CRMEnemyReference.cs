@@ -3,11 +3,11 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CREnemyReference : CRContentReference<CREnemyDefinition, CREnemyInfo>
+public class CRMEnemyReference : CRMContentReference<CRMEnemyDefinition, CREnemyInfo>
 {
-    public CREnemyReference() : base()
+    public CRMEnemyReference() : base()
     { }
-    public CREnemyReference(NamespacedKey<CREnemyInfo> key) : base(key)
+    public CRMEnemyReference(NamespacedKey<CREnemyInfo> key) : base(key)
     { }
     public override bool TryResolve(out CREnemyInfo info)
     {

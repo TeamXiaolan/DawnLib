@@ -3,12 +3,14 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRMapObjectReference : CRContentReference<CRMapObjectDefinition, CRMapObjectInfo>
+public class CRMMapObjectReference : CRMContentReference<CRMMapObjectDefinition, CRMapObjectInfo>
 {
-    public CRMapObjectReference() : base()
+    public CRMMapObjectReference() : base()
     { }
-    public CRMapObjectReference(NamespacedKey<CRMapObjectInfo> key) : base(key)
+
+    public CRMMapObjectReference(NamespacedKey<CRMapObjectInfo> key) : base(key)
     { }
+
     public override bool TryResolve(out CRMapObjectInfo info)
     {
         return LethalContent.MapObjects.TryGetValue(TypedKey, out info);

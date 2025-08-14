@@ -57,7 +57,6 @@ static class UnlockableRegistrationHandler
             shopSelectionNode.terminalOptions = [confirmBuyCompatibleNoun, cancelDenyCompatibleNoun];
             unlockableInfo.UnlockableItem.shopSelectionNode = shopSelectionNode;
             latestUnlockableID++;
-            // TODO: bruh while doing this i just realised decors are literally just ship upgrades without "Always In Stock" ticked, like i thought it'd be more than that lol but fair enough ig
         }
 
         foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
