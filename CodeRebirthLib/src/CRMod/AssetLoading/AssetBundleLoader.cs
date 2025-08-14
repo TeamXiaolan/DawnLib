@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using BepInEx.Configuration;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
 using Unity.Netcode;
@@ -10,7 +12,7 @@ using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
 namespace CodeRebirthLib.CRMod;
-public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetBundleLoader<T>
+public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoader : AssetBundleLoader<TLoader>
 {
     private readonly bool _hasNonPreloadAudioClips;
     private List<string> _audioClipNames = new();
@@ -33,7 +35,7 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
         Debuggers.AssetLoading?.Log($"{bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
 
-        Type type = typeof(T);
+        Type type = typeof(TLoader);
         foreach (PropertyInfo property in type.GetProperties())
         {
             LoadFromBundleAttribute loadInstruction = (LoadFromBundleAttribute)property.GetCustomAttribute(typeof(LoadFromBundleAttribute));
@@ -74,14 +76,15 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
         // Sort content
         List<Type> definitionOrder = [
-            typeof(CRMEnemyDefinition),
-            typeof(CRMItemDefinition),
-            typeof(CRMMapObjectDefinition),
-            typeof(CRMUnlockableDefinition),
             typeof(CRMWeatherDefinition),
+            typeof(CRMMapObjectDefinition),
+            typeof(CRMEnemyDefinition),
+            typeof(CRMUnlockableDefinition),
+            typeof(CRMItemDefinition),
+            typeof(CRAdditionalTilesDefinition),
             typeof(CRMAchievementDefinition),
-            typeof(CRAdditionalTilesDefinition)
         ];
+
         Content = Content.OrderBy(it =>
         {
             Type definitionType = it.GetType();
@@ -92,6 +95,29 @@ public abstract class AssetBundleLoader<T> : IAssetBundleLoader where T : AssetB
 
     public AssetBundleData? AssetBundleData { get; set; } = null;
     public CRMContentDefinition[] Content { get; }
+    public Dictionary<string, ConfigEntryBase> ConfigEntries => Content.SelectMany(c => c.generalConfigs).ToDictionary(it => it.Key, it => it.Value); // TODO please do better than me here
+
+    public ConfigEntry<T> GetConfig<T>(string configName)
+    {
+        return (ConfigEntry<T>)ConfigEntries[configName];
+    }
+
+    public bool TryGetConfig<T>(string configName, [NotNullWhen(true)] out ConfigEntry<T>? entry)
+    {
+        if (ConfigEntries.TryGetValue(configName, out ConfigEntryBase configBase))
+        {
+            entry = (ConfigEntry<T>)configBase;
+            return true;
+        }
+
+        if (Debuggers.ReplaceThis != null)
+        {
+            Content.FirstOrDefault()?.Mod.Logger?.LogWarning($"TryGetConfig: '{configName}' does not exist on '{Content}', returning false and entry will be null");
+        }
+
+        entry = null;
+        return false;
+    }
 
     internal void TryUnload()
     {

@@ -19,7 +19,7 @@ public abstract class CRMContentDefinition : ScriptableObject
 
     protected abstract string EntityNameReference { get; }
 
-    private readonly Dictionary<string, ConfigEntryBase> _generalConfigs = new();
+    internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
     public CRMod Mod { get; private set; }
 
     internal AssetBundleData AssetBundleData;
@@ -36,30 +36,8 @@ public abstract class CRMContentDefinition : ScriptableObject
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (CRDynamicConfig configDefinition in _configEntries)
         {
-            _generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
+            generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
         }
-    }
-
-    public ConfigEntry<T> GetGeneralConfig<T>(string configName)
-    {
-        return (ConfigEntry<T>)_generalConfigs[configName];
-    }
-
-    public bool TryGetGeneralConfig<T>(string configName, [NotNullWhen(true)] out ConfigEntry<T>? entry)
-    {
-        if (_generalConfigs.TryGetValue(configName, out ConfigEntryBase configBase))
-        {
-            entry = (ConfigEntry<T>)configBase;
-            return true;
-        }
-
-        if (Debuggers.ReplaceThis != null)
-        {
-            Mod.Logger?.LogWarning($"TryGetGeneralConfig: '{configName}' does not exist on '{name}', returning false and entry will be null");
-        }
-
-        entry = null;
-        return false;
     }
 }
 
