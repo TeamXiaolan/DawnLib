@@ -1,7 +1,12 @@
 namespace CodeRebirthLib;
 
-public class CRWeatherInfo : INamespaced<CRWeatherInfo>
+public class CRWeatherInfo : CRBaseInfo<CRWeatherInfo>
 {
-    public NamespacedKey Key => TypedKey;
-    public NamespacedKey<CRWeatherInfo> TypedKey { get; }
+    public CRWeatherInfo(NamespacedKey<CRWeatherInfo> key, bool isExternal, WeatherEffect weatherEffect) : base(key, isExternal)
+    {
+        WeatherEffect = weatherEffect;
+    }
+
+
+    public WeatherEffect WeatherEffect { get; }
 }

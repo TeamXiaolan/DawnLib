@@ -41,7 +41,12 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
             }
         }
 
-        ImprovedWeatherEffect newImprovedWeatherEffect = new(effectObject, effectPermanentObject)
+        WeatherEffect weatherEffect = new();
+        {
+            effectObject = Weather.Effect.EffectObject;
+            effectPermanentObject = Weather.Effect.WorldObject;
+        }
+        ImprovedWeatherEffect newImprovedWeatherEffect = new(weatherEffect)
         {
             SunAnimatorBool = Weather.Effect.SunAnimatorBool,
         };
@@ -61,6 +66,10 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
+        /*CRLib.DefineWeather(TypedKey, weather.Effect.VanillaWeatherEffect, builder =>
+        {
+            builder.Build();
+        });*/
     }
 
     public override List<WeatherData> GetEntities(CRMod mod)
