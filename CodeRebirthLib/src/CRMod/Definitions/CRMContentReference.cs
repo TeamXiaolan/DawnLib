@@ -7,8 +7,6 @@ public abstract class CRMContentReference
     public abstract Type Type { get; }
     public abstract Type DefinitionType { get; }
     public abstract NamespacedKey Key { get; protected set; }
-
-    private string assetGUID;
 }
 
 [Serializable]
