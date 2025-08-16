@@ -1,0 +1,6 @@
+{
+    "EnemyKeys": {
+        "__type": "CREnemyInfo",
+        "Centipede": "lethal_company:centipede"
+    }
+}

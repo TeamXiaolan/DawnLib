@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib", "CodeRebir
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib.Preloader", "CodeRebirthLib.Preloader\CodeRebirthLib.Preloader.csproj", "{68672AE6-5606-46C1-835E-5E1D28BEBC10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib.SourceGen", "CodeRebirthLib.SourceGen\CodeRebirthLib.SourceGen.csproj", "{527E09BF-B4C9-42A3-9C54-D37B05774D02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
