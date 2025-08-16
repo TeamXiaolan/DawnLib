@@ -1,7 +1,10 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using Unity.Netcode;
 
 namespace CodeRebirthLib;
+
+[Serializable]
 public class NamespacedKey : INetworkSerializable
 {
     public const char Separator = ':';
@@ -73,6 +76,7 @@ public class NamespacedKey : INetworkSerializable
 }
 
 // todo: is there anyway to not do the duplication for the From/Vanilla/Parse methods? or am i stuck with it because generics
+[Serializable]
 public class NamespacedKey<T> : NamespacedKey where T : INamespaced
 {
     protected NamespacedKey(string @namespace, string key) : base(@namespace, key) { }
