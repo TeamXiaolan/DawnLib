@@ -8,6 +8,11 @@ namespace CodeRebirthLib.CRMod;
 public abstract class EntityData
 {
     public abstract NamespacedKey Key { get; }
+
+    [Obsolete("Use Key instead")]
+    [HideInInspector]
+    [SerializeField]
+    public string entityName;
 }
 
 [Serializable]

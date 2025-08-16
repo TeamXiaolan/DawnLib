@@ -34,6 +34,8 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
     [field: SerializeField]
     public TerminalKeyword? TerminalKeyword { get; private set; }
 
+    protected override string EntityNameReference => EnemyType.enemyName;
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public EnemyConfig Config { get; private set; }
 

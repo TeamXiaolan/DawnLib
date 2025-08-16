@@ -7,6 +7,7 @@ public class CRMAchievementReference : CRMContentReference<CRMAchievementDefinit
 {
     public CRMAchievementReference() : base()
     { }
+
     public CRMAchievementReference(NamespacedKey<CRMAchievementDefinition> key) : base(key)
     { }
 

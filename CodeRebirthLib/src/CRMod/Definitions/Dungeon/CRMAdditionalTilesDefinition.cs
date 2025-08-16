@@ -16,6 +16,8 @@ public class CRAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRT
         BranchCap = 1 << 1,
     }
 
+    protected override string EntityNameReference => TilesToAdd.name;
+
     public const string REGISTRY_ID = "additional_tiles";
 
     [field: SerializeField]

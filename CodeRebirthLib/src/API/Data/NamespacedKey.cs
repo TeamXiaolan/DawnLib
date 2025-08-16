@@ -1,6 +1,7 @@
 ﻿using System;
 using BepInEx;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace CodeRebirthLib;
 
@@ -10,6 +11,7 @@ public class NamespacedKey : INetworkSerializable
     public const char Separator = ':';
     public const string VanillaNamespace = "lethal_company";
 
+    [field: SerializeField]
     private string _namespace, _key;
 
     public string Namespace => _namespace;
@@ -53,6 +55,7 @@ public class NamespacedKey : INetworkSerializable
         serializer.SerializeValue(ref _namespace);
         serializer.SerializeValue(ref _key);
     }
+
     public override bool Equals(object? obj)
     {
         if (obj == null || GetType() != obj.GetType()) return false;

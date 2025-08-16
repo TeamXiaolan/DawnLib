@@ -13,6 +13,9 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
     [field: SerializeField]
     public Weather Weather { get; private set; }
 
+    protected override string EntityNameReference => Weather.Name;
+
+
     public override void Register(CRMod mod, WeatherData data)
     {
         GameObject? effectObject = null;

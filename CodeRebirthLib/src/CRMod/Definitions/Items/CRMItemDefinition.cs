@@ -26,6 +26,9 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
     public ProgressiveItemData? ProgressiveData { get; private set; }
+    protected override string EntityNameReference => Item.itemName;
+
+
 
     public override void Register(CRMod mod, ItemData data)
     {
