@@ -43,7 +43,7 @@ public abstract class CRMContentDefinition : ScriptableObject
 
 public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition where T : EntityData where TInfo : INamespaced<TInfo>
 {
-    [field: SerializeField, InspectorName("Key")]
+    [field: SerializeField, InspectorName("Key"), NamespacedKeyName("")]
     public NamespacedKey<TInfo> TypedKey { get; private set; }
 
     public override NamespacedKey Key => TypedKey;

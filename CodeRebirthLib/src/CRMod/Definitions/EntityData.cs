@@ -16,18 +16,18 @@ public abstract class EntityData
 }
 
 [Serializable]
-public abstract class EntityData<T> : EntityData where T : CRMContentReference
+public abstract class EntityData<T> : EntityData where T : CRMContentReference, new()
 {
     [FormerlySerializedAs("reference")]
     [SerializeReference]
-    T _reference;
+    T _reference = new T();
     public override NamespacedKey Key => _reference == null ? null : _reference.Key;
 
     public EntityData()
     {
         if (_reference == null)
         {
-            _reference = (T)typeof(T).GetConstructor([]).Invoke([]);
+            _reference = new T();
         }
     }
 }

@@ -5,6 +5,7 @@ namespace CodeRebirthLib.CRMod;
 public abstract class CRMContentReference
 {
     public abstract Type Type { get; }
+    public abstract Type DefinitionType { get; }
     public abstract NamespacedKey Key { get; protected set; }
 
     private string assetGUID;
@@ -25,6 +26,7 @@ public abstract class CRMContentReference<TDef, TInfo> : CRMContentReference whe
     public NamespacedKey<TInfo> TypedKey => Key.AsTyped<TInfo>();
     public override NamespacedKey Key { get; protected set; }
     public override Type Type => typeof(TInfo);
+    public override Type DefinitionType => typeof(TDef);
 
     public abstract bool TryResolve(out TInfo info);
     public abstract TInfo Resolve();
