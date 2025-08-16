@@ -1,0 +1,20 @@
+﻿{
+  "EnemyKeys": {
+    "__type": "CREnemyInfo"
+  },
+  "MapObjectKeys": {
+    "__type": "CRMapObjectInfo"
+  },
+  "ItemKeys": {
+    "__type": "CRItemInfo"
+  },
+  "DungeonKeys": {
+    "__type": "CRDungeonInfo"
+  },
+  "MoonKeys": {
+    "__type": "CRMoonInfo"
+  },
+  "WeatherKeys": {
+    "__type": "CRWeatherInfo"
+  }
+}

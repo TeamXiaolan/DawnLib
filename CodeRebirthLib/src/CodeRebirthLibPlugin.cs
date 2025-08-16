@@ -47,7 +47,6 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         }
 
         ExtendedTOML.Init();
-        Config.Bind("bwaa", "bwaa", MoonKeys.March, "asdasd");
 
         MoonRegistrationHandler.Init();
         AdditionalTilesRegistrationHandler.Init();
