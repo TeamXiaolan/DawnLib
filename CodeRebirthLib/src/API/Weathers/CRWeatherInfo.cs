@@ -7,6 +7,5 @@ public class CRWeatherInfo : CRBaseInfo<CRWeatherInfo>
         WeatherEffect = weatherEffect;
     }
 
-
     public WeatherEffect WeatherEffect { get; }
 }

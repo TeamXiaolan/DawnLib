@@ -27,8 +27,6 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
     public ItemConfig Config { get; private set; }
     public ProgressiveItemData? ProgressiveData { get; private set; }
 
-    protected override string EntityNameReference => Item.itemName;
-
     public override void Register(CRMod mod, ItemData data)
     {
         BoundedRange itemWorth = new(Item.minValue * 0.4f, Item.maxValue * 0.4f);
@@ -109,5 +107,14 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
     public override List<ItemData> GetEntities(CRMod mod)
     {
         return mod.Content.assetBundles.SelectMany(it => it.items).ToList();
+    }
+
+    public override string GetDefaultKey()
+    {
+        if (Item == null)
+        {
+            return "";
+        }
+        return Item.itemName;
     }
 }

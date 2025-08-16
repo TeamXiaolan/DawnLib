@@ -122,15 +122,6 @@ public class CRMod
             entities.AddRange(content.dungeons);
         }
 
-        foreach (var entity in entities)
-        {
-            if (entity.Key == null)
-            {
-#pragma warning disable CS0618 // Type or member is obsolete
-                CodeRebirthLibPlugin.Logger.LogWarning($"Defaulting to old entity name: {entity.entityName} for comparison, please update your mod to use the new references in ContentContainer.");
-#pragma warning restore CS0618 // Type or member is obsolete
-            }
-        }
         _allMods.Add(this);
     }
     public static IReadOnlyList<CRMod> AllMods => _allMods.AsReadOnly();

@@ -41,8 +41,6 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition<Achievemen
 
     public bool Completed { get; protected set; } = false;
 
-    protected override string EntityNameReference => AchievementName;
-
     NamespacedKey<CRMAchievementDefinition> INamespaced<CRMAchievementDefinition>.TypedKey => TypedKey;
 
     public virtual void LoadAchievementState(ES3Settings globalSettings)
@@ -86,4 +84,9 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition<Achievemen
     }
 
     public virtual bool IsActive() { return true; }
+
+    public override string GetDefaultKey()
+    {
+        return AchievementName;
+    }
 }

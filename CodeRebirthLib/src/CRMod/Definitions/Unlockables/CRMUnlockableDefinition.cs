@@ -4,6 +4,7 @@ using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
+
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
 public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUnlockableItemInfo>
 {
@@ -18,8 +19,6 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
     public UnlockableConfig Config { get; private set; }
 
     public ProgressiveUnlockData? ProgressiveData { get; private set; }
-
-    protected override string EntityNameReference => UnlockableItem.unlockableName;
 
     public override void Register(CRMod mod, UnlockableData data)
     {
@@ -70,5 +69,10 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
     public override List<UnlockableData> GetEntities(CRMod mod)
     {
         return mod.Content.assetBundles.SelectMany(it => it.unlockables).ToList();
+    }
+
+    public override string GetDefaultKey()
+    {
+        return UnlockableItem.unlockableName;
     }
 }

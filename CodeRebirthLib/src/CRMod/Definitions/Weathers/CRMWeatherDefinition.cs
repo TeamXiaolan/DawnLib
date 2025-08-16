@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using WeatherRegistry;
 using WeatherRegistry.Modules;
 
@@ -11,11 +10,8 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
 {
     public const string REGISTRY_ID = "weathers";
 
-    [field: FormerlySerializedAs("Weather")]
     [field: SerializeField]
     public Weather Weather { get; private set; }
-
-    protected override string EntityNameReference => Weather.Name;
 
     public override void Register(CRMod mod, WeatherData data)
     {
@@ -76,5 +72,14 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
     {
         return mod.Content.assetBundles.SelectMany(it => it.weathers).ToList();
         // probably should be cached but i dont care anymore.
+    }
+
+    public override string GetDefaultKey()
+    {
+        if (Weather == null)
+        {
+            return "";
+        }
+        return Weather.name;
     }
 }

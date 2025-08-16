@@ -18,8 +18,6 @@ public class CRAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRT
 
     public const string REGISTRY_ID = "additional_tiles";
 
-    protected override string EntityNameReference => TilesToAdd.name;
-
     [field: SerializeField]
     public TileSet TilesToAdd { get; private set; }
 
@@ -37,9 +35,9 @@ public class CRAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRT
             CRLib.FixDoorwaySockets(chance.Value);
         }
 
-        CRLib.DefineTileSet(null, TilesToAdd, builder =>
+        CRLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
-            builder.AddToDungeon(null);
+            // builder.AddToDungeon();
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
         });
@@ -48,5 +46,14 @@ public class CRAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRT
     public override List<DungeonData> GetEntities(CRMod mod)
     {
         return mod.Content.assetBundles.SelectMany(it => it.dungeons).ToList();
+    }
+
+    public override string GetDefaultKey()
+    {
+        if (TilesToAdd == null)
+        {
+            return "";
+        }
+        return TilesToAdd.name;
     }
 }

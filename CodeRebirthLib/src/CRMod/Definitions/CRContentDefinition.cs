@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using BepInEx.Configuration;
 using CodeRebirthLib.Internal;
@@ -11,13 +10,11 @@ namespace CodeRebirthLib.CRMod;
 
 public abstract class CRMContentDefinition : ScriptableObject
 {
-    public abstract NamespacedKey Key { get; }
+    public abstract NamespacedKey Key { get; protected set; }
 
     [FormerlySerializedAs("ConfigEntries")]
     [SerializeField]
     private List<CRDynamicConfig> _configEntries;
-
-    protected abstract string EntityNameReference { get; }
 
     internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
     public CRMod Mod { get; private set; }
@@ -39,14 +36,16 @@ public abstract class CRMContentDefinition : ScriptableObject
             generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
         }
     }
+
+    public abstract string GetDefaultKey();
 }
 
 public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition where T : EntityData where TInfo : INamespaced<TInfo>
 {
-    [field: SerializeField, InspectorName("Key"), NamespacedKeyName("")]
-    public NamespacedKey<TInfo> TypedKey { get; private set; }
+    public NamespacedKey<TInfo> TypedKey => Key.AsTyped<TInfo>();
 
-    public override NamespacedKey Key => TypedKey;
+    [field: SerializeField, InspectorName("Namespace")]
+    public override NamespacedKey Key { get; protected set; }
 
     public override void Register(CRMod mod)
     {
@@ -60,13 +59,13 @@ public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition wher
                         Debuggers.CRMContentDefinition?.Log($"{this} | Comparing {Key} with {it.Key}.");
                         return Equals(it.Key, Key);
                     }
-                    return it.entityName == EntityNameReference;
 
+                    return false;
                 }));
         }
         catch (InvalidOperationException ex)
         {
-            mod.Logger?.LogError($"{this} with {EntityNameReference} failed to find a matching entity. {ex.Message}");
+            mod.Logger?.LogError($"{this} with {Key} failed to find a matching entity. {ex.Message}");
         }
 
         base.Register(mod);

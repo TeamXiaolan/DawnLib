@@ -37,8 +37,6 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public EnemyConfig Config { get; private set; }
 
-    protected override string EntityNameReference => EnemyType.enemyName;
-
     public override void Register(CRMod mod, EnemyData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
@@ -95,5 +93,14 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
     {
         return mod.Content.assetBundles.SelectMany(it => it.enemies).ToList();
         // probably should be cached but i dont care anymore.
+    }
+
+    public override string GetDefaultKey()
+    {
+        if (EnemyType == null)
+        {
+            return "";
+        }
+        return EnemyType.enemyName;
     }
 }

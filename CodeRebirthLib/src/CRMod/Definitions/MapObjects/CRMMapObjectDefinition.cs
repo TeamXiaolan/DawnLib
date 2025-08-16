@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.CRMod;
+
 [CreateAssetMenu(fileName = "New Map Definition", menuName = "CodeRebirthLib/Definitions/Map Object Definition")]
 public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapObjectInfo>
 {
@@ -26,12 +27,11 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
 
     public MapObjectConfig Config { get; private set; }
 
-    protected override string EntityNameReference => MapObjectName;
 
     public override void Register(CRMod mod, MapObjectData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateMapObjectConfig(section, data, EntityNameReference);
+        Config = CreateMapObjectConfig(section, data, MapObjectName);
 
         CRLib.DefineMapObject(TypedKey, GameObject, builder =>
         {
@@ -94,5 +94,10 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
     public override List<MapObjectData> GetEntities(CRMod mod)
     {
         return mod.Content.assetBundles.SelectMany(it => it.mapObjects).ToList();
+    }
+
+    public override string GetDefaultKey()
+    {
+        return MapObjectName;
     }
 }
