@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace CodeRebirthLib;
 
 static class MoonRegistrationHandler
@@ -17,9 +19,15 @@ static class MoonRegistrationHandler
 
         foreach (SelectableLevel level in self.levels)
         {
-            NamespacedKey<CRMoonInfo> key = level.ToNamespacedKey();
+            NamespacedKey<CRMoonInfo>? key = (NamespacedKey<CRMoonInfo>?)typeof(MoonKeys).GetField(new string(level.PlanetName.Replace(" ", "").SkipWhile(c => !char.IsLetter(c)).ToArray()))?.GetValue(null);
+            if (key == null)
+                continue;
+
+            if (LethalContent.Moons.ContainsKey(key))
+                continue;
 
             CRMoonInfo moonInfo = new(key, level);
+            level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
 

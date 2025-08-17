@@ -9,7 +9,7 @@ public static class LethalContent
     public static Registry<CRTileSetInfo> TileSets = new();
     public static Registry<CRDungeonInfo> Dungeons = new();
     public static Registry<CRUnlockableItemInfo> Unlockables = new();
-    public static Registry<CRWeatherInfo> Weathers = new();
+    public static Registry<CRWeatherEffectInfo> Weathers = new();
 }
 
 public static class Tags

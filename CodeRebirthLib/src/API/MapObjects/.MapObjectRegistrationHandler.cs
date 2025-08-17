@@ -21,7 +21,7 @@ static class MapObjectRegistrationHandler
     private static void FreezeMapObjectContents(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         orig(self);
-        if (LethalContent.MapObjects.IsFrozen) // effectively check for a lobby reload
+        if (LethalContent.MapObjects.IsFrozen)
             return;
 
         Dictionary<SpawnableMapObject, CurveTableBuilder<CRMoonInfo>> vanillaInsideWeights = new();
@@ -61,7 +61,7 @@ static class MapObjectRegistrationHandler
         foreach (var mapObjectWithCurveTableDict in vanillaOutsideWeights)
         {
             var spawnableMapObject = mapObjectWithCurveTableDict.Value.Build();
-            CROutsideMapObjectInfo outsideMapObjectInfo = new(mapObjectWithCurveTableDict.Value.Build(), false); // TODO, look into the align stuff? iunno
+            CROutsideMapObjectInfo outsideMapObjectInfo = new(mapObjectWithCurveTableDict.Value.Build(), false);
             vanillaOutsideMapObjectsDict.Add(mapObjectWithCurveTableDict.Key.prefabToSpawn, outsideMapObjectInfo);
         }
 
@@ -73,7 +73,7 @@ static class MapObjectRegistrationHandler
 
         foreach (var mapObject in vanillaMapObjects)
         {
-            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(mapObject.name.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
+            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(mapObject.name.Replace(" ", ""))?.GetValue(null);
             if (key == null)
                 continue;
 
@@ -109,6 +109,7 @@ static class MapObjectRegistrationHandler
             // TODO how do i even register this shit if im not putting it inside vanilla fields??
             // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
+        orig(self);
     }
 
     private static void HandleSpawningOutsideObjects(CROutsideMapObjectInfo outsideInfo, System.Random everyoneRandom, System.Random serverOnlyRandom)

@@ -2,7 +2,6 @@
 using CodeRebirthLib.Internal;
 using DunGen;
 using UnityEngine;
-using WeatherRegistry;
 
 namespace CodeRebirthLib;
 public static class CRLib
@@ -37,13 +36,16 @@ public static class CRLib
     {
         TilesetInfoBuilder builder = new(key, tileSet);
         callback(builder);
-        LethalContent.TileSets.Register(builder.Build());
+        CRTileSetInfo tileSetInfo = builder.Build();
+        tileSet.SetCRInfo(tileSetInfo);
+        LethalContent.TileSets.Register(tileSetInfo);
     }
 
     public static void DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
     {
         MapObjectInfoBuilder builder = new(key, mapObject);
         callback(builder);
+        // TODO what to do here?
         LethalContent.MapObjects.Register(builder.Build());
     }
 
@@ -51,28 +53,36 @@ public static class CRLib
     {
         UnlockableInfoBuilder builder = new(key, unlockableItem);
         callback(builder);
-        LethalContent.Unlockables.Register(builder.Build());
+        CRUnlockableItemInfo unlockableItemInfo = builder.Build();
+        unlockableItem.SetCRInfo(unlockableItemInfo);
+        LethalContent.Unlockables.Register(unlockableItemInfo);
     }
 
     public static void DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
     {
         ItemInfoBuilder builder = new(key, item);
         callback(builder);
-        LethalContent.Items.Register(builder.Build());
+        CRItemInfo itemInfo = builder.Build();
+        item.SetCRInfo(itemInfo);
+        LethalContent.Items.Register(itemInfo);
     }
 
     public static void DefineEnemy(NamespacedKey<CREnemyInfo> key, EnemyType enemy, Action<EnemyInfoBuilder> callback)
     {
         EnemyInfoBuilder builder = new(key, enemy);
         callback(builder);
-        LethalContent.Enemies.Register(builder.Build());
+        CREnemyInfo enemyInfo = builder.Build();
+        enemy.SetCRInfo(enemyInfo);
+        LethalContent.Enemies.Register(enemyInfo);
     }
 
-    public static void DefineWeather(NamespacedKey<CRWeatherInfo> key, WeatherEffect weatherEffect, Action<WeatherInfoBuilder> callback)
+    public static void DefineWeather(NamespacedKey<CRWeatherEffectInfo> key, WeatherEffect weatherEffect, Action<WeatherInfoBuilder> callback)
     {
         WeatherInfoBuilder builder = new(key, weatherEffect);
         callback(builder);
-        LethalContent.Weathers.Register(builder.Build());
+        CRWeatherEffectInfo weatherInfo = builder.Build();
+        weatherEffect.SetCRInfo(weatherInfo);
+        LethalContent.Weathers.Register(weatherInfo);
     }
 
     public static TerminalNodeBuilder DefineTerminalNode(string name)

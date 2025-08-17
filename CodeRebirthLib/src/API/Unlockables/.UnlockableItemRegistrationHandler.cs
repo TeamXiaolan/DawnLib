@@ -10,7 +10,7 @@ static class UnlockableRegistrationHandler
     internal static void Init()
     {
         On.Terminal.LoadNewNodeIfAffordable += Terminal_LoadNewNodeIfAffordable;
-        On.Terminal.Awake += RegisterShipUnlockables; // maybe patch terminal instead and await for startofround's instance to be not null?
+        On.Terminal.Awake += RegisterShipUnlockables;
     }
 
     private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
@@ -62,7 +62,7 @@ static class UnlockableRegistrationHandler
         foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
             CRSuitInfo? suitInfo = unlockableInfo.SuitInfo;
-            if (suitInfo == null || unlockableInfo.Key.IsVanilla())
+            if (suitInfo == null || unlockableInfo.Key.IsVanilla() || unlockableInfo.IsExternal)
                 continue; // also ensure not to register vanilla stuff again
 
             // TODO Suits

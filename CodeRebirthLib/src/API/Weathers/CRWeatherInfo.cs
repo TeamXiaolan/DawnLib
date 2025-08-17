@@ -1,8 +1,8 @@
 namespace CodeRebirthLib;
 
-public class CRWeatherInfo : CRBaseInfo<CRWeatherInfo>
+public class CRWeatherEffectInfo : CRBaseInfo<CRWeatherEffectInfo>
 {
-    public CRWeatherInfo(NamespacedKey<CRWeatherInfo> key, bool isExternal, WeatherEffect weatherEffect) : base(key, isExternal)
+    public CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, bool isExternal, WeatherEffect weatherEffect) : base(key, isExternal)
     {
         WeatherEffect = weatherEffect;
     }

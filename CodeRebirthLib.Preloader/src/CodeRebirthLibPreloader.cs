@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using BepInEx.Logging;
 using Mono.Cecil;
 using FieldAttributes = Mono.Cecil.FieldAttributes;
@@ -12,7 +10,7 @@ class CodeRebirthLibPreloader
     internal static ManualLogSource Log { get; } = Logger.CreateLogSource("CodeRebirthLib.Preloader");
 
     public static IEnumerable<string> TargetDLLs { get; } = new string[] { "Assembly-CSharp.dll" };
-    private static string[] HasExtraCRInfo = ["SelectableLevel", "EnemyType", "Item", "UnlockableItem", "DunGen.TileSet", "DunGen.Graph.DunGenFlow"];
+    private static string[] HasExtraCRInfo = ["SelectableLevel", "EnemyType", "Item", "UnlockableItem", "DunGen.TileSet", "DunGen.Graph.DunGenFlow", "WeatherEffect"];
 
     public static void Patch(AssemblyDefinition assembly)
     {

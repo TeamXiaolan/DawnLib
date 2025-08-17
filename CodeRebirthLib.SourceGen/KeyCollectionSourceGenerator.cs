@@ -16,6 +16,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
     {
         
     }
+
     public void Execute(GeneratorExecutionContext context)
     {
         foreach (AdditionalText? additionalFile in context.AdditionalFiles)
@@ -44,7 +45,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
 
                 foreach (var value in values)
                 {
-                    if(value.Key == "__type") continue;
+                    if (value.Key == "__type") continue;
                     string[] parts = value.Value.Split(':');
 
                     GeneratedField field = new GeneratedField(Visibility.Public, type, value.Key)
@@ -67,12 +68,12 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                 {
                     Namespace = "CodeRebirthLib", // todo
                     Usings = ["CodeRebirthLib"],
-                    Symbols = [ @class ]
+                    Symbols = [@class]
                 };
 
                 FileWriterVisitor visitor = new FileWriterVisitor();
                 visitor.Accept(file);
-                
+
                 context.AddSource($"{className}.g.cs", SourceText.From(visitor.ToString(), Encoding.UTF8));
             }
         }

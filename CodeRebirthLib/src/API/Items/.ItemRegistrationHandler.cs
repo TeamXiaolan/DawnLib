@@ -144,7 +144,7 @@ static class ItemRegistrationHandler
 
         foreach (var item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(item.itemName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
+            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(new string(item.itemName.Replace(" ", "").SkipWhile(c => !char.IsLetter(c)).ToArray()))?.GetValue(null);
             if (key == null)
                 continue;
 
@@ -161,6 +161,7 @@ static class ItemRegistrationHandler
             }
 
             CRItemInfo itemInfo = new(key, true, item, scrapInfo, shopInfo);
+            item.SetCRInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }
         LethalContent.Items.Freeze();

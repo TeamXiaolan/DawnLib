@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace CodeRebirthLib;
@@ -119,7 +118,7 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace(" ", ""))?.GetValue(null);
                 if (key == null)
                     continue;
 
@@ -144,6 +143,7 @@ static class EnemyRegistrationHandler
                 }
 
                 CREnemyInfo enemyInfo = new(key, true, enemyWithRarity.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
+                enemyWithRarity.enemyType.SetCRInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);
             }
 
