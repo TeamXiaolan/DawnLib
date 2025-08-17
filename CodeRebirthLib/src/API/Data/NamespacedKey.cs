@@ -13,7 +13,7 @@ public class NamespacedKey : INetworkSerializable
     internal static string NormalizeNamespacedKey(string input)
     {
         // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
-        return NamespacedKeyRegex.Replace(input, string.Empty).Replace(" ", "_").ToLowerInvariant();
+        return NamespacedKeyRegex.Replace(input.Replace(" ", "_").ToLowerInvariant(), string.Empty);
     }
 
     public const char Separator = ':';
