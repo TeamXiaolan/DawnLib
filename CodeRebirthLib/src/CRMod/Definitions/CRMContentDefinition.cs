@@ -16,8 +16,6 @@ public abstract class CRMContentDefinition : ScriptableObject
     [SerializeField]
     private List<CRDynamicConfig> _configEntries;
 
-    protected abstract string EntityNameReference { get; }
-
     internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
     public CRMod Mod { get; private set; }
 
@@ -40,6 +38,7 @@ public abstract class CRMContentDefinition : ScriptableObject
     }
 
     public abstract string GetDefaultKey();
+    protected abstract string EntityNameReference { get; }
 }
 
 public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition where T : EntityData where TInfo : INamespaced<TInfo>

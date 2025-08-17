@@ -5,6 +5,7 @@ using WeatherRegistry;
 using WeatherRegistry.Modules;
 
 namespace CodeRebirthLib.CRMod;
+
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = "CodeRebirthLib/Definitions/Weather Definition")]
 public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherInfo>
 {
@@ -12,9 +13,6 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
 
     [field: SerializeField]
     public Weather Weather { get; private set; }
-
-    protected override string EntityNameReference => Weather.Name;
-
 
     public override void Register(CRMod mod, WeatherData data)
     {
@@ -85,4 +83,5 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
         }
         return Weather.name;
     }
+    protected override string EntityNameReference => Weather.Name;
 }

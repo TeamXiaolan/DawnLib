@@ -17,8 +17,6 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
     public ProgressiveObject ProgressiveObject { get; private set; }
 
     public UnlockableConfig Config { get; private set; }
-    protected override string EntityNameReference => UnlockableItem.unlockableName;
-
 
     public ProgressiveUnlockData? ProgressiveData { get; private set; }
 
@@ -77,4 +75,5 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
     {
         return UnlockableItem.unlockableName;
     }
+    protected override string EntityNameReference => UnlockableItem.unlockableName;
 }

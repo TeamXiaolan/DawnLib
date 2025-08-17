@@ -26,9 +26,6 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
     public OutsideMapObjectSettings OutsideMapObjectSettings { get; private set; }
 
     public MapObjectConfig Config { get; private set; }
-    protected override string EntityNameReference => MapObjectName;
-
-
 
     public override void Register(CRMod mod, MapObjectData data)
     {
@@ -102,4 +99,5 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
     {
         return MapObjectName;
     }
+    protected override string EntityNameReference => MapObjectName;
 }
