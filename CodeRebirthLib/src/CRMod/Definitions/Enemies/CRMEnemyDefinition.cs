@@ -95,13 +95,5 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
         // probably should be cached but i dont care anymore.
     }
 
-    public override string GetDefaultKey()
-    {
-        if (EnemyType == null)
-        {
-            return "";
-        }
-        return EnemyType.enemyName;
-    }
     protected override string EntityNameReference => EnemyType.enemyName;
 }

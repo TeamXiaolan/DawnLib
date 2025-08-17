@@ -37,7 +37,12 @@ public abstract class CRMContentDefinition : ScriptableObject
         }
     }
 
-    public abstract string GetDefaultKey();
+    public string GetDefaultKey()
+    {
+        string normalizedName = NamespacedKey.NormalizeNamespacedKey(EntityNameReference);
+        return normalizedName;
+    }
+
     protected abstract string EntityNameReference { get; }
 }
 

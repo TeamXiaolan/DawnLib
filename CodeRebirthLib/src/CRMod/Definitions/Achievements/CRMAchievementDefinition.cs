@@ -85,9 +85,5 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition<Achievemen
 
     public virtual bool IsActive() { return true; }
 
-    public override string GetDefaultKey()
-    {
-        return AchievementName;
-    }
     protected override string EntityNameReference => AchievementName;
 }

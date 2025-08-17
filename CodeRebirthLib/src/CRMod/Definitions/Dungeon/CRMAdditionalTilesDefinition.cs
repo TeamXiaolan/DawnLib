@@ -48,13 +48,5 @@ public class CRAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRT
         return mod.Content.assetBundles.SelectMany(it => it.dungeons).ToList();
     }
 
-    public override string GetDefaultKey()
-    {
-        if (TilesToAdd == null)
-        {
-            return "";
-        }
-        return TilesToAdd.name;
-    }
     protected override string EntityNameReference => TilesToAdd.name;
 }

@@ -75,13 +75,5 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherI
         // probably should be cached but i dont care anymore.
     }
 
-    public override string GetDefaultKey()
-    {
-        if (Weather == null)
-        {
-            return "";
-        }
-        return Weather.name;
-    }
     protected override string EntityNameReference => Weather.Name;
 }

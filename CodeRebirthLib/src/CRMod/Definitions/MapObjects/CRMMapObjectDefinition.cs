@@ -95,9 +95,5 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
         return mod.Content.assetBundles.SelectMany(it => it.mapObjects).ToList();
     }
 
-    public override string GetDefaultKey()
-    {
-        return MapObjectName;
-    }
     protected override string EntityNameReference => MapObjectName;
 }

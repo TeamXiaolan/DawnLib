@@ -71,9 +71,5 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
         return mod.Content.assetBundles.SelectMany(it => it.unlockables).ToList();
     }
 
-    public override string GetDefaultKey()
-    {
-        return UnlockableItem.unlockableName;
-    }
     protected override string EntityNameReference => UnlockableItem.unlockableName;
 }

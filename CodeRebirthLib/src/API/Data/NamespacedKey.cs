@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using BepInEx;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,6 +9,13 @@ namespace CodeRebirthLib;
 [Serializable]
 public class NamespacedKey : INetworkSerializable
 {
+    private static readonly Regex NamespacedKeyRegex = new(@"[\n\t""`\[\]']");
+    internal static string NormalizeNamespacedKey(string input)
+    {
+        // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
+        return NamespacedKeyRegex.Replace(input, string.Empty).Replace(" ", "_").ToLowerInvariant();
+    }
+
     public const char Separator = ':';
     public const string VanillaNamespace = "lethal_company";
 

@@ -109,13 +109,5 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
         return mod.Content.assetBundles.SelectMany(it => it.items).ToList();
     }
 
-    public override string GetDefaultKey()
-    {
-        if (Item == null)
-        {
-            return "";
-        }
-        return Item.itemName;
-    }
     protected override string EntityNameReference => Item.itemName;
 }
