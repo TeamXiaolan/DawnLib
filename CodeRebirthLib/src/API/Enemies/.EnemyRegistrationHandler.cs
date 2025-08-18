@@ -62,7 +62,7 @@ static class EnemyRegistrationHandler
 
         foreach (var level in self.levels)
         {
-            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
+            NamespacedKey<CRMoonInfo>? moonKey = level.ToNamespacedKey();
 
             foreach (var enemyWithRarity in level.Enemies)
             {
@@ -118,7 +118,7 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace(" ", ""))?.GetValue(null);
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyWithRarity.enemyType.enemyName))?.GetValue(null);
                 if (key == null)
                     continue;
 

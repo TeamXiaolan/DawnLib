@@ -144,7 +144,7 @@ static class ItemRegistrationHandler
 
         foreach (var item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(new string(item.itemName.Replace(" ", "").SkipWhile(c => !char.IsLetter(c)).ToArray()))?.GetValue(null);
+            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName))?.GetValue(null);
             if (key == null)
                 continue;
 

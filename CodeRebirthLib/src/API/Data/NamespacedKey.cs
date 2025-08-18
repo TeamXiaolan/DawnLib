@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using BepInEx;
 using Unity.Netcode;
@@ -9,11 +11,39 @@ namespace CodeRebirthLib;
 [Serializable]
 public class NamespacedKey : INetworkSerializable
 {
-    private static readonly Regex NamespacedKeyRegex = new(@"[\n\t""`\[\]']");
-    internal static string NormalizeNamespacedKey(string input)
+    private static readonly Regex NamespacedKeyRegex = new(@"[.\n\t""`\[\]'-]");
+    private static readonly Dictionary<char, string> NumberWords = new()
     {
-        // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
-        return NamespacedKeyRegex.Replace(input.Replace(" ", "_").ToLowerInvariant(), string.Empty);
+        { '0', "Zero" },
+        { '1', "One" },
+        { '2', "Two" },
+        { '3', "Three" },
+        { '4', "Four" },
+        { '5', "Five" },
+        { '6', "Six" },
+        { '7', "Seven" },
+        { '8', "Eight" },
+        { '9', "Nine" },
+    };
+
+    internal static string NormalizeStringForNamespacedKey(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return string.Empty;
+
+        string cleanedstring = NamespacedKeyRegex.Replace(input, string.Empty);
+
+        StringBuilder stringBuilder = new(cleanedstring.Length);
+        foreach (char character in cleanedstring)
+        {
+            if (NumberWords.TryGetValue(character, out string word))
+                stringBuilder.Append(word);
+            else
+                stringBuilder.Append(character);
+        }
+
+        string result = stringBuilder.ToString().ToLowerInvariant().Replace(" ", "_");
+        return result;
     }
 
     public const char Separator = ':';

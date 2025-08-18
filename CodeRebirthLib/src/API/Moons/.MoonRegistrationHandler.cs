@@ -19,7 +19,7 @@ static class MoonRegistrationHandler
 
         foreach (SelectableLevel level in self.levels)
         {
-            NamespacedKey<CRMoonInfo>? key = (NamespacedKey<CRMoonInfo>?)typeof(MoonKeys).GetField(new string(level.PlanetName.Replace(" ", "").SkipWhile(c => !char.IsLetter(c)).ToArray()))?.GetValue(null);
+            NamespacedKey<CRMoonInfo>? key = (NamespacedKey<CRMoonInfo>?)typeof(MoonKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName))?.GetValue(null);
             if (key == null)
                 continue;
 

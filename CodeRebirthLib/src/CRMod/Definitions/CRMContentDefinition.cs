@@ -39,7 +39,7 @@ public abstract class CRMContentDefinition : ScriptableObject
 
     public string GetDefaultKey()
     {
-        string normalizedName = NamespacedKey.NormalizeNamespacedKey(EntityNameReference);
+        string normalizedName = NamespacedKey.NormalizeStringForNamespacedKey(EntityNameReference);
         return normalizedName;
     }
 

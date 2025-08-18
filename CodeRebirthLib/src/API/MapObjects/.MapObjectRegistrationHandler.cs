@@ -73,7 +73,7 @@ static class MapObjectRegistrationHandler
 
         foreach (var mapObject in vanillaMapObjects)
         {
-            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(mapObject.name.Replace(" ", ""))?.GetValue(null);
+            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name))?.GetValue(null);
             if (key == null)
                 continue;
 
