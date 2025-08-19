@@ -80,7 +80,7 @@ public static class CRLib
         LethalContent.Enemies.Register(enemyInfo);
     }
 
-    public static void ApplyTag(TagDefinition definition)
+    public static void ApplyTag(JSONTagDefinition definition)
     {
         NamespacedKey tag = NamespacedKey.Parse(definition.Tag);
 
@@ -107,7 +107,7 @@ public static class CRLib
     {
         foreach (string filePath in Directory.GetFiles(path, "*.tag.json", SearchOption.AllDirectories))
         {
-            TagDefinition definition = JsonConvert.DeserializeObject<TagDefinition>(File.ReadAllText(filePath))!;
+            JSONTagDefinition definition = JsonConvert.DeserializeObject<JSONTagDefinition>(File.ReadAllText(filePath))!;
             ApplyTag(definition);
         }
     }

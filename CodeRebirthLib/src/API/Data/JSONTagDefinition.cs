@@ -1,5 +1,5 @@
 ﻿namespace CodeRebirthLib;
-public class TagDefinition
+public class JSONTagDefinition
 {
     public string Tag;
     public string[] Values;
