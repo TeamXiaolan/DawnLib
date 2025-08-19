@@ -83,7 +83,7 @@ static class MapObjectRegistrationHandler
             vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo? insideMapObjectInfo);
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo? outsideMapObjectInfo);
 
-            CRMapObjectInfo mapObjectInfo = new(key, true, mapObject, insideMapObjectInfo, outsideMapObjectInfo);
+            CRMapObjectInfo mapObjectInfo = new(key, [CRLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
             LethalContent.MapObjects.Register(mapObjectInfo);
         }
         LethalContent.MapObjects.Freeze();
@@ -181,7 +181,7 @@ static class MapObjectRegistrationHandler
         foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var insideInfo = mapObjectInfo.InsideInfo;
-            if (insideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.IsExternal)
+            if (insideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]);

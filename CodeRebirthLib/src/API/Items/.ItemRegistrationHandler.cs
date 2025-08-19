@@ -34,7 +34,7 @@ static class ItemRegistrationHandler
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.IsExternal)
+            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
@@ -160,7 +160,7 @@ static class ItemRegistrationHandler
                 scrapInfo = new(weightTableBuilder.Build());
             }
 
-            CRItemInfo itemInfo = new(key, true, item, scrapInfo, shopInfo);
+            CRItemInfo itemInfo = new(key, [CRLibTags.IsExternal], item, scrapInfo, shopInfo);
             item.SetCRInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace CodeRebirthLib;
@@ -28,22 +29,22 @@ static class EnemyRegistrationHandler
     {
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.Key.IsVanilla() || enemyInfo.IsExternal)
+            if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
-            if (enemyInfo.OutsideWeights != null)
+            if (enemyInfo.Outside != null)
             {
-                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.OutsideWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Outside.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
             }
 
-            if (enemyInfo.InsideWeights != null)
+            if (enemyInfo.Inside != null)
             {
-                level.Enemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.InsideWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.Enemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Inside.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
             }
 
-            if (enemyInfo.DaytimeWeights != null)
+            if (enemyInfo.Daytime != null)
             {
-                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.DaytimeWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Daytime.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
             }
         }
     }
@@ -62,7 +63,7 @@ static class EnemyRegistrationHandler
 
         foreach (var level in self.levels)
         {
-            NamespacedKey<CRMoonInfo>? moonKey = level.ToNamespacedKey();
+            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
 
             foreach (var enemyWithRarity in level.Enemies)
             {
@@ -118,7 +119,7 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyWithRarity.enemyType.enemyName))?.GetValue(null);
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
                 if (key == null)
                     continue;
 
@@ -142,7 +143,7 @@ static class EnemyRegistrationHandler
                     daytimeWeightBuilder = enemyDaytimeWeightBuilder[enemyWithRarity.enemyType];
                 }
 
-                CREnemyInfo enemyInfo = new(key, true, enemyWithRarity.enemyType, insideWeightBuilder.Build(), outsideWeightBuilder.Build(), daytimeWeightBuilder.Build());
+                CREnemyInfo enemyInfo = new(key, [CRLibTags.IsExternal], enemyWithRarity.enemyType, new CREnemyLocationInfo(insideWeightBuilder.Build()), new CREnemyLocationInfo(outsideWeightBuilder.Build()), new CREnemyLocationInfo(daytimeWeightBuilder.Build()));
                 enemyWithRarity.enemyType.SetCRInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);
             }
@@ -152,13 +153,13 @@ static class EnemyRegistrationHandler
                 if (enemyInfo.Key.IsVanilla())
                     continue; // also ensure not to register vanilla stuff again
 
-                if (enemyInfo.OutsideWeights != null)
+                if (enemyInfo.Outside != null)
                     TryAddToEnemyList(enemyInfo, level.OutsideEnemies);
 
-                if (enemyInfo.DaytimeWeights != null)
+                if (enemyInfo.Daytime != null)
                     TryAddToEnemyList(enemyInfo, level.DaytimeEnemies);
 
-                if (enemyInfo.InsideWeights != null)
+                if (enemyInfo.Inside != null)
                     TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }

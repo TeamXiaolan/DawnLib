@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CodeRebirthLib;
 public class ItemInfoBuilder
@@ -116,7 +117,8 @@ public class ItemInfoBuilder
 
     private CRScrapItemInfo? _scrapInfo;
     private CRShopItemInfo? _shopInfo;
-
+    private List<NamespacedKey> _tags;
+    
     internal ItemInfoBuilder(NamespacedKey<CRItemInfo> key, Item item)
     {
         _key = key;
@@ -138,8 +140,14 @@ public class ItemInfoBuilder
         return this;
     }
 
+    public ItemInfoBuilder AddTag(NamespacedKey tag)
+    {
+        _tags.Add(tag);
+        return this;
+    }
+    
     internal CRItemInfo Build()
     {
-        return new CRItemInfo(_key, false, _item, _scrapInfo, _shopInfo);
+        return new CRItemInfo(_key, _tags, _item, _scrapInfo, _shopInfo);
     }
 }

@@ -54,7 +54,7 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
             {
                 builder.DefineDaytime(daytimeBuilder =>
                 {
-                    daytimeBuilder.SetGlobalWeight(SpawnWeights);
+                    daytimeBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
                 });
             }
 
@@ -62,7 +62,7 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
             {
                 builder.DefineOutside(outsideBuilder =>
                 {
-                    outsideBuilder.SetGlobalWeight(SpawnWeights);
+                    outsideBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
                 });
             }
 
@@ -70,7 +70,7 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
             {
                 builder.DefineInside(insideBuilder =>
                 {
-                    insideBuilder.SetGlobalWeight(SpawnWeights);
+                    insideBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
                 });
             }
         });

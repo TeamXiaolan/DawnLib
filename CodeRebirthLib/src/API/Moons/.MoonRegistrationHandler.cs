@@ -29,7 +29,7 @@ static class MoonRegistrationHandler
             if (LethalContent.Moons.ContainsKey(key))
                 continue;
 
-            CRMoonInfo moonInfo = new(key, level);
+            CRMoonInfo moonInfo = new(key, [CRLibTags.IsExternal], level);
             level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -116,6 +117,8 @@ public class MapObjectInfoBuilder
 
     private CRInsideMapObjectInfo? _insideInfo;
     private CROutsideMapObjectInfo? _outsideInfo;
+    
+    private List<NamespacedKey> _tags;
 
     internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject)
     {
@@ -138,9 +141,15 @@ public class MapObjectInfoBuilder
         _outsideInfo = builder.Build();
         return this;
     }
+    
+    public MapObjectInfoBuilder AddTag(NamespacedKey tag)
+    {
+        _tags.Add(tag);
+        return this;
+    }
 
     internal CRMapObjectInfo Build()
     {
-        return new CRMapObjectInfo(_key, false, _mapObject, _insideInfo, _outsideInfo);
+        return new CRMapObjectInfo(_key, _tags, _mapObject, _insideInfo, _outsideInfo);
     }
 }

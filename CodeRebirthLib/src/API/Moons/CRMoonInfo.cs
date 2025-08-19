@@ -1,10 +1,15 @@
-﻿namespace CodeRebirthLib;
+﻿using System.Collections.Generic;
+
+namespace CodeRebirthLib;
 public class CRMoonInfo : INamespaced<CRMoonInfo>, ITaggable
 {
-    internal CRMoonInfo(NamespacedKey<CRMoonInfo> key, SelectableLevel level)
+    private List<NamespacedKey> _tags;
+    
+    internal CRMoonInfo(NamespacedKey<CRMoonInfo> key, List<NamespacedKey> tags, SelectableLevel level)
     {
         TypedKey = key;
         Level = level;
+        _tags = tags;
     }
 
     public SelectableLevel Level { get; }
@@ -13,6 +18,6 @@ public class CRMoonInfo : INamespaced<CRMoonInfo>, ITaggable
     public NamespacedKey<CRMoonInfo> TypedKey { get; }
     public bool HasTag(NamespacedKey tag)
     {
-        return false; // todo
+        return _tags.Contains(tag);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace CodeRebirthLib;
 public class UnlockableInfoBuilder
@@ -53,6 +54,8 @@ public class UnlockableInfoBuilder
     private CRPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
 
+    private List<NamespacedKey> _tags;
+    
     internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem)
     {
         _key = key;
@@ -87,6 +90,12 @@ public class UnlockableInfoBuilder
         return this;
     }
 
+    public UnlockableInfoBuilder AddTag(NamespacedKey tag)
+    {
+        _tags.Add(tag);
+        return this;
+    }
+    
     internal CRUnlockableItemInfo Build()
     {
         int cost = 0;
@@ -100,6 +109,6 @@ public class UnlockableInfoBuilder
         }
 
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-        return new CRUnlockableItemInfo(_purchasePredicate, _key, false, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
+        return new CRUnlockableItemInfo(_purchasePredicate, _key, _tags, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
     }
 }

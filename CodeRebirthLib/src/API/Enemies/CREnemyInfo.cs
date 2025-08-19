@@ -1,18 +1,23 @@
+using System.Collections.Generic;
+
 namespace CodeRebirthLib;
 
 public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
 {
-    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, bool isExternal, EnemyType enemyType, ProviderTable<int?, CRMoonInfo>? outsideWeights, ProviderTable<int?, CRMoonInfo>? insideWeights, ProviderTable<int?, CRMoonInfo>? daytimeWeights) : base(key, isExternal)
+    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, CREnemyLocationInfo? outside, CREnemyLocationInfo? inside, CREnemyLocationInfo? daytime) : base(key, tags)
     {
         EnemyType = enemyType;
-        OutsideWeights = outsideWeights;
-        InsideWeights = insideWeights;
-        DaytimeWeights = daytimeWeights;
+        Outside = outside;
+        if (Outside != null) Outside.ParentInfo = this;
+        Inside = inside;
+        if (Inside != null) Inside.ParentInfo = this;
+        Daytime = daytime;
+        if (Daytime != null) Daytime.ParentInfo = this;
     }
 
     public EnemyType EnemyType { get; }
 
-    public ProviderTable<int?, CRMoonInfo>? OutsideWeights { get; }
-    public ProviderTable<int?, CRMoonInfo>? InsideWeights { get; }
-    public ProviderTable<int?, CRMoonInfo>? DaytimeWeights { get; }
+    public CREnemyLocationInfo? Outside { get; }
+    public CREnemyLocationInfo? Inside { get; }
+    public CREnemyLocationInfo? Daytime { get; }
 }

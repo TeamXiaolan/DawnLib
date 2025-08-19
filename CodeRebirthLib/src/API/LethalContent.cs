@@ -1,4 +1,7 @@
-﻿namespace CodeRebirthLib;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+namespace CodeRebirthLib;
 
 public static class LethalContent
 {
@@ -14,5 +17,10 @@ public static class LethalContent
 
 public static class Tags
 {
-    public static readonly NamespacedKey ForestTag = NamespacedKey.Vanilla("forest");
+    public static readonly NamespacedKey Forest = NamespacedKey.Vanilla("forest");
+}
+
+public static class CRLibTags
+{
+    internal static readonly NamespacedKey IsExternal = NamespacedKey.From("code_rebirth_lib", "is_external");
 }

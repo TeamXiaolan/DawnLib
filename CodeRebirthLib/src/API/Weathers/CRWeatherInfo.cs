@@ -2,7 +2,7 @@ namespace CodeRebirthLib;
 
 public class CRWeatherEffectInfo : CRBaseInfo<CRWeatherEffectInfo>
 {
-    public CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, bool isExternal, WeatherEffect weatherEffect) : base(key, isExternal)
+    internal CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, bool isExternal, WeatherEffect weatherEffect) : base(key, [CRLibTags.IsExternal]) // todo
     {
         WeatherEffect = weatherEffect;
     }

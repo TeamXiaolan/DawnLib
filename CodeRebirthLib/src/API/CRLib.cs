@@ -2,6 +2,7 @@
 using CodeRebirthLib.Internal;
 using DunGen;
 using UnityEngine;
+using WeatherRegistry;
 
 namespace CodeRebirthLib;
 public static class CRLib
@@ -74,15 +75,6 @@ public static class CRLib
         CREnemyInfo enemyInfo = builder.Build();
         enemy.SetCRInfo(enemyInfo);
         LethalContent.Enemies.Register(enemyInfo);
-    }
-
-    public static void DefineWeather(NamespacedKey<CRWeatherEffectInfo> key, WeatherEffect weatherEffect, Action<WeatherInfoBuilder> callback)
-    {
-        WeatherInfoBuilder builder = new(key, weatherEffect);
-        callback(builder);
-        CRWeatherEffectInfo weatherInfo = builder.Build();
-        weatherEffect.SetCRInfo(weatherInfo);
-        LethalContent.Weathers.Register(weatherInfo);
     }
 
     public static TerminalNodeBuilder DefineTerminalNode(string name)

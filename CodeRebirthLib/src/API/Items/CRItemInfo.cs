@@ -1,7 +1,9 @@
-﻿namespace CodeRebirthLib;
+﻿using System.Collections.Generic;
+
+namespace CodeRebirthLib;
 public sealed class CRItemInfo : CRBaseInfo<CRItemInfo>
 {
-    internal CRItemInfo(NamespacedKey<CRItemInfo> key, bool isExternal, Item item, CRScrapItemInfo? scrapItemInfo, CRShopItemInfo? shopItemInfo) : base(key, isExternal)
+    internal CRItemInfo(NamespacedKey<CRItemInfo> key, List<NamespacedKey> tags, Item item, CRScrapItemInfo? scrapItemInfo, CRShopItemInfo? shopItemInfo) : base(key, tags)
     {
         Item = item;
         ScrapInfo = scrapItemInfo;

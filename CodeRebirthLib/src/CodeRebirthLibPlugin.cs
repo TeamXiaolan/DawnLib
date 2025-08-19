@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -67,12 +68,12 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Items", LethalContent.Items, itemInfo => itemInfo.Item.itemName);
         DebugPrintRegistryResult("Unlockables", LethalContent.Unlockables, unlockableInfo => unlockableInfo.UnlockableItem.unlockableName);
         DebugPrintRegistryResult("MapObjects", LethalContent.MapObjects, mapObjectInfo => mapObjectInfo.MapObject.name);
-        // DebugPrintRegistryResult("Weathers", LethalContent.Weathers, weatherInfo => weatherInfo);
+        DebugPrintRegistryResult("Weathers", LethalContent.Weathers, weatherInfo => weatherInfo.WeatherEffect.name);
         DebugPrintRegistryResult("AdditionalTiles", LethalContent.TileSets, additionalTileInfo => additionalTileInfo.TileSet.name);
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
-
+        
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
-
+        
         AutoCRModHandler.AutoRegisterMods();
     }
 

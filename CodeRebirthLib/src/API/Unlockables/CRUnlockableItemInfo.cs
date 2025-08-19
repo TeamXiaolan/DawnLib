@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+
 namespace CodeRebirthLib;
 
 public sealed class CRUnlockableItemInfo : CRBaseInfo<CRUnlockableItemInfo>, ITerminalPurchase
 {
-    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, bool isExternal, UnlockableItem unlockableItem, int cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo) : base(key, isExternal)
+    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, List<NamespacedKey> tags, UnlockableItem unlockableItem, int cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo) : base(key, tags)
     {
         PurchasePredicate = predicate;
         UnlockableItem = unlockableItem;

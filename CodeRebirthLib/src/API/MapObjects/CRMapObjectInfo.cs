@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ namespace CodeRebirthLib;
 
 public sealed class CRMapObjectInfo : CRBaseInfo<CRMapObjectInfo>
 {
-    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, bool isExternal, GameObject mapObject, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo) : base(key, isExternal)
+    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, List<NamespacedKey> tags, GameObject mapObject, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo) : base(key, tags)
     {
         MapObject = mapObject;
         InsideInfo = insideInfo;
