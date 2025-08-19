@@ -66,12 +66,6 @@ public class NamespacedKey : INetworkSerializable
         return new NamespacedKey(@namespace, key);
     }
 
-    public static NamespacedKey From<T>(string key) where T : BaseUnityPlugin
-    {
-        BepInPlugin plugin = MetadataHelper.GetMetadata(typeof(T));
-        return From(plugin.Name, key);
-    }
-
     public static NamespacedKey Vanilla(string key)
     {
         return From(VanillaNamespace, key);
@@ -126,13 +120,6 @@ public class NamespacedKey<T> : NamespacedKey where T : INamespaced
     {
         return new NamespacedKey<T>(@namespace, key);
     }
-
-    public new static NamespacedKey<T> From<TPlugin>(string key) where TPlugin : BaseUnityPlugin
-    {
-        BepInPlugin plugin = MetadataHelper.GetMetadata(typeof(TPlugin));
-        return From(plugin.Name, key);
-    }
-
     public new static NamespacedKey<T> Vanilla(string key)
     {
         return From(VanillaNamespace, key);
