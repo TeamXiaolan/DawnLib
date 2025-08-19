@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CodeRebirthLib.CRMod;
 
 [CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = "CodeRebirthLib/Definitions/Additional Tiles Definition")]
-public class CRAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRTileSetInfo>
+public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRTileSetInfo>
 {
     [Flags]
     public enum BranchCapSetting

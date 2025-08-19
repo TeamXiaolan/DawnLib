@@ -81,7 +81,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             typeof(CRMEnemyDefinition),
             typeof(CRMUnlockableDefinition),
             typeof(CRMItemDefinition),
-            typeof(CRAdditionalTilesDefinition),
+            typeof(CRMAdditionalTilesDefinition),
             typeof(CRMAchievementDefinition),
         ];
 

@@ -1,4 +1,4 @@
-using System.Linq;
+using MonoMod.RuntimeDetour;
 
 namespace CodeRebirthLib;
 
@@ -6,7 +6,10 @@ static class MoonRegistrationHandler
 {
     internal static void Init()
     {
-        On.StartOfRound.Awake += CollectLevels;
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.StartOfRound.Awake += CollectLevels;
+        }
     }
 
     private static void CollectLevels(On.StartOfRound.orig_Awake orig, StartOfRound self)

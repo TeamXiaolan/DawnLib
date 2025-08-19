@@ -3,7 +3,7 @@ using System;
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class CRMAdditionalTilesReference : CRMContentReference<CRAdditionalTilesDefinition, CRTileSetInfo>
+public class CRMAdditionalTilesReference : CRMContentReference<CRMAdditionalTilesDefinition, CRTileSetInfo>
 {
     public CRMAdditionalTilesReference() : base()
     { }

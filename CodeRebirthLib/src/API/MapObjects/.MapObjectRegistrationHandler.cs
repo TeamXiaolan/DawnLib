@@ -106,7 +106,7 @@ static class MapObjectRegistrationHandler
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
-            // TODO how do i even register this shit if im not putting it inside vanilla fields??
+            // TODO register vanilla outside objects
             // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
         orig(self);
