@@ -60,7 +60,7 @@ static class ItemRegistrationHandler
                     weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
                     itemWeightBuilder[itemWithRarity.spawnableItem] = weightTableBuilder;
                 }
-                weightTableBuilder.AddWeight(moonKey, itemWithRarity.rarity);
+                weightTableBuilder.AddWeight(level.ToNamespacedKey(), itemWithRarity.rarity);
             }
         }
 
@@ -144,7 +144,7 @@ static class ItemRegistrationHandler
 
         foreach (var item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName))?.GetValue(null);
+            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true))?.GetValue(null);
             if (key == null)
                 continue;
 

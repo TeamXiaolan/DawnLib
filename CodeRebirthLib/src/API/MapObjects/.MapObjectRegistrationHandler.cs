@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.CRMod;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
 using Unity.Netcode;
@@ -24,64 +25,116 @@ static class MapObjectRegistrationHandler
         if (LethalContent.MapObjects.IsFrozen)
             return;
 
-        Dictionary<SpawnableMapObject, CurveTableBuilder<CRMoonInfo>> vanillaInsideWeights = new();
-        Dictionary<SpawnableOutsideObject, CurveTableBuilder<CRMoonInfo>> vanillaOutsideWeights = new();
+        Dictionary<GameObject, CurveTableBuilder<CRMoonInfo>> insideWeightsByPrefab = new();
+        Dictionary<GameObject, CurveTableBuilder<CRMoonInfo>> outsideWeightsByPrefab = new();
+
+        Dictionary<GameObject, InsideMapObjectSettings> insidePlacementByPrefab = new();
+        Dictionary<GameObject, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
 
         foreach (var level in self.levels)
         {
-            foreach (var mapObject in level.spawnableMapObjects)
+            foreach (SpawnableMapObject mapObject in level.spawnableMapObjects)
             {
-                if (mapObject.prefabToSpawn != null && !vanillaInsideWeights.ContainsKey(mapObject))
+                GameObject prefab = mapObject.prefabToSpawn;
+                if (prefab == null)
+                    continue;
+
+                if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<CRMoonInfo> builder))
                 {
-                    vanillaInsideWeights.Add(mapObject, new CurveTableBuilder<CRMoonInfo>());
+                    builder = new CurveTableBuilder<CRMoonInfo>();
+                    insideWeightsByPrefab[prefab] = builder;
+
+                    if (!insidePlacementByPrefab.ContainsKey(prefab))
+                    {
+                        insidePlacementByPrefab[prefab] = new InsideMapObjectSettings()
+                        {
+                            spawnFacingAwayFromWall = mapObject.spawnFacingAwayFromWall,
+                            spawnFacingWall = mapObject.spawnFacingWall,
+                            spawnWithBackToWall = mapObject.spawnWithBackToWall,
+                            spawnWithBackFlushAgainstWall = mapObject.spawnWithBackFlushAgainstWall,
+                            requireDistanceBetweenSpawns = mapObject.requireDistanceBetweenSpawns,
+                            disallowSpawningNearEntrances = mapObject.disallowSpawningNearEntrances
+                        };
+                    }
                 }
-                vanillaInsideWeights[mapObject].AddCurve(level.ToNamespacedKey(), mapObject.numberToSpawn);
+
+                builder.AddCurve(level.ToNamespacedKey(), mapObject.numberToSpawn);
             }
 
-            foreach (var mapObject in level.spawnableOutsideObjects)
+            foreach (SpawnableOutsideObjectWithRarity outsideMapObject in level.spawnableOutsideObjects)
             {
-                if (mapObject.spawnableObject.prefabToSpawn != null && !vanillaOutsideWeights.ContainsKey(mapObject.spawnableObject))
+                SpawnableOutsideObject spawnable = outsideMapObject.spawnableObject;
+                if (spawnable?.prefabToSpawn == null)
+                    continue;
+
+                GameObject prefab = spawnable.prefabToSpawn;
+                if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<CRMoonInfo> builder))
                 {
-                    vanillaOutsideWeights.Add(mapObject.spawnableObject, new CurveTableBuilder<CRMoonInfo>());
+                    builder = new CurveTableBuilder<CRMoonInfo>();
+                    outsideWeightsByPrefab[prefab] = builder;
+
+                    if (!outsidePlacementByPrefab.ContainsKey(prefab))
+                    {
+                        outsidePlacementByPrefab[prefab] = new OutsideMapObjectSettings()
+                        {
+                            AlignWithTerrain = false,
+                        };
+                    }
                 }
-                vanillaOutsideWeights[mapObject.spawnableObject].AddCurve(level.ToNamespacedKey(), mapObject.randomAmount);
+
+                builder.AddCurve(level.ToNamespacedKey(), outsideMapObject.randomAmount);
             }
         }
 
         Dictionary<GameObject, CRInsideMapObjectInfo> vanillaInsideMapObjectsDict = new();
+        foreach (var kvp in insideWeightsByPrefab)
+        {
+            GameObject prefab = kvp.Key;
+            ProviderTable<AnimationCurve?, CRMoonInfo> table = kvp.Value.Build();
+
+            insidePlacementByPrefab.TryGetValue(prefab, out InsideMapObjectSettings mapObjectSettings);
+            CRInsideMapObjectInfo insideInfo = new(
+                table,
+                mapObjectSettings.spawnFacingAwayFromWall,
+                mapObjectSettings.spawnFacingWall,
+                mapObjectSettings.spawnWithBackToWall,
+                mapObjectSettings.spawnWithBackFlushAgainstWall,
+                mapObjectSettings.requireDistanceBetweenSpawns,
+                mapObjectSettings.disallowSpawningNearEntrances
+            );
+
+            vanillaInsideMapObjectsDict[prefab] = insideInfo;
+        }
+
         Dictionary<GameObject, CROutsideMapObjectInfo> vanillaOutsideMapObjectsDict = new();
-
-        foreach (var mapObjectWithCurveTableDict in vanillaInsideWeights)
+        foreach (var kvp in outsideWeightsByPrefab)
         {
-            var spawnableMapObject = mapObjectWithCurveTableDict.Value.Build();
-            CRInsideMapObjectInfo insideMapObjectInfo = new(mapObjectWithCurveTableDict.Value.Build(), mapObjectWithCurveTableDict.Key.spawnFacingAwayFromWall, mapObjectWithCurveTableDict.Key.spawnFacingWall, mapObjectWithCurveTableDict.Key.spawnWithBackToWall, mapObjectWithCurveTableDict.Key.spawnWithBackFlushAgainstWall, mapObjectWithCurveTableDict.Key.requireDistanceBetweenSpawns, mapObjectWithCurveTableDict.Key.disallowSpawningNearEntrances);
-            vanillaInsideMapObjectsDict.Add(mapObjectWithCurveTableDict.Key.prefabToSpawn, insideMapObjectInfo);
+            GameObject prefab = kvp.Key;
+            ProviderTable<AnimationCurve?, CRMoonInfo> table = kvp.Value.Build();
+            outsidePlacementByPrefab.TryGetValue(prefab, out OutsideMapObjectSettings mapObjectSettings);
+            CROutsideMapObjectInfo outsideInfo = new(
+                table,
+                mapObjectSettings.AlignWithTerrain
+            );
+            vanillaOutsideMapObjectsDict[prefab] = outsideInfo;
         }
 
-        foreach (var mapObjectWithCurveTableDict in vanillaOutsideWeights)
-        {
-            var spawnableMapObject = mapObjectWithCurveTableDict.Value.Build();
-            CROutsideMapObjectInfo outsideMapObjectInfo = new(mapObjectWithCurveTableDict.Value.Build(), false);
-            vanillaOutsideMapObjectsDict.Add(mapObjectWithCurveTableDict.Key.prefabToSpawn, outsideMapObjectInfo);
-        }
+        List<GameObject> vanillaMapObjects = insideWeightsByPrefab.Keys
+            .Concat(outsideWeightsByPrefab.Keys)
+            .Distinct()
+            .ToList();
 
-        List<GameObject> vanillaMapObjects =
-        [
-            .. vanillaInsideWeights.Keys.Select(x => x.prefabToSpawn),
-            .. vanillaOutsideWeights.Keys.Select(x => x.prefabToSpawn)
-        ];
-
-        foreach (var mapObject in vanillaMapObjects)
+        foreach (GameObject mapObject in vanillaMapObjects)
         {
-            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name))?.GetValue(null);
+            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true))?.GetValue(null);
             if (key == null)
                 continue;
 
             if (LethalContent.MapObjects.ContainsKey(key))
                 continue;
 
-            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo? insideMapObjectInfo);
-            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo? outsideMapObjectInfo);
+            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo insideMapObjectInfo);
+            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo outsideMapObjectInfo);
 
             CRMapObjectInfo mapObjectInfo = new(key, [CRLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
             LethalContent.MapObjects.Register(mapObjectInfo);

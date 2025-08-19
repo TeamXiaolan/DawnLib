@@ -119,7 +119,7 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyWithRarity.enemyType.enemyName, true))?.GetValue(null);
                 if (key == null)
                     continue;
 

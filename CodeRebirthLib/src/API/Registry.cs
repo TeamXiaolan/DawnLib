@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib;
 public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : INamespaced<T>
@@ -28,6 +29,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
         if (ContainsKey(key))
             throw new ArgumentException($"'{key}' has already been added to this registry.");
 
+        Debuggers.ReplaceThis?.Log($"Registering: {key}");
         _dictionary[key] = value;
     }
 

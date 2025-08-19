@@ -27,7 +27,7 @@ public class NamespacedKey : INetworkSerializable
 		{ '9', "Nine" },
 	};
 
-	internal static string NormalizeStringForNamespacedKey(string input)
+	internal static string NormalizeStringForNamespacedKey(string input, bool CSharpName)
 	{
 		if (string.IsNullOrEmpty(input))
 			return string.Empty;
@@ -56,8 +56,16 @@ public class NamespacedKey : INetworkSerializable
 		}
 
 		string result = actualWordBuilder.ToString();
-		result = result.ToLowerInvariant().Replace(" ", "_");
-
+		if (CSharpName)
+		{
+			result = result.Replace(" ", "");
+			result = result.Replace("_", "");
+			result = result.ToCapitalized();
+		}
+		else
+		{
+			result = result.ToLowerInvariant().Replace(" ", "_");
+		}
 		return result;
 	}
 

@@ -1,6 +1,6 @@
-using System.Globalization;
-using System.Linq;
+using System;
 using System.Reflection;
+using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib;
 
@@ -13,8 +13,12 @@ public static class SelectableLevelExtensions
     {
         if (!level.HasCRInfo())
         {
-            CodeRebirthLibPlugin.Logger.LogError($"SelectableLevel '{level.PlanetName}' does not have a CRMoonInfo, you are either accessing this too early or it erroneously never got created!");
-            return null;
+            Debuggers.Moons?.Log($"Registering potentially modded level: {level.PlanetName}");
+            NamespacedKey<CRMoonInfo> key = NamespacedKey<CRMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+            CRMoonInfo moonInfo = new(key, [CRLibTags.IsExternal], level);
+            level.SetCRInfo(moonInfo);
+            LethalContent.Moons.Register(moonInfo);
+            // throw new MissingFieldException(); // TODO what exception should this be throwing
         }
         return level.GetCRInfo().TypedKey;
     }
