@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -55,6 +56,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         EnemyRegistrationHandler.Init();
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
+        TagRegistrationHandler.Init();
 
         AchievementRegistrationPatch.Init();
         CRLibNetworkerPatch.Init();
@@ -74,7 +76,13 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
         
+        CRLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
         AutoCRModHandler.AutoRegisterMods();
+    }
+
+    internal static string RelativePath(params string[] folders)
+    {
+        return Path.Combine(Assembly.GetExecutingAssembly().Location, Path.Combine(folders));
     }
 
     private void NetcodePatcher()

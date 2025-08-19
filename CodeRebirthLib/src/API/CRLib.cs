@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using CodeRebirthLib.Internal;
 using DunGen;
+using Mono.Cecil;
+using Newtonsoft.Json;
 using UnityEngine;
 using WeatherRegistry;
 
@@ -77,6 +80,38 @@ public static class CRLib
         LethalContent.Enemies.Register(enemyInfo);
     }
 
+    public static void ApplyTag(TagDefinition definition)
+    {
+        NamespacedKey tag = NamespacedKey.Parse(definition.Tag);
+
+        TagRegistrationHandler.OnApplyTags += () =>
+        {
+            Debuggers.Tags?.Log($"Applying tag: {tag}");
+            
+            foreach (string value in definition.Values)
+            {
+                NamespacedKey key = NamespacedKey.Parse(value);
+                // this isn't great lmao
+                if (LethalContent.Moons.TryGetValue(key, out CRMoonInfo minfo)) minfo.Internal_AddTag(tag);
+                if (LethalContent.Weathers.TryGetValue(key, out CRWeatherEffectInfo winfo)) winfo.Internal_AddTag(tag);
+                if (LethalContent.Enemies.TryGetValue(key, out CREnemyInfo einfo)) einfo.Internal_AddTag(tag);
+                if (LethalContent.MapObjects.TryGetValue(key, out CRMapObjectInfo moinfo)) moinfo.Internal_AddTag(tag);
+                if (LethalContent.Items.TryGetValue(key, out CRItemInfo iinfo)) iinfo.Internal_AddTag(tag);
+                if (LethalContent.Dungeons.TryGetValue(key, out CRDungeonInfo dinfo)) dinfo.Internal_AddTag(tag);
+            }
+        };
+        Debuggers.Tags?.Log($"Scheduled applying tag: {tag}");
+    }
+
+    public static void ApplyAllTagsInFolder(string path)
+    {
+        foreach (string filePath in Directory.GetFiles(path, "*.tag.json", SearchOption.AllDirectories))
+        {
+            TagDefinition definition = JsonConvert.DeserializeObject<TagDefinition>(File.ReadAllText(filePath))!;
+            ApplyTag(definition);
+        }
+    }
+    
     public static TerminalNodeBuilder DefineTerminalNode(string name)
     {
         return new TerminalNodeBuilder(name);

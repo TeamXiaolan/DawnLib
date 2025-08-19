@@ -48,6 +48,11 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
         return _dictionary.TryGetValue(key, out value);
     }
 
+    public bool TryGetValue(NamespacedKey key, out T value)
+    {
+        return TryGetValue(key.AsTyped<T>(), out value);
+    }
+
     public T this[NamespacedKey<T> key] => _dictionary[key];
 
     public IEnumerable<NamespacedKey<T>> Keys => _dictionary.Keys;

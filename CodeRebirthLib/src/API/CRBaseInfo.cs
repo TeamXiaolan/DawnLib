@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib;
 public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBaseInfo<T>
@@ -28,6 +29,7 @@ public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBase
     /// <param name="tag">new tag</param>
     internal void Internal_AddTag(NamespacedKey tag)
     {
+        Debuggers.Tags?.Log($"Internal_AddTag: {tag} !!!");
         _tags.Add(tag);
     }
 }

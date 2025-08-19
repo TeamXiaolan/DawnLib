@@ -19,6 +19,7 @@ internal static class Debuggers
     internal static DebugLogSource? ExtendedTOML;
     internal static DebugLogSource? LethalConfig;
     internal static DebugLogSource? Pathfinding;
+    internal static DebugLogSource? Tags;
 
     internal static void Bind(ConfigFile file)
     {
