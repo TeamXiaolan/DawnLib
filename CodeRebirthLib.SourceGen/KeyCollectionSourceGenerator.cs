@@ -10,8 +10,6 @@ namespace CodeRebirthLib.SourceGen;
 [Generator]
 public class KeyCollectionSourceGenerator : ISourceGenerator
 {
-    const string CodeGenAttribute = $"""System.CodeDom.Compiler.GeneratedCode("CodeRebirthLib", "{MyPluginInfo.PLUGIN_VERSION}")""";
-    
     public void Initialize(GeneratorInitializationContext context)
     {
         
@@ -39,7 +37,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                 GeneratedClass @class = new GeneratedClass(Visibility.Public, className)
                 {
                     IsStatic = true,
-                    Attributes = { CodeGenAttribute }
+                    Attributes = { CRLibSourceGenConstants.CodeGenAttribute }
                 };
                 string type = $"NamespacedKey<{values["__type"]}>";
 

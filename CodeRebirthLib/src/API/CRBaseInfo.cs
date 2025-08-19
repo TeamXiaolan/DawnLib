@@ -19,4 +19,15 @@ public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBase
     {
         return _tags.Contains(tag);
     }
+
+
+    /// <summary>
+    /// Usually tags should be defined fully as the Info class is created. However, to make my life easier with applying tags
+    /// to vanilla content, this method exists to add at a later point. 
+    /// </summary>
+    /// <param name="tag">new tag</param>
+    internal void Internal_AddTag(NamespacedKey tag)
+    {
+        _tags.Add(tag);
+    }
 }

@@ -1,0 +1,76 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using CodeRebirthLib.SourceGen.AST;
+using CodeRebirthLib.SourceGen.Extensions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Newtonsoft.Json;
+
+namespace CodeRebirthLib.SourceGen;
+
+[Generator]
+public class TagSourceGenerator : ISourceGenerator
+{
+
+    
+    
+    public void Initialize(GeneratorInitializationContext context)
+    {
+        
+    }
+    public void Execute(GeneratorExecutionContext context)
+    {
+        GeneratedClass @class = new GeneratedClass(Visibility.Public, "Tags") // todo: e.g. MeltdownTags
+        {
+            IsStatic = true,
+            Attributes = { CRLibSourceGenConstants.CodeGenAttribute }
+        };
+        
+        foreach (AdditionalText? additionalFile in context.AdditionalFiles)
+        {
+            if (additionalFile == null)
+                continue;
+
+            if (!additionalFile.Path.EndsWith("tag.json"))
+                continue;
+
+            SourceText? text = additionalFile.GetText();
+            if (text == null)
+                continue;
+
+            string fieldName = Path.GetFileName(additionalFile.Path).Split('.')[0];
+            fieldName = string.Join("",fieldName.Split('_').Select(it => it.ToCapitalized()));
+            
+            TagDefinition definition = JsonConvert.DeserializeObject<TagDefinition>(text.ToString())!;
+            string[] parts = definition.Tag.Split(':');
+            GeneratedField field = new GeneratedField(Visibility.Public, "NamespacedKey", fieldName)
+            {
+                IsStatic = true
+            };
+            
+            if (parts[0] == "lethal_company")
+            {
+                field.Value = $"NamespacedKey.Vanilla(\"{parts[1]}\")";
+            }
+            else
+            {
+                field.Value = $"NamespacedKey.From(\"{parts[0]}\",\"{parts[1]}\")";
+            }
+            @class.Members.Add(field);
+        }
+
+        GeneratedCodeFile file = new GeneratedCodeFile()
+        {
+            Namespace = "CodeRebirthLib", // todo
+            Usings = ["CodeRebirthLib"],
+            Symbols = [@class]
+        };
+
+        FileWriterVisitor visitor = new FileWriterVisitor();
+        visitor.Accept(file);
+        
+        context.AddSource($"{@class.Name}.g.cs", SourceText.From(visitor.ToString(), Encoding.UTF8));
+    }
+}
