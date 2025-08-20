@@ -9,16 +9,12 @@ public static class SelectableLevelExtensions
     // todo: reference stripped patched assembly??
     private static FieldInfo _infoField = typeof(SelectableLevel).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
 
-    public static NamespacedKey<CRMoonInfo>? ToNamespacedKey(this SelectableLevel level)
+    public static NamespacedKey<CRMoonInfo> ToNamespacedKey(this SelectableLevel level)
     {
         if (!level.HasCRInfo())
         {
-            Debuggers.Moons?.Log($"Registering potentially modded level: {level.PlanetName}");
-            NamespacedKey<CRMoonInfo> key = NamespacedKey<CRMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
-            CRMoonInfo moonInfo = new(key, [CRLibTags.IsExternal], level);
-            level.SetCRInfo(moonInfo);
-            LethalContent.Moons.Register(moonInfo);
-            // throw new MissingFieldException(); // TODO what exception should this be throwing
+            Debuggers.Moons?.Log($"SelectableLevel {level} has no CRInfo");
+            throw new Exception();
         }
         return level.GetCRInfo().TypedKey;
     }

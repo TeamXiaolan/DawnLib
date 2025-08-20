@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib;
@@ -20,7 +18,6 @@ public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBase
     {
         return _tags.Contains(tag);
     }
-
 
     /// <summary>
     /// Usually tags should be defined fully as the Info class is created. However, to make my life easier with applying tags

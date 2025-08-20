@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib.CRMod;
 
@@ -19,13 +20,34 @@ public class MoonWeightTransformer : WeightTransformer
 
     public override string ToConfigString()
     {
+        if (MatchingMoonsWithWeightAndOperationDict.Count == 0)
+            return string.Empty;
+
         string MatchingMoonWithWeight = string.Join(",", MatchingMoonsWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
         return $"{MatchingMoonWithWeight}";
     }
 
     public override void FromConfigString(string config)
     {
-        MatchingMoonsWithWeightAndOperationDict = config.ToLowerInvariant().Split(':', StringSplitOptions.RemoveEmptyEntries).Select(part => part.Split(',')).ToDictionary(tokens => tokens[0].Trim(), tokens => tokens[1].Trim());
+        if (string.IsNullOrEmpty(config))
+            return;
+
+        IEnumerable<string> configEntries = config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        List<string[]> moonWithWeightEntries = configEntries.Select(kvp => kvp.Split(':', StringSplitOptions.RemoveEmptyEntries)).ToList();
+        MatchingMoonsWithWeightAndOperationDict.Clear();
+        foreach (string[] moonWithWeightEntry in moonWithWeightEntries)
+        {
+            if (moonWithWeightEntry.Length != 2)
+                continue;
+
+            string moonName = moonWithWeightEntry[0].Trim();
+            string weightFactor = moonWithWeightEntry[1].Trim();
+            if (string.IsNullOrEmpty(moonName) || string.IsNullOrEmpty(weightFactor))
+                continue;
+
+            Debuggers.Weights?.Log($"Adding {moonName} with weight {weightFactor} to MoonWeightTransformer");
+            MatchingMoonsWithWeightAndOperationDict.Add(moonName, weightFactor);
+        }
     }
 
     public override float GetNewWeight(float currentWeight)

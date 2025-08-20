@@ -14,27 +14,23 @@ static class MapObjectRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
-        On.StartOfRound.Awake += RegisterMapObjects;
-        On.StartOfRound.Start += FreezeMapObjectContents;
+        LethalContent.Moons.OnFreeze += RegisterMapObjects;
     }
 
-    private static void FreezeMapObjectContents(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void FreezeMapObjectContents()
     {
-        orig(self);
-        if (LethalContent.MapObjects.IsFrozen)
-            return;
-
         Dictionary<GameObject, CurveTableBuilder<CRMoonInfo>> insideWeightsByPrefab = new();
         Dictionary<GameObject, CurveTableBuilder<CRMoonInfo>> outsideWeightsByPrefab = new();
 
         Dictionary<GameObject, InsideMapObjectSettings> insidePlacementByPrefab = new();
         Dictionary<GameObject, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
 
-        foreach (var level in self.levels)
+        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
         {
+            SelectableLevel level = moonInfo.Level;
             foreach (SpawnableMapObject mapObject in level.spawnableMapObjects)
             {
-                GameObject prefab = mapObject.prefabToSpawn;
+                GameObject? prefab = mapObject.prefabToSpawn;
                 if (prefab == null)
                     continue;
 
@@ -57,12 +53,12 @@ static class MapObjectRegistrationHandler
                     }
                 }
 
-                builder.AddCurve(level.ToNamespacedKey(), mapObject.numberToSpawn);
+                builder.AddCurve(moonInfo.TypedKey, mapObject.numberToSpawn);
             }
 
             foreach (SpawnableOutsideObjectWithRarity outsideMapObject in level.spawnableOutsideObjects)
             {
-                SpawnableOutsideObject spawnable = outsideMapObject.spawnableObject;
+                SpawnableOutsideObject? spawnable = outsideMapObject.spawnableObject;
                 if (spawnable?.prefabToSpawn == null)
                     continue;
 
@@ -81,7 +77,7 @@ static class MapObjectRegistrationHandler
                     }
                 }
 
-                builder.AddCurve(level.ToNamespacedKey(), outsideMapObject.randomAmount);
+                builder.AddCurve(moonInfo.TypedKey, outsideMapObject.randomAmount);
             }
         }
 
@@ -125,12 +121,11 @@ static class MapObjectRegistrationHandler
 
         foreach (GameObject mapObject in vanillaMapObjects)
         {
-            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true))?.GetValue(null);
-            if (key == null)
-                continue;
+            if (LethalContent.MapObjects.Values.Any(x => x.MapObject == mapObject))
+                continue; // TODO This is not that great, pls find something better
 
-            if (LethalContent.MapObjects.ContainsKey(key))
-                continue;
+            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true))?.GetValue(null);
+            key ??= NamespacedKey<CRMapObjectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
 
             vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo insideMapObjectInfo);
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo outsideMapObjectInfo);
@@ -154,7 +149,7 @@ static class MapObjectRegistrationHandler
         foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla())
+            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
@@ -230,24 +225,28 @@ static class MapObjectRegistrationHandler
 
     internal static void UpdateInsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
     {
-        foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
+        if (!LethalContent.MapObjects.IsFrozen)
+            return;
+
+        foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
-            var insideInfo = mapObjectInfo.InsideInfo;
+            CRInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
             if (insideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
+            Debuggers.MapObjects?.Log($"Updating spawn weight for {mapObjectInfo.MapObject.name} on level {level.name}");
             level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]);
         }
     }
 
-    private static void RegisterMapObjects(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    private static void RegisterMapObjects()
     {
-        foreach (var level in self.levels)
+        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            var newSpawnableMapObjects = level.spawnableMapObjects.ToList();
+            List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
             foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
             {
-                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla())
+                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                     continue;
 
                 SpawnableMapObject spawnableMapObject = new()
@@ -265,8 +264,8 @@ static class MapObjectRegistrationHandler
                 newSpawnableMapObjects.Add(spawnableMapObject);
             }
 
-            level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
+            moonInfo.Level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
         }
-        orig(self);
+        FreezeMapObjectContents();
     }
 }

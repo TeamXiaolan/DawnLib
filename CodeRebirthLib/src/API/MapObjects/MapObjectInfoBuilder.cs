@@ -118,7 +118,7 @@ public class MapObjectInfoBuilder
     private CRInsideMapObjectInfo? _insideInfo;
     private CROutsideMapObjectInfo? _outsideInfo;
     
-    private List<NamespacedKey> _tags;
+    private List<NamespacedKey> _tags = new();
 
     internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject)
     {

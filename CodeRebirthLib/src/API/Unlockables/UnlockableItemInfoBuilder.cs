@@ -54,7 +54,7 @@ public class UnlockableInfoBuilder
     private CRPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
 
-    private List<NamespacedKey> _tags;
+    private List<NamespacedKey> _tags = new();
     
     internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem)
     {

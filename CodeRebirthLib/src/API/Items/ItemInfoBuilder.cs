@@ -117,7 +117,7 @@ public class ItemInfoBuilder
 
     private CRScrapItemInfo? _scrapInfo;
     private CRShopItemInfo? _shopInfo;
-    private List<NamespacedKey> _tags;
+    private List<NamespacedKey> _tags = new();
     
     internal ItemInfoBuilder(NamespacedKey<CRItemInfo> key, Item item)
     {

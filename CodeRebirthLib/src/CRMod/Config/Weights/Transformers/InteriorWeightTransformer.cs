@@ -18,13 +18,33 @@ public class InteriorWeightTransformer : WeightTransformer
 
     public override string ToConfigString()
     {
+        if (MatchingInteriorsWithWeightAndOperationDict.Count == 0)
+            return string.Empty;
+
         string MatchingInteriorWithWeight = string.Join(",", MatchingInteriorsWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
         return $"{MatchingInteriorWithWeight}";
     }
 
     public override void FromConfigString(string config)
     {
-        MatchingInteriorsWithWeightAndOperationDict = config.ToLowerInvariant().Split(':', StringSplitOptions.RemoveEmptyEntries).Select(part => part.Split(',')).ToDictionary(tokens => tokens[0].Trim(), tokens => tokens[1].Trim());
+        if (string.IsNullOrEmpty(config))
+            return;
+
+        IEnumerable<string> configEntries = config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        List<string[]> moonWithWeightEntries = configEntries.Select(kvp => kvp.Split(':', StringSplitOptions.RemoveEmptyEntries)).ToList();
+        MatchingInteriorsWithWeightAndOperationDict.Clear();
+        foreach (string[] moonWithWeightEntry in moonWithWeightEntries)
+        {
+            if (moonWithWeightEntry.Length != 2)
+                continue;
+
+            string moonName = moonWithWeightEntry[0].Trim();
+            string weightFactor = moonWithWeightEntry[1].Trim();
+            if (string.IsNullOrEmpty(moonName) || string.IsNullOrEmpty(weightFactor))
+                continue;
+
+            MatchingInteriorsWithWeightAndOperationDict.Add(moonName, weightFactor);
+        }
     }
 
     public override float GetNewWeight(float currentWeight)

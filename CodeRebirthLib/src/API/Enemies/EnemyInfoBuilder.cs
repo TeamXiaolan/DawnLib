@@ -9,7 +9,7 @@ public class EnemyInfoBuilder
     private EnemyType _enemyType;
 
     private CREnemyLocationInfo? _inside, _outside, _daytime;
-    private List<NamespacedKey> _tags;
+    private List<NamespacedKey> _tags = new();
 
     public class EnemyLocationBuilder
     {

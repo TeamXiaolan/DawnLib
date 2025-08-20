@@ -59,6 +59,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         EnemyRegistrationHandler.Init();
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
+        WeatherRegistrationHandler.Init();
         TagRegistrationHandler.Init();
 
         AchievementRegistrationPatch.Init();

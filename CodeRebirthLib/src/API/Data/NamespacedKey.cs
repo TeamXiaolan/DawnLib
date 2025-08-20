@@ -113,7 +113,9 @@ public class NamespacedKey : INetworkSerializable
 
     public override bool Equals(object? obj)
     {
-        if (obj == null || GetType() != obj.GetType()) return false;
+        if (obj == null)
+            return false;
+
         NamespacedKey other = (NamespacedKey)obj;
         return Namespace == other.Namespace && Key == other.Key;
     }

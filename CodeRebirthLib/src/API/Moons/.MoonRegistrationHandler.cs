@@ -1,5 +1,5 @@
-using System;
-using System.Collections;
+using CodeRebirthLib.Internal;
+using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using MonoMod.RuntimeDetour;
 
 namespace CodeRebirthLib;
@@ -11,13 +11,28 @@ static class MoonRegistrationHandler
         using (new DetourContext(priority: int.MaxValue))
         {
             On.StartOfRound.Awake += CollectLevels;
+            On.StartOfRound.Start += CollectLevels;
         }
     }
 
-    private static IEnumerator FreezeLevels()
+    private static void CollectLevels(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
-        yield return null;
-        yield return null;
+        orig(self);
+
+        if (LethalContent.Moons.IsFrozen)
+            return;
+
+        foreach (SelectableLevel level in self.levels)
+        {
+            if (level.HasCRInfo())
+                continue;
+
+            Debuggers.Moons?.Log($"Registering potentially modded level: {level.PlanetName}");
+            NamespacedKey<CRMoonInfo> key = NamespacedKey<CRMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+            CRMoonInfo moonInfo = new(key, [CRLibTags.IsExternal], level);
+            level.SetCRInfo(moonInfo);
+            LethalContent.Moons.Register(moonInfo);
+        }
         LethalContent.Moons.Freeze();
     }
 
@@ -31,7 +46,7 @@ static class MoonRegistrationHandler
 
         foreach (SelectableLevel level in self.levels)
         {
-            NamespacedKey<CRMoonInfo>? key = (NamespacedKey<CRMoonInfo>?)typeof(MoonKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true))?.GetValue(null);
+            NamespacedKey<CRMoonInfo>? key = (NamespacedKey<CRMoonInfo>?)typeof(MoonKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"))?.GetValue(null);
             if (key == null)
                 continue;
 
@@ -43,6 +58,5 @@ static class MoonRegistrationHandler
             LethalContent.Moons.Register(moonInfo);
         }
         orig(self);
-        self.StartCoroutine(FreezeLevels());
     }
 }
