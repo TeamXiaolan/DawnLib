@@ -38,10 +38,16 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherE
             }
         }
 
+        WeatherEffect weatherEffect = new()
+        {
+            effectObject = effectObject,
+            effectPermanentObject = effectPermanentObject,
+        };
+
         ImprovedWeatherEffect newImprovedWeatherEffect = ScriptableObject.CreateInstance<ImprovedWeatherEffect>();
         newImprovedWeatherEffect.SunAnimatorBool = Weather.Effect.SunAnimatorBool;
-        newImprovedWeatherEffect.EffectObject = effectObject;
-        newImprovedWeatherEffect.WorldObject = effectPermanentObject;
+        newImprovedWeatherEffect.EffectObject = weatherEffect.effectObject;
+        newImprovedWeatherEffect.WorldObject = weatherEffect.effectPermanentObject;
         newImprovedWeatherEffect.EffectObject?.SetActive(false);
         newImprovedWeatherEffect.WorldObject?.SetActive(false);
 
