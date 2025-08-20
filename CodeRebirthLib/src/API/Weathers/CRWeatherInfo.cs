@@ -4,7 +4,7 @@ namespace CodeRebirthLib;
 
 public class CRWeatherEffectInfo : CRBaseInfo<CRWeatherEffectInfo>
 {
-    internal CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, List<NamespacedKey> tags, WeatherEffect weatherEffect) : base(key, tags) // todo
+    internal CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, List<NamespacedKey> tags, WeatherEffect weatherEffect) : base(key, tags)
     {
         WeatherEffect = weatherEffect;
     }
