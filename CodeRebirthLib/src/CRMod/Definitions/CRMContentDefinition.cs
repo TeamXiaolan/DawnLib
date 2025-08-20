@@ -66,7 +66,7 @@ public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition wher
                         return Equals(it.Key, Key);
                     }
 
-                    return false;
+                    return false; // throw?
                 }));
         }
         catch (InvalidOperationException ex)
