@@ -14,7 +14,7 @@ static class MoonRegistrationHandler
         }
     }
 
-    private static IEnumerator FreezeLevels(StartOfRound self)
+    private static IEnumerator FreezeLevels()
     {
         yield return null;
         yield return null;
@@ -43,6 +43,6 @@ static class MoonRegistrationHandler
             LethalContent.Moons.Register(moonInfo);
         }
         orig(self);
-        self.StartCoroutine(FreezeLevels(self));
+        self.StartCoroutine(FreezeLevels());
     }
 }

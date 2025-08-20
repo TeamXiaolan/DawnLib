@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib.CRMod;
+namespace CodeRebirthLib;
 
 [Serializable]
 public class OutsideMapObjectSettings
