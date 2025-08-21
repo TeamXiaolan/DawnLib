@@ -39,10 +39,6 @@ static class ItemRegistrationHandler
                 continue;
 
             Debuggers.Items?.Log($"messing with {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
-            foreach (SpawnableItemWithRarity spawnableScrapWithRarity in level.spawnableScrap)
-            {
-                Debuggers.Items?.Log($"checking {itemInfo.Item.itemName} against {spawnableScrapWithRarity.spawnableItem.itemName}");
-            }
             level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
         }
     }
@@ -176,23 +172,27 @@ static class ItemRegistrationHandler
 
     private static void RegisterScrapItemsToAllLevels()
     {
-        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
-            SelectableLevel level = moonInfo.Level;
-            foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
-            {
-                CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-                if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
-                    continue;
+            CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
+            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
+                continue;
 
+            foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+            {
+                SelectableLevel level = moonInfo.Level;
                 SpawnableItemWithRarity spawnDef = new()
                 {
                     spawnableItem = itemInfo.Item,
                     rarity = 0
                 };
                 level.spawnableScrap.Add(spawnDef);
-                StartOfRound.Instance.allItemsList.itemsList.Add(itemInfo.Item);
             }
+
+            if (itemInfo.ShopInfo != null)
+                continue;
+
+            StartOfRound.Instance.allItemsList.itemsList.Add(itemInfo.Item);
         }
     }
 

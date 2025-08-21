@@ -66,6 +66,9 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherE
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
+        CRWeatherEffectInfo weatherEffectInfo = new(TypedKey, [], weatherEffect);
+        weatherEffect.SetCRInfo(weatherEffectInfo);
+        LethalContent.Weathers.Register(weatherEffectInfo); // TEMPORARY
     }
 
     public override List<WeatherData> GetEntities(CRMod mod)

@@ -1,3 +1,4 @@
+using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
 using TMPro;
 using UnityEngine;
@@ -28,6 +29,9 @@ public class AchievementUIElement : MonoBehaviour
     [SerializeField]
     private Image _backgroundImage = null!;
 
+    [SerializeField]
+    private Image _progressBar = null!;
+
     public void SetupAchievementUI(CRMAchievementDefinition definition)
     {
         _achievementNameTMP.text = definition.AchievementName;
@@ -56,8 +60,8 @@ public class AchievementUIElement : MonoBehaviour
 
         if (definition is IProgress progressiveAchievement)
         {
-            Image image = _achievementProgressGO.GetComponentInChildren<Image>();
-            image.fillAmount = progressiveAchievement.Percentage();
+            Debuggers.Achievements?.Log($"Setting up progress achievement: {definition.AchievementName} with percentage: {progressiveAchievement.Percentage()}");
+            _progressBar.fillAmount = progressiveAchievement.Percentage();
         }
         else
         {

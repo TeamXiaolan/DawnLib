@@ -109,19 +109,6 @@ public class CRMod
         }
 
         Content = containers[0];
-
-        List<EntityData> entities = new();
-        foreach (var content in Content.assetBundles)
-        {
-            entities.AddRange(content.enemies);
-            entities.AddRange(content.items);
-            entities.AddRange(content.mapObjects);
-            entities.AddRange(content.unlockables);
-            entities.AddRange(content.weathers);
-            entities.AddRange(content.achievements);
-            entities.AddRange(content.dungeons);
-        }
-
         _allMods.Add(this);
     }
     public static IReadOnlyList<CRMod> AllMods => _allMods.AsReadOnly();

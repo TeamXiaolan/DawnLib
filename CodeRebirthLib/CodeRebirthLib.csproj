@@ -46,7 +46,7 @@
     <!-- Other mod dependencies -->
     <ItemGroup>
         <PackageReference Include="Evaisa.LethalLib" Publicize="true" Version="1.*" />
-        <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="0.7.0" PrivateAssets="all" />
+        <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="0.7.1" PrivateAssets="all" />
         <PackageReference Include="mrov.MrovLib" Publicize="true" Version="*" PrivateAssets="all" />
 
         <PackageReference Include="BananaPuncher714-LethalQuantities" Version="1.2.9" PrivateAssets="all" Publicize="true" />

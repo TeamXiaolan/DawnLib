@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using CodeRebirthLib.Internal;
 using TMPro;
 using UnityEngine;
@@ -10,8 +8,11 @@ namespace CodeRebirthLib.CRMod;
  * Button to reset specific achievements
  * probably more im forgetting
 */
-public abstract class CRMAchievementDefinition : CRMContentDefinition<AchievementData, CRMAchievementDefinition>, INamespaced<CRMAchievementDefinition>
+public abstract class CRMAchievementDefinition : CRMContentDefinition, INamespaced<CRMAchievementDefinition>
 {
+    [field: SerializeField]
+    private NamespacedKey<CRMAchievementDefinition> _typedKey;
+
     public const string REGISTRY_ID = "achievements";
 
     [field: SerializeField]
@@ -41,7 +42,8 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition<Achievemen
 
     public bool Completed { get; protected set; } = false;
 
-    NamespacedKey<CRMAchievementDefinition> INamespaced<CRMAchievementDefinition>.TypedKey => TypedKey;
+    public NamespacedKey<CRMAchievementDefinition> TypedKey => _typedKey;
+    public override NamespacedKey Key { get => TypedKey; protected set => throw new System.NotImplementedException(); } // TODO
 
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {
@@ -72,15 +74,10 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition<Achievemen
         Completed = false;
     }
 
-    public override void Register(CRMod mod, AchievementData data)
+    public override void Register(CRMod mod)
     {
         base.Register(mod);
         CRModContent.Achievements.Register(this);
-    }
-
-    public override List<AchievementData> GetEntities(CRMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.achievements).ToList();
     }
 
     public virtual bool IsActive() { return true; }
