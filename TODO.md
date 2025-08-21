@@ -8,7 +8,9 @@
 - Tag weights and more tags.
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.
-- Fill progress bar on achievements.
+- Grab the "vanilla" content tags LLL has as a soft dependency and make us use em as vanilla like lethal_company:+forest.
+- Grab the non vanilla content tags LLL has and set em per mod_name:+content_tag.
+- Add option for hidden achievements to not be allowed to be unhidden.
 
 ## Needs to be done eventually
 
