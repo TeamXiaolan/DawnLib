@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using CodeRebirthLib.SourceGen.AST;
 using Microsoft.CodeAnalysis;
@@ -37,7 +38,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                 GeneratedClass @class = new GeneratedClass(Visibility.Public, className)
                 {
                     IsStatic = true,
-                    Attributes = { CRLibSourceGenConstants.CodeGenAttribute }
+                    IsPartial = true
                 };
                 string type = $"NamespacedKey<{values["__type"]}>";
 
@@ -72,7 +73,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                 FileWriterVisitor visitor = new FileWriterVisitor();
                 visitor.Accept(file);
 
-                context.AddSource($"{className}.g.cs", SourceText.From(visitor.ToString(), Encoding.UTF8));
+                context.AddSource($"{Path.GetFileNameWithoutExtension(additionalFile.Path).Split('.')[0]}.{className}.g.cs", SourceText.From(visitor.ToString(), Encoding.UTF8));
             }
         }
     }

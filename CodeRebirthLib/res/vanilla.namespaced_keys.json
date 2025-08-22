@@ -174,9 +174,9 @@
   },
   "DungeonKeys": {
     "__type": "CRDungeonInfo",
-    "LevelOneFlow": "lethal_company:leveloneflow",
-    "LevelOneFlowThreeExits": "lethal_company:leveloneflowthreeexits",
-    "LevelOneFlowExtraLarge": "lethal_company:leveloneflowextralarge",
+    "LevelOneFlow": "lethal_company:facility",
+    "LevelOneFlowThreeExits": "lethal_company:facility_three_exits",
+    "LevelOneFlowExtraLarge": "lethal_company:facility_extra_large",
     "LevelTwoFlow": "lethal_company:leveltwoflow",
     "LevelThreeFlow": "lethal_company:levelthreeflow"
   },

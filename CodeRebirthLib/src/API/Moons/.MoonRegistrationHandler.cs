@@ -53,6 +53,10 @@ static class MoonRegistrationHandler
             return;
         }
 
+        CRMoonInfo testMoonInfo = new(MoonKeys.Test, [CRLibTags.IsExternal], self.currentLevel);
+        self.currentLevel.SetCRInfo(testMoonInfo);
+        LethalContent.Moons.Register(testMoonInfo);
+
         foreach (SelectableLevel level in self.levels)
         {
             NamespacedKey<CRMoonInfo>? key = (NamespacedKey<CRMoonInfo>?)typeof(MoonKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"))?.GetValue(null);

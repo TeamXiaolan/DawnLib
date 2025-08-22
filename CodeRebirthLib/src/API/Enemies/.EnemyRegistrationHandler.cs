@@ -13,6 +13,35 @@ static class EnemyRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         LethalContent.Moons.OnFreeze += RegisterEnemies;
+        LethalContent.Enemies.OnFreeze += AddEnemiesToDebugList;
+    }
+
+    private static void AddEnemiesToDebugList()
+    {
+        SelectableLevel testLevel = LethalContent.Moons[MoonKeys.Test].Level;
+        foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            SpawnableEnemyWithRarity spawnDef = new()
+            {
+                enemyType = enemyInfo.EnemyType,
+                rarity = 0
+            };
+
+            if (enemyInfo.Inside != null)
+            {
+                testLevel.Enemies.Add(spawnDef);
+            }
+
+            if (enemyInfo.Outside != null)
+            {
+                testLevel.OutsideEnemies.Add(spawnDef);
+            }
+
+            if (enemyInfo.Daytime != null)
+            {
+                testLevel.DaytimeEnemies.Add(spawnDef);
+            }
+        }
     }
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
