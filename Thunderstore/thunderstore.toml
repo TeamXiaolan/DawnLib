@@ -24,6 +24,10 @@ source = "../CodeRebirthLib/bin/Release/netstandard2.1/com.github.xuuxiaolan.cod
 target = "BepInEx/plugins/CodeRebirthLib/"
 
 [[build.copy]]
+source = "../CodeRebirthLib.Preloader/bin/Release/netstandard2.1/com.github.xuuxiaolan.coderebirthlib.preloader.dll"
+target = "BepInEx/patchers/CodeRebirthLib/"
+
+[[build.copy]]
 source = "../CodeRebirthLib/data"
 target = "BepInEx/plugins/CodeRebirthLib/data/"
 
