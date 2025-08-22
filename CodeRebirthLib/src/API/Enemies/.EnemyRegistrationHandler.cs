@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeRebirthLib.Internal.ModCompats;
+using UnityEngine;
 
 namespace CodeRebirthLib;
 
@@ -9,7 +11,69 @@ static class EnemyRegistrationHandler
     {
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
+        On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         LethalContent.Moons.OnFreeze += RegisterEnemies;
+    }
+
+    private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
+    {
+        CREnemyInfo enemyInfo = self.enemyType.GetCRInfo();
+        if (enemyInfo.HasTag(CRLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
+        {
+            orig(self);
+            return;
+        }
+
+        if (enemyInfo.Daytime != null)
+        {
+            self.enemyType.isDaytimeEnemy = true;
+        }
+        GameObject[]? insideNodes = RoundManager.Instance.insideAINodes;
+        GameObject[]? outsideNodes = RoundManager.Instance.outsideAINodes;
+        bool insideIsClosest = true;
+
+        float closestDistance = float.MaxValue;
+        if (insideNodes != null)
+        {
+            foreach (var node in insideNodes)
+            {
+                float distance = Vector3.Distance(node.transform.position, self.transform.position);
+                if (distance >= closestDistance)
+                    continue;
+
+                closestDistance = distance;
+            }
+        }
+        if (outsideNodes != null)
+        {
+            foreach (var node in outsideNodes)
+            {
+                float distance = Vector3.Distance(node.transform.position, self.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    insideIsClosest = false;
+                    break;
+                }
+            }
+        }
+
+        bool previouslyOutside = self.enemyType.isOutsideEnemy;
+        if (insideIsClosest)
+        {
+            self.enemyType.isOutsideEnemy = false;
+        }
+        else
+        {
+            self.enemyType.isOutsideEnemy = true;
+        }
+
+        orig(self);
+
+        if (previouslyOutside != self.enemyType.isOutsideEnemy)
+        {
+            self.enemyType.isOutsideEnemy = previouslyOutside;
+        }
     }
 
     private static void UpdateEnemyWeights(On.RoundManager.orig_RefreshEnemiesList orig, RoundManager self)
