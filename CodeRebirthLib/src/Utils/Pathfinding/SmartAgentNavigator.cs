@@ -240,6 +240,13 @@ public class SmartAgentNavigator : NetworkBehaviour
         List<T> pointsTList = points.Select(x => x.Item1).ToList();
         checkPathsTask.StartPathTask(this.agent, this.transform.position, pointsVectorList, GetAllowedPathLinks());
         int listSize = pointsVectorList.Count;
+        if (listSize == 0)
+        {
+            action(TList);
+            checkPathsRoutine = null;
+            CodeRebirthLibPlugin.Logger.LogError($"{this.gameObject.name} has no points to check paths for, report this along with what was happening.");
+            yield break;
+        }
         Debuggers.Pathfinding?.Log($"Checking paths for {listSize} objects");
         yield return new WaitUntil(() => checkPathsTask.IsComplete);
         for (int i = 0; i < listSize; i++)
@@ -469,6 +476,11 @@ public class SmartAgentNavigator : NetworkBehaviour
         roamingTask ??= new SmartPathTask();
         roamingTask.StartPathTask(this.agent, this.transform.position, _roamingPointsVectorList, GetAllowedPathLinks());
         int listSize = _roamingPointsVectorList.Count;
+        if (listSize == 0)
+        {
+            CodeRebirthLibPlugin.Logger.LogError($"Roaming points list is empty for {this.gameObject.name}, this means that the moon has basically no nodes, and no navmesh around where this entity spawned, no idea how else this could happen, report this with more logs and a detail of what was happening");
+            yield break;
+        }
         Debuggers.Pathfinding?.Log($"Checking paths for {listSize} objects");
         yield return new WaitUntil(() => roamingTask.IsComplete);
         for (int i = 0; i < listSize; i++)
