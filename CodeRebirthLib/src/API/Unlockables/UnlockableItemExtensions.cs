@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace CodeRebirthLib;
@@ -7,12 +8,12 @@ public static class UnlockableItemExtensions
     // todo: reference stripped patched assembly??
     private static FieldInfo _infoField = typeof(UnlockableItem).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
 
-    public static NamespacedKey<CRUnlockableItemInfo>? ToNamespacedKey(this UnlockableItem unlockableItem)
+    public static NamespacedKey<CRUnlockableItemInfo> ToNamespacedKey(this UnlockableItem unlockableItem)
     {
         if (!unlockableItem.HasCRInfo())
         {
             CodeRebirthLibPlugin.Logger.LogError($"UnlockableItem '{unlockableItem.unlockableName}' does not have a CRUnlockableItemInfo, you are either accessing this too early or it erroneously never got created!");
-            return null;
+            throw new Exception();
         }
         return unlockableItem.GetCRInfo().TypedKey;
     }

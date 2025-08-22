@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace CodeRebirthLib;
@@ -10,7 +9,7 @@ static class EnemyRegistrationHandler
     {
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
-        On.StartOfRound.Awake += RegisterEnemies;
+        LethalContent.Moons.OnFreeze += RegisterEnemies;
     }
 
     private static void UpdateEnemyWeights(On.RoundManager.orig_RefreshEnemiesList orig, RoundManager self)
@@ -27,6 +26,9 @@ static class EnemyRegistrationHandler
 
     internal static void UpdateEnemyWeightsOnLevel(SelectableLevel level)
     {
+        if (!LethalContent.Enemies.IsFrozen)
+            return;
+
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
@@ -49,21 +51,16 @@ static class EnemyRegistrationHandler
         }
     }
 
-    private static void RegisterEnemies(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    private static void RegisterEnemies()
     {
-        if (LethalContent.Enemies.IsFrozen)
-        {
-            orig(self);
-            return;
-        }
-
         Dictionary<EnemyType, WeightTableBuilder<CRMoonInfo>> enemyInsideWeightBuilder = new();
         Dictionary<EnemyType, WeightTableBuilder<CRMoonInfo>> enemyOutsideWeightBuilder = new();
         Dictionary<EnemyType, WeightTableBuilder<CRMoonInfo>> enemyDaytimeWeightBuilder = new();
 
-        foreach (var level in self.levels)
+        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
+            SelectableLevel level = moonInfo.Level;
+            NamespacedKey<CRMoonInfo> moonKey = moonInfo.TypedKey;
 
             foreach (var enemyWithRarity in level.Enemies)
             {
@@ -105,8 +102,9 @@ static class EnemyRegistrationHandler
             }
         }
 
-        foreach (SelectableLevel level in self.levels)
+        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
         {
+            SelectableLevel level = moonInfo.Level;
             List<SpawnableEnemyWithRarity> levelEnemies =
             [
                 .. level.Enemies,
@@ -119,12 +117,11 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(enemyWithRarity.enemyType.enemyName.Replace("-", "_").Replace(" ", "_"))?.GetValue(null);
-                if (key == null)
+                if (enemyWithRarity.enemyType.HasCRInfo())
                     continue;
 
-                if (LethalContent.Enemies.ContainsKey(key))
-                    continue;
+                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyWithRarity.enemyType.enemyName, true))?.GetValue(null);
+                key ??= NamespacedKey<CREnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyWithRarity.enemyType.enemyName, false));
 
                 WeightTableBuilder<CRMoonInfo> insideWeightBuilder = new();
                 WeightTableBuilder<CRMoonInfo> outsideWeightBuilder = new();
@@ -150,8 +147,8 @@ static class EnemyRegistrationHandler
 
             foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
-                if (enemyInfo.Key.IsVanilla())
-                    continue; // also ensure not to register vanilla stuff again
+                if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
+                    continue;
 
                 if (enemyInfo.Outside != null)
                     TryAddToEnemyList(enemyInfo, level.OutsideEnemies);
@@ -163,10 +160,9 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }
-
         LethalContent.Enemies.Freeze();
-        orig(self);
     }
+
     private static void TryAddToEnemyList(CREnemyInfo enemyInfo, List<SpawnableEnemyWithRarity> list)
     {
         SpawnableEnemyWithRarity spawnDef = new()

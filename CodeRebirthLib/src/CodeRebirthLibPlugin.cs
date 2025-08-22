@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -21,13 +20,17 @@ namespace CodeRebirthLib;
 public class CodeRebirthLibPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
+    internal static ConfigManager ConfigManager { get; private set; } = null!;
     internal static MainAssets Main { get; private set; } = null!;
 
     private void Awake()
     {
         Logger = base.Logger;
-        NetcodePatcher();
         Debuggers.Bind(Config);
+        ConfigManager = new ConfigManager(Config);
+        CodeRebirthLibConfig.Bind(ConfigManager);
+
+        NetcodePatcher();
         if (LethalConfigCompat.Enabled)
         {
             LethalConfigCompat.Init();
@@ -56,6 +59,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         EnemyRegistrationHandler.Init();
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
+        WeatherRegistrationHandler.Init();
         TagRegistrationHandler.Init();
 
         AchievementRegistrationPatch.Init();
@@ -82,7 +86,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
 
     internal static string RelativePath(params string[] folders)
     {
-        return Path.Combine(Assembly.GetExecutingAssembly().Location, Path.Combine(folders));
+        return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(folders));
     }
 
     private void NetcodePatcher()

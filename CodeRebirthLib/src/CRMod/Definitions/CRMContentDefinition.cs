@@ -39,7 +39,7 @@ public abstract class CRMContentDefinition : ScriptableObject
 
     public string GetDefaultKey()
     {
-        string normalizedName = NamespacedKey.NormalizeStringForNamespacedKey(EntityNameReference);
+        string normalizedName = NamespacedKey.NormalizeStringForNamespacedKey(EntityNameReference, false);
         return normalizedName;
     }
 
@@ -66,7 +66,7 @@ public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition wher
                         return Equals(it.Key, Key);
                     }
 
-                    return false;
+                    return false; // throw?
                 }));
         }
         catch (InvalidOperationException ex)

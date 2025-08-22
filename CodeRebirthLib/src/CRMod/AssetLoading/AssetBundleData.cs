@@ -20,6 +20,5 @@ public class AssetBundleData
     public List<ItemData> items;
     public List<MapObjectData> mapObjects;
     public List<UnlockableData> unlockables;
-    public List<AchievementData> achievements;
     public List<DungeonData> dungeons;
 }

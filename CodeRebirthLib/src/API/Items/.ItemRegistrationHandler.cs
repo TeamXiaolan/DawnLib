@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.Internal;
 using UnityEngine;
@@ -12,9 +11,8 @@ static class ItemRegistrationHandler
     {
         On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
-        On.StartOfRound.Awake += RegisterScrapItems;
-        On.Terminal.Awake += RegisterShopItems;
-        On.Terminal.Start += FreezeItemContent;
+        On.Terminal.Awake += RegisterShopItemsToTerminal;
+        LethalContent.Moons.OnFreeze += FreezeItemContent;
     }
 
     private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
@@ -31,27 +29,30 @@ static class ItemRegistrationHandler
 
     internal static void UpdateItemWeightsOnLevel(SelectableLevel level)
     {
+        if (!LethalContent.Items.IsFrozen)
+            return;
+
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
             if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
+            Debuggers.Items?.Log($"messing with {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
             level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
         }
     }
 
-    private static void FreezeItemContent(On.Terminal.orig_Start orig, Terminal self)
+    private static void FreezeItemContent()
     {
-        orig(self);
         if (LethalContent.Items.IsFrozen)
             return;
 
         Dictionary<Item, WeightTableBuilder<CRMoonInfo>> itemWeightBuilder = new();
         Dictionary<Item, CRShopItemInfo> itemsWithShopInfo = new();
-        foreach (var level in StartOfRound.Instance.levels)
+        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            NamespacedKey<CRMoonInfo> moonKey = level.ToNamespacedKey();
+            SelectableLevel level = moonInfo.Level;
 
             foreach (var itemWithRarity in level.spawnableScrap)
             {
@@ -60,16 +61,17 @@ static class ItemRegistrationHandler
                     weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
                     itemWeightBuilder[itemWithRarity.spawnableItem] = weightTableBuilder;
                 }
-                weightTableBuilder.AddWeight(moonKey, itemWithRarity.rarity);
+                weightTableBuilder.AddWeight(moonInfo.TypedKey, itemWithRarity.rarity);
             }
         }
 
-        TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
-        TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
+        Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
+        TerminalKeyword buyKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
+        TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
 
         List<CompatibleNoun> buyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
-        List<TerminalKeyword> terminalKeywords = self.terminalNodes.allKeywords.ToList();
+        List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
 
         foreach (var terminalKeyword in terminalKeywords)
         {
@@ -77,7 +79,7 @@ static class ItemRegistrationHandler
             terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
         }
 
-        foreach (var buyableItem in self.buyableItemsList)
+        foreach (var buyableItem in terminal.buyableItemsList)
         {
             TerminalNode? infoNode = null;
             TerminalNode requestNode = null!;
@@ -111,20 +113,20 @@ static class ItemRegistrationHandler
 
             if (infoNode == null)
             {
-                /*infoNode = new TerminalNodeBuilder($"{simplifiedItemName}InfoNode")
+                infoNode = new TerminalNodeBuilder($"{simplifiedItemName}InfoNode")
                     .SetDisplayText($"[No information about this object was found.]\n\n")
                     .SetClearPreviousText(true)
                     .SetMaxCharactersToType(25)
                     .Build();
 
-                var compatibleNounMissing = new CompatibleNoun()
+                CompatibleNoun compatibleNounMissing = new()
                 {
                     noun = buyKeywordOfSignificance,
                     result = infoNode
                 };
                 List<CompatibleNoun> newCompatibleNouns = infoKeyword.compatibleNouns.ToList();
                 newCompatibleNouns.Add(compatibleNounMissing);
-                infoKeyword.compatibleNouns = newCompatibleNouns.ToArray();*/ //
+                infoKeyword.compatibleNouns = newCompatibleNouns.ToArray();
             }
 
             foreach (var compatibleNouns in buyKeyword.compatibleNouns)
@@ -142,14 +144,13 @@ static class ItemRegistrationHandler
             itemsWithShopInfo[buyableItem] = shopInfo;
         }
 
-        foreach (var item in StartOfRound.Instance.allItemsList.itemsList)
+        foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName))?.GetValue(null);
-            if (key == null)
+            if (item.HasCRInfo())
                 continue;
 
-            if (LethalContent.Items.ContainsKey(key))
-                continue;
+            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true))?.GetValue(null);
+            key ??= NamespacedKey<CRItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
 
             itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<CRMoonInfo>? weightTableBuilder);
             CRScrapItemInfo? scrapInfo = null;
@@ -164,38 +165,38 @@ static class ItemRegistrationHandler
             item.SetCRInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }
+
+        RegisterScrapItemsToAllLevels();
         LethalContent.Items.Freeze();
     }
 
-    private static void RegisterScrapItems(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    private static void RegisterScrapItemsToAllLevels()
     {
-        orig(self);
-        if (LethalContent.Items.IsFrozen)
+        foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
-            orig(self);
-            return;
-        }
+            CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
+            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
+                continue;
 
-        foreach (SelectableLevel level in self.levels)
-        {
-            foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
+            foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
             {
-                CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-                if (scrapInfo == null || itemInfo.Key.IsVanilla())
-                    continue; // also ensure not to register vanilla stuff again
-
+                SelectableLevel level = moonInfo.Level;
                 SpawnableItemWithRarity spawnDef = new()
                 {
                     spawnableItem = itemInfo.Item,
                     rarity = 0
                 };
                 level.spawnableScrap.Add(spawnDef);
-                self.allItemsList.itemsList.Add(itemInfo.Item);
             }
+
+            if (itemInfo.ShopInfo != null)
+                continue;
+
+            StartOfRound.Instance.allItemsList.itemsList.Add(itemInfo.Item);
         }
     }
 
-    private static void RegisterShopItems(On.Terminal.orig_Awake orig, Terminal self)
+    private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
         TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
         TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
@@ -203,17 +204,17 @@ static class ItemRegistrationHandler
         TerminalKeyword denyPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "deny");
         TerminalNode cancelPurchaseNode = buyKeyword.compatibleNouns[0].result.terminalOptions[1].result;
 
-        // first add modded content
         List<Item> newBuyableList = self.buyableItemsList.ToList();
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
+        StartOfRound startOfRound = GameObject.FindFirstObjectByType<StartOfRound>();
 
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || itemInfo.Key.IsVanilla())
-                continue; // also ensure not to register vanilla stuff again
+            if (shopInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
+                continue;
 
             string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();
 
@@ -271,10 +272,9 @@ static class ItemRegistrationHandler
                 noun = buyItemKeyword,
                 result = shopInfo.InfoNode
             });
-            RoundManager.Instance.playersManager.allItemsList.itemsList.Add(itemInfo.Item);
+            startOfRound.allItemsList.itemsList.Add(itemInfo.Item);
         }
 
-        // update terminal references to include new stuff
         self.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray(); // SO so it sticks
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray(); // SO so it sticks

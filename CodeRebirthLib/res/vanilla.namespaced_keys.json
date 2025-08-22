@@ -200,7 +200,7 @@
     "Tree": "lethal_company:tree"
   },
   "WeatherKeys": {
-    "__type": "CRWeatherInfo",
+    "__type": "CRWeatherEffectInfo",
     "Rollinggroundfog": "lethal_company:rolling_ground_fog",
     "Rainy": "lethal_company:rainy",
     "Stormy": "lethal_company:stormy",

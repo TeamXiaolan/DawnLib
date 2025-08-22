@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+
 namespace CodeRebirthLib;
 
 public class CRWeatherEffectInfo : CRBaseInfo<CRWeatherEffectInfo>
 {
-    internal CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, bool isExternal, WeatherEffect weatherEffect) : base(key, [CRLibTags.IsExternal]) // todo
+    internal CRWeatherEffectInfo(NamespacedKey<CRWeatherEffectInfo> key, List<NamespacedKey> tags, WeatherEffect weatherEffect) : base(key, tags)
     {
         WeatherEffect = weatherEffect;
     }

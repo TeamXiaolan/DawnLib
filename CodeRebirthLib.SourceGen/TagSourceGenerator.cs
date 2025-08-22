@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using CodeRebirthLib.SourceGen.AST;
@@ -13,9 +12,6 @@ namespace CodeRebirthLib.SourceGen;
 [Generator]
 public class TagSourceGenerator : ISourceGenerator
 {
-
-    
-    
     public void Initialize(GeneratorInitializationContext context)
     {
         

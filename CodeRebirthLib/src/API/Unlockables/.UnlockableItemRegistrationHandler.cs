@@ -34,7 +34,7 @@ static class UnlockableRegistrationHandler
         {
             CRPlaceableObjectInfo? placeableObjectInfo = unlockableInfo.PlaceableObjectInfo;
             if (placeableObjectInfo == null || unlockableInfo.Key.IsVanilla() || unlockableInfo.HasTag(CRLibTags.IsExternal))
-                continue; // also ensure not to register vanilla stuff again
+                continue;
 
             StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
             TerminalNode shopSelectionNode = ScriptableObject.CreateInstance<TerminalNode>(); // unsure if its relevant but for some reason some ship upgrades dont have this, might not be needed and game might auto generate them.
@@ -66,6 +66,39 @@ static class UnlockableRegistrationHandler
                 continue; // also ensure not to register vanilla stuff again
 
             // TODO Suits
+        }
+
+        foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
+        {
+            if (unlockableItem.HasCRInfo())
+                continue;
+
+            NamespacedKey<CRUnlockableItemInfo>? key = (NamespacedKey<CRUnlockableItemInfo>?)typeof(UnlockableItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true))?.GetValue(null);
+            key ??= NamespacedKey<CRUnlockableItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+            int cost = 0;
+            if (unlockableItem.shopSelectionNode == null && unlockableItem.alreadyUnlocked)
+            {
+                // this is probably a problem?
+                Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no shop selection node and is already unlocked. This is probably a problem.");
+            }
+            else if (unlockableItem.shopSelectionNode != null)
+            {
+                cost = unlockableItem.shopSelectionNode.itemCost;
+            }
+
+            CRSuitInfo? suitInfo = null;
+            if (unlockableItem.suitMaterial != null)
+            {
+                suitInfo = new CRSuitInfo();
+            }
+            CRPlaceableObjectInfo? placeableObjectInfo = null;
+            if (unlockableItem.prefabObject != null)
+            {
+                placeableObjectInfo = new CRPlaceableObjectInfo();
+            }
+
+            CRUnlockableItemInfo unlockableItemInfo = new(new AlwaysAvaliableTerminalPredicate(), key, [CRLibTags.IsExternal], unlockableItem, cost, suitInfo, placeableObjectInfo);
+            LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 
         LethalContent.Unlockables.Freeze();

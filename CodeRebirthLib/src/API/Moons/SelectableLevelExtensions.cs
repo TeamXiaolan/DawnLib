@@ -1,6 +1,6 @@
-using System.Globalization;
-using System.Linq;
+using System;
 using System.Reflection;
+using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib;
 
@@ -9,12 +9,12 @@ public static class SelectableLevelExtensions
     // todo: reference stripped patched assembly??
     private static FieldInfo _infoField = typeof(SelectableLevel).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
 
-    public static NamespacedKey<CRMoonInfo>? ToNamespacedKey(this SelectableLevel level)
+    public static NamespacedKey<CRMoonInfo> ToNamespacedKey(this SelectableLevel level)
     {
         if (!level.HasCRInfo())
         {
-            CodeRebirthLibPlugin.Logger.LogError($"SelectableLevel '{level.PlanetName}' does not have a CRMoonInfo, you are either accessing this too early or it erroneously never got created!");
-            return null;
+            Debuggers.Moons?.Log($"SelectableLevel {level} has no CRInfo");
+            throw new Exception();
         }
         return level.GetCRInfo().TypedKey;
     }
