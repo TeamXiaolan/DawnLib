@@ -24,9 +24,13 @@ class CodeRebirthLibPreloader
         Dictionary<string, List<Type>> interfacesToInject = [];
         foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            if(!type.IsInterface) continue;
+            if (!type.IsInterface)
+                continue;
+
             var attributes = type.GetCustomAttributes(typeof(InjectInterfaceAttribute)).Cast<InjectInterfaceAttribute>();
-            if (!attributes.Any()) continue;
+
+            if (!attributes.Any())
+                continue;
             
             foreach (InjectInterfaceAttribute attribute in attributes)
             {
@@ -43,7 +47,9 @@ class CodeRebirthLibPreloader
         
         foreach (TypeDefinition type in assembly.MainModule.Types)
         {
-            if (!interfacesToInject.TryGetValue(type.FullName, out List<Type> interfaces)) continue;
+            if (!interfacesToInject.TryGetValue(type.FullName, out List<Type> interfaces))
+                continue;
+
             Log.LogInfo($"{type.Name} has {interfaces.Count} interface(s) to inject.");
             
             foreach (Type @interface in interfaces)
@@ -62,8 +68,9 @@ class CodeRebirthLibPreloader
         foreach (MethodInfo method in @interface.GetMethods())
         {
             Log.LogDebug($"trying to inject {method.Name} ({method.Attributes})");
-            if(method.Attributes.HasFlag(System.Reflection.MethodAttributes.SpecialName)) continue;
-            
+            if(method.Attributes.HasFlag(System.Reflection.MethodAttributes.SpecialName))
+                continue;
+
             type.AddMethod(
                 method.Name, 
                 MethodAttributes.Public | MethodAttributes.Virtual, 
@@ -105,7 +112,6 @@ class CodeRebirthLibPreloader
             type.Properties.Add(propertyDef);
             type.Fields.Add(field);
         }
-        
         type.Interfaces.Add(new InterfaceImplementation(type.Module.ImportReference(@interface)));
     }
 

@@ -234,7 +234,7 @@ static class MapObjectRegistrationHandler
             if (insideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
-            Debuggers.MapObjects?.Log($"Updating spawn weight for {mapObjectInfo.MapObject.name} on level {level.name}");
+            Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
             level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]);
         }
     }

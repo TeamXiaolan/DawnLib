@@ -1,35 +1,33 @@
-using System.Reflection;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using CodeRebirthLib.Internal;
+using CodeRebirthLib.Preloader;
 using DunGen;
 
 namespace CodeRebirthLib;
 
 public static class TileSetExtensions
 {
-    // todo: reference stripped patched assembly??
-    private static FieldInfo _infoField = typeof(TileSet).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
-
-    public static NamespacedKey<CRTileSetInfo>? ToNamespacedKey(this TileSet tileSet)
+    public static NamespacedKey<CRTileSetInfo> ToNamespacedKey(this TileSet tileSet)
     {
-        if (!tileSet.HasCRInfo())
+        if (!tileSet.TryGetCRInfo(out CRTileSetInfo? tileSetInfo))
         {
-            CodeRebirthLibPlugin.Logger.LogError($"TileSet '{tileSet.name}' does not have a CRTileSetInfo, you are either accessing this too early or it erroneously never got created!");
-            return null;
+            Debuggers.Moons?.Log($"TileSet {tileSet} has no CRInfo");
+            throw new Exception();
         }
-        return tileSet.GetCRInfo().TypedKey;
+        return tileSetInfo.TypedKey;
     }
 
-    internal static bool HasCRInfo(this TileSet tileSet)
+    internal static bool TryGetCRInfo(this TileSet tileSet, [NotNullWhen(true)] out CRTileSetInfo? tileSetInfo)
     {
-        return _infoField.GetValue(tileSet) != null;
+        object newObject = tileSet;
+        tileSetInfo = (CRTileSetInfo)((ICRObject)newObject).CRInfo;
+        return tileSetInfo != null;
     }
 
-    internal static CRTileSetInfo GetCRInfo(this TileSet tileSet)
+    internal static void SetCRInfo(this TileSet tileSet, CRTileSetInfo tileSetInfo)
     {
-        return (CRTileSetInfo)_infoField.GetValue(tileSet);
-    }
-
-    internal static void SetCRInfo(this TileSet tileSet, CRTileSetInfo info)
-    {
-        _infoField.SetValue(tileSet, info);
+        object newObject = tileSet;
+        ((ICRObject)newObject).CRInfo = tileSetInfo;
     }
 }

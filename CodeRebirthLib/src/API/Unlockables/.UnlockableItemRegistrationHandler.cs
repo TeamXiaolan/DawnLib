@@ -70,7 +70,7 @@ static class UnlockableRegistrationHandler
 
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
         {
-            if (unlockableItem.HasCRInfo())
+            if (unlockableItem.TryGetCRInfo(out _))
                 continue;
 
             NamespacedKey<CRUnlockableItemInfo>? key = (NamespacedKey<CRUnlockableItemInfo>?)typeof(UnlockableItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true))?.GetValue(null);

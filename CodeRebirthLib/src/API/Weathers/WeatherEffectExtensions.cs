@@ -1,35 +1,30 @@
 using System;
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
+using CodeRebirthLib.Internal;
+using CodeRebirthLib.Preloader;
 
 namespace CodeRebirthLib;
 
 public static class WeatherEffectExtensions
 {
-    // todo: reference stripped patched assembly??
-    private static FieldInfo _infoField = typeof(WeatherEffect).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
-
     public static NamespacedKey<CRWeatherEffectInfo> ToNamespacedKey(this WeatherEffect weatherEffect)
     {
-        if (!weatherEffect.HasCRInfo())
+        if (!weatherEffect.TryGetCRInfo(out CRWeatherEffectInfo? weatherEffectInfo))
         {
-            CodeRebirthLibPlugin.Logger.LogError($"WeatherEffect '{weatherEffect.name}' does not have a CRWeatherInfo, you are either accessing this too early or it erroneously never got created!");
+            Debuggers.ReplaceThis?.Log($"WeatherEffect {weatherEffect} has no CRInfo");
             throw new Exception();
         }
-        return weatherEffect.GetCRInfo().TypedKey;
+        return weatherEffectInfo.TypedKey;
     }
 
-    internal static bool HasCRInfo(this WeatherEffect weatherEffect)
+    internal static bool TryGetCRInfo(this WeatherEffect weatherEffect, [NotNullWhen(true)] out CRWeatherEffectInfo? weatherEffectInfo)
     {
-        return _infoField.GetValue(weatherEffect) != null;
+        weatherEffectInfo = (CRWeatherEffectInfo)((ICRObject)weatherEffect).CRInfo;
+        return weatherEffectInfo != null;
     }
 
-    internal static CRWeatherEffectInfo GetCRInfo(this WeatherEffect weatherEffect)
+    internal static void SetCRInfo(this WeatherEffect weatherEffect, CRWeatherEffectInfo weatherEffectInfo)
     {
-        return (CRWeatherEffectInfo)_infoField.GetValue(weatherEffect);
-    }
-
-    internal static void SetCRInfo(this WeatherEffect weatherEffect, CRWeatherEffectInfo info)
-    {
-        _infoField.SetValue(weatherEffect, info);
+        ((ICRObject)weatherEffect).CRInfo = weatherEffectInfo;
     }
 }

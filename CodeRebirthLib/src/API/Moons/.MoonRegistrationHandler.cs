@@ -25,7 +25,7 @@ static class MoonRegistrationHandler
 
         foreach (SelectableLevel level in self.levels)
         {
-            if (level.HasCRInfo())
+            if (level.TryGetCRInfo(out _))
                 continue;
 
             Debuggers.Moons?.Log($"Registering potentially modded level: {level.PlanetName}");

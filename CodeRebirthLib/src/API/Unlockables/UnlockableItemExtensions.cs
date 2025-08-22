@@ -1,35 +1,31 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using CodeRebirthLib.Internal;
+using CodeRebirthLib.Preloader;
 
 namespace CodeRebirthLib;
 
 public static class UnlockableItemExtensions
 {
-    // todo: reference stripped patched assembly??
-    private static FieldInfo _infoField = typeof(UnlockableItem).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
-
     public static NamespacedKey<CRUnlockableItemInfo> ToNamespacedKey(this UnlockableItem unlockableItem)
     {
-        if (!unlockableItem.HasCRInfo())
+        if (!unlockableItem.TryGetCRInfo(out CRUnlockableItemInfo? unlockableItemInfo))
         {
-            CodeRebirthLibPlugin.Logger.LogError($"UnlockableItem '{unlockableItem.unlockableName}' does not have a CRUnlockableItemInfo, you are either accessing this too early or it erroneously never got created!");
+            Debuggers.Unlockables?.Log($"UnlockableItem {unlockableItem} has no CRInfo");
             throw new Exception();
         }
-        return unlockableItem.GetCRInfo().TypedKey;
+        return unlockableItemInfo.TypedKey;
     }
 
-    internal static bool HasCRInfo(this UnlockableItem unlockableItem)
+    internal static bool TryGetCRInfo(this UnlockableItem unlockableItem, [NotNullWhen(true)] out CRUnlockableItemInfo? unlockableItemInfo)
     {
-        return _infoField.GetValue(unlockableItem) != null;
+        unlockableItemInfo = (CRUnlockableItemInfo)((ICRObject)unlockableItem).CRInfo;
+        return unlockableItemInfo != null;
     }
 
-    internal static CRUnlockableItemInfo GetCRInfo(this UnlockableItem unlockableItem)
+    internal static void SetCRInfo(this UnlockableItem unlockableItem, CRUnlockableItemInfo unlockableItemInfo)
     {
-        return (CRUnlockableItemInfo)_infoField.GetValue(unlockableItem);
-    }
-
-    internal static void SetCRInfo(this UnlockableItem unlockableItem, CRUnlockableItemInfo info)
-    {
-        _infoField.SetValue(unlockableItem, info);
+        ((ICRObject)unlockableItem).CRInfo = unlockableItemInfo;
     }
 }

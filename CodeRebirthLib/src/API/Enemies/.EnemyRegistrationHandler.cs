@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using CodeRebirthLib.Internal;
 using CodeRebirthLib.Internal.ModCompats;
 using UnityEngine;
 
@@ -13,40 +15,49 @@ static class EnemyRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         LethalContent.Moons.OnFreeze += RegisterEnemies;
-        LethalContent.Enemies.OnFreeze += AddEnemiesToDebugList;
+        On.QuickMenuManager.Start += AddEnemiesToDebugList;
     }
 
-    private static void AddEnemiesToDebugList()
+    private static void AddEnemiesToDebugList(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
     {
         SelectableLevel testLevel = LethalContent.Moons[MoonKeys.Test].Level;
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
+            if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
+                continue;
+
             SpawnableEnemyWithRarity spawnDef = new()
             {
                 enemyType = enemyInfo.EnemyType,
                 rarity = 0
             };
 
-            if (enemyInfo.Inside != null)
+            if (enemyInfo.Inside != null && testLevel.Enemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
+                Debuggers.ReplaceThis?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} inside.");
                 testLevel.Enemies.Add(spawnDef);
             }
 
-            if (enemyInfo.Outside != null)
+            if (enemyInfo.Outside != null && testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
+                Debuggers.ReplaceThis?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} outside.");
                 testLevel.OutsideEnemies.Add(spawnDef);
             }
 
-            if (enemyInfo.Daytime != null)
+            if (enemyInfo.Daytime != null && testLevel.DaytimeEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
+                Debuggers.ReplaceThis?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} daytime.");
                 testLevel.DaytimeEnemies.Add(spawnDef);
             }
         }
+        orig(self);
     }
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
-        CREnemyInfo enemyInfo = self.enemyType.GetCRInfo();
+        if (!self.enemyType.TryGetCRInfo(out CREnemyInfo? enemyInfo))
+            return;
+
         if (enemyInfo.HasTag(CRLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
@@ -127,6 +138,7 @@ static class EnemyRegistrationHandler
             if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
+            Debuggers.ReplaceThis?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
             if (enemyInfo.Outside != null)
             {
                 level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Outside.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
@@ -210,7 +222,7 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (enemyWithRarity.enemyType.HasCRInfo())
+                if (enemyWithRarity.enemyType.TryGetCRInfo(out _))
                     continue;
 
                 NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyWithRarity.enemyType.enemyName, true))?.GetValue(null);

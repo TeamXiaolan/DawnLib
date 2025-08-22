@@ -38,7 +38,7 @@ static class ItemRegistrationHandler
             if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
-            Debuggers.Items?.Log($"messing with {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
+            Debuggers.Items?.Log($"Updating {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
             level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
         }
     }
@@ -146,7 +146,7 @@ static class ItemRegistrationHandler
 
         foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            if (item.HasCRInfo())
+            if (item.TryGetCRInfo(out _))
                 continue;
 
             NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true))?.GetValue(null);

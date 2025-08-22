@@ -1,34 +1,30 @@
-using System.Reflection;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using CodeRebirthLib.Internal;
+using CodeRebirthLib.Preloader;
 
 namespace CodeRebirthLib;
 
 public static class ItemExtensions
 {
-    // todo: reference stripped patched assembly??
-    private static FieldInfo _infoField = typeof(Item).GetField("__crinfo", BindingFlags.Instance | BindingFlags.Public);
-
-    public static NamespacedKey<CRItemInfo>? ToNamespacedKey(this Item item)
+    public static NamespacedKey<CRItemInfo> ToNamespacedKey(this Item item)
     {
-        if (!item.HasCRInfo())
+        if (!item.TryGetCRInfo(out CRItemInfo? itemInfo))
         {
-            CodeRebirthLibPlugin.Logger.LogError($"Item '{item.itemName}' does not have a CRItemInfo, you are either accessing this too early or it erroneously never got created!");
-            return null;
+            Debuggers.Items?.Log($"Item {item} has no CRInfo");
+            throw new Exception();
         }
-        return item.GetCRInfo().TypedKey;
+        return itemInfo.TypedKey;
     }
 
-    internal static bool HasCRInfo(this Item item)
+    internal static bool TryGetCRInfo(this Item item, [NotNullWhen(true)] out CRItemInfo? itemInfo)
     {
-        return _infoField.GetValue(item) != null;
+        itemInfo = (CRItemInfo)((ICRObject)item).CRInfo;
+        return itemInfo != null;
     }
 
-    internal static CRItemInfo GetCRInfo(this Item item)
+    internal static void SetCRInfo(this Item item, CRItemInfo itemInfo)
     {
-        return (CRItemInfo)_infoField.GetValue(item);
-    }
-
-    internal static void SetCRInfo(this Item item, CRItemInfo info)
-    {
-        _infoField.SetValue(item, info);
+        ((ICRObject)item).CRInfo = itemInfo;
     }
 }

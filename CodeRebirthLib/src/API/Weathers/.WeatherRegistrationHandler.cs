@@ -13,16 +13,16 @@ static class WeatherRegistrationHandler
         if (LethalContent.Weathers.IsFrozen)
             return;
 
-        foreach (WeatherEffect effect in TimeOfDay.Instance.effects)
+        foreach (WeatherEffect weatherEffect in TimeOfDay.Instance.effects)
         {
-            if (effect.HasCRInfo())
+            if (weatherEffect.TryGetCRInfo(out _))
                 continue;
 
-            NamespacedKey<CRWeatherEffectInfo>? key = (NamespacedKey<CRWeatherEffectInfo>?)typeof(WeatherKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(effect.name, true))?.GetValue(null);
-            key ??= NamespacedKey<CRWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(effect.name, false));
+            NamespacedKey<CRWeatherEffectInfo>? key = (NamespacedKey<CRWeatherEffectInfo>?)typeof(WeatherKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true))?.GetValue(null);
+            key ??= NamespacedKey<CRWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
             // TODO something about crlib weathers being registered with this namespace instead of code_rebirth for example
 
-            CRWeatherEffectInfo weatherEffectInfo = new(key, [CRLibTags.IsExternal], effect);
+            CRWeatherEffectInfo weatherEffectInfo = new(key, [CRLibTags.IsExternal], weatherEffect);
             LethalContent.Weathers.Register(weatherEffectInfo);
         }
         LethalContent.Weathers.Freeze();

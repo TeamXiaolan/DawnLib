@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
@@ -12,12 +14,12 @@ public abstract class WeightTransformer
     public float DoOperation(float currentValue, string previousValueWithOperation)
     {
         // first character is the operation, get that as string?
+        Debuggers.Weights?.Log($"Operation: {previousValueWithOperation}");
         string operation = previousValueWithOperation[..1];
-        float previousValue = int.Parse(previousValueWithOperation[1..]);
         // parse everything else as int
-        if (int.TryParse(operation, out _)) // if no operation provided, default to `+`
+        if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out float previousValue)) // if no operation provided, default to `+`
         {
-            previousValue = int.Parse(previousValueWithOperation);
+            previousValue = float.Parse(previousValueWithOperation);
             return currentValue + previousValue;
         }
         else if (operation == "+")
