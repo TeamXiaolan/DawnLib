@@ -1,0 +1,19 @@
+{
+  "tag": "lethal_company:biped",
+  "values": [
+    "lethal_company:baboon_hawk",
+    "lethal_company:flowerman",
+    "lethal_company:spring",
+    "lethal_company:forestgiant",
+    "lethal_company:girl",
+    "lethal_company:hoarding_bug",
+    "lethal_company:jester",
+    "lethal_company:lasso",
+    "lethal_company:manticoil",
+    "lethal_company:masked",
+    "lethal_company:nutcracker",
+    "lethal_company:butler",
+    "lethal_company:radmech",
+    "lethal_company:clay_surgeon"
+  ]
+}

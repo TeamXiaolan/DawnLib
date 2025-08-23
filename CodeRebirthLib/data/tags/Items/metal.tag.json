@@ -1,0 +1,26 @@
+{
+  "tag": "lethal_company:metal",
+  "values": [
+    "lethal_company:airhorn",
+    "lethal_company:apparatus",
+    "lethal_company:bell",
+    "lethal_company:big_bolt",
+    "lethal_company:cash_register",
+    "lethal_company:clown_horn",
+    "lethal_company:chemical_jug",
+    "lethal_company:cookie_mold_pan",
+    "lethal_company:egg_beater",
+    "lethal_company:gold_bar",
+    "lethal_company:golden_cup",
+    "lethal_company:key",
+    "lethal_company:kitchen_knife",
+    "lethal_company:large_axle",
+    "lethal_company:metal_sheet",
+    "lethal_company:red_soda",
+    "lethal_company:steering_wheel",
+    "lethal_company:stop_sign",
+    "lethal_company:tea_kettle",
+    "lethal_company:vtype_engine",
+    "lethal_company:yield_sign"
+  ]
+}

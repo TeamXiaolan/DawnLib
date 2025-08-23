@@ -1,0 +1,10 @@
+{
+  "tag": "lethal_company:luminescent",
+  "values": [
+    "lethal_company:apparatus",
+    "lethal_company:fancy_lamp",
+    "lethal_company:flashlight",
+    "lethal_company:proflashlight",
+    "lethal_company:laser_pointer"
+  ]
+}

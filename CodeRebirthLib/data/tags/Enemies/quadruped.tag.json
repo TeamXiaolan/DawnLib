@@ -1,0 +1,10 @@
+{
+  "tag": "lethal_company:quadruped",
+  "values": [
+    "lethal_company:bunker_spider",
+    "lethal_company:mouthdog",
+    "lethal_company:puffer",
+    "lethal_company:crawler",
+    "lethal_company:bush_wolf"
+  ]
+}

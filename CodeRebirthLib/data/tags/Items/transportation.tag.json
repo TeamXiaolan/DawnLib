@@ -1,0 +1,9 @@
+{
+  "tag": "lethal_company:transportation",
+  "values": [
+    "lethal_company:lockpicker",
+    "lethal_company:key",
+    "lethal_company:jetpack",
+    "lethal_company:extension_ladder"
+  ]
+}
