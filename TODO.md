@@ -10,6 +10,7 @@
 - Weather Namespace shenanigans with CRLib created weathers.
 - Grab the "vanilla" content tags LLL has as a soft dependency and make us use em as vanilla like lethal_company:forest.
 - Grab the non vanilla content tags LLL has and set em per mod_name:content_tag.
+- Figure out the interior name situation with weights.
 
 ## Needs to be done eventually
 

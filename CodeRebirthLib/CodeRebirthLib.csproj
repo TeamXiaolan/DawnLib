@@ -91,10 +91,12 @@
       </Reference>
     </ItemGroup>
     <ItemGroup>
-        <None Remove="res\vanilla.namespaced_keys.json" />
-        <AdditionalFiles Include="res\vanilla.namespaced_keys.json" />
-        <None Remove="res\extra.namespaced_keys.json" />
-        <AdditionalFiles Include="res\extra.namespaced_keys.json" />
+        <None Remove="data\keys\vanilla.namespaced_keys.json" />
+        <AdditionalFiles Include="data\keys\vanilla.namespaced_keys.json" />
+
+        <None Remove="data\keys\extra.namespaced_keys.json" />
+        <AdditionalFiles Include="data\keys\extra.namespaced_keys.json" />
+
         <None Remove="data\tags\forest.tag.json" />
         <AdditionalFiles Include="data\tags\forest.tag.json" />
     </ItemGroup>
