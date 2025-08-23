@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace CodeRebirthLib.CRMod;
@@ -14,14 +15,14 @@ public class WeatherWeightTransformer : WeightTransformer
 
         FromConfigString(weatherConfig);
     }
-    public Dictionary<string, string> MatchingWeathersWithWeightAndOperationDict = new();
+    public Dictionary<NamespacedKey, string> MatchingWeathersWithWeightAndOperationDict = new();
 
     public override string ToConfigString()
     {
         if (MatchingWeathersWithWeightAndOperationDict.Count == 0)
             return string.Empty;
 
-        string MatchingWeatherWithWeight = string.Join(",", MatchingWeathersWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}:{kvp.Value}"));
+        string MatchingWeatherWithWeight = string.Join(",", MatchingWeathersWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
         return $"{MatchingWeatherWithWeight}";
     }
 
@@ -30,61 +31,66 @@ public class WeatherWeightTransformer : WeightTransformer
         if (string.IsNullOrEmpty(config))
             return;
 
-        IEnumerable<string> configEntries = config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries);
-        List<string[]> moonWithWeightEntries = configEntries.Select(kvp => kvp.Split(':', StringSplitOptions.RemoveEmptyEntries)).ToList();
         MatchingWeathersWithWeightAndOperationDict.Clear();
-        foreach (string[] moonWithWeightEntry in moonWithWeightEntries)
+        IEnumerable<string> configEntries = config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        List<string[]> weatherWithWeightEntries = configEntries.Select(kvp => kvp.Split('=', StringSplitOptions.RemoveEmptyEntries)).ToList();
+        foreach (string[] weatherWithWeightEntry in weatherWithWeightEntries)
         {
-            if (moonWithWeightEntry.Length != 2)
+            if (weatherWithWeightEntry.Length != 2)
                 continue;
 
-            string moonName = moonWithWeightEntry[0].Trim();
-            string weightFactor = moonWithWeightEntry[1].Trim();
-            if (string.IsNullOrEmpty(moonName) || string.IsNullOrEmpty(weightFactor))
+            NamespacedKey weatherNamespacedKey = NamespacedKey.ForceParse(weatherWithWeightEntry[0].Trim());
+
+            string weightFactor = weatherWithWeightEntry[1].Trim();
+            if (string.IsNullOrEmpty(weightFactor))
                 continue;
 
-            MatchingWeathersWithWeightAndOperationDict.Add(moonName, weightFactor);
+            MatchingWeathersWithWeightAndOperationDict.Add(weatherNamespacedKey, weightFactor);
         }
     }
 
     public override float GetNewWeight(float currentWeight)
     {
-        if (!RoundManager.Instance) return currentWeight;
-        if (!RoundManager.Instance.currentLevel) return currentWeight;
-        if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(RoundManager.Instance.currentLevel.currentWeather.ToString().ToLowerInvariant().Trim(), out string operationWithWeight))
-            return currentWeight;
+        if (!TimeOfDay.Instance) return currentWeight;
+        if (!TimeOfDay.Instance.currentLevel) return currentWeight;
+
+        NamespacedKey currentWeatherNamespacedKey = NamespacedKey<CRWeatherEffectInfo>.Vanilla("none");
+        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetCRInfo(out CRWeatherEffectInfo? weatherInfo))
+        {
+            currentWeatherNamespacedKey = weatherInfo.TypedKey;
+        }
+
+        if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out string operationWithWeight)) return currentWeight;
+        /*foreach (NamespacedKey tag in moonInfo.tags)
+        {
+            Could potentially have a priority system, check all valid tags and apply the lowest weight one? or an average? but would need to account for the different operations
+        }*/
 
         return DoOperation(currentWeight, operationWithWeight);
     }
 
     public override string GetOperation()
     {
-        if (!RoundManager.Instance) return string.Empty;
-        if (!RoundManager.Instance.currentLevel) return string.Empty;
-        if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(RoundManager.Instance.currentLevel.currentWeather.ToString().ToLowerInvariant().Trim(), out string operationWithWeight))
-            return string.Empty;
+        if (!TimeOfDay.Instance) return string.Empty;
+        if (!TimeOfDay.Instance.currentLevel) return string.Empty;
 
-        // first character is the operation, get that as string?
+        NamespacedKey currentWeatherNamespacedKey = NamespacedKey<CRWeatherEffectInfo>.Vanilla("none");
+        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetCRInfo(out CRWeatherEffectInfo? weatherInfo))
+        {
+            currentWeatherNamespacedKey = weatherInfo.TypedKey;
+        }
+
+        if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out string operationWithWeight)) return string.Empty;
+
+
         string operation = operationWithWeight[..1];
-        if (int.TryParse(operation, out _)) // if no operation provided, default to `+`
+        if (operation == "+" || operation == "*" || operation == "/" || operation == "-")
+        {
+            return operation;
+        }
+        else if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
         {
             return "+";
-        }
-        else if (operation == "+")
-        {
-            return "+";
-        }
-        else if (operation == "*")
-        {
-            return "*";
-        }
-        else if (operation == "-")
-        {
-            return "-";
-        }
-        else if (operation == "/")
-        {
-            return "/";
         }
         else
         {

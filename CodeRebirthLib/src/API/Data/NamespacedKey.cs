@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
 using CodeRebirthLib.Utils;
@@ -97,6 +98,29 @@ public class NamespacedKey : INetworkSerializable
     public static NamespacedKey Parse(string input)
     {
         string[] parts = input.Split(Separator);
+        return From(parts[0], parts[1]);
+    }
+
+    public static bool TryParse(string input, [NotNullWhen(true)] out NamespacedKey? result)
+    {
+        result = null;
+        string[] parts = input.Split(Separator);
+        if (parts.Length != 2)
+        {
+            return false;
+        }
+
+        result = From(parts[0], parts[1]);
+        return true;
+    }
+
+    public static NamespacedKey ForceParse(string input)
+    {
+        string[] parts = input.Split(Separator);
+        if (parts.Length == 1)
+        {
+            parts = [VanillaNamespace, parts[0]];
+        }
         return From(parts[0], parts[1]);
     }
 

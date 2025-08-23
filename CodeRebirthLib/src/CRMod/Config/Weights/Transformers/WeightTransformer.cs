@@ -13,11 +13,9 @@ public abstract class WeightTransformer
 
     public float DoOperation(float currentValue, string previousValueWithOperation)
     {
-        // first character is the operation, get that as string?
         Debuggers.Weights?.Log($"Operation: {previousValueWithOperation}");
         string operation = previousValueWithOperation[..1];
-        // parse everything else as int
-        if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out float previousValue)) // if no operation provided, default to `+`
+        if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out float previousValue))
         {
             previousValue = float.Parse(previousValueWithOperation);
             return currentValue + previousValue;

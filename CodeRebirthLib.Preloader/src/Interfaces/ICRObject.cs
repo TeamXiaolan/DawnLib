@@ -6,7 +6,7 @@
 [InjectInterface("Item")]
 [InjectInterface("UnlockableItem")]
 [InjectInterface("DunGen.TileSet")]
-[InjectInterface("DunGen.Graph.DunGenFlow")]
+[InjectInterface("DunGen.Graph.DungeonFlow")]
 public interface ICRObject
 {
     object CRInfo { get; set; }
