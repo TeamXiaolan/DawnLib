@@ -2,6 +2,7 @@ using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CodeRebirthLib.CRMod;
@@ -32,13 +33,36 @@ public class AchievementUIElement : MonoBehaviour
     [SerializeField]
     private Image _progressBar = null!;
 
+    [SerializeField]
+    private EventTrigger? _eventTrigger = null;
+
     public void SetupAchievementUI(CRMAchievementDefinition definition)
     {
         _achievementNameTMP.text = definition.AchievementName;
         _achievementDescriptionTMP.text = definition.AchievementDescription;
         _achievementIcon.sprite = definition.AchievementIcon;
-        if (!definition.IsHidden)
+        _achievementHiddenButton.interactable = false;
+        if (_eventTrigger != null)
         {
+            _eventTrigger.enabled = false;
+        }
+
+        if (definition.CanBeUnhidden)
+        {
+            _achievementHiddenButton.interactable = true;
+            if (_eventTrigger != null)
+            {
+                _eventTrigger.enabled = true;
+            }
+        }
+
+        if (!definition.IsHidden || definition.Completed)
+        {
+            if (_eventTrigger != null)
+            {
+                _eventTrigger.enabled = true;
+            }
+            _achievementHiddenButton.interactable = true;
             _achievementHiddenButton.onClick.Invoke();
         }
 

@@ -38,6 +38,9 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition, INamespac
     [field: SerializeField]
     public bool IsHidden { get; private set; }
     [field: SerializeField]
+    public bool CanBeUnhidden { get; private set; }
+
+    [field: SerializeField]
     public float PopupTime { get; private set; } = 5f;
 
     public bool Completed { get; protected set; } = false;

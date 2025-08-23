@@ -33,8 +33,7 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        var sortedAchievements = CRModContent.Achievements.Values
-            .Where(it => true)
+        List<CRMAchievementDefinition> sortedAchievements = CRModContent.Achievements.Values
             .OrderByDescending(a => a.AchievementName)
             .ToList();
 
