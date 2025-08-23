@@ -39,12 +39,21 @@ public class CRMStatAchievement : CRMAchievementDefinition, IProgress
 
     public bool IncrementProgress(float amount)
     {
-        CurrentProgress += amount;
+        CurrentProgress = Mathf.Max(0f, CurrentProgress + amount);
         if (CurrentProgress >= MaxProgress)
         {
             CurrentProgress = MaxProgress;
             return TryCompleteAchievement();
         }
         return false;
+    }
+
+    public void DecrementProgress(float amount)
+    {
+        CurrentProgress -= Mathf.Max(0f, amount);
+        if (CurrentProgress <= 0f)
+        {
+            CurrentProgress = 0f;
+        }
     }
 }

@@ -61,17 +61,28 @@ public class CRMDiscoveryAchievement : CRMAchievementDefinition, IProgress
     {
         foreach (string id in UniqueID)
         {
-            if (CurrentlyCollectedUniqueStringIDs.Contains(id) || !UniqueStringIDs.Contains(id))
-                continue;
-
-            CurrentlyCollectedUniqueStringIDs.Add(id);
+            if (TryDiscoverMoreProgress(id))
+            {
+                return true;
+            }
         }
 
-        if (CurrentProgress >= MaxProgress)
-        {
-            CurrentlyCollectedUniqueStringIDs = UniqueStringIDs;
-            return TryCompleteAchievement();
-        }
         return false;
+    }
+
+    public void UndiscoverProgress(string UniqueID)
+    {
+        if (!UniqueStringIDs.Contains(UniqueID))
+            return;
+
+        CurrentlyCollectedUniqueStringIDs.Remove(UniqueID);
+    }
+
+    public void UndiscoverProgress(IEnumerable<string> UniqueID)
+    {
+        foreach (string id in UniqueID)
+        {
+            UndiscoverProgress(id);
+        }
     }
 }
