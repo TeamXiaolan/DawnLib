@@ -35,7 +35,7 @@ public class CRMod
     internal static CRMod RegisterNoCodeMod(CRModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
         var plugin = modInfo.CreatePluginMetadata();
-        Debuggers.ReplaceThis?.Log("Registering no-code mod!");
+        Debuggers.CRMContentDefinition?.Log("Registering no-code mod!");
         ConfigManager configManager = new(ConfigManager.GenerateConfigFile(plugin));
         CRMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
         noCodeMod.ModInformation = modInfo;
@@ -76,7 +76,7 @@ public class CRMod
         ModInformation.Version = manifest.version_number;
         ModInformation.ExtraDependencies = manifest.dependencies;
         ModInformation.WebsiteUrl = manifest.website_url;
-        Debuggers.ReplaceThis?.Log($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
+        Debuggers.CRMContentDefinition?.Log($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
     }
 
     private Sprite? LoadIcon(string iconPath)

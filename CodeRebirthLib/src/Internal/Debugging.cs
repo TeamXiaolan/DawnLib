@@ -8,6 +8,8 @@ namespace CodeRebirthLib.Internal;
 internal static class Debuggers
 {
     internal static DebugLogSource? ReplaceThis;
+    internal static DebugLogSource? Weathers;
+    internal static DebugLogSource? Enemies;
     internal static DebugLogSource? Moons;
     internal static DebugLogSource? Items;
     internal static DebugLogSource? MapObjects;

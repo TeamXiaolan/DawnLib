@@ -110,7 +110,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             return true;
         }
 
-        if (Debuggers.ReplaceThis != null)
+        if (Debuggers.CRMContentDefinition != null)
         {
             Content.FirstOrDefault()?.Mod.Logger?.LogWarning($"TryGetConfig: '{configName}' does not exist on '{Content}', returning false and entry will be null");
         }

@@ -11,7 +11,7 @@ public static class EnemyTypeExtensions
     {
         if (!enemyType.TryGetCRInfo(out CREnemyInfo? moonInfo))
         {
-            Debuggers.ReplaceThis?.Log($"EnemyType {enemyType} has no CRInfo");
+            Debuggers.Enemies?.Log($"EnemyType {enemyType} has no CRInfo");
             throw new Exception();
         }
         return moonInfo.TypedKey;

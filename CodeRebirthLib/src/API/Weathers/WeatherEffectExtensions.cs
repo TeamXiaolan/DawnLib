@@ -11,7 +11,7 @@ public static class WeatherEffectExtensions
     {
         if (!weatherEffect.TryGetCRInfo(out CRWeatherEffectInfo? weatherEffectInfo))
         {
-            Debuggers.ReplaceThis?.Log($"WeatherEffect {weatherEffect} has no CRInfo");
+            Debuggers.Weathers?.Log($"WeatherEffect {weatherEffect} has no CRInfo");
             throw new Exception();
         }
         return weatherEffectInfo.TypedKey;

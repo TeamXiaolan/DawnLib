@@ -34,19 +34,19 @@ static class EnemyRegistrationHandler
 
             if (enemyInfo.Inside != null && testLevel.Enemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
-                Debuggers.ReplaceThis?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} inside.");
+                Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} inside.");
                 testLevel.Enemies.Add(spawnDef);
             }
 
             if (enemyInfo.Outside != null && testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
-                Debuggers.ReplaceThis?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} outside.");
+                Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} outside.");
                 testLevel.OutsideEnemies.Add(spawnDef);
             }
 
             if (enemyInfo.Daytime != null && testLevel.DaytimeEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
-                Debuggers.ReplaceThis?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} daytime.");
+                Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} daytime.");
                 testLevel.DaytimeEnemies.Add(spawnDef);
             }
         }
@@ -138,7 +138,7 @@ static class EnemyRegistrationHandler
             if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
-            Debuggers.ReplaceThis?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
+            Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
             if (enemyInfo.Outside != null)
             {
                 level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Outside.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
