@@ -18,6 +18,5 @@
 - ScanNode having preloader stuff to save its equivalent recttransform
 - Swap TerminalPredicate stuff with preloader stuff.
 - Transpiler on spawning outside map object so that outside map objects count towards an internal int inside the SpawnOutsideHazards patch.
-- Add a % completion for each achievement somewhere.
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.

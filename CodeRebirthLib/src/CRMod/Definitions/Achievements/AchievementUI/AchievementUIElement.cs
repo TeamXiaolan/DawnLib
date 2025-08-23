@@ -86,6 +86,7 @@ public class AchievementUIElement : MonoBehaviour
         {
             Debuggers.Achievements?.Log($"Setting up progress achievement: {definition.AchievementName} with percentage: {progressiveAchievement.Percentage()}");
             _progressBar.fillAmount = progressiveAchievement.Percentage();
+            _progressBar.GetComponentInChildren<TextMeshProUGUI>().text = $"{progressiveAchievement.CurrentProgress}/{progressiveAchievement.MaxProgress}";
         }
         else
         {
