@@ -91,14 +91,8 @@
       </Reference>
     </ItemGroup>
     <ItemGroup>
-        <None Remove="data\keys\vanilla.namespaced_keys.json" />
-        <AdditionalFiles Include="data\keys\vanilla.namespaced_keys.json" />
-
-        <None Remove="data\keys\extra.namespaced_keys.json" />
-        <AdditionalFiles Include="data\keys\extra.namespaced_keys.json" />
-
-        <None Remove="data\tags\forest.tag.json" />
-        <AdditionalFiles Include="data\tags\forest.tag.json" />
+        <None Remove="data\**\*.json" />
+        <AdditionalFiles Include="data\**\*.json" />
     </ItemGroup>
     
     <Target Name="PackThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'" DependsOnTargets="NetcodePatch">
