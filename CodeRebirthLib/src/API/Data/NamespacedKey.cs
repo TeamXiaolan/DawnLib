@@ -137,7 +137,7 @@ public class NamespacedKey : INetworkSerializable
 
     public override bool Equals(object? obj)
     {
-        if (obj == null)
+        if (obj == null) // TODO??
             return false;
 
         NamespacedKey other = (NamespacedKey)obj;
