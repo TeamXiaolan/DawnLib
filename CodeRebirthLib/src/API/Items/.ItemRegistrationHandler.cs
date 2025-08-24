@@ -161,7 +161,57 @@ static class ItemRegistrationHandler
                 scrapInfo = new(weightTableBuilder.Build());
             }
 
-            CRItemInfo itemInfo = new(key, [CRLibTags.IsExternal], item, scrapInfo, shopInfo);
+            List<NamespacedKey> tags = [CRLibTags.IsExternal];
+            if (item.spawnPrefab.GetComponent<GrabbableObject>().GetType() == typeof(GrabbableObject))
+            {
+                tags.Add(Tags.NonInteractable);
+            }
+            else if (item.spawnPrefab.GetComponent<NoisemakerProp>() != null)
+            {
+                tags.Add(Tags.Noisy);
+            }
+            else
+            {
+                tags.Add(Tags.Interactable);
+            }
+
+            if (shopInfo != null)
+            {
+                tags.Add(Tags.Buyable);
+            }
+
+            if (scrapInfo != null)
+            {
+                tags.Add(Tags.Scrap);
+            }
+
+            if (item.requiresBattery)
+            {
+                tags.Add(Tags.Chargeable);
+            }
+
+            if (item.isConductiveMetal)
+            {
+                tags.Add(Tags.Conductive);
+            }
+
+            // do the weights and values
+
+            if (item.twoHanded)
+            {
+                tags.Add(Tags.TwoHanded);
+            }
+            else
+            {
+                tags.Add(Tags.OneHanded);
+            }
+
+            if (item.isDefensiveWeapon)
+            {
+                tags.Add(Tags.Weapon);
+            }
+
+            CRItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo);
             item.SetCRInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }
