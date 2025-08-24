@@ -22,7 +22,19 @@ public class AchievementModUIElement : MonoBehaviour
     private GameObject _achievementUIElementPrefab = null!;
 
     internal GameObject _achievementsContainer = null!;
-    private List<GameObject> _achievementsContainerList = new();
+
+    internal List<AchievementUIElement> achievementsContainerList = new();
+    internal static List<AchievementModUIElement> achievementModUIElements = new();
+
+    private void Awake()
+    {
+        achievementModUIElements.Add(this);
+    }
+
+    private void OnDestroy()
+    {
+        achievementModUIElements.Remove(this);
+    }
 
     internal void SetupModUI(CRMod mod)
     {
@@ -37,18 +49,18 @@ public class AchievementModUIElement : MonoBehaviour
             .OrderByDescending(a => a.AchievementName)
             .ToList();
 
-        foreach (var achievement in sortedAchievements)
+        foreach (CRMAchievementDefinition achievement in sortedAchievements)
         {
             Debuggers.Achievements?.Log($"Adding achievement: {achievement.AchievementName}");
 
-            var go = GameObject.Instantiate(_achievementUIElementPrefab, _achievementsContainer.transform);
+            GameObject go = GameObject.Instantiate(_achievementUIElementPrefab, _achievementsContainer.transform);
             go.SetActive(false);
 
-            var ui = go.GetComponent<AchievementUIElement>();
-            ui.SetupAchievementUI(achievement);
+            AchievementUIElement uiElement = go.GetComponent<AchievementUIElement>();
+            uiElement.SetupAchievementUI(achievement);
 
             go.name = $"CodeRebirthLib Achievement UI - {achievement.AchievementName} - {mod.Plugin.GUID}";
-            _achievementsContainerList.Add(go);
+            achievementsContainerList.Add(uiElement);
         }
 
         _achievementAccessButton.onClick.AddListener(OnButtonClick);
@@ -62,15 +74,15 @@ public class AchievementModUIElement : MonoBehaviour
             if (modUIElement == this)
                 continue;
 
-            foreach (var achievement in modUIElement._achievementsContainerList)
+            foreach (var achievement in modUIElement.achievementsContainerList)
             {
-                achievement.SetActive(!achievement.activeSelf);
+                achievement.gameObject.SetActive(!achievement.gameObject.activeSelf);
             }
         }
 
-        foreach (var achievement in _achievementsContainerList)
+        foreach (var achievement in achievementsContainerList)
         {
-            achievement.SetActive(!achievement.activeSelf);
+            achievement.gameObject.SetActive(!achievement.gameObject.activeSelf);
         }
     }
 }

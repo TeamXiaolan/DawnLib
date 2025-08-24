@@ -32,9 +32,8 @@ public class CRMStatAchievement : CRMAchievementDefinition, IProgress
 
     public override void ResetProgress()
     {
-        base.ResetProgress();
         CurrentProgress = 0f;
-        SaveAchievementState(CRAchievementHandler.globalSettings);
+        base.ResetProgress();
     }
 
     public bool IncrementProgress(float amount)

@@ -66,7 +66,7 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherE
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
-        CRWeatherEffectInfo weatherEffectInfo = new(TypedKey, [], weatherEffect);
+        CRWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, weatherEffect);
         weatherEffect.SetCRInfo(weatherEffectInfo);
         LethalContent.Weathers.Register(weatherEffectInfo); // TEMPORARY
     }

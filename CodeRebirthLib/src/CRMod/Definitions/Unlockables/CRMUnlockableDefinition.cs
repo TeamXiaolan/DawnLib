@@ -52,6 +52,11 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
                 ProgressiveData = new ProgressiveUnlockData(this);
                 builder.SetPurchasePredicate(new ProgressiveUnlockablePredicate(ProgressiveData));
             }
+
+            foreach (NamespacedKey tag in _tags)
+            {
+                builder.AddTag(tag);
+            }
         });
     }
 

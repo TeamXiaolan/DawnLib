@@ -73,8 +73,12 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
                     insideBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
                 });
             }
+
+            foreach (NamespacedKey tag in _tags)
+            {
+                builder.AddTag(tag);
+            }
         });
-        // TODO make the bestiaries
     }
 
     public static EnemyConfig CreateEnemyConfig(ConfigContext section, EnemyData data, SpawnWeightsPreset spawnWeightsPreset, string enemyName)

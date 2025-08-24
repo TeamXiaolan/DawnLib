@@ -32,9 +32,8 @@ public class CRMDiscoveryAchievement : CRMAchievementDefinition, IProgress
 
     public override void ResetProgress()
     {
+        CurrentlyCollectedUniqueStringIDs.Clear();
         base.ResetProgress();
-        CurrentlyCollectedUniqueStringIDs = new();
-        SaveAchievementState(CRAchievementHandler.globalSettings);
     }
 
     public float MaxProgress => UniqueStringIDs.Count;

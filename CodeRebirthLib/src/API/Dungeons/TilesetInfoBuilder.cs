@@ -6,6 +6,7 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 {
     private List<NamespacedKey<CRDungeonInfo>> _appliedTo = [];
     private bool _branchCap, _regular = true;
+    private List<NamespacedKey> _tags = new();
 
     internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
     {
@@ -29,8 +30,14 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
         return this;
     }
 
+    public TilesetInfoBuilder AddTag(NamespacedKey tag)
+    {
+        _tags.Add(tag);
+        return this;
+    }
+
     override internal CRTileSetInfo Build()
     {
-        return new CRTileSetInfo(_key, [], _value, _appliedTo, _branchCap, _regular);
+        return new CRTileSetInfo(_key, _tags, _value, _appliedTo, _branchCap, _regular);
     }
 }

@@ -82,6 +82,11 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
                     }
                 });
             }
+
+            foreach (NamespacedKey tag in _tags)
+            {
+                builder.AddTag(tag);
+            }
         });
     }
 

@@ -14,7 +14,10 @@ public abstract class CRMContentDefinition : ScriptableObject
 
     [FormerlySerializedAs("ConfigEntries")]
     [SerializeField]
-    private List<CRDynamicConfig> _configEntries;
+    private List<CRDynamicConfig> _configEntries = new();
+
+    [SerializeField]
+    internal List<NamespacedKey> _tags = new();
 
     internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
     public CRMod Mod { get; private set; }

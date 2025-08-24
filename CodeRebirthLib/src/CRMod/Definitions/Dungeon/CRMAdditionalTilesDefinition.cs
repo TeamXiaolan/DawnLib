@@ -22,6 +22,9 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
     public TileSet TilesToAdd { get; private set; }
 
     [field: SerializeField]
+    public List<NamespacedKey<CRDungeonInfo>> dungeonKeys = new();
+
+    [field: SerializeField]
     public string ArchetypeName { get; private set; }
 
     [field: SerializeField]
@@ -37,9 +40,16 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
 
         CRLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
-            // builder.AddToDungeon();
+            foreach (NamespacedKey<CRDungeonInfo> dungeonKey in dungeonKeys)
+            {
+                builder.AddToDungeon(dungeonKey);
+            }
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
+            foreach (NamespacedKey tag in _tags)
+            {
+                builder.AddTag(tag);
+            }
         });
     }
 

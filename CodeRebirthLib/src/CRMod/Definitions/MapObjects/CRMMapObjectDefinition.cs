@@ -52,7 +52,6 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
                 });
             }
 
-
             builder.DefineOutside(outsideBuilder =>
             {
                 MapObjectSpawnMechanics OutsideSpawnMechanics = new(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
@@ -62,6 +61,11 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
                     weightBuilder.SetGlobalCurve(OutsideSpawnMechanics);
                 });
             });
+
+            foreach (NamespacedKey tag in _tags)
+            {
+                builder.AddTag(tag);
+            }
         });
     }
 

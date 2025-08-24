@@ -72,9 +72,19 @@ public abstract class CRMAchievementDefinition : CRMContentDefinition, INamespac
         return Completed;
     }
 
-    public virtual void ResetProgress() // TODO do i need to reload all achievements after this so that parent achievement actually updates for this same with the UI?
+    public virtual void ResetProgress()
     {
         Completed = false;
+
+        CRAchievementHandler.SaveAll();
+        CRAchievementHandler.LoadAll();
+        foreach (AchievementModUIElement modUIElement in AchievementModUIElement.achievementModUIElements)
+        {
+            foreach (AchievementUIElement achievementUIElement in modUIElement.achievementsContainerList)
+            {
+                CRAchievementHandler.UpdateUIElement(achievementUIElement, achievementUIElement.achievementDefinition);
+            }
+        }
     }
 
     public override void Register(CRMod mod)
