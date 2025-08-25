@@ -15,6 +15,7 @@ public class AssetBundleData
     [field: FormerlySerializedAs("keepLoaded")]
     public bool AlwaysKeepLoaded { get; private set; }
 
+    [AssertNotEmpty]
     public string configName;
     public List<WeatherData> weathers;
     public List<EnemyData> enemies;

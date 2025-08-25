@@ -11,7 +11,7 @@ public abstract class CRMContentReference
     public abstract NamespacedKey Key { get; protected set; }
 
     [field: SerializeField]
-    private string assetGUID;
+    internal string assetGUID;
 }
 
 [Serializable]
