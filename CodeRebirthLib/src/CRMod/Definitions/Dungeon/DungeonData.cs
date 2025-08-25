@@ -28,6 +28,20 @@ public class DungeonData : EntityData<CRMAdditionalTilesReference>, IInspectorHe
                     if (!string.IsNullOrEmpty(path))
                     {
                         currentAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<CRMAdditionalTilesDefinition>(path);
+                        /*
+                        UnityEditor.AssetImporter importer = UnityEditor.AssetImporter.GetAtPath(path);
+                        if (importer != null)
+                        {
+                            string bundleName = importer.assetBundleName;
+                            if (!string.IsNullOrEmpty(bundleName))
+                            {
+                                if (!bundleName.Equals("my_special_bundle", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    message = "AdditionalTilesDefinition is not assigned to the correct AssetBundle.";
+                                    return true;
+                                }
+                            }
+                        }*/
                     }
                 }
 
