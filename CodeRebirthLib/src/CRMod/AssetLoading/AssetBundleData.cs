@@ -8,6 +8,7 @@ namespace CodeRebirthLib.CRMod;
 [Serializable]
 public class AssetBundleData
 {
+    [AssetBundleReference]
     public string assetBundleName;
 
     [field: SerializeField]
