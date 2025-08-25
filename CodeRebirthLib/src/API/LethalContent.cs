@@ -3,14 +3,14 @@ namespace CodeRebirthLib;
 
 public static class LethalContent
 {
-    public static Registry<CRItemInfo> Items = new();
-    public static Registry<CREnemyInfo> Enemies = new();
-    public static Registry<CRMapObjectInfo> MapObjects = new();
-    public static Registry<CRMoonInfo> Moons = new();
-    public static Registry<CRTileSetInfo> TileSets = new();
-    public static Registry<CRDungeonInfo> Dungeons = new();
-    public static Registry<CRUnlockableItemInfo> Unlockables = new();
-    public static Registry<CRWeatherEffectInfo> Weathers = new();
+    public static TaggedRegistry<CRItemInfo> Items = new();
+    public static TaggedRegistry<CREnemyInfo> Enemies = new();
+    public static TaggedRegistry<CRMapObjectInfo> MapObjects = new();
+    public static TaggedRegistry<CRMoonInfo> Moons = new();
+    public static TaggedRegistry<CRTileSetInfo> TileSets = new();
+    public static TaggedRegistry<CRDungeonInfo> Dungeons = new();
+    public static TaggedRegistry<CRUnlockableItemInfo> Unlockables = new();
+    public static TaggedRegistry<CRWeatherEffectInfo> Weathers = new();
 }
 
 public static class CRLibTags

@@ -6,10 +6,25 @@ using UnityEngine;
 
 namespace CodeRebirthLib;
 
+// todo: actually calculate this well
+public class WeightTagger(NamespacedKey tag, int minimumWeight) : IAutoTagger<CRItemInfo>
+{
+
+    public NamespacedKey Tag => tag;
+    public bool ShouldApply(CRItemInfo info)
+    {
+        return info.Item.weight < minimumWeight;
+    }
+}
+
 static class ItemRegistrationHandler
 {
     internal static void Init()
     {
+        LethalContent.Items.AddAutoTaggers(
+            new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, it => it.Item.isConductiveMetal)
+        );
+        
         On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.Terminal.Awake += RegisterShopItemsToTerminal;
@@ -189,11 +204,6 @@ static class ItemRegistrationHandler
             if (item.requiresBattery)
             {
                 tags.Add(Tags.Chargeable);
-            }
-
-            if (item.isConductiveMetal)
-            {
-                tags.Add(Tags.Conductive);
             }
 
             // do the weights and values

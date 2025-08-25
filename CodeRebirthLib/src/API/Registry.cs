@@ -26,7 +26,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
         OnFreeze();
     }
 
-    internal void Register(T value)
+    virtual internal void Register(T value)
     {
         if (IsFrozen)
             throw new RegistryFrozenException();
