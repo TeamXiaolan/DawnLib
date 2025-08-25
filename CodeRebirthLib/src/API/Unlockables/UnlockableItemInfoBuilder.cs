@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CodeRebirthLib;
-public class UnlockableInfoBuilder
+public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
 {
     public class SuitBuilder
     {
@@ -30,13 +30,13 @@ public class UnlockableInfoBuilder
 
         internal PlaceableObjectBuilder SetDecor()
         {
-            _parentBuilder._unlockableItem.alwaysInStock = false;
+            _parentBuilder.value.alwaysInStock = false;
             return this;
         }
 
         internal PlaceableObjectBuilder SetShipUpgrade()
         {
-            _parentBuilder._unlockableItem.alwaysInStock = true;
+            _parentBuilder.value.alwaysInStock = true;
             return this;
         }
 
@@ -46,20 +46,13 @@ public class UnlockableInfoBuilder
         }
     }
 
-    private NamespacedKey<CRUnlockableItemInfo> _key;
-    private UnlockableItem _unlockableItem;
-
     private int? _cost;
     private CRSuitInfo? _suitInfo;
     private CRPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
-
-    private List<NamespacedKey> _tags = new();
     
-    internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem)
+    internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
     {
-        _key = key;
-        _unlockableItem = unlockableItem;
     }
 
     public UnlockableInfoBuilder SetCost(int cost)
@@ -90,25 +83,19 @@ public class UnlockableInfoBuilder
         return this;
     }
 
-    public UnlockableInfoBuilder AddTag(NamespacedKey tag)
-    {
-        _tags.Add(tag);
-        return this;
-    }
-    
-    internal CRUnlockableItemInfo Build()
+    override internal CRUnlockableItemInfo Build()
     {
         int cost = 0;
-        if (_cost == null && _unlockableItem.shopSelectionNode == null)
+        if (_cost == null && value.shopSelectionNode == null)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Unlockable: '{_key}' didn't set cost. If you intend to have no cost, call .SetCost(0) or provide a ShopSelectionNode with a cost inside to use.");
+            CodeRebirthLibPlugin.Logger.LogWarning($"Unlockable: '{key}' didn't set cost. If you intend to have no cost, call .SetCost(0) or provide a ShopSelectionNode with a cost inside to use.");
         }
         else if (_cost == null)
         {
-            cost = _unlockableItem.shopSelectionNode.itemCost;
+            cost = value.shopSelectionNode.itemCost;
         }
 
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-        return new CRUnlockableItemInfo(_purchasePredicate, _key, _tags, _unlockableItem, cost, _suitInfo, _placeableObjectInfo);
+        return new CRUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo);
     }
 }

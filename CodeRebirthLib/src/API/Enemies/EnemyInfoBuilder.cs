@@ -3,14 +3,10 @@ using System.Collections.Generic;
 
 namespace CodeRebirthLib;
 
-public class EnemyInfoBuilder
+public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInfoBuilder>
 {
-    private NamespacedKey<CREnemyInfo> _key;
-    private EnemyType _enemyType;
-
     private CREnemyLocationInfo? _inside, _outside, _daytime;
-    private List<NamespacedKey> _tags = new();
-
+    
     public class EnemyLocationBuilder
     {
         private ProviderTable<int?, CRMoonInfo>? _weights;
@@ -34,10 +30,8 @@ public class EnemyInfoBuilder
         }
     }
     
-    internal EnemyInfoBuilder(NamespacedKey<CREnemyInfo> key, EnemyType enemyType)
+    internal EnemyInfoBuilder(NamespacedKey<CREnemyInfo> key, EnemyType enemyType) : base(key, enemyType)
     {
-        _key = key;
-        _enemyType = enemyType;
     }
 
     public EnemyInfoBuilder DefineOutside(Action<EnemyLocationBuilder> callback)
@@ -64,14 +58,8 @@ public class EnemyInfoBuilder
         return this;
     }
 
-    public EnemyInfoBuilder AddTag(NamespacedKey tag)
+    override internal CREnemyInfo Build()
     {
-        _tags.Add(tag);
-        return this;
-    }
-
-    internal CREnemyInfo Build()
-    {
-        return new CREnemyInfo(_key, _tags, _enemyType, _outside, _inside, _daytime);
+        return new CREnemyInfo(key, tags, value, _outside, _inside, _daytime);
     }
 }

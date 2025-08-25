@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib;
 
-public class MapObjectInfoBuilder
+public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject, MapObjectInfoBuilder>
 {
     public class InsideBuilder
     {
@@ -67,7 +67,7 @@ public class MapObjectInfoBuilder
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder._key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
                 _weights = ProviderTable<AnimationCurve?, CRMoonInfo>.Empty();
             }
             return new CRInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
@@ -105,25 +105,19 @@ public class MapObjectInfoBuilder
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder._key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
                 _weights = ProviderTable<AnimationCurve?, CRMoonInfo>.Empty();
             }
             return new CROutsideMapObjectInfo(_weights, _alignWithTerrain);
         }
     }
 
-    private NamespacedKey<CRMapObjectInfo> _key;
-    private GameObject _mapObject;
 
     private CRInsideMapObjectInfo? _insideInfo;
     private CROutsideMapObjectInfo? _outsideInfo;
-    
-    private List<NamespacedKey> _tags = new();
 
-    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject)
+    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject) : base(key, mapObject)
     {
-        _key = key;
-        _mapObject = mapObject;
     }
 
     public MapObjectInfoBuilder DefineInside(Action<InsideBuilder> callback)
@@ -141,15 +135,9 @@ public class MapObjectInfoBuilder
         _outsideInfo = builder.Build();
         return this;
     }
-    
-    public MapObjectInfoBuilder AddTag(NamespacedKey tag)
-    {
-        _tags.Add(tag);
-        return this;
-    }
 
-    internal CRMapObjectInfo Build()
+    override internal CRMapObjectInfo Build()
     {
-        return new CRMapObjectInfo(_key, _tags, _mapObject, _insideInfo, _outsideInfo);
+        return new CRMapObjectInfo(key, tags, value, _insideInfo, _outsideInfo);
     }
 }

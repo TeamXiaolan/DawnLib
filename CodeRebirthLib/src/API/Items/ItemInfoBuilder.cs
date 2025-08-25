@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Steamworks.ServerList;
 
 namespace CodeRebirthLib;
-public class ItemInfoBuilder
+public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder>
 {
     public class ScrapBuilder
     {
@@ -27,7 +28,7 @@ public class ItemInfoBuilder
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder._item.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                CodeRebirthLibPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder.value.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
                 _weights = ProviderTable<int?, CRMoonInfo>.Empty();
             }
             return new CRScrapItemInfo(_weights);
@@ -81,8 +82,8 @@ public class ItemInfoBuilder
         {
             if (_receiptNode == null)
             {
-                _receiptNode = new TerminalNodeBuilder($"{_parentBuilder._item.itemName}ReceiptNode")
-                    .SetDisplayText($"Ordered [variableAmount] {_parentBuilder._item.itemName}. Your new balance is [playerCredits].\n\nOur contractors enjoy fast, free shipping while on the job! Any purchased items will arrive hourly at your approximate location.\r\n\r\n")
+                _receiptNode = new TerminalNodeBuilder($"{_parentBuilder.value.itemName}ReceiptNode")
+                    .SetDisplayText($"Ordered [variableAmount] {_parentBuilder.value.itemName}. Your new balance is [playerCredits].\n\nOur contractors enjoy fast, free shipping while on the job! Any purchased items will arrive hourly at your approximate location.\r\n\r\n")
                     .SetClearPreviousText(true)
                     .SetMaxCharactersToType(15)
                     .Build();
@@ -90,8 +91,8 @@ public class ItemInfoBuilder
 
             if (_requestNode == null)
             {
-                _requestNode = new TerminalNodeBuilder($"{_parentBuilder._item.itemName}RequestNode")
-                    .SetDisplayText($"You have requested to order {_parentBuilder._item.itemName}. Amount: [variableAmount].\nTotal cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\r\n\r\n")
+                _requestNode = new TerminalNodeBuilder($"{_parentBuilder.value.itemName}RequestNode")
+                    .SetDisplayText($"You have requested to order {_parentBuilder.value.itemName}. Amount: [variableAmount].\nTotal cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\r\n\r\n")
                     .SetClearPreviousText(true)
                     .SetMaxCharactersToType(35)
                     .Build();
@@ -99,7 +100,7 @@ public class ItemInfoBuilder
 
             if (_infoNode == null) // this can be null in vanilla, should we really be creating this?
             {
-                _infoNode = new TerminalNodeBuilder($"{_parentBuilder._item.itemName}InfoNode")
+                _infoNode = new TerminalNodeBuilder($"{_parentBuilder.value.itemName}InfoNode")
                     .SetDisplayText($"[No information about this object was found.]\n\n")
                     .SetClearPreviousText(true)
                     .SetMaxCharactersToType(25)
@@ -108,21 +109,15 @@ public class ItemInfoBuilder
 
             _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
 
-            return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride ?? _parentBuilder._item.creditsWorth);
+            return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride ?? _parentBuilder.value.creditsWorth);
         }
     }
 
-    private NamespacedKey<CRItemInfo> _key;
-    private Item _item;
-
     private CRScrapItemInfo? _scrapInfo;
     private CRShopItemInfo? _shopInfo;
-    private List<NamespacedKey> _tags = new();
     
-    internal ItemInfoBuilder(NamespacedKey<CRItemInfo> key, Item item)
+    internal ItemInfoBuilder(NamespacedKey<CRItemInfo> key, Item item) : base(key, item)
     {
-        _key = key;
-        _item = item;
     }
 
     public ItemInfoBuilder DefineShop(Action<ShopBuilder> callback)
@@ -139,15 +134,9 @@ public class ItemInfoBuilder
         _scrapInfo = builder.Build();
         return this;
     }
-
-    public ItemInfoBuilder AddTag(NamespacedKey tag)
-    {
-        _tags.Add(tag);
-        return this;
-    }
     
-    internal CRItemInfo Build()
+    override internal CRItemInfo Build()
     {
-        return new CRItemInfo(_key, _tags, _item, _scrapInfo, _shopInfo);
+        return new CRItemInfo(key, tags, value, _scrapInfo, _shopInfo);
     }
 }

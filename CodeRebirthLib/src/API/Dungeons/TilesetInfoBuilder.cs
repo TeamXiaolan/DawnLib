@@ -2,10 +2,9 @@
 using DunGen;
 
 namespace CodeRebirthLib;
-public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
+public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, TilesetInfoBuilder>
 {
     private bool _branchCap, _regular = true;
-    private List<NamespacedKey> _tags = new();
 
     internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
     {
@@ -25,12 +24,12 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 
     public TilesetInfoBuilder AddTag(NamespacedKey tag)
     {
-        _tags.Add(tag);
+        tags.Add(tag);
         return this;
     }
 
     override internal CRTileSetInfo Build()
     {
-        return new CRTileSetInfo(_key, _tags, _value, _branchCap, _regular);
+        return new CRTileSetInfo(key, tags, value, _branchCap, _regular);
     }
 }
