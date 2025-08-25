@@ -264,7 +264,31 @@ static class EnemyRegistrationHandler
                 {
                     tags.Add(Tags.Large);
                 }
-    
+
+                if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
+                {
+                    foreach ((string modName, string tagName) in tagsWithModNames)
+                    {
+                        bool alreadyAdded = false;
+                        foreach (NamespacedKey tag in tags)
+                        {
+                            if (tag.Key == tagName)
+                            {
+                                alreadyAdded = true;
+                                break;
+                            }
+                        }
+
+                        if (alreadyAdded)
+                            continue;
+
+                        string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                        string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                        Debuggers.Enemies?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to enemy {enemyType.enemyName}");
+                        tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                    }
+                }
+
                 CREnemyInfo enemyInfo = new(key, tags, enemyType, new CREnemyLocationInfo(insideWeightBuilder.Build()), new CREnemyLocationInfo(outsideWeightBuilder.Build()), new CREnemyLocationInfo(daytimeWeightBuilder.Build()));
                 enemyType.SetCRInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);

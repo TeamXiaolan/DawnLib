@@ -56,6 +56,29 @@ static class AdditionalTilesRegistrationHandler
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
+            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
+            {
+                foreach ((string modName, string tagName) in tagsWithModNames)
+                {
+                    bool alreadyAdded = false;
+                    foreach (NamespacedKey tag in tags)
+                    {
+                        if (tag.Key == tagName)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        continue;
+
+                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                    Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
+                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                }
+            }
             CRDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
             dungeonFlow.SetCRInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
@@ -82,6 +105,30 @@ static class AdditionalTilesRegistrationHandler
             NamespacedKey<CRDungeonInfo>? key = (NamespacedKey<CRDungeonInfo>?)typeof(DungeonKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, true))?.GetValue(null);
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
+
+            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
+            {
+                foreach ((string modName, string tagName) in tagsWithModNames)
+                {
+                    bool alreadyAdded = false;
+                    foreach (NamespacedKey tag in tags)
+                    {
+                        if (tag.Key == tagName)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        continue;
+    
+                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                    Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
+                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                }
+            }
 
             CRDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
             dungeonFlow.SetCRInfo(dungeonInfo);

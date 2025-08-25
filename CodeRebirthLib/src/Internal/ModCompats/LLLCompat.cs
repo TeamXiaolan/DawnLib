@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using DunGen.Graph;
@@ -37,5 +39,89 @@ static class LLLCompat
             return true;
         }
         return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetAllTagsWithModNames(SelectableLevel selectableLevel, out List<(string modName, string tagName)> allTagsWithModNames)
+    {
+        allTagsWithModNames = new();
+        if (!LethalLevelLoader.LevelManager.TryGetExtendedLevel(selectableLevel, out ExtendedLevel extendedLevel))
+        {
+            return false;
+        }
+
+        foreach (ContentTag contentTag in extendedLevel.ContentTags)
+        {
+            allTagsWithModNames.Add((extendedLevel.ModName, contentTag.contentTagName));
+        }
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetAllTagsWithModNames(DungeonFlow dungeonFlow, out List<(string modName, string tagName)> allTagsWithModNames)
+    {
+        allTagsWithModNames = new();
+        if (!LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
+        {
+            return false;
+        }
+
+        foreach (ContentTag contentTag in extendedDungeonFlow.ContentTags)
+        {
+            allTagsWithModNames.Add((extendedDungeonFlow.ModName, contentTag.contentTagName));
+        }
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetAllTagsWithModNames(Item item, out List<(string modName, string tagName)> allTagsWithModNames)
+    {
+        allTagsWithModNames = new();
+        ExtendedItem? extendedItem = null;
+        foreach (ExtendedItem extendedItem1 in LethalLevelLoader.PatchedContent.ExtendedItems)
+        {
+            if (extendedItem1.Item == item)
+            {
+                extendedItem = extendedItem1;
+                break;
+            }
+        }
+
+        if (extendedItem == null)
+        {
+            return false;
+        }
+
+        foreach (ContentTag contentTag in extendedItem.ContentTags)
+        {
+            allTagsWithModNames.Add((extendedItem.ModName, contentTag.contentTagName));
+        }
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetAllTagsWithModNames(EnemyType enemyType, out List<(string modName, string tagName)> allTagsWithModNames)
+    {
+        allTagsWithModNames = new();
+        ExtendedEnemyType? extendedEnemyType = null;
+        foreach (ExtendedEnemyType extendedEnemy in LethalLevelLoader.PatchedContent.ExtendedEnemyTypes)
+        {
+            if (extendedEnemy.EnemyType == enemyType)
+            {
+                extendedEnemyType = extendedEnemy;
+                break;
+            }
+        }
+
+        if (extendedEnemyType == null)
+        {
+            return false;
+        }
+
+        foreach (ContentTag contentTag in extendedEnemyType.ContentTags)
+        {
+            allTagsWithModNames.Add((extendedEnemyType.ModName, contentTag.contentTagName));
+        }
+        return true;
     }
 }

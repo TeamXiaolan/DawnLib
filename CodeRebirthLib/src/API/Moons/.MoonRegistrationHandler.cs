@@ -42,6 +42,29 @@ static class MoonRegistrationHandler
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
+            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
+            {
+                foreach ((string modName, string tagName) in tagsWithModNames)
+                {
+                    bool alreadyAdded = false;
+                    foreach (NamespacedKey tag in tags)
+                    {
+                        if (tag.Key == tagName)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        continue;
+
+                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                    Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
+                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                }
+            }
             CRMoonInfo moonInfo = new(key, tags, level);
             level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
@@ -69,6 +92,29 @@ static class MoonRegistrationHandler
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
+            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
+            {
+                foreach ((string modName, string tagName) in tagsWithModNames)
+                {
+                    bool alreadyAdded = false;
+                    foreach (NamespacedKey tag in tags)
+                    {
+                        if (tag.Key == tagName)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        continue;
+
+                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                    Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
+                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                }
+            }
             CRMoonInfo moonInfo = new(key, tags, level);
             level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);

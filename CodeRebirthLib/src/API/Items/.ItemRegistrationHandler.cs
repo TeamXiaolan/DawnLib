@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.Internal;
+using CodeRebirthLib.Internal.ModCompats;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -211,6 +212,29 @@ static class ItemRegistrationHandler
                 tags.Add(Tags.Weapon);
             }
 
+            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
+            {
+                foreach ((string modName, string tagName) in tagsWithModNames)
+                {
+                    bool alreadyAdded = false;
+                    foreach (NamespacedKey tag in tags)
+                    {
+                        if (tag.Key == tagName)
+                        {
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyAdded)
+                        continue;
+
+                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                    Debuggers.Items?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to item {item.itemName}");
+                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                }
+            }
             CRItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo);
             item.SetCRInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
