@@ -4,11 +4,16 @@ using System.Collections.Generic;
 using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib;
+public class RegistryFrozenException() : Exception("Registry is frozen")
+{
+}
+
 public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : INamespaced<T>
 {
     private readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
 
     public bool IsFrozen { get; private set; }
+    public event Action BeforeFreeze = delegate { };
     public event Action OnFreeze = delegate { };
 
     internal void Freeze()
@@ -16,6 +21,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
         if (IsFrozen)
             return;
 
+        BeforeFreeze();
         IsFrozen = true;
         OnFreeze();
     }
@@ -23,7 +29,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
     internal void Register(T value)
     {
         if (IsFrozen)
-            throw new Exception("Registry is frozen");
+            throw new RegistryFrozenException();
 
         NamespacedKey<T> key = value.TypedKey;
         if (ContainsKey(key))

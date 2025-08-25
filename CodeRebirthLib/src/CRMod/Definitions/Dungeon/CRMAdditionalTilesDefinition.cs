@@ -25,11 +25,10 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
     public List<NamespacedKey<CRDungeonInfo>> dungeonKeys = new();
 
     [field: SerializeField]
-    public string ArchetypeName { get; private set; }
-
-    [field: SerializeField]
     public BranchCapSetting BranchCap { get; private set; }
 
+    private CRTileSetInfo _info;
+    
     public override void Register(CRMod mod, DungeonData data)
     {
         base.Register(mod);
@@ -38,12 +37,8 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
             CRLib.FixDoorwaySockets(chance.Value);
         }
 
-        CRLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
+        _info = CRLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
-            foreach (NamespacedKey<CRDungeonInfo> dungeonKey in dungeonKeys)
-            {
-                builder.AddToDungeon(dungeonKey);
-            }
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
             foreach (NamespacedKey tag in _tags)
@@ -51,6 +46,17 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
                 builder.AddTag(tag);
             }
         });
+
+        LethalContent.Dungeons.BeforeFreeze += () =>
+        {
+            foreach (NamespacedKey<CRDungeonInfo> key in dungeonKeys)
+            {
+                if (LethalContent.Dungeons.TryGetValue(key, out CRDungeonInfo dungeonInfo))
+                {
+                    dungeonInfo.AddTileSet(_info);
+                }
+            }
+        };
     }
 
     public override List<DungeonData> GetEntities(CRMod mod)

@@ -35,48 +35,54 @@ public static class CRLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
-    public static void DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
+    public static CRTileSetInfo DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
     {
         TilesetInfoBuilder builder = new(key, tileSet);
         callback(builder);
         CRTileSetInfo tileSetInfo = builder.Build();
         tileSet.SetCRInfo(tileSetInfo);
         LethalContent.TileSets.Register(tileSetInfo);
+        return tileSetInfo;
     }
 
-    public static void DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
+    public static CRMapObjectInfo DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
     {
         MapObjectInfoBuilder builder = new(key, mapObject);
         callback(builder);
         // TODO what to do here?
-        LethalContent.MapObjects.Register(builder.Build());
+        CRMapObjectInfo info = builder.Build();
+        LethalContent.MapObjects.Register(info);
+        return info;
     }
 
-    public static void DefineUnlockable(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem, Action<UnlockableInfoBuilder> callback)
+    public static CRUnlockableItemInfo DefineUnlockable(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem, Action<UnlockableInfoBuilder> callback)
     {
         UnlockableInfoBuilder builder = new(key, unlockableItem);
         callback(builder);
         CRUnlockableItemInfo unlockableItemInfo = builder.Build();
         unlockableItem.SetCRInfo(unlockableItemInfo);
         LethalContent.Unlockables.Register(unlockableItemInfo);
+        return unlockableItemInfo;
     }
 
-    public static void DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
+    public static CRItemInfo DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
     {
         ItemInfoBuilder builder = new(key, item);
         callback(builder);
         CRItemInfo itemInfo = builder.Build();
         item.SetCRInfo(itemInfo);
         LethalContent.Items.Register(itemInfo);
+        return itemInfo;
     }
 
-    public static void DefineEnemy(NamespacedKey<CREnemyInfo> key, EnemyType enemy, Action<EnemyInfoBuilder> callback)
+    public static CREnemyInfo DefineEnemy(NamespacedKey<CREnemyInfo> key, EnemyType enemy, Action<EnemyInfoBuilder> callback)
     {
         EnemyInfoBuilder builder = new(key, enemy);
         callback(builder);
         CREnemyInfo enemyInfo = builder.Build();
         enemy.SetCRInfo(enemyInfo);
         LethalContent.Enemies.Register(enemyInfo);
+        return enemyInfo;
     }
 
     public static void ApplyTag(JSONTagDefinition definition)

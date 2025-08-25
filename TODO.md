@@ -3,7 +3,7 @@
 ## Needs to be done
 
 - Enemy bestiaries.
-- Progressive unlockable stuff not being copy pasted for unlocking scrap and/or unlockableitem
+- Use FailedTerminalResult.OverrideName
 - Tag weights
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.

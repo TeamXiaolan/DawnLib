@@ -4,18 +4,11 @@ using DunGen;
 namespace CodeRebirthLib;
 public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 {
-    private List<NamespacedKey<CRDungeonInfo>> _appliedTo = [];
     private bool _branchCap, _regular = true;
     private List<NamespacedKey> _tags = new();
 
     internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
     {
-    }
-
-    public TilesetInfoBuilder AddToDungeon(NamespacedKey<CRDungeonInfo> dungeonKey)
-    {
-        _appliedTo.Add(dungeonKey);
-        return this;
     }
 
     public TilesetInfoBuilder SetIsBranchCap(bool value)
@@ -38,6 +31,6 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet>
 
     override internal CRTileSetInfo Build()
     {
-        return new CRTileSetInfo(_key, _tags, _value, _appliedTo, _branchCap, _regular);
+        return new CRTileSetInfo(_key, _tags, _value, _branchCap, _regular);
     }
 }

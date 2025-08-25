@@ -141,10 +141,10 @@ static class AdditionalTilesRegistrationHandler
     {
         foreach (CRTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
         {
-            if (!tileSetInfo.AppliedTo.Contains(dungeonFlow.ToNamespacedKey()))
+            /*if (!tileSetInfo.AppliedTo.Contains(dungeonFlow.ToNamespacedKey()))
             {
                 continue;
-            }
+            }*/
 
             foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
             {
