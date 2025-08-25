@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
+using DunGen.Graph;
 using LethalLevelLoader;
 
 namespace CodeRebirthLib.Internal.ModCompats;
@@ -21,6 +22,17 @@ static class LLLCompat
     {
         extendedLevel = null;
         if (LethalLevelLoader.LevelManager.TryGetExtendedLevel(level, out extendedLevel))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetExtendedDungeon(DungeonFlow dungeonFlow, out ExtendedDungeonFlow? extendedDungeon)
+    {
+        extendedDungeon = null;
+        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out extendedDungeon))
         {
             return true;
         }

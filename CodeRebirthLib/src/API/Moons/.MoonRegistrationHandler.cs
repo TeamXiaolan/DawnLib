@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Internal.ModCompats;
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
@@ -38,7 +39,10 @@ static class MoonRegistrationHandler
             {
                 key = NamespacedKey<CRMoonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
-            CRMoonInfo moonInfo = new(key, [CRLibTags.IsExternal], level);
+
+            List<NamespacedKey> tags = [CRLibTags.IsExternal];
+
+            CRMoonInfo moonInfo = new(key, tags, level);
             level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -63,10 +67,9 @@ static class MoonRegistrationHandler
             if (key == null)
                 continue;
 
-            if (LethalContent.Moons.ContainsKey(key))
-                continue;
+            List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
-            CRMoonInfo moonInfo = new(key, [CRLibTags.IsExternal], level);
+            CRMoonInfo moonInfo = new(key, tags, level);
             level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }

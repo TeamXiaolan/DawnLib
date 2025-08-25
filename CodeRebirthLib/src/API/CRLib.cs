@@ -32,7 +32,7 @@ public static class CRLib
         if (!prefab)
             throw new ArgumentNullException(nameof(prefab));
 
-        AdditionalTilesRegistrationHandler.tilesToFixSockets.Add(prefab);
+        MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
     public static void DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
