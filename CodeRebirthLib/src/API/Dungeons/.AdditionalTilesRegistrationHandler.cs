@@ -56,7 +56,7 @@ static class AdditionalTilesRegistrationHandler
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
-            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
+            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)
                 {
@@ -75,7 +75,7 @@ static class AdditionalTilesRegistrationHandler
 
                     string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
                     string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-                    Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
+                    Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
                     tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
                 }
             }
