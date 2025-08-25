@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.Utils;
-public class UnlockProgressiveObject : NetworkBehaviour // TODO, a better way to do the progressive stuff
+public class UnlockProgressiveObject : NetworkBehaviour
 {
     [FormerlySerializedAs("interactTrigger")]
     [SerializeField]

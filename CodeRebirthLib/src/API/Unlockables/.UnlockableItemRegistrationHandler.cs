@@ -9,7 +9,6 @@ static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
-        On.Terminal.LoadNewNodeIfAffordable += Terminal_LoadNewNodeIfAffordable;
         On.Terminal.Awake += RegisterShipUnlockables;
     }
 
@@ -116,35 +115,5 @@ static class UnlockableRegistrationHandler
         terminalNode.itemCost = cost;
         terminalNode.playSyncedClip = 0;
         return terminalNode;
-    }
-
-    private static void Terminal_LoadNewNodeIfAffordable(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
-    {
-        if (node.shipUnlockableID != -1)
-        {
-            UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
-            ProgressiveUnlockData? unlockData = ProgressiveUnlockableHandler.AllProgressiveUnlockables
-                .FirstOrDefault(it => it.Definition.UnlockableItem == unlockableItem);
-
-            if (unlockData != null && !unlockData.IsUnlocked)
-            {
-                orig(self, unlockData.Definition.ProgressiveObject.ProgressiveDenyNode);
-                return;
-            }
-        }
-
-        if (node.buyItemIndex != -1)
-        {
-            Item item = self.buyableItemsList[node.buyItemIndex];
-            ProgressiveItemData? itemData = ProgressiveItemHandler.AllProgressiveItems
-                .FirstOrDefault(it => it.Definition.Item == item);
-
-            if (itemData != null && !itemData.IsUnlocked)
-            {
-                orig(self, itemData.Definition.ProgressiveObject.ProgressiveDenyNode);
-                return;
-            }
-        }
-        orig(self, node);
     }
 }
