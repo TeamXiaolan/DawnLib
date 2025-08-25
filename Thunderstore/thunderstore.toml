@@ -4,14 +4,13 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "XuXiaolan"
 name = "CodeRebirthLib"
-description = "Library for managing large Lethal Company mods."
+description = "A modern API for Lethal Company content and all sizes of mods"
 websiteUrl = "https://github.com/TeamXiaolan/CodeRebirthLib"
 containsNsfwContent = false
 [package.dependencies]
 BepInEx-BepInExPack = "5.4.2100"
 Hamunii-AutoHookGenPatcher = "1.0.6"
 Evaisa-FixPluginTypesSerialization = "1.1.2"
-Evaisa-LethalLib = "1.1.1"
 Zaggy1024-PathfindingLib = "0.1.1"
 
 [build]

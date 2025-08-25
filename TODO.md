@@ -8,7 +8,10 @@
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.
 - Figure out the interior name situation with weights.
-- Dropdown for assetbundles
+- editor validation? ex:
+  - empty config name
+  - things like null references in content definitions?
+  - no references across asset bundles
 
 ## Needs to be done eventually
 

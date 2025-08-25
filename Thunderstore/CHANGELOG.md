@@ -1,4 +1,32 @@
-# v0.9.9
+# v0.10.0
+CodeRebirthLib v0.10 is a major internal rework, mods that depend *will* have to update.
+
+## CRLib
+- Added registering content through `CRLib`
+- Added `WeightTable` and `CurveTable` so that weights can be updated dynamically in-game.
+- Added `ITerminalPurchasePredicate` to allow some items to not be bought based on conditions.
+- Removed `VanillaEnemies` and added `LethalContent`
+- Added `tags`
+- Allow registering new tilesets to dungeons
+
+## CRMod
+**BREAKING:** Multiple namespaces and classes changed names. You will need to remake your `Content Container`, `Mod Information` and content definitions. The general flow has not changed overall.
+- Reworked `Content Container`:
+  - `Entity Name` (from content definitions) and `Entity Name Reference` have been removed. Instead, content can just be referenced.
+  - `Asset Bundle Name` is now a dropdown.
+  - Button to source generated all `NamespacedKey`s to generate in C#.
+- Added 4 types of `Achievements`: Discovery, Instant, Stat, Parent
+- Reworked progressive data. Both shop items and unlockables can now be progressive through the new `Progressive Predicate` ScriptableObject.
+- Content definitions can now apply `tags`
+- Added `CRModContent` for the `Achievement` registry.
+- Moved `.RegisterMod()` from `CRLib` to `CRMod`
+- Added `CRMAdditionalTilesDefinition`
+
+## Utilities / Misc
+- Added `NetworkAudioSource`, `AssetBundleUtils`
+- Removed `ExtendedLogging` and split it into `DebugLogSources` (yes this uses SoundAPI code.)
+
+## v0.9.9
 
 - Touched up code all over a bit more, achievements are mostly finished in practise with only UI left.
 - Added a component that allows you to run events based on trying to complete achievements, an event on completing an achievement, and incrementing achievement progress.
