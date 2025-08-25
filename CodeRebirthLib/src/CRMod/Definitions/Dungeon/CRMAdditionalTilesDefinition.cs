@@ -39,12 +39,9 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
 
         _info = CRLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
+            ApplyTagsTo(builder);
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
-            foreach (NamespacedKey tag in _tags)
-            {
-                builder.AddTag(tag);
-            }
         });
 
         LethalContent.Dungeons.BeforeFreeze += () =>

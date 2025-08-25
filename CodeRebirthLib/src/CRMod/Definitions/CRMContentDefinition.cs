@@ -47,6 +47,10 @@ public abstract class CRMContentDefinition : ScriptableObject
     }
 
     protected abstract string EntityNameReference { get; }
+    protected void ApplyTagsTo(BaseInfoBuilder builder)
+    {
+        builder.SoloAddTags(_tags);
+    }
 }
 
 public abstract class CRMContentDefinition<T, TInfo> : CRMContentDefinition where T : EntityData where TInfo : INamespaced<TInfo>

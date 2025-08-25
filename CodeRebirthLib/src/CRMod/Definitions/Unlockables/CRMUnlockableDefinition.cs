@@ -53,10 +53,7 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
                 builder.SetPurchasePredicate(TerminalPredicate);
             }
 
-            foreach (NamespacedKey tag in _tags)
-            {
-                builder.AddTag(tag);
-            }
+            ApplyTagsTo(builder);
         });
     }
 

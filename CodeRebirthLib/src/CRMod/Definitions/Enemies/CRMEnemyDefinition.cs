@@ -74,10 +74,7 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
                 });
             }
 
-            foreach (NamespacedKey tag in _tags)
-            {
-                builder.AddTag(tag);
-            }
+            ApplyTagsTo(builder);
         });
     }
 

@@ -62,10 +62,7 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
                 });
             });
 
-            foreach (NamespacedKey tag in _tags)
-            {
-                builder.AddTag(tag);
-            }
+            ApplyTagsTo(builder);
         });
     }
 
