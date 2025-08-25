@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
+using MonoMod.Cil;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,12 +10,31 @@ namespace CodeRebirthLib;
 
 static class MapObjectRegistrationHandler
 {
+    private static int _spawnedObjects;
+    
     internal static void Init()
     {
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
+        IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
         LethalContent.Moons.OnFreeze += RegisterMapObjects;
+    }
+    private static void RegenerateNavMeshTranspiler(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+
+        c.GotoNext(
+            i => i.MatchLdloc(out _), // num2
+            i => i.MatchLdcI4(0), // 0
+            i => i.MatchBle(out _), // >
+            
+            // further matching so that it doesn't need to be updated with the game as much hopefully
+            i => i.MatchLdstr("OutsideLevelNavMesh")
+        );
+
+        c.Index++;
+        c.EmitDelegate((int spawned) => spawned + _spawnedObjects);
     }
 
     private static void FreezeMapObjectContents()
@@ -157,6 +177,7 @@ static class MapObjectRegistrationHandler
             // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
         orig(self);
+        _spawnedObjects = 0;
     }
 
     private static void HandleSpawningOutsideObjects(CROutsideMapObjectInfo outsideInfo, System.Random everyoneRandom, System.Random serverOnlyRandom)
@@ -214,6 +235,7 @@ static class MapObjectRegistrationHandler
                 continue;
 
             spawnedPrefab.GetComponent<NetworkObject>().Spawn(true);
+            _spawnedObjects++;
         }
     }
 
