@@ -12,6 +12,9 @@ public class UnlockProgressiveObject : NetworkBehaviour // TODO, a better way to
     [SerializeField]
     private InteractTrigger _interactTrigger = null!;
 
+    [SerializeField]
+    private HUDDisplayTip _displayTip;
+    
     private void Start()
     {
         _interactTrigger.onInteract.AddListener(OnInteract);
@@ -35,27 +38,33 @@ public class UnlockProgressiveObject : NetworkBehaviour // TODO, a better way to
         PlayerControllerB player = reference; // implict cast
         if (player.currentlyHeldObjectServer is UnlockableUpgradeScrap unlockableUpgradeScrap)
         {
-            ProgressiveUnlockData unlockData = ProgressiveUnlockableHandler.AllProgressiveUnlockables
-                .First(it => it.Definition.UnlockableItem == unlockableUpgradeScrap.CRUnlockableReference.Resolve().UnlockableItem);
-            unlockData.Unlock(
-                new HUDDisplayTip(
-                    "Assembled Parts",
-                    $"Congratulations on finding the parts, Unlocked {unlockData.OriginalName}."
-                )
-            );
-            if (unlockableUpgradeScrap.IsOwner) player.DespawnHeldObject();
+            CRUnlockableItemInfo definition = unlockableUpgradeScrap.CRUnlockableReference.Resolve();
+            if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
+
+            if (definition.PurchasePredicate is not ProgressivePredicate progressive)
+            {
+                CodeRebirthLibPlugin.Logger.LogError($"{definition.UnlockableItem.unlockableName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
+                return;
+            }
+            progressive.Unlock(_displayTip);
         }
         else if (player.currentlyHeldObjectServer is ItemUpgradeScrap itemUpgradeScrap)
         {
-            ProgressiveItemData itemData = ProgressiveItemHandler.AllProgressiveItems
-                .First(it => it.Definition.Item == itemUpgradeScrap.CRItemReference.Resolve().Item);
-            itemData.Unlock(
-                new HUDDisplayTip(
-                    "Assembled Parts",
-                    $"Congratulations on finding the parts, Unlocked {itemData.OriginalName}."
-                )
-            );
-            if (itemUpgradeScrap.IsOwner) player.DespawnHeldObject();
+            CRItemInfo definition = itemUpgradeScrap.CRItemReference.Resolve();
+            if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
+
+            if (definition.ShopInfo == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogError($"{definition.Item.itemName} is not a shop item. It can not be progressively unlocked.");
+                return;
+            }
+            
+            if (definition.ShopInfo.PurchasePredicate is not ProgressivePredicate progressive)
+            {
+                CodeRebirthLibPlugin.Logger.LogError($"{definition.Item.itemName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
+                return;
+            }
+            progressive.Unlock(_displayTip);
         }
         else
         {

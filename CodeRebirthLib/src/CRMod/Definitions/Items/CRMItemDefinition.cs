@@ -21,11 +21,10 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
     public ShopItemPreset ShopItemPreset { get; private set; } = new();
 
     [field: SerializeField]
-    public ProgressiveObject ProgressiveObject { get; private set; }
+    public CRMTerminalPredicate TerminalPredicate { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
-    public ProgressiveItemData? ProgressiveData { get; private set; }
 
     public override void Register(CRMod mod, ItemData data)
     {
@@ -71,14 +70,17 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
                     shopItemBuilder.OverrideReceiptNode(ShopItemPreset.OrderReceiptNode);
                     shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
                     shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
+                    
+                    // todo: probably should be better, because CRMTerminalPredicate can really be anything.
+                    // config will need to be updated though
                     if (Config.IsProgressive?.Value ?? data.isProgressive)
                     {
-                        Debuggers.Progressive?.Log($"Creating ProgressiveItemData for {Item.itemName}");
-                        if (!ProgressiveObject)
-                            ProgressiveObject = ScriptableObject.CreateInstance<ProgressiveObject>();
+                        Debuggers.Progressive?.Log($"Creating ProgressiveUnlockData for {Item.itemName}");
+                        if (!TerminalPredicate)
+                            TerminalPredicate = ScriptableObject.CreateInstance<ProgressivePredicate>();
 
-                        ProgressiveData = new ProgressiveItemData(this);
-                        shopItemBuilder.SetPurchasePredicate(new ProgressiveItemPredicate(ProgressiveData));
+                        TerminalPredicate.Register(Item.itemName);
+                        shopItemBuilder.SetPurchasePredicate(TerminalPredicate);
                     }
                 });
             }

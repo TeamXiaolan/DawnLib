@@ -5,6 +5,7 @@ static class TerminalPredicatePatch
 {
     internal static void Init()
     {
+        // todo: patch to use failedResult.OverrideName
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
     }
     private static void HandlePredicate(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)

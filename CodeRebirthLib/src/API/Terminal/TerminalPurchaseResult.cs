@@ -8,9 +8,9 @@ public abstract class TerminalPurchaseResult
         return SuccessPurchaseResult.Instance;
     }
 
-    public static TerminalPurchaseResult Fail(TerminalNode node)
+    public static TerminalPurchaseResult Fail(TerminalNode node, string? overrideName = null)
     {
-        return new FailedPurchaseResult(node);
+        return new FailedPurchaseResult(node, overrideName);
     }
 
     public class SuccessPurchaseResult : TerminalPurchaseResult
@@ -21,10 +21,13 @@ public abstract class TerminalPurchaseResult
 
     public class FailedPurchaseResult : TerminalPurchaseResult
     {
-        internal FailedPurchaseResult(TerminalNode node)
+        internal FailedPurchaseResult(TerminalNode node, string? overrideName)
         {
             ReasonNode = node;
+            OverrideName = overrideName;
         }
+        
+        public string? OverrideName { get; }
         public TerminalNode ReasonNode { get; }
     }
 }

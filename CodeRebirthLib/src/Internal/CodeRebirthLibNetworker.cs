@@ -32,13 +32,13 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         yield return new WaitUntil(() => GameNetworkManager.Instance.localPlayerController != null);
         if (IsHost || IsServer)
         {
-            ProgressiveUnlockableHandler.LoadAll(SaveSettings);
+            ProgressivePredicate.LoadAll(SaveSettings);
         }
         else
         {
             RequestProgressiveUnlockableStatesServerRpc(
                 GameNetworkManager.Instance.localPlayerController,
-                ProgressiveUnlockableHandler.AllProgressiveUnlockables
+                ProgressivePredicate.AllProgressiveItems
                     .Select(it => it.NetworkID)
                     .ToArray()
             );
@@ -56,10 +56,10 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         for (int i = 0; i < expectedOrder.Length; i++)
         {
             uint unlockableNetworkId = expectedOrder[i];
-            CRMUnlockableDefinition? definition = ProgressiveUnlockableHandler.AllProgressiveUnlockables.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; })?.Definition;
-            if (definition)
+            ProgressivePredicate? predicate = ProgressivePredicate.AllProgressiveItems.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; });
+            if (predicate)
             {
-                values[i] = definition.ProgressiveData!.IsUnlocked;
+                values[i] = predicate!.IsUnlocked;
                 Debuggers.Progressive?.Log($"set values[{i}] = {values[i]}");
             }
             else
@@ -82,19 +82,18 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     [ClientRpc]
     private void ProgressiveUnlockableStateResponseClientRpc(bool[] states, ClientRpcParams rpcParams = default)
     {
-        CRMUnlockableDefinition[] definitions = ProgressiveUnlockableHandler.AllProgressiveUnlockables.Select(it => it.Definition).ToArray();
+        ProgressivePredicate[] definitions = ProgressivePredicate.AllProgressiveItems.ToArray();
         for (int i = 0; i < definitions.Length; i++)
         {
-            CRMUnlockableDefinition definition = definitions[i];
-            Debuggers.Progressive?.Log($"setting state of {definition.UnlockableItem.unlockableName} to {states[i]}. (index: {i}, networkID: {definition.ProgressiveData!.NetworkID})");
-            definition.ProgressiveData!.SetFromServer(states[i]);
+            ProgressivePredicate predicate = definitions[i];
+            predicate.SetFromServer(states[i]);
         }
     }
 
     internal void SaveCodeRebirthLibData()
     {
         if (!NetworkManager.Singleton.IsHost) return;
-        ProgressiveUnlockableHandler.SaveAll(SaveSettings);
+        ProgressivePredicate.SaveAll(SaveSettings);
     }
 
     internal static void ResetCodeRebirthLibData(ES3Settings saveSettings)

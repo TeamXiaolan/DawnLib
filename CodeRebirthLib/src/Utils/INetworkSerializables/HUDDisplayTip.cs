@@ -1,6 +1,8 @@
+using System;
 using Unity.Netcode;
 
 namespace CodeRebirthLib.Utils;
+[Serializable]
 public class HUDDisplayTip(string header, string body, HUDDisplayTip.AlertType type = HUDDisplayTip.AlertType.Hint) : INetworkSerializable
 {
     public enum AlertType

@@ -4,7 +4,7 @@
 
 - Enemy bestiaries.
 - Progressive unlockable stuff not being copy pasted for unlocking scrap and/or unlockableitem
-- Tag weights and more tags.
+- Tag weights
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.
 - Figure out the interior name situation with weights.
@@ -20,3 +20,6 @@
 - Transpiler on spawning outside map object so that outside map objects count towards an internal int inside the SpawnOutsideHazards patch.
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.
+
+### Code cleanup
+- Use `const int` to describe `order` for `CreateAssetMenu`s

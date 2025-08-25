@@ -14,11 +14,9 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
     public UnlockableItem UnlockableItem { get; private set; }
 
     [field: SerializeField]
-    public ProgressiveObject ProgressiveObject { get; private set; }
+    public CRMTerminalPredicate TerminalPredicate { get; private set; }
 
     public UnlockableConfig Config { get; private set; }
-
-    public ProgressiveUnlockData? ProgressiveData { get; private set; }
 
     public override void Register(CRMod mod, UnlockableData data)
     {
@@ -43,14 +41,16 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
                 }
             });
 
+            // todo: probably should be better, because CRMTerminalPredicate can really be anything.
+            // config will need to be updated though
             if (Config.IsProgressive?.Value ?? data.isProgressive)
             {
                 Debuggers.Progressive?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
-                if (!ProgressiveObject)
-                    ProgressiveObject = ScriptableObject.CreateInstance<ProgressiveObject>();
+                if (!TerminalPredicate)
+                    TerminalPredicate = ScriptableObject.CreateInstance<ProgressivePredicate>();
 
-                ProgressiveData = new ProgressiveUnlockData(this);
-                builder.SetPurchasePredicate(new ProgressiveUnlockablePredicate(ProgressiveData));
+                TerminalPredicate.Register(UnlockableItem.unlockableName);
+                builder.SetPurchasePredicate(TerminalPredicate);
             }
 
             foreach (NamespacedKey tag in _tags)
