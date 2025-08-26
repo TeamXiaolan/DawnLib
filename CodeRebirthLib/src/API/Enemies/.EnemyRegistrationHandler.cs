@@ -264,21 +264,21 @@ static class EnemyRegistrationHandler
                 NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true))?.GetValue(null);
                 key ??= NamespacedKey<CREnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
 
-                WeightTableBuilder<CRMoonInfo> insideWeightBuilder = new();
-                WeightTableBuilder<CRMoonInfo> outsideWeightBuilder = new();
-                WeightTableBuilder<CRMoonInfo> daytimeWeightBuilder = new();
+                CREnemyLocationInfo? insideInfo = null;
+                CREnemyLocationInfo? outsideInfo = null;
+                CREnemyLocationInfo? daytimeInfo = null;
 
                 if (enemyInsideWeightBuilder.ContainsKey(enemyType))
                 {
-                    insideWeightBuilder = enemyInsideWeightBuilder[enemyType];
+                    insideInfo = new CREnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
                 }
                 if (enemyOutsideWeightBuilder.ContainsKey(enemyType))
                 {
-                    outsideWeightBuilder = enemyOutsideWeightBuilder[enemyType];
+                    outsideInfo = new CREnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
                 }
                 if (enemyDaytimeWeightBuilder.ContainsKey(enemyType))
                 {
-                    daytimeWeightBuilder = enemyDaytimeWeightBuilder[enemyType];
+                    daytimeInfo = new CREnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
                 }
 
                 List<NamespacedKey> tags = [CRLibTags.IsExternal];
@@ -325,12 +325,9 @@ static class EnemyRegistrationHandler
                 }
 
                 CREnemyInfo enemyInfo = new(
-                    key, 
-                    tags, 
+                    key, tags, 
                     enemyType, 
-                    new CREnemyLocationInfo(insideWeightBuilder.Build()), 
-                    new CREnemyLocationInfo(outsideWeightBuilder.Build()), 
-                    new CREnemyLocationInfo(daytimeWeightBuilder.Build()),
+                    outsideInfo, insideInfo, daytimeInfo,
                     null!, null! // todo: get external terminal nodes/keywords
                 );
                 enemyType.SetCRInfo(enemyInfo);

@@ -18,4 +18,3 @@
 
 ## Needs to be done eventually
 - Suits
-- Enemies have an Inside, Outside and Daytime weights in the info regardless of it.
