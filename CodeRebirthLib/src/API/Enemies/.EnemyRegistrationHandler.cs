@@ -16,6 +16,41 @@ static class EnemyRegistrationHandler
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
+        On.Terminal.Start += AddBestiaryNodes;
+    }
+    private static void AddBestiaryNodes(On.Terminal.orig_Start orig, Terminal self)
+    {
+        // todo: handle lobby reload correctly. im not sure if enemy registry has frozen now.
+        var infoKeyword = self.terminalNodes.allKeywords.First(it => it.word == "info");
+        var allKeywords = self.terminalNodes.allKeywords.ToList();
+        var itemInfoNouns = infoKeyword.compatibleNouns.ToList();
+        
+        foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            if(enemyInfo.HasTag(CRLibTags.IsExternal)) continue;
+
+            enemyInfo.NameKeyword.defaultVerb = infoKeyword;
+            allKeywords.Add(enemyInfo.NameKeyword);
+            
+            itemInfoNouns.Add(new CompatibleNoun()
+            {
+                noun = enemyInfo.NameKeyword,
+                result = enemyInfo.BestiaryNode
+            });
+
+            enemyInfo.BestiaryNode.creatureFileID = self.enemyFiles.Count;
+            self.enemyFiles.Add(enemyInfo.BestiaryNode);
+
+            var scanNodes = enemyInfo.EnemyType.enemyPrefab.GetComponentsInChildren<ScanNodeProperties>();
+            foreach (ScanNodeProperties scanNode in scanNodes)
+            {
+                scanNode.creatureScanID = enemyInfo.BestiaryNode.creatureFileID;
+            }
+        }
+        
+        infoKeyword.compatibleNouns = itemInfoNouns.ToArray();
+        self.terminalNodes.allKeywords = allKeywords.ToArray();
+        orig(self);
     }
 
     private static void AddEnemiesToDebugList(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
@@ -289,7 +324,15 @@ static class EnemyRegistrationHandler
                     }
                 }
 
-                CREnemyInfo enemyInfo = new(key, tags, enemyType, new CREnemyLocationInfo(insideWeightBuilder.Build()), new CREnemyLocationInfo(outsideWeightBuilder.Build()), new CREnemyLocationInfo(daytimeWeightBuilder.Build()));
+                CREnemyInfo enemyInfo = new(
+                    key, 
+                    tags, 
+                    enemyType, 
+                    new CREnemyLocationInfo(insideWeightBuilder.Build()), 
+                    new CREnemyLocationInfo(outsideWeightBuilder.Build()), 
+                    new CREnemyLocationInfo(daytimeWeightBuilder.Build()),
+                    null!, null! // todo: get external terminal nodes/keywords
+                );
                 enemyType.SetCRInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);
             }

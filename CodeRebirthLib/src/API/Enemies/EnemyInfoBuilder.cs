@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CodeRebirthLib;
 
 public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInfoBuilder>
 {
     private CREnemyLocationInfo? _inside, _outside, _daytime;
+    private TerminalNode? _terminalNode;
+    private TerminalKeyword? _terminalKeyword;
     
     public class EnemyLocationBuilder
     {
@@ -58,8 +61,39 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
         return this;
     }
 
+    public EnemyInfoBuilder SetBestiaryNode(TerminalNode node)
+    {
+        _terminalNode = node;
+        return this;
+    }
+
+    // maybe have a OverrideNameKeyword(string name)? i doubt it will be massively important to override the whole keyword
+    public EnemyInfoBuilder OverrideNameKeyword(TerminalKeyword keyword)
+    {
+        _terminalKeyword = keyword;
+        return this;
+    }
+
     override internal CREnemyInfo Build()
     {
-        return new CREnemyInfo(key, tags, value, _outside, _inside, _daytime);
+        if (_terminalNode == null)
+        {
+            _terminalNode = new TerminalNodeBuilder($"{value.enemyName}BestiaryNode")
+                .SetDisplayText($"{value.enemyName}\n\nDanger level: Unknown\n\n[No information about this creature was found.]\n\n")
+                .SetClearPreviousText(true)
+                .SetMaxCharactersToType(35)
+                .Build();
+        }
+
+        if (_terminalKeyword == null)
+        {
+            string word = value.enemyName.ToLowerInvariant().Replace(' ', '-');
+            _terminalKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
+            _terminalKeyword.name = word;
+            _terminalKeyword.word = word;
+        }
+
+        _terminalNode.creatureName = value.enemyName;
+        return new CREnemyInfo(key, tags, value, _outside, _inside, _daytime, _terminalNode, _terminalKeyword);
     }
 }

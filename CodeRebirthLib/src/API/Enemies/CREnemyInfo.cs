@@ -4,7 +4,7 @@ namespace CodeRebirthLib;
 
 public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
 {
-    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, CREnemyLocationInfo? outside, CREnemyLocationInfo? inside, CREnemyLocationInfo? daytime) : base(key, tags)
+    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, CREnemyLocationInfo? outside, CREnemyLocationInfo? inside, CREnemyLocationInfo? daytime, TerminalNode bestiaryNode, TerminalKeyword keyword) : base(key, tags)
     {
         EnemyType = enemyType;
         Outside = outside;
@@ -13,6 +13,8 @@ public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
         if (Inside != null) Inside.ParentInfo = this;
         Daytime = daytime;
         if (Daytime != null) Daytime.ParentInfo = this;
+        BestiaryNode = bestiaryNode;
+        NameKeyword = keyword;
     }
 
     public EnemyType EnemyType { get; }
@@ -20,4 +22,7 @@ public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
     public CREnemyLocationInfo? Outside { get; }
     public CREnemyLocationInfo? Inside { get; }
     public CREnemyLocationInfo? Daytime { get; }
+    
+    public TerminalNode BestiaryNode { get; }
+    public TerminalKeyword NameKeyword { get; }
 }
