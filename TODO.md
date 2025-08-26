@@ -14,7 +14,6 @@
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.
 - Figure out the interior name situation with weights.
-- Use `const int` to describe `order` for `CreateAssetMenu`s
 - Swap TerminalPredicate stuff with preloader stuff.
 
 ## Needs to be done eventually

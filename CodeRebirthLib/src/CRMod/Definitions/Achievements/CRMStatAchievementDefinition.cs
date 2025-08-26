@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-[CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Stat Definition")]
+[CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = $"{CRModConstants.Achievements}/Stat Definition")]
 public class CRMStatAchievement : CRMAchievementDefinition, IProgress
 {
 

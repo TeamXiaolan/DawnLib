@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.CRMod;
 
-[CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Parent Definition")]
+[CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = $"{CRModConstants.Achievements}/Parent Definition")]
 public class CRMParentAchievement : CRMAchievementDefinition, IProgress
 {
     [field: SerializeReference]

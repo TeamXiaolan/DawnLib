@@ -14,7 +14,7 @@ public enum SpawnTable
     Daytime = 1 << 2,
 }
 
-[CreateAssetMenu(fileName = "New Enemy Definition", menuName = "CodeRebirthLib/Definitions/Enemy Definition")]
+[CreateAssetMenu(fileName = "New Enemy Definition", menuName = $"{CRModConstants.Definitions}/Enemy Definition")]
 public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
 {
     public const string REGISTRY_ID = "enemies";

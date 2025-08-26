@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.CRMod;
 
-[CreateAssetMenu(fileName = "New Item Definition", menuName = "CodeRebirthLib/Definitions/Item Definition")]
+[CreateAssetMenu(fileName = "New Item Definition", menuName = $"{CRModConstants.Definitions}/Item Definition")]
 public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
 {
     public const string REGISTRY_ID = "items";

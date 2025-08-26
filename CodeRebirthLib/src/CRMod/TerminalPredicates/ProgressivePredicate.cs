@@ -7,7 +7,7 @@ using LethalLib.Modules;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
-[CreateAssetMenu(menuName = "CodeRebirthLib/Terminal Predicates/Progressive Unlockable", fileName = "New Progressive Predicate", order = -40)]
+[CreateAssetMenu(menuName = $"{CRModConstants.TerminalPredicates}/Progressive Unlockable", fileName = "New Progressive Predicate", order = CRModConstants.PredicateOrder)]
 public class ProgressivePredicate : CRMTerminalPredicate
 {
     [SerializeField]

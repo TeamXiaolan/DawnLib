@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-[CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = "CodeRebirthLib/Definitions/Additional Tiles Definition")]
+[CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = $"{CRModConstants.Definitions}/Additional Tiles Definition")]
 public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRTileSetInfo>
 {
     [Flags]

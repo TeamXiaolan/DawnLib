@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-[CreateAssetMenu(fileName = "New Unlockable Definition", menuName = "CodeRebirthLib/Definitions/Unlockable Definition")]
+[CreateAssetMenu(fileName = "New Unlockable Definition", menuName = $"{CRModConstants.Definitions}/Unlockable Definition")]
 public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUnlockableItemInfo>
 {
     public const string REGISTRY_ID = "unlockables";

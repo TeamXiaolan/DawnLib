@@ -3,7 +3,7 @@ using BepInEx;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
-[CreateAssetMenu(fileName = "Mod Information", menuName = "CodeRebirthLib/Mod Information", order = -11)]
+[CreateAssetMenu(fileName = "Mod Information", menuName = $"{CRModConstants.MenuName}/Mod Information", order = CRModConstants.CRModInfoOrder)]
 public class CRModInformation : ScriptableObject
 {
     [field: SerializeField]

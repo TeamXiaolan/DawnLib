@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-[CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = "CodeRebirthLib/Definitions/Achievements/Discovery Definition")]
+[CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = $"{CRModConstants.Achievements}/Discovery Definition")]
 public class CRMDiscoveryAchievement : CRMAchievementDefinition, IProgress
 {
     [Tooltip("Unique string ID for each discovery to account for progress.")]
