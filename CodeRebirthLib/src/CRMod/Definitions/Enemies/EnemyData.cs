@@ -1,17 +1,10 @@
 using System;
-using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
 [Serializable]
-public class EnemyData : EntityData<CRMEnemyReference>, IInspectorHeaderWarning
+public class EnemyData : EntityData<CRMEnemyReference>
 {
-    public bool TryGetHeaderWarning(out string? message)
-    {
-        message = null;
-        return false;
-    }
-
     public string moonSpawnWeights;
     public string interiorSpawnWeights;
     public string weatherSpawnWeights;

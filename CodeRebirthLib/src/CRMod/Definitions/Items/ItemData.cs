@@ -1,16 +1,9 @@
 using System;
-using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class ItemData : EntityData<CRMItemReference>, IInspectorHeaderWarning
+public class ItemData : EntityData<CRMItemReference>
 {
-    public bool TryGetHeaderWarning(out string? message)
-    {
-        message = null;
-        return false;
-    }
-
     public string moonSpawnWeights;
     public string interiorSpawnWeights;
     public string weatherSpawnWeights;

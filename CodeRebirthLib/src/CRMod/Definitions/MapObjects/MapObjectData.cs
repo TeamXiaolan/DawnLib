@@ -1,16 +1,9 @@
 using System;
-using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
-public class MapObjectData : EntityData<CRMMapObjectReference>, IInspectorHeaderWarning
+public class MapObjectData : EntityData<CRMMapObjectReference>
 {
-    public bool TryGetHeaderWarning(out string? message)
-    {
-        message = null;
-        return false;
-    }
-
     public bool isInsideHazard;
     public bool createInsideHazardConfig;
     public string defaultInsideCurveSpawnWeights;
