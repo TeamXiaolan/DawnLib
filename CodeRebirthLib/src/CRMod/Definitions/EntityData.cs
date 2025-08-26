@@ -18,8 +18,6 @@ public abstract class EntityData<T> : EntityData where T : CRMContentReference, 
     [AssertFieldNotNull]
     T _reference = new T();
 
-    protected T Reference => _reference;
-
     public override NamespacedKey Key => _reference == null ? null : _reference.Key;
 
     public EntityData()
