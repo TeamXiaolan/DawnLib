@@ -14,16 +14,6 @@ static class AdditionalTilesRegistrationHandler
     {
         On.RoundManager.Awake += CollectVanillaDungeons;
         On.RoundManager.Start += CollectModdedDungeons;
-        LethalContent.Dungeons.OnFreeze += RegisterTileSets;
-    }
-
-    private static void RegisterTileSets()
-    {
-        foreach (CRDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
-        {
-            DungeonFlow dungeonFlow = dungeonInfo.DungeonFlow;
-            TryInjectTileSets(dungeonFlow);
-        }
     }
 
     private static void CollectModdedDungeons(On.RoundManager.orig_Start orig, RoundManager self)
@@ -45,7 +35,7 @@ static class AdditionalTilesRegistrationHandler
 
             Debuggers.Dungeons?.Log($"Registering potentially modded dungeon: {dungeonFlow.name}");
             NamespacedKey<CRDungeonInfo> key;
-            if (LLLCompat.Enabled && LLLCompat.TryGetExtendedDungeon(dungeonFlow, out _))
+            if (LLLCompat.Enabled && LLLCompat.IsExtendedDungeon(dungeonFlow))
             {
                 key = NamespacedKey<CRDungeonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
             }
@@ -56,34 +46,74 @@ static class AdditionalTilesRegistrationHandler
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
-            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
-            {
-                foreach ((string modName, string tagName) in tagsWithModNames)
-                {
-                    bool alreadyAdded = false;
-                    foreach (NamespacedKey tag in tags)
-                    {
-                        if (tag.Key == tagName)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (alreadyAdded)
-                        continue;
-
-                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-                    Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
-                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
-                }
-            }
+            CollectLLLTags(dungeonFlow, tags);
             CRDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
             dungeonFlow.SetCRInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
+        
+        CollectArchetypesAndTileSets();
         LethalContent.Dungeons.Freeze();
+    }
+    private static void CollectArchetypesAndTileSets() {
+        foreach (CRDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            foreach (DungeonArchetype dungeonArchetype in dungeonInfo.DungeonFlow.GetUsedArchetypes())
+            {
+                NamespacedKey<CRArchetypeInfo> archetypeKey = NamespacedKey<CRArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false)); // todo: ArchetypeKeys
+                if (LethalContent.Archetypes.ContainsKey(archetypeKey))
+                {
+                    Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {archetypeKey}");
+                    continue;
+                }
+                
+                CRArchetypeInfo info = new CRArchetypeInfo(archetypeKey, [CRLibTags.IsExternal], dungeonArchetype);
+                info.ParentInfo = dungeonInfo;
+                LethalContent.Archetypes.Register(info);
+
+                IEnumerable<TileSet> allTiles = [..dungeonArchetype.TileSets, ..dungeonArchetype.BranchCapTileSets];
+                foreach (TileSet tileSet in allTiles)
+                {
+                    NamespacedKey<CRTileSetInfo> tileSetKey = NamespacedKey<CRTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, false)); // todo
+                    if (LethalContent.TileSets.ContainsKey(tileSetKey))
+                    {
+                        Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
+                        continue;
+                    }
+                    CRTileSetInfo tileSetInfo = new CRTileSetInfo(tileSetKey, [CRLibTags.IsExternal], tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
+                    info.AddTileSet(tileSetInfo);
+                    LethalContent.TileSets.Register(tileSetInfo);
+                }
+            }
+        }
+        
+        LethalContent.Archetypes.Freeze();
+        LethalContent.TileSets.Freeze();
+    }
+    private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags) {
+        if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
+        {
+            foreach ((string modName, string tagName) in tagsWithModNames)
+            {
+                bool alreadyAdded = false;
+                foreach (NamespacedKey tag in tags)
+                {
+                    if (tag.Key == tagName)
+                    {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+
+                if (alreadyAdded)
+                    continue;
+
+                string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
+                tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+            }
+        }
     }
 
     private static void CollectVanillaDungeons(On.RoundManager.orig_Awake orig, RoundManager self)
@@ -106,30 +136,7 @@ static class AdditionalTilesRegistrationHandler
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
-            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
-            {
-                foreach ((string modName, string tagName) in tagsWithModNames)
-                {
-                    bool alreadyAdded = false;
-                    foreach (NamespacedKey tag in tags)
-                    {
-                        if (tag.Key == tagName)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (alreadyAdded)
-                        continue;
-    
-                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-                    Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
-                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
-                }
-            }
-
+            CollectLLLTags(dungeonFlow, tags);
             CRDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
             dungeonFlow.SetCRInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);

@@ -178,7 +178,13 @@ static class ItemRegistrationHandler
             }
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
-            if (item.spawnPrefab.GetComponent<GrabbableObject>().GetType() == typeof(GrabbableObject))
+            if (!item.spawnPrefab)
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"{item.itemName} ({item.name}) didn't have a spawn prefab?");
+                continue;
+            }
+            
+            if (item.spawnPrefab.TryGetComponent(out GrabbableObject grabbable) && grabbable.GetType() == typeof(GrabbableObject))
             {
                 tags.Add(Tags.NonInteractable);
             }

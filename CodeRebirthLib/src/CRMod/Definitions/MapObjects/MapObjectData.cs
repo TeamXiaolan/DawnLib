@@ -8,35 +8,6 @@ public class MapObjectData : EntityData<CRMMapObjectReference>, IInspectorHeader
     public bool TryGetHeaderWarning(out string? message)
     {
         message = null;
-        if (Key == null || string.IsNullOrEmpty(Key.ToString()) || Key.ToString() == ":")
-        {
-            message = "MapObject Data has no NamespacedKey.";
-            return true;
-        }
-
-        if (Application.isEditor)
-        {
-            if (Reference != null)
-            {
-                object? currentAsset = null;
-                if (!string.IsNullOrEmpty(Reference.assetGUID))
-                {
-                    string guid = Reference.assetGUID;
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        currentAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<CRMMapObjectDefinition>(path);
-                    }
-                }
-
-                if (currentAsset != null && ((CRMMapObjectDefinition)currentAsset).GameObject == null)
-                {
-                    message = "MapObjectDefinition has no MapObject.";
-                    return true;
-                }
-            }
-        }
         return false;
     }
 

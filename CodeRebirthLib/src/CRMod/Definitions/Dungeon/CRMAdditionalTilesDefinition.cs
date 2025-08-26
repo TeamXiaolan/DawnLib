@@ -22,7 +22,7 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
     public TileSet TilesToAdd { get; private set; }
 
     [field: SerializeField]
-    public List<NamespacedKey<CRDungeonInfo>> dungeonKeys = new();
+    public List<NamespacedKey<CRArchetypeInfo>> archetypeKeys = new();
 
     [field: SerializeField]
     public BranchCapSetting BranchCap { get; private set; }
@@ -44,11 +44,11 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
         });
 
-        LethalContent.Dungeons.BeforeFreeze += () =>
+        LethalContent.Archetypes.BeforeFreeze += () =>
         {
-            foreach (NamespacedKey<CRDungeonInfo> key in dungeonKeys)
+            foreach (NamespacedKey<CRArchetypeInfo> key in archetypeKeys)
             {
-                if (LethalContent.Dungeons.TryGetValue(key, out CRDungeonInfo dungeonInfo))
+                if (LethalContent.Archetypes.TryGetValue(key, out CRArchetypeInfo dungeonInfo))
                 {
                     dungeonInfo.AddTileSet(_info);
                 }

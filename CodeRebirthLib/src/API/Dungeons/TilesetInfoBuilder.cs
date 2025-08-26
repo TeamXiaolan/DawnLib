@@ -22,14 +22,10 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, Tilese
         return this;
     }
 
-    public TilesetInfoBuilder AddTag(NamespacedKey tag)
-    {
-        tags.Add(tag);
-        return this;
-    }
 
     override internal CRTileSetInfo Build()
     {
-        return new CRTileSetInfo(key, tags, value, _branchCap, _regular);
+        // tilesets do not really need tags, its just there to carry the IsExternal flag
+        return new CRTileSetInfo(key, [], value, _branchCap, _regular);
     }
 }

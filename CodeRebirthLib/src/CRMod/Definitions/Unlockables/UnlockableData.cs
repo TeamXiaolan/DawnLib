@@ -8,35 +8,6 @@ public class UnlockableData : EntityData<CRMUnlockableReference>, IInspectorHead
     public bool TryGetHeaderWarning(out string? message)
     {
         message = null;
-        if (Key == null || string.IsNullOrEmpty(Key.ToString()) || Key.ToString() == ":")
-        {
-            message = "UnlockableItem Data has no NamespacedKey.";
-            return true;
-        }
-
-        if (Application.isEditor)
-        {
-            if (Reference != null)
-            {
-                object? currentAsset = null;
-                if (!string.IsNullOrEmpty(Reference.assetGUID))
-                {
-                    string guid = Reference.assetGUID;
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        currentAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<CRMUnlockableDefinition>(path);
-                    }
-                }
-
-                if (currentAsset != null && string.IsNullOrEmpty(((CRMUnlockableDefinition)currentAsset).UnlockableItem.unlockableName))
-                {
-                    message = "UnlockableDefinition has no name assigned to it.";
-                    return true;
-                }
-            }
-        }
         return false;
     }
 

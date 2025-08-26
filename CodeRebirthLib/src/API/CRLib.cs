@@ -103,7 +103,6 @@ public static class CRLib
                 if (LethalContent.MapObjects.TryGetValue(key, out CRMapObjectInfo mapObjectInfo)) mapObjectInfo.Internal_AddTag(tag);
                 if (LethalContent.Items.TryGetValue(key, out CRItemInfo itemInfo)) itemInfo.Internal_AddTag(tag);
                 if (LethalContent.Dungeons.TryGetValue(key, out CRDungeonInfo dungeonInfo)) dungeonInfo.Internal_AddTag(tag);
-                if (LethalContent.TileSets.TryGetValue(key, out CRTileSetInfo tileSetInfo)) tileSetInfo.Internal_AddTag(tag);
                 if (LethalContent.Unlockables.TryGetValue(key, out CRUnlockableItemInfo unlockableItemInfo)) unlockableItemInfo.Internal_AddTag(tag);
             }
         };

@@ -20,10 +20,9 @@ static class LLLCompat
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    public static bool TryGetExtendedLevel(SelectableLevel level, out ExtendedLevel? extendedLevel)
+    public static bool IsExtendedLevel(SelectableLevel level)
     {
-        extendedLevel = null;
-        if (LethalLevelLoader.LevelManager.TryGetExtendedLevel(level, out extendedLevel))
+        if (LethalLevelLoader.LevelManager.TryGetExtendedLevel(level, out _))
         {
             return true;
         }
@@ -31,10 +30,9 @@ static class LLLCompat
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    public static bool TryGetExtendedDungeon(DungeonFlow dungeonFlow, out ExtendedDungeonFlow? extendedDungeon)
+    public static bool IsExtendedDungeon(DungeonFlow dungeonFlow)
     {
-        extendedDungeon = null;
-        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out extendedDungeon))
+        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out _))
         {
             return true;
         }

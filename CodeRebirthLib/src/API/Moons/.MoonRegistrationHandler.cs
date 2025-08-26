@@ -31,7 +31,7 @@ static class MoonRegistrationHandler
 
             Debuggers.Moons?.Log($"Registering potentially modded level: {level.PlanetName}");
             NamespacedKey<CRMoonInfo> key;
-            if (LLLCompat.Enabled && LLLCompat.TryGetExtendedLevel(level, out _))
+            if (LLLCompat.Enabled && LLLCompat.IsExtendedLevel(level))
             {
                 key = NamespacedKey<CRMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }

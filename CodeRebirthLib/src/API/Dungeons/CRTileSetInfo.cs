@@ -4,6 +4,7 @@ using DunGen;
 namespace CodeRebirthLib;
 public class CRTileSetInfo : CRBaseInfo<CRTileSetInfo>
 {
+    
     internal CRTileSetInfo(NamespacedKey<CRTileSetInfo> key, List<NamespacedKey> tags, TileSet tileSet, bool isBranchCap, bool isRegular) : base(key, tags)
     {
         TileSet = tileSet;

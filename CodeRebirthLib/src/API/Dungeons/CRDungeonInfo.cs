@@ -10,7 +10,6 @@ namespace CodeRebirthLib;
 public class CRDungeonInfo : CRBaseInfo<CRDungeonInfo>
 {
     private List<DoorwaySocket> _sockets;
-    private List<CRTileSetInfo> _addedTilesets;
     
     internal CRDungeonInfo(NamespacedKey<CRDungeonInfo> key, List<NamespacedKey> tags, DungeonFlow dungeonFlow) : base(key, tags)
     {
@@ -32,11 +31,6 @@ public class CRDungeonInfo : CRBaseInfo<CRDungeonInfo>
 
     public DungeonFlow DungeonFlow { get; }
     public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
-    public IReadOnlyList<CRTileSetInfo> AdditionalTileSets => _addedTilesets.AsReadOnly();
     
-    public void AddTileSet(CRTileSetInfo info)
-    {
-        if (LethalContent.Dungeons.IsFrozen) throw new RegistryFrozenException();
-        _addedTilesets.Add(info);
-    }
+    
 }
