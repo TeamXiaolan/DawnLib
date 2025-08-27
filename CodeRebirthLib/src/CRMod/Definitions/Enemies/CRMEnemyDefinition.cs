@@ -74,6 +74,12 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
                 });
             }
 
+            if (TerminalKeyword != null)
+                builder.OverrideNameKeyword(TerminalKeyword);
+
+            if (TerminalNode != null)
+                builder.SetBestiaryNode(TerminalNode);
+
             ApplyTagsTo(builder);
         });
     }
