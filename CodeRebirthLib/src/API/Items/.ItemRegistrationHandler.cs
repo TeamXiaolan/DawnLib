@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CodeRebirthLib;
 
 // todo: actually calculate this well
-public class WeightTagger(NamespacedKey tag, int minimumWeight) : IAutoTagger<CRItemInfo>
+/*public class WeightTagger(NamespacedKey tag, int minimumWeight) : IAutoTagger<CRItemInfo>
 {
 
     public NamespacedKey Tag => tag;
@@ -15,16 +15,25 @@ public class WeightTagger(NamespacedKey tag, int minimumWeight) : IAutoTagger<CR
     {
         return info.Item.weight < minimumWeight;
     }
-}
+}*/
 
 static class ItemRegistrationHandler
 {
     internal static void Init()
     {
         LethalContent.Items.AddAutoTaggers(
-            new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, it => it.Item.isConductiveMetal)
-        );
-        
+            new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, it => it.Item.isConductiveMetal),
+            new SimpleAutoTagger<CRItemInfo>(Tags.NonInteractable, it => it.Item.spawnPrefab.TryGetComponent(out GrabbableObject grabbableObject) && grabbableObject.GetType() == typeof(GrabbableObject)),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Noisy, it => !it.HasTag(Tags.NonInteractable) && it.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Interactable, it => !it.HasTag(Tags.NonInteractable) && !it.HasTag(Tags.Noisy)),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Buyable, it => it.ShopInfo != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Scrap, it => it.ScrapInfo != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Chargeable, it => it.Item.requiresBattery),
+            new SimpleAutoTagger<CRItemInfo>(Tags.TwoHanded, it => it.Item.twoHanded),
+            new SimpleAutoTagger<CRItemInfo>(Tags.OneHanded, it => !it.HasTag(Tags.TwoHanded)),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Weapon, it => it.Item.isDefensiveWeapon)
+        ); // TODO WEIGHTS AND VALUES
+
         On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.Terminal.Awake += RegisterShopItemsToTerminal;
@@ -182,50 +191,6 @@ static class ItemRegistrationHandler
             {
                 CodeRebirthLibPlugin.Logger.LogWarning($"{item.itemName} ({item.name}) didn't have a spawn prefab?");
                 continue;
-            }
-            
-            if (item.spawnPrefab.TryGetComponent(out GrabbableObject grabbable) && grabbable.GetType() == typeof(GrabbableObject))
-            {
-                tags.Add(Tags.NonInteractable);
-            }
-            else if (item.spawnPrefab.GetComponent<NoisemakerProp>() != null)
-            {
-                tags.Add(Tags.Noisy);
-            }
-            else
-            {
-                tags.Add(Tags.Interactable);
-            }
-
-            if (shopInfo != null)
-            {
-                tags.Add(Tags.Buyable);
-            }
-
-            if (scrapInfo != null)
-            {
-                tags.Add(Tags.Scrap);
-            }
-
-            if (item.requiresBattery)
-            {
-                tags.Add(Tags.Chargeable);
-            }
-
-            // do the weights and values
-
-            if (item.twoHanded)
-            {
-                tags.Add(Tags.TwoHanded);
-            }
-            else
-            {
-                tags.Add(Tags.OneHanded);
-            }
-
-            if (item.isDefensiveWeapon)
-            {
-                tags.Add(Tags.Weapon);
             }
 
             if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
