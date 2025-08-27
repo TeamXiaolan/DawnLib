@@ -67,7 +67,14 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
         return this;
     }
 
-    // maybe have a OverrideNameKeyword(string name)? i doubt it will be massively important to override the whole keyword
+    public EnemyInfoBuilder OverrideNameKeyword(string word)
+    {
+        _terminalKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
+        _terminalKeyword.name = word;
+        _terminalKeyword.word = word;
+        return this;
+    }
+   
     public EnemyInfoBuilder OverrideNameKeyword(TerminalKeyword keyword)
     {
         _terminalKeyword = keyword;
@@ -88,9 +95,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
         if (_terminalKeyword == null)
         {
             string word = value.enemyName.ToLowerInvariant().Replace(' ', '-');
-            _terminalKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-            _terminalKeyword.name = word;
-            _terminalKeyword.word = word;
+            OverrideNameKeyword(word);
         }
 
         _terminalNode.creatureName = value.enemyName;
