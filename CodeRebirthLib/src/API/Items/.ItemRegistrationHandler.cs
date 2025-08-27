@@ -156,7 +156,7 @@ static class ItemRegistrationHandler
             }
 
             receiptNode = requestNode.terminalOptions[0].result;
-            CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, buyableItem.creditsWorth);
+            CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
             itemsWithShopInfo[buyableItem] = shopInfo;
         }
 
@@ -332,12 +332,12 @@ static class ItemRegistrationHandler
             TerminalNode requestNode = shopInfo.RequestNode;
 
             receiptNode.buyItemIndex = newBuyableList.Count - 1;
-            receiptNode.itemCost = shopInfo.Cost;
+            receiptNode.itemCost = shopInfo.Cost.Provide();
 
             requestNode.buyItemIndex = newBuyableList.Count - 1;
             requestNode.isConfirmationNode = true;
             requestNode.overrideOptions = true;
-            requestNode.itemCost = shopInfo.Cost;
+            requestNode.itemCost = shopInfo.Cost.Provide();
             requestNode.terminalOptions =
             [
                 new CompatibleNoun()

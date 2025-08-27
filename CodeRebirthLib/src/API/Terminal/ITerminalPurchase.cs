@@ -1,7 +1,7 @@
 ﻿namespace CodeRebirthLib;
 public interface ITerminalPurchase
 {
-    int Cost { get; }
+    IProvider<int> Cost { get; }
     ITerminalPurchasePredicate PurchasePredicate { get; }
 
 }

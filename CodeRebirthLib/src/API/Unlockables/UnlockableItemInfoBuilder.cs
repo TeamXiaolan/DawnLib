@@ -96,6 +96,6 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, Unloc
         }
 
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-        return new CRUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo);
+        return new CRUnlockableItemInfo(_purchasePredicate, key, tags, value, new SimpleProvider<int>(cost), _suitInfo, _placeableObjectInfo);
     }
 }

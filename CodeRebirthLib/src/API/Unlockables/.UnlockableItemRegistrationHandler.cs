@@ -41,13 +41,13 @@ static class UnlockableRegistrationHandler
             shopSelectionNode.clearPreviousText = true;
             shopSelectionNode.maxCharactersToType = 25;
             shopSelectionNode.shipUnlockableID = latestUnlockableID;
-            shopSelectionNode.itemCost = unlockableInfo.Cost;
+            shopSelectionNode.itemCost = unlockableInfo.Cost.Provide();
             shopSelectionNode.creatureName = unlockableInfo.UnlockableItem.unlockableName;
             shopSelectionNode.overrideOptions = true;
 
             CompatibleNoun confirmBuyCompatibleNoun = new();
             confirmBuyCompatibleNoun.noun = confirmPurchaseKeyword;
-            confirmBuyCompatibleNoun.result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID, unlockableInfo.Cost);
+            confirmBuyCompatibleNoun.result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID, unlockableInfo.Cost.Provide());
 
             CompatibleNoun cancelDenyCompatibleNoun = new();
             cancelDenyCompatibleNoun.noun = denyPurchaseKeyword;
@@ -96,7 +96,7 @@ static class UnlockableRegistrationHandler
                 placeableObjectInfo = new CRPlaceableObjectInfo();
             }
 
-            CRUnlockableItemInfo unlockableItemInfo = new(new AlwaysAvaliableTerminalPredicate(), key, [CRLibTags.IsExternal], unlockableItem, cost, suitInfo, placeableObjectInfo);
+            CRUnlockableItemInfo unlockableItemInfo = new(new AlwaysAvaliableTerminalPredicate(), key, [CRLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo);
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 

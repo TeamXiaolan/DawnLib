@@ -108,8 +108,9 @@ public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder
             }
 
             _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
+            _costOverride ??= _parentBuilder.value.creditsWorth;
 
-            return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride ?? _parentBuilder.value.creditsWorth);
+            return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, new SimpleProvider<int>(_costOverride.Value));
         }
     }
 

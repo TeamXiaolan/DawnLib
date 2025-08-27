@@ -4,7 +4,7 @@ namespace CodeRebirthLib;
 
 public sealed class CRUnlockableItemInfo : CRBaseInfo<CRUnlockableItemInfo>, ITerminalPurchase
 {
-    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, List<NamespacedKey> tags, UnlockableItem unlockableItem, int cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo) : base(key, tags)
+    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, List<NamespacedKey> tags, UnlockableItem unlockableItem, IProvider<int> cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo) : base(key, tags)
     {
         PurchasePredicate = predicate;
         UnlockableItem = unlockableItem;
@@ -16,7 +16,7 @@ public sealed class CRUnlockableItemInfo : CRBaseInfo<CRUnlockableItemInfo>, ITe
     }
 
     public UnlockableItem UnlockableItem { get; }
-    public int Cost { get; }
+    public IProvider<int> Cost { get; }
     public ITerminalPurchasePredicate PurchasePredicate { get; }
     public CRSuitInfo? SuitInfo { get; }
     public CRPlaceableObjectInfo? PlaceableObjectInfo { get; }

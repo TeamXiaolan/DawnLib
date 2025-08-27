@@ -4,17 +4,17 @@ public class SimpleWeighted(int weight) : IWeighted
     public int GetWeight() => weight;
 }
 
-public class SimpleWeightProvider<TBase>(IWeighted weight) : IProvider<int?, TBase> where TBase : INamespaced<TBase>
+public class SimpleWeightContextualProvider<TBase>(IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
 
     public int? Provide(TBase info) => weight.GetWeight();
 }
 
-public class SimpleProvider<T, TBase>(T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
+public class SimpleContextualProvider<T, TBase>(T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
 {
     public T Provide(TBase info) => value;
 }
-public class MatchingKeyProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
+public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
 {
     public T? Provide(TBase info)
     {
@@ -22,7 +22,7 @@ public class MatchingKeyProvider<T, TBase>(NamespacedKey<TBase> targetKey, T val
     }
 }
 
-public class HasTagProvider<T, TBase>(NamespacedKey tag, T value) : IProvider<T, TBase> where TBase : INamespaced<TBase>
+public class HasTagContextualProvider<T, TBase>(NamespacedKey tag, T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
 {
     public T? Provide(TBase info)
     {
@@ -32,7 +32,7 @@ public class HasTagProvider<T, TBase>(NamespacedKey tag, T value) : IProvider<T,
     }
 }
 
-public class MatchingKeyWeightProvider<TBase>(NamespacedKey<TBase> targetKey, IWeighted weight) : IProvider<int?, TBase> where TBase : INamespaced<TBase>
+public class MatchingKeyWeightContextualProvider<TBase>(NamespacedKey<TBase> targetKey, IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
 
     public int? Provide(TBase info)
@@ -41,7 +41,7 @@ public class MatchingKeyWeightProvider<TBase>(NamespacedKey<TBase> targetKey, IW
     }
 }
 
-public class HasTagWeightProvider<TBase>(NamespacedKey tag, IWeighted weight) : IProvider<int?, TBase> where TBase : INamespaced<TBase>
+public class HasTagWeightContextualProvider<TBase>(NamespacedKey tag, IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
     public int? Provide(TBase info)
     {

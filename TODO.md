@@ -18,3 +18,4 @@
 
 ## Needs to be done eventually
 - Suits
+- Fully implement dynamic costs for terminal purchases.

@@ -4,27 +4,27 @@ using UnityEngine;
 namespace CodeRebirthLib;
 public class CurveTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggable
 {
-    private List<IProvider<AnimationCurve?, TBase>> _baseProviders = [];
-    private List<IProvider<AnimationCurve?, TBase>> _tagProviders = [];
-    private IProvider<AnimationCurve?, TBase>? _global;
+    private List<IContextualProvider<AnimationCurve?, TBase>> _baseProviders = [];
+    private List<IContextualProvider<AnimationCurve?, TBase>> _tagProviders = [];
+    private IContextualProvider<AnimationCurve?, TBase>? _global;
 
     public CurveTableBuilder<TBase> AddCurve(NamespacedKey<TBase> key, AnimationCurve curve)
     {
-        _baseProviders.Add(new MatchingKeyProvider<AnimationCurve, TBase>(key, curve));
+        _baseProviders.Add(new MatchingKeyContextualProvider<AnimationCurve, TBase>(key, curve));
         return this;
     }
 
     public CurveTableBuilder<TBase> AddTagCurve(NamespacedKey tag, AnimationCurve curve)
     {
-        _tagProviders.Add(new HasTagProvider<AnimationCurve, TBase>(tag, curve));
+        _tagProviders.Add(new HasTagContextualProvider<AnimationCurve, TBase>(tag, curve));
         return this;
     }
 
     public CurveTableBuilder<TBase> SetGlobalCurve(AnimationCurve curve)
     {
-        return SetGlobalCurve(new SimpleProvider<AnimationCurve?, TBase>(curve));
+        return SetGlobalCurve(new SimpleContextualProvider<AnimationCurve?, TBase>(curve));
     }
-    public CurveTableBuilder<TBase> SetGlobalCurve(IProvider<AnimationCurve?, TBase> provider)
+    public CurveTableBuilder<TBase> SetGlobalCurve(IContextualProvider<AnimationCurve?, TBase> provider)
     {
         _global = provider;
         return this;
@@ -32,7 +32,7 @@ public class CurveTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggabl
 
     public ProviderTable<AnimationCurve?, TBase> Build()
     {
-        List<IProvider<AnimationCurve?, TBase>> compiled = [.. _baseProviders, .. _tagProviders];
+        List<IContextualProvider<AnimationCurve?, TBase>> compiled = [.. _baseProviders, .. _tagProviders];
         if (_global != null)
         {
             compiled.Add(_global);

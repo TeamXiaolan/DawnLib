@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-public class MapObjectSpawnMechanics : IProvider<AnimationCurve?, CRMoonInfo>
+public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, CRMoonInfo>
 {
     public MapObjectSpawnMechanics(string configString)
     {

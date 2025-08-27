@@ -3,9 +3,9 @@
 namespace CodeRebirthLib;
 public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggable
 {
-    private List<IProvider<int?, TBase>> _baseProviders = [];
-    private List<IProvider<int?, TBase>> _tagProviders = [];
-    private IProvider<int?, TBase>? _global;
+    private List<IContextualProvider<int?, TBase>> _baseProviders = [];
+    private List<IContextualProvider<int?, TBase>> _tagProviders = [];
+    private IContextualProvider<int?, TBase>? _global;
 
     public WeightTableBuilder<TBase> AddWeight(NamespacedKey<TBase> key, int weight)
     {
@@ -14,7 +14,7 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
 
     public WeightTableBuilder<TBase> AddWeight(NamespacedKey<TBase> key, IWeighted weight)
     {
-        _baseProviders.Add(new MatchingKeyWeightProvider<TBase>(key, weight));
+        _baseProviders.Add(new MatchingKeyWeightContextualProvider<TBase>(key, weight));
         return this;
     }
 
@@ -25,7 +25,7 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
 
     public WeightTableBuilder<TBase> AddTagWeight(NamespacedKey tag, IWeighted weight)
     {
-        _tagProviders.Add(new HasTagWeightProvider<TBase>(tag, weight));
+        _tagProviders.Add(new HasTagWeightContextualProvider<TBase>(tag, weight));
         return this;
     }
 
@@ -36,10 +36,10 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
 
     public WeightTableBuilder<TBase> SetGlobalWeight(IWeighted weight)
     {
-        return SetGlobalWeight(new SimpleWeightProvider<TBase>(weight));
+        return SetGlobalWeight(new SimpleWeightContextualProvider<TBase>(weight));
     }
 
-    public WeightTableBuilder<TBase> SetGlobalWeight(IProvider<int?, TBase> provider)
+    public WeightTableBuilder<TBase> SetGlobalWeight(IContextualProvider<int?, TBase> provider)
     {
         _global = provider;
         return this;
@@ -47,7 +47,7 @@ public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggab
 
     public ProviderTable<int?, TBase> Build()
     {
-        List<IProvider<int?, TBase>> compiled = [.. _baseProviders, .. _tagProviders];
+        List<IContextualProvider<int?, TBase>> compiled = [.. _baseProviders, .. _tagProviders];
         if (_global != null)
         {
             compiled.Add(_global);
