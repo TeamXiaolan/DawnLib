@@ -27,8 +27,10 @@ public class TaggedRegistry<T> : Registry<T> where T : CRBaseInfo<T>
         base.Register(value);
         foreach (IAutoTagger<T> tagger in _autoTaggers)
         {
-            if(tagger.ShouldApply(value)) 
+            if (tagger.ShouldApply(value))
+            {
                 value.Internal_AddTag(tagger.Tag);
+            }
         }
     }
 }

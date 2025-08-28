@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 namespace CodeRebirthLib.Utils;
+
 [Serializable]
 public class BoundedRange
 {
@@ -22,4 +23,7 @@ public class BoundedRange
             Min = Max;
         }
     }
+
+    public bool IsInRange(float value) => value > Min && value <= Max;
+    public float GetAverage() => (Min + Max) / 2f;
 }
