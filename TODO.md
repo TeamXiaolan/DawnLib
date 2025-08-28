@@ -5,7 +5,6 @@
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.
 - Write the new AutoTaggers in Item/Enemy/etc RegistrationHandlers.
-- Get external enemy bestiary nodes/keywords. (EnemyRegistrationHandler) (or mark it nullable in EnemyInfo for now)
 
 ## Bongo
 

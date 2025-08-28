@@ -183,13 +183,13 @@ static class ItemRegistrationHandler
                 scrapInfo = new(weightTableBuilder.Build());
             }
 
-            List<NamespacedKey> tags = [CRLibTags.IsExternal];
             if (!item.spawnPrefab)
             {
                 CodeRebirthLibPlugin.Logger.LogWarning($"{item.itemName} ({item.name}) didn't have a spawn prefab?");
                 continue;
             }
 
+            List<NamespacedKey> tags = [CRLibTags.IsExternal];
             if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)

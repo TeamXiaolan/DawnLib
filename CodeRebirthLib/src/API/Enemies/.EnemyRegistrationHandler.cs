@@ -10,6 +10,13 @@ static class EnemyRegistrationHandler
 {
     internal static void Init()
     {
+        LethalContent.Enemies.AddAutoTaggers(
+            new SimpleAutoTagger<CREnemyInfo>(Tags.Killable, info => info.EnemyType.canDie),
+            new SimpleAutoTagger<CREnemyInfo>(Tags.Small, info => info.EnemyType.EnemySize == EnemySize.Tiny),
+            new SimpleAutoTagger<CREnemyInfo>(Tags.Medium, info => info.EnemyType.EnemySize == EnemySize.Medium),
+            new SimpleAutoTagger<CREnemyInfo>(Tags.Large, info => info.EnemyType.EnemySize == EnemySize.Giant)
+        );
+
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
@@ -26,7 +33,7 @@ static class EnemyRegistrationHandler
 
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(CRLibTags.IsExternal))
+            if (enemyInfo.HasTag(CRLibTags.IsExternal) || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
                 continue;
 
             enemyInfo.BestiaryNode.creatureFileID = self.enemyFiles.Count;
@@ -290,24 +297,6 @@ static class EnemyRegistrationHandler
                 }
 
                 List<NamespacedKey> tags = [CRLibTags.IsExternal];
-                if (enemyType.canDie)
-                {
-                    tags.Add(Tags.Killable);
-                }
-
-                if (enemyType.EnemySize == EnemySize.Tiny)
-                {
-                    tags.Add(Tags.Small);
-                }
-                else if (enemyType.EnemySize == EnemySize.Medium)
-                {
-                    tags.Add(Tags.Medium);
-                }
-                else
-                {
-                    tags.Add(Tags.Large);
-                }
-
                 if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
                 {
                     foreach ((string modName, string tagName) in tagsWithModNames)
@@ -353,7 +342,7 @@ static class EnemyRegistrationHandler
                     key, tags,
                     enemyType,
                     outsideInfo, insideInfo, daytimeInfo,
-                    bestiaryNode, nameKeyword // todo: get external terminal nodes/keywords
+                    bestiaryNode, nameKeyword
                 );
                 enemyType.SetCRInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);
