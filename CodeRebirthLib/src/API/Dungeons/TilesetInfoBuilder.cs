@@ -5,7 +5,8 @@ namespace CodeRebirthLib;
 public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, TilesetInfoBuilder>
 {
     private bool _branchCap, _regular = true;
-
+    private IPredicate? _predicate;
+    
     internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
     {
     }
@@ -22,10 +23,17 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, Tilese
         return this;
     }
 
+    public TilesetInfoBuilder SetInjectionPredicate(IPredicate predicate)
+    {
+        _predicate = predicate;
+        return this;
+    }
 
     override internal CRTileSetInfo Build()
     {
+        if(_predicate == null) _predicate = ConstantPredicate.True;
+        
         // tilesets do not really need tags, its just there to carry the IsExternal flag
-        return new CRTileSetInfo(key, [], value, _branchCap, _regular);
+        return new CRTileSetInfo(key, [], _predicate, value, _branchCap, _regular);
     }
 }

@@ -6,6 +6,7 @@
 [InjectInterface("Item")]
 [InjectInterface("UnlockableItem")]
 [InjectInterface("DunGen.TileSet")]
+[InjectInterface("DunGen.DungeonArchetype")]
 [InjectInterface("DunGen.Graph.DungeonFlow")]
 public interface ICRObject
 {

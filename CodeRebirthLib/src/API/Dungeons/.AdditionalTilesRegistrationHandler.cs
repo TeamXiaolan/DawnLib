@@ -14,6 +14,11 @@ static class AdditionalTilesRegistrationHandler
     {
         On.RoundManager.Awake += CollectVanillaDungeons;
         On.RoundManager.Start += CollectModdedDungeons;
+        On.DunGen.RuntimeDungeon.Generate += (orig, self) =>
+        {
+            TryInjectTileSets(self.Generator.DungeonFlow);
+            orig(self);
+        };
     }
 
     private static void CollectModdedDungeons(On.RoundManager.orig_Start orig, RoundManager self)
@@ -111,7 +116,7 @@ static class AdditionalTilesRegistrationHandler
                         Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
                         continue;
                     }
-                    CRTileSetInfo tileSetInfo = new CRTileSetInfo(tileSetKey, [CRLibTags.IsExternal], tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
+                    CRTileSetInfo tileSetInfo = new CRTileSetInfo(tileSetKey, [CRLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
                     info.AddTileSet(tileSetInfo);
                     LethalContent.TileSets.Register(tileSetInfo);
                 }
@@ -216,25 +221,36 @@ static class AdditionalTilesRegistrationHandler
 
     internal static void TryInjectTileSets(DungeonFlow dungeonFlow)
     {
-        foreach (CRTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
+        foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
         {
-            /*if (!tileSetInfo.AppliedTo.Contains(dungeonFlow.ToNamespacedKey()))
+            if (!archetype.TryGetCRInfo(out CRArchetypeInfo? info))
             {
+                CodeRebirthLibPlugin.Logger.LogWarning("what? archetype didn't have crinfo by the time we're trying to inject tile sets.");
                 continue;
-            }*/
-
-            foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
+            }
+            foreach (CRTileSetInfo tileSet in info.TileSets)
             {
-                Debuggers.Dungeons?.Log($"Injecting {tileSetInfo.TileSet.name} tileset into {archetype.name}");
+                if(tileSet.HasTag(CRLibTags.IsExternal))
+                    continue;
 
-                if (tileSetInfo.IsBranchCap)
+                // remove unconditionally.
+                if (archetype.BranchCapTileSets.Contains(tileSet.TileSet))
+                    archetype.BranchCapTileSets.Remove(tileSet.TileSet);
+                
+                if (archetype.TileSets.Contains(tileSet.TileSet))
+                    archetype.TileSets.Remove(tileSet.TileSet);
+                
+                // then if this passes, re-add to the archetype.
+                if(!tileSet.InjectionPredicate.Evaluate())
+                    continue;
+                
+                if (tileSet.IsBranchCap)
                 {
-                    archetype.BranchCapTileSets.Add(tileSetInfo.TileSet);
+                    archetype.BranchCapTileSets.Add(tileSet.TileSet);
                 }
-
-                if (tileSetInfo.IsRegular)
+                if (tileSet.IsRegular)
                 {
-                    archetype.TileSets.Add(tileSetInfo.TileSet);
+                    archetype.TileSets.Add(tileSet.TileSet);
                 }
             }
         }
