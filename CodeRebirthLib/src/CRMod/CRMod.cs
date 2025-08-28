@@ -53,14 +53,13 @@ public class CRMod
         var searchDir = Path.GetFullPath(assembly.Location);
         var parent = Directory.GetParent(searchDir);
 
-        // Ensure our search directory has a parent of `plugins` ex: `plugins/SEARCH_DIR`, this should leave us with a best match for how r2modman and it's derivatives' install mods.
         while (parent != null && !string.Equals(parent.Name, "plugins", StringComparison.OrdinalIgnoreCase))
         {
             searchDir = parent.FullName;
-            parent = Directory.GetParent(searchDir); // This prevents an infinite loop, as parent becomes null if we hit the root of the drive.
+            parent = Directory.GetParent(searchDir);
         }
 
-        if (searchDir.EndsWith(".dll")) // Return early if the searchDir is a dll file, prevents a crash from occuring below. Commonly occurs when manually installing mods.
+        if (searchDir.EndsWith(".dll"))
             return;
 
         var iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();

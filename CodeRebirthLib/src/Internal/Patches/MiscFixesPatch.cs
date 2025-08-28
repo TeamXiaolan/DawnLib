@@ -22,8 +22,12 @@ static class MiscFixesPatch
     private static void DoSoundFixes(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
-        AudioSource menuManagerAudioSource = self.GetComponent<AudioSource>();
 
+        AudioSource? menuManagerAudioSource = self.gameObject.GetComponent<AudioSource>();
+        if (menuManagerAudioSource == null)
+        {
+            return;
+        }
         AudioMixer audioMixer = menuManagerAudioSource.outputAudioMixerGroup.audioMixer;
         foreach (GameObject prefabToFix in soundPrefabsToFix)
         {

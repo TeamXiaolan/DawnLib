@@ -164,7 +164,7 @@ static class MapObjectRegistrationHandler
     }
 
     private static void SpawnOutsideMapObjects(On.RoundManager.orig_SpawnOutsideHazards orig, RoundManager self)
-    { // TODO probably needs a transpiler on SpawnOutsideHazards for potential navmesh regen
+    {
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
         foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
@@ -174,8 +174,6 @@ static class MapObjectRegistrationHandler
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
-            // TODO register vanilla outside objects
-            // there isn't an inside version because those are handled on StartOfRound's Start/Awake, this is because vanilla lacks some features in handling outside objects so I have to do it myself.
         }
         orig(self);
         _spawnedObjects = 0;

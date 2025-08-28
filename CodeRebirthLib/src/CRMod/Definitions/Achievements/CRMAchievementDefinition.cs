@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
 
-/* TODOs
- * Button to reset specific achievements
- * probably more im forgetting
-*/
 public abstract class CRMAchievementDefinition : CRMContentDefinition, INamespaced<CRMAchievementDefinition>
 {
     [field: SerializeField]

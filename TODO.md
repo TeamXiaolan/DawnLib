@@ -8,7 +8,6 @@
 
 ## Bongo
 
-- Add logs for tags per item, enemy, etc.
 - Use FailedTerminalResult.OverrideName
 - Tag weights
 - MapObject CRInfo stuff?

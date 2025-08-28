@@ -126,8 +126,8 @@ static class AdditionalTilesRegistrationHandler
         LethalContent.Archetypes.Freeze();
         LethalContent.TileSets.Freeze();
     }
-    
-    private static string FormatTileSetName(TileSet tileSet)
+
+    private static string FormatTileSetName(TileSet tileSet) // todo: use this in whatever editor tool generates the vanilla keys.
     {
         string name = NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, true);
         name = ReplaceInternalLevelNames(name).Replace("Tiles", string.Empty);
