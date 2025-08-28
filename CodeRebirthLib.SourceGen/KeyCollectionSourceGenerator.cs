@@ -18,6 +18,12 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
+        if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out string? rootNamespace) || string.IsNullOrWhiteSpace(rootNamespace))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(CRLibDiagnostics.MissingRootNamespace, Location.None));
+            return;
+        }
+        
         foreach (AdditionalText? additionalFile in context.AdditionalFiles)
         {
             if (additionalFile == null)
@@ -65,7 +71,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
 
                 GeneratedCodeFile file = new GeneratedCodeFile()
                 {
-                    Namespace = "CodeRebirthLib", // todo
+                    Namespace = rootNamespace,
                     Usings = ["CodeRebirthLib"],
                     Symbols = [@class]
                 };

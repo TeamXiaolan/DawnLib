@@ -18,6 +18,12 @@ public class TagSourceGenerator : ISourceGenerator
     }
     public void Execute(GeneratorExecutionContext context)
     {
+        if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out string? rootNamespace) || string.IsNullOrWhiteSpace(rootNamespace))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(CRLibDiagnostics.MissingRootNamespace, Location.None));
+            return;
+        }
+        
         GeneratedClass @class = new GeneratedClass(Visibility.Public, "Tags") // todo: e.g. MeltdownTags
         {
             IsStatic = true,
@@ -59,7 +65,7 @@ public class TagSourceGenerator : ISourceGenerator
 
         GeneratedCodeFile file = new GeneratedCodeFile()
         {
-            Namespace = "CodeRebirthLib", // todo
+            Namespace = rootNamespace,
             Usings = ["CodeRebirthLib"],
             Symbols = [@class]
         };
