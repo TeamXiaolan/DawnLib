@@ -16,7 +16,7 @@ static class ItemRegistrationHandler
             new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, itemInfo => itemInfo.Item.isConductiveMetal),
             new SimpleAutoTagger<CRItemInfo>(Tags.Noisy, itemInfo => itemInfo.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
             new SimpleAutoTagger<CRItemInfo>(Tags.Interactable, itemInfo => !itemInfo.HasTag(Tags.NonInteractable) && !itemInfo.HasTag(Tags.Noisy)),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Buyable, itemInfo => itemInfo.ShopInfo != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Paid, itemInfo => itemInfo.ShopInfo != null),
             new SimpleAutoTagger<CRItemInfo>(Tags.Scrap, itemInfo => itemInfo.ScrapInfo != null),
             new SimpleAutoTagger<CRItemInfo>(Tags.Chargeable, itemInfo => itemInfo.Item.requiresBattery),
             new SimpleAutoTagger<CRItemInfo>(Tags.TwoHanded, itemInfo => itemInfo.Item.twoHanded),
