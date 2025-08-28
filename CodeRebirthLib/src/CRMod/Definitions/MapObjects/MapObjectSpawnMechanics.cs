@@ -29,11 +29,11 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, CRMo
 
         foreach ((string moonName, string value) in spawnRateByMoonName)
         {
-            CurvesByMoonName[moonName] = ConfigManager.ParseCurve(value);
+            CurvesByMoonOrTagName[moonName] = ConfigManager.ParseCurve(value);
         }
     }
 
-    public Dictionary<string, AnimationCurve> CurvesByMoonName { get; } = new();
+    public Dictionary<string, AnimationCurve> CurvesByMoonOrTagName { get; } = new();
 
     public AnimationCurve? AllCurve { get; }
     public AnimationCurve? VanillaCurve { get; }
@@ -47,22 +47,41 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, CRMo
         string actualLevelName = ConfigManager.GetLLLNameOfLevel(level.name);
         bool isVanilla = level.ToNamespacedKey().IsVanilla();
         Debuggers.MapObjects?.Log($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
-        if (CurvesByMoonName.TryGetValue(actualLevelName, out AnimationCurve curve))
+        if (CurvesByMoonOrTagName.TryGetValue(actualLevelName, out AnimationCurve curve))
         {
             return curve;
         }
-        /*if (LLLCompatibility.Enabled && LLLCompatibility.TryGetCurveDictAndLevelTag(CurvesByMoonName, level, out string tagName) && CurvesByMoonName.TryGetValue(tagName, out curve))
-        { TODO
-            return curve;
-        }*/
+
+        if (level.TryGetCRInfo(out CRMoonInfo? moonInfo))
+        {
+            List<AnimationCurve> tagCurveCandidates = new();
+            foreach ((string tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)
+            {
+                if (!NamespacedKey.TryParse(tagName, out NamespacedKey? key))
+                    continue;
+
+                if (!moonInfo.HasTag(key))
+                    continue;
+
+                tagCurveCandidates.Add(tagCurve);
+            }
+
+            if (tagCurveCandidates.Count > 0)
+            {
+                return tagCurveCandidates[0]; // TODO Do this properly
+            }
+        }
+
         if (isVanilla && VanillaCurve != null)
         {
             return VanillaCurve;
         }
+
         if (ModdedCurve != null)
         {
             return ModdedCurve;
         }
+
         if (AllCurve != null)
         {
             return AllCurve;

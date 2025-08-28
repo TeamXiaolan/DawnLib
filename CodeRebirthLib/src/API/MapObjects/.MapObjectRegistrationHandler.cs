@@ -170,7 +170,7 @@ static class MapObjectRegistrationHandler
         foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
+            if (outsideInfo == null || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
@@ -254,7 +254,7 @@ static class MapObjectRegistrationHandler
         foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             CRInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
-            if (insideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
+            if (insideInfo == null || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
@@ -269,7 +269,7 @@ static class MapObjectRegistrationHandler
             List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
             foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
             {
-                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.Key.IsVanilla() || mapObjectInfo.HasTag(CRLibTags.IsExternal))
+                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(CRLibTags.IsExternal))
                     continue;
 
                 SpawnableMapObject spawnableMapObject = new()

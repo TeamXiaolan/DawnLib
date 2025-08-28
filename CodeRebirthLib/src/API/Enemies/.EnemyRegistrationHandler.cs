@@ -16,18 +16,19 @@ static class EnemyRegistrationHandler
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
-        On.Terminal.Start += AddBestiaryNodes;
+        On.Terminal.Awake += AddBestiaryNodes;
     }
-    private static void AddBestiaryNodes(On.Terminal.orig_Start orig, Terminal self)
+    private static void AddBestiaryNodes(On.Terminal.orig_Awake orig, Terminal self)
     {
         // todo: handle lobby reload correctly. im not sure if enemy registry has frozen now.
-        var infoKeyword = self.terminalNodes.allKeywords.First(it => it.word == "info");
-        var allKeywords = self.terminalNodes.allKeywords.ToList();
-        var itemInfoNouns = infoKeyword.compatibleNouns.ToList();
+        TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(it => it.word == "info");
+        List<TerminalKeyword> allKeywords = self.terminalNodes.allKeywords.ToList();
+        List<CompatibleNoun> itemInfoNouns = infoKeyword.compatibleNouns.ToList();
         
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if(enemyInfo.HasTag(CRLibTags.IsExternal)) continue;
+            if (enemyInfo.HasTag(CRLibTags.IsExternal))
+                continue;
 
             enemyInfo.NameKeyword.defaultVerb = infoKeyword;
             allKeywords.Add(enemyInfo.NameKeyword);
@@ -58,7 +59,7 @@ static class EnemyRegistrationHandler
         SelectableLevel testLevel = LethalContent.Moons[MoonKeys.Test].Level;
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
+            if (enemyInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             SpawnableEnemyWithRarity spawnDef = new()
@@ -170,7 +171,7 @@ static class EnemyRegistrationHandler
 
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
+            if (enemyInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
@@ -337,7 +338,7 @@ static class EnemyRegistrationHandler
 
             foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
-                if (enemyInfo.Key.IsVanilla() || enemyInfo.HasTag(CRLibTags.IsExternal))
+                if (enemyInfo.HasTag(CRLibTags.IsExternal))
                     continue;
 
                 if (enemyInfo.Outside != null)

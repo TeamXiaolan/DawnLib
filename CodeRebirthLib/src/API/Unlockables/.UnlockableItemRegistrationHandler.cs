@@ -32,7 +32,7 @@ static class UnlockableRegistrationHandler
         foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
             CRPlaceableObjectInfo? placeableObjectInfo = unlockableInfo.PlaceableObjectInfo;
-            if (placeableObjectInfo == null || unlockableInfo.Key.IsVanilla() || unlockableInfo.HasTag(CRLibTags.IsExternal))
+            if (placeableObjectInfo == null || unlockableInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
@@ -61,7 +61,7 @@ static class UnlockableRegistrationHandler
         foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
             CRSuitInfo? suitInfo = unlockableInfo.SuitInfo;
-            if (suitInfo == null || unlockableInfo.Key.IsVanilla() || unlockableInfo.HasTag(CRLibTags.IsExternal))
+            if (suitInfo == null || unlockableInfo.HasTag(CRLibTags.IsExternal))
                 continue; // also ensure not to register vanilla stuff again
 
             // TODO Suits

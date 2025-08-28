@@ -56,7 +56,7 @@ static class ItemRegistrationHandler
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
+            if (scrapInfo == null || itemInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             Debuggers.Items?.Log($"Updating {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
@@ -227,7 +227,7 @@ static class ItemRegistrationHandler
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
+            if (scrapInfo == null || itemInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
@@ -265,7 +265,7 @@ static class ItemRegistrationHandler
         foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
         {
             CRShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || itemInfo.Key.IsVanilla() || itemInfo.HasTag(CRLibTags.IsExternal))
+            if (shopInfo == null || itemInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
             string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();
