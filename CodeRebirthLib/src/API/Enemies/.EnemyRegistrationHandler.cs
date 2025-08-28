@@ -301,21 +301,13 @@ static class EnemyRegistrationHandler
                 {
                     foreach ((string modName, string tagName) in tagsWithModNames)
                     {
-                        bool alreadyAdded = false;
-                        foreach (NamespacedKey tag in tags)
-                        {
-                            if (tag.Key == tagName)
-                            {
-                                alreadyAdded = true;
-                                break;
-                            }
-                        }
-
-                        if (alreadyAdded)
-                            continue;
-
                         string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
                         string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+
+                        if (normalizedModName == "lethalcompany")
+                        {
+                            normalizedModName = "lethal_level_loader";
+                        }
                         Debuggers.Enemies?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to enemy {enemyType.enemyName}");
                         tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
                     }

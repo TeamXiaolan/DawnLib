@@ -196,22 +196,10 @@ static class ItemRegistrationHandler
                 {
                     string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
                     string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-                    bool alreadyAdded = false;
-                    foreach (NamespacedKey tag in tags)
-                    {
-                        if (tag.Key == normalizedTagName)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (alreadyAdded)
-                        continue;
 
                     if (normalizedModName == "lethalcompany")
                     {
-                        normalizedModName = "lethal_company";
+                        normalizedModName = "lethal_level_loader";
                     }
                     Debuggers.Items?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to item {item.itemName}");
                     tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));

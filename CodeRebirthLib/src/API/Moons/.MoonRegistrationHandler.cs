@@ -35,16 +35,13 @@ static class MoonRegistrationHandler
         TerminalKeyword routeKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "route");
         foreach (SelectableLevel level in self.levels)
         {
-            if (level.TryGetCRInfo(out _))
-                continue;
-
-            Debuggers.Moons?.Log($"Registering potentially modded level: {level.PlanetName}");
-            NamespacedKey<CRMoonInfo> key;
-            if (LLLCompat.Enabled && LLLCompat.IsExtendedLevel(level))
+            Debuggers.Moons?.Log($"Registering level: {level.PlanetName}");
+            NamespacedKey<CRMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
+            if (key == null && LLLCompat.Enabled && LLLCompat.IsExtendedLevel(level))
             {
                 key = NamespacedKey<CRMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
-            else
+            else if (key == null)
             {
                 key = NamespacedKey<CRMoonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
@@ -54,21 +51,13 @@ static class MoonRegistrationHandler
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)
                 {
-                    bool alreadyAdded = false;
-                    foreach (NamespacedKey tag in tags)
-                    {
-                        if (tag.Key == tagName)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (alreadyAdded)
-                        continue;
-
                     string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
                     string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+
+                    if (normalizedModName == "lethalcompany")
+                    {
+                        normalizedModName = "lethal_level_loader";
+                    }
                     Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
                     tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
                 }
@@ -103,56 +92,6 @@ static class MoonRegistrationHandler
         CRMoonInfo testMoonInfo = new(MoonKeys.Test, [CRLibTags.IsExternal], self.currentLevel, null, null);
         self.currentLevel.SetCRInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
-
-        Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
-        TerminalKeyword routeKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "route");
-        foreach (SelectableLevel level in self.levels)
-        {
-            string name = NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level");
-            NamespacedKey<CRMoonInfo>? key = MoonKeys.GetByReflection(name);
-            if (key == null)
-                continue;
-
-            List<NamespacedKey> tags = [CRLibTags.IsExternal];
-            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
-            {
-                foreach ((string modName, string tagName) in tagsWithModNames)
-                {
-                    bool alreadyAdded = false;
-                    foreach (NamespacedKey tag in tags)
-                    {
-                        if (tag.Key == tagName)
-                        {
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-
-                    if (alreadyAdded)
-                        continue;
-
-                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-                    Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
-                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
-                }
-            }
-
-            TerminalNode? routeNode = null;
-            TerminalKeyword? nameKeyword = null;
-            foreach (CompatibleNoun compatibleNoun in routeKeyword.compatibleNouns)
-            {
-                if (compatibleNoun.result.displayPlanetInfo == level.levelID)
-                {
-                    routeNode = compatibleNoun.result;
-                    nameKeyword = compatibleNoun.noun;
-                    break;
-                }
-            }
-            CRMoonInfo moonInfo = new CRMoonInfo(key, tags, level, routeNode, nameKeyword);
-            level.SetCRInfo(moonInfo);
-            LethalContent.Moons.Register(moonInfo);
-        }
         orig(self);
     }
 }

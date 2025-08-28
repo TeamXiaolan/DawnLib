@@ -164,26 +164,19 @@ static class AdditionalTilesRegistrationHandler
         return input;
     }
     
-    private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags) {
+    private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags)
+    {
         if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
         {
             foreach ((string modName, string tagName) in tagsWithModNames)
             {
-                bool alreadyAdded = false;
-                foreach (NamespacedKey tag in tags)
-                {
-                    if (tag.Key == tagName)
-                    {
-                        alreadyAdded = true;
-                        break;
-                    }
-                }
-
-                if (alreadyAdded)
-                    continue;
-
                 string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
                 string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+
+                if (normalizedModName == "lethalcompany")
+                {
+                    normalizedModName = "lethal_level_loader";
+                }
                 Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
                 tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
             }
