@@ -1,5 +1,8 @@
-﻿namespace CodeRebirthLib;
+﻿using System.Collections.Generic;
+
+namespace CodeRebirthLib;
 public interface ITaggable
 {
-    public bool HasTag(NamespacedKey tag);
+    bool HasTag(NamespacedKey tag);
+    IEnumerable<NamespacedKey> AllTags();
 }

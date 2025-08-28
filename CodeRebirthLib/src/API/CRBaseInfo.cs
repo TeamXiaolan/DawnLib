@@ -18,6 +18,10 @@ public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBase
     {
         return _tags.Contains(tag);
     }
+    public IEnumerable<NamespacedKey> AllTags()
+    {
+        return _tags;
+    }
 
     /// <summary>
     /// Usually tags should be defined fully as the Info class is created. However, to make my life easier with applying tags
