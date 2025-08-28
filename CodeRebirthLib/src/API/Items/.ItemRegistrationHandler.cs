@@ -2,37 +2,33 @@
 using System.Linq;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Internal.ModCompats;
+using CodeRebirthLib.Utils;
 using UnityEngine;
 
 namespace CodeRebirthLib;
-
-// todo: actually calculate this well
-/*public class WeightTagger(NamespacedKey tag, int minimumWeight) : IAutoTagger<CRItemInfo>
-{
-
-    public NamespacedKey Tag => tag;
-    public bool ShouldApply(CRItemInfo info)
-    {
-        return info.Item.weight < minimumWeight;
-    }
-}*/
 
 static class ItemRegistrationHandler
 {
     internal static void Init()
     {
         LethalContent.Items.AddAutoTaggers(
-            new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, it => it.Item.isConductiveMetal),
-            new SimpleAutoTagger<CRItemInfo>(Tags.NonInteractable, it => it.Item.spawnPrefab.TryGetComponent(out GrabbableObject grabbableObject) && grabbableObject.GetType() == typeof(GrabbableObject)),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Noisy, it => !it.HasTag(Tags.NonInteractable) && it.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Interactable, it => !it.HasTag(Tags.NonInteractable) && !it.HasTag(Tags.Noisy)),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Buyable, it => it.ShopInfo != null),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Scrap, it => it.ScrapInfo != null),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Chargeable, it => it.Item.requiresBattery),
-            new SimpleAutoTagger<CRItemInfo>(Tags.TwoHanded, it => it.Item.twoHanded),
-            new SimpleAutoTagger<CRItemInfo>(Tags.OneHanded, it => !it.HasTag(Tags.TwoHanded)),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Weapon, it => it.Item.isDefensiveWeapon)
-        ); // TODO WEIGHTS AND VALUES
+            new AutoNonInteractableTagger(Tags.NonInteractable),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, itemInfo => itemInfo.Item.isConductiveMetal),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Noisy, itemInfo => itemInfo.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Interactable, itemInfo => !itemInfo.HasTag(Tags.NonInteractable) && !itemInfo.HasTag(Tags.Noisy)),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Buyable, itemInfo => itemInfo.ShopInfo != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Scrap, itemInfo => itemInfo.ScrapInfo != null),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Chargeable, itemInfo => itemInfo.Item.requiresBattery),
+            new SimpleAutoTagger<CRItemInfo>(Tags.TwoHanded, itemInfo => itemInfo.Item.twoHanded),
+            new SimpleAutoTagger<CRItemInfo>(Tags.OneHanded, itemInfo => !itemInfo.Item.twoHanded),
+            new SimpleAutoTagger<CRItemInfo>(Tags.Weapon, itemInfo => itemInfo.Item.isDefensiveWeapon),
+            new AutoValueTagger(Tags.LowValue, new BoundedRange(0, 100)),
+            new AutoValueTagger(Tags.MediumValue, new BoundedRange(100, 200)),
+            new AutoValueTagger(Tags.HighValue, new BoundedRange(200, int.MaxValue)),
+            new AutoWeightTagger(Tags.LightWeight, new BoundedRange(0, 1.2f)),
+            new AutoWeightTagger(Tags.MediumWeight, new BoundedRange(1.2f, 1.4f)),
+            new AutoWeightTagger(Tags.HeavyWeight, new BoundedRange(1.4f, int.MaxValue))
+        );
 
         On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
