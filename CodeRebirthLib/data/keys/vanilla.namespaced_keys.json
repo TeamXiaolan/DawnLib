@@ -174,11 +174,11 @@
   },
   "DungeonKeys": {
     "__type": "CRDungeonInfo",
-    "LevelOneFlow": "lethal_company:facility",
-    "LevelOneFlowThreeExits": "lethal_company:facility_three_exits",
-    "LevelOneFlowExtraLarge": "lethal_company:facility_extra_large",
-    "LevelTwoFlow": "lethal_company:mansion",
-    "LevelThreeFlow": "lethal_company:mineshaft"
+    "FacilityFlow": "lethal_company:facility",
+    "FacilityFlowThreeExits": "lethal_company:facility_three_exits",
+    "FacilityFlowExtraLarge": "lethal_company:facility_extra_large",
+    "MansionFlow": "lethal_company:mansion",
+    "MineshaftFlow": "lethal_company:mineshaft"
   },
   "MapObjectKeys": {
     "__type": "CRMapObjectInfo",

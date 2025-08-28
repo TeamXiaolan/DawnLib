@@ -60,10 +60,26 @@ static class AdditionalTilesRegistrationHandler
         {
             foreach (DungeonArchetype dungeonArchetype in dungeonInfo.DungeonFlow.GetUsedArchetypes())
             {
-                NamespacedKey<CRArchetypeInfo> archetypeKey = NamespacedKey<CRArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false)); // todo: ArchetypeKeys
+                Debuggers.Dungeons?.Log($"dungeonArchetype.name: {dungeonArchetype.name}");
+                NamespacedKey<CRArchetypeInfo> archetypeKey;
+                if (dungeonInfo.Key.IsVanilla())
+                {
+                    string name = FormatArchetypeName(dungeonArchetype);
+                    archetypeKey = DungeonArchetypeKeys.GetByReflection(name);
+                    if (archetypeKey == null)
+                    {
+                        CodeRebirthLibPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                        continue;
+                    }
+                }
+                else
+                {
+                    archetypeKey = NamespacedKey<CRArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
+                }
+                
                 if (LethalContent.Archetypes.ContainsKey(archetypeKey))
                 {
-                    Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {archetypeKey}");
+                    Debuggers.Dungeons?.Log($"LethalContent.Archetypes already contains {archetypeKey}");
                     continue;
                 }
                 
@@ -74,7 +90,22 @@ static class AdditionalTilesRegistrationHandler
                 IEnumerable<TileSet> allTiles = [..dungeonArchetype.TileSets, ..dungeonArchetype.BranchCapTileSets];
                 foreach (TileSet tileSet in allTiles)
                 {
-                    NamespacedKey<CRTileSetInfo> tileSetKey = NamespacedKey<CRTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, false)); // todo
+                    NamespacedKey<CRTileSetInfo> tileSetKey;
+                    Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
+                    if (dungeonInfo.Key.IsVanilla())
+                    {
+                        string name = FormatTileSetName(tileSet);
+                        tileSetKey = DungeonTileSetKeys.GetByReflection(name);
+                        if(tileSetKey == null)
+                        {
+                            CodeRebirthLibPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        tileSetKey = NamespacedKey<CRTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
+                    }
                     if (LethalContent.TileSets.ContainsKey(tileSetKey))
                     {
                         Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
@@ -90,6 +121,39 @@ static class AdditionalTilesRegistrationHandler
         LethalContent.Archetypes.Freeze();
         LethalContent.TileSets.Freeze();
     }
+    
+    // todo: use this in whatever editor tool generates the vanilla keys.
+    private static string FormatTileSetName(TileSet tileSet) {
+        string name = NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, true);
+        name = ReplaceInternalLevelNames(name).Replace("Tiles", string.Empty);
+        return name;
+    }
+    private static string FormatArchetypeName(DungeonArchetype dungeonArchetype) {
+        string name = NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, true);
+        name = ReplaceInternalLevelNames(name).Replace("Archetype", string.Empty);
+        return name;
+    }
+    private static string FormatFlowName(DungeonFlow dungeonFlow) {
+        string name = NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, true);
+        name = ReplaceInternalLevelNames(name);
+        return name;
+    }
+    
+    private static readonly Dictionary<string, string> _internalToHumanDungeonNames = new()
+    {
+        { "LevelOne", "Facility" },
+        { "LevelTwo", "Mansion" },
+        { "LevelThree", "Mineshaft" }
+    };
+    private static string ReplaceInternalLevelNames(string input)
+    {
+        foreach ((string internalName, string humanName) in _internalToHumanDungeonNames)
+        {
+            input = input.Replace(internalName, humanName);
+        }
+        return input;
+    }
+    
     private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags) {
         if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
         {
@@ -132,8 +196,13 @@ static class AdditionalTilesRegistrationHandler
             if (dungeonFlow.TryGetCRInfo(out _))
                 continue;
 
-            string name = NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, true);
+            string name = FormatFlowName(dungeonFlow);
             NamespacedKey<CRDungeonInfo>? key = DungeonKeys.GetByReflection(name);
+            if (key == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                continue;
+            }
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 
