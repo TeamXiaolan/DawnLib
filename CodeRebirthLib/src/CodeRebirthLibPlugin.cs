@@ -30,6 +30,11 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         ConfigManager = new ConfigManager(Config);
         CodeRebirthLibConfig.Bind(ConfigManager);
 
+        if (CodeRebirthLibConfig.CreateTagExport)
+        {
+            TagExporter.Init();
+        }
+        
         NetcodePatcher();
         if (LethalConfigCompat.Enabled)
         {
@@ -60,7 +65,6 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
-        TagRegistrationHandler.Init();
 
         AchievementRegistrationPatch.Init();
         CRLibNetworkerPatch.Init();

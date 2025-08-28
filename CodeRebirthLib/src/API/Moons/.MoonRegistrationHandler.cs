@@ -15,7 +15,7 @@ static class MoonRegistrationHandler
         LethalContent.Moons.AddAutoTaggers(
             new SimpleAutoTagger<CRMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
             new SimpleAutoTagger<CRMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost == 0),
-            new SimpleAutoTagger<CRMoonInfo>(Tags.Paid, moonInfo => !moonInfo.RouteNode && moonInfo.RouteNode.itemCost > 0)
+            new SimpleAutoTagger<CRMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost > 0)
         );
 
         using (new DetourContext(priority: int.MaxValue))

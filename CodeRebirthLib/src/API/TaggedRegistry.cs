@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CodeRebirthLib;
 public class TaggedRegistry<T> : Registry<T> where T : CRBaseInfo<T>
 {
+    public event Action AfterTagging = delegate { };
+    
     private List<IAutoTagger<T>> _autoTaggers = [];
     public void AddAutoTaggers(params IAutoTagger<T>[] taggers)
     {
@@ -30,5 +33,6 @@ public class TaggedRegistry<T> : Registry<T> where T : CRBaseInfo<T>
                 value.Internal_AddTag(tagger.Tag);
             }
         }
+        AfterTagging();
     }
 }
