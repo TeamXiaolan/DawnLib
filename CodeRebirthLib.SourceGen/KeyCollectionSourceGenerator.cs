@@ -23,6 +23,8 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
             context.ReportDiagnostic(Diagnostic.Create(CRLibDiagnostics.MissingRootNamespace, Location.None));
             return;
         }
+
+        List<string> alreadyGenerated = [];
         
         foreach (AdditionalText? additionalFile in context.AdditionalFiles)
         {
@@ -69,6 +71,21 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                     @class.Members.Add(field);
                 }
 
+                if (!alreadyGenerated.Contains(@class.Name))
+                {
+                    GeneratedMethod getReflectionMethod = new GeneratedMethod(Visibility.Public, $"{type}?", "GetByReflection")
+                    {
+                        IsStatic = true,
+                        Params = ["string name"],
+                        Body =
+                        [
+                            $"return ({type}?)typeof({@class.Name}).GetField(name)?.GetValue(null);"
+                        ]
+                    };
+                    @class.Members.Add(getReflectionMethod);
+                    @class.Attributes.Add(CRLibSourceGenConstants.CodeGenAttribute);
+                }
+
                 GeneratedCodeFile file = new GeneratedCodeFile()
                 {
                     Namespace = rootNamespace,
@@ -79,6 +96,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                 FileWriterVisitor visitor = new FileWriterVisitor();
                 visitor.Accept(file);
 
+                alreadyGenerated.Add(@class.Name);
                 context.AddSource($"{Path.GetFileNameWithoutExtension(additionalFile.Path).Split('.')[0]}.{className}.g.cs", SourceText.From(visitor.ToString(), Encoding.UTF8));
             }
         }

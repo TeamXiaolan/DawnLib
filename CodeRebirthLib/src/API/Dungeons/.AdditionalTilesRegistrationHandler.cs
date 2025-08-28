@@ -132,7 +132,8 @@ static class AdditionalTilesRegistrationHandler
             if (dungeonFlow.TryGetCRInfo(out _))
                 continue;
 
-            NamespacedKey<CRDungeonInfo>? key = (NamespacedKey<CRDungeonInfo>?)typeof(DungeonKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, true))?.GetValue(null);
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, true);
+            NamespacedKey<CRDungeonInfo>? key = DungeonKeys.GetByReflection(name);
 
             List<NamespacedKey> tags = [CRLibTags.IsExternal];
 

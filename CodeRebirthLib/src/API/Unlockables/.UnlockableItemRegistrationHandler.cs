@@ -72,7 +72,8 @@ static class UnlockableRegistrationHandler
             if (unlockableItem.TryGetCRInfo(out _))
                 continue;
 
-            NamespacedKey<CRUnlockableItemInfo>? key = (NamespacedKey<CRUnlockableItemInfo>?)typeof(UnlockableItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true))?.GetValue(null);
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true);
+            NamespacedKey<CRUnlockableItemInfo>? key = UnlockableItemKeys.GetByReflection(name);
             key ??= NamespacedKey<CRUnlockableItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
             int cost = 0;
             if (unlockableItem.shopSelectionNode == null && unlockableItem.alreadyUnlocked)

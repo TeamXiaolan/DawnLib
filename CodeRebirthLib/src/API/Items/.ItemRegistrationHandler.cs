@@ -174,7 +174,8 @@ static class ItemRegistrationHandler
             if (item.TryGetCRInfo(out _))
                 continue;
 
-            NamespacedKey<CRItemInfo>? key = (NamespacedKey<CRItemInfo>?)typeof(ItemKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true))?.GetValue(null);
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true);
+            NamespacedKey<CRItemInfo>? key = ItemKeys.GetByReflection(name);
             key ??= NamespacedKey<CRItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
 
             itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<CRMoonInfo>? weightTableBuilder);

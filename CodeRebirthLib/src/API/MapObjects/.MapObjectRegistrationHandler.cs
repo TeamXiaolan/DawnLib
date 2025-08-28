@@ -144,7 +144,8 @@ static class MapObjectRegistrationHandler
             if (LethalContent.MapObjects.Values.Any(x => x.MapObject == mapObject))
                 continue; // TODO This is not that great, pls find something better
 
-            NamespacedKey<CRMapObjectInfo>? key = (NamespacedKey<CRMapObjectInfo>?)typeof(MapObjectKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true))?.GetValue(null);
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true);
+            NamespacedKey<CRMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
             key ??= NamespacedKey<CRMapObjectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
 
             vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo insideMapObjectInfo);

@@ -261,7 +261,8 @@ static class EnemyRegistrationHandler
                 if (enemyType.TryGetCRInfo(out _))
                     continue;
 
-                NamespacedKey<CREnemyInfo>? key = (NamespacedKey<CREnemyInfo>?)typeof(EnemyKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true))?.GetValue(null);
+                string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
+                NamespacedKey<CREnemyInfo>? key = EnemyKeys.GetByReflection(name);
                 key ??= NamespacedKey<CREnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
 
                 CREnemyLocationInfo? insideInfo = null;

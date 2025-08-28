@@ -18,7 +18,8 @@ static class WeatherRegistrationHandler
             if (weatherEffect.TryGetCRInfo(out _))
                 continue;
 
-            NamespacedKey<CRWeatherEffectInfo>? key = (NamespacedKey<CRWeatherEffectInfo>?)typeof(WeatherKeys).GetField(NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true))?.GetValue(null);
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true);
+            NamespacedKey<CRWeatherEffectInfo>? key = WeatherKeys.GetByReflection(name);
             key ??= NamespacedKey<CRWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
             // TODO something about crlib weathers being registered with this namespace instead of code_rebirth for example
 
