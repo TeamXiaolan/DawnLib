@@ -44,10 +44,8 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherE
             effectPermanentObject = effectPermanentObject,
         };
 
-        ImprovedWeatherEffect newImprovedWeatherEffect = ScriptableObject.CreateInstance<ImprovedWeatherEffect>();
+        ImprovedWeatherEffect newImprovedWeatherEffect = new(weatherEffect);
         newImprovedWeatherEffect.SunAnimatorBool = Weather.Effect.SunAnimatorBool;
-        newImprovedWeatherEffect.EffectObject = weatherEffect.effectObject;
-        newImprovedWeatherEffect.WorldObject = weatherEffect.effectPermanentObject;
         newImprovedWeatherEffect.EffectObject?.SetActive(false);
         newImprovedWeatherEffect.WorldObject?.SetActive(false);
 
@@ -66,8 +64,8 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherE
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
-        CRWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, weatherEffect);
-        weatherEffect.SetCRInfo(weatherEffectInfo);
+        CRWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, newImprovedWeatherEffect.VanillaWeatherEffect);
+        newImprovedWeatherEffect.VanillaWeatherEffect.SetCRInfo(weatherEffectInfo);
         LethalContent.Weathers.Register(weatherEffectInfo); // TEMPORARY
     }
 
