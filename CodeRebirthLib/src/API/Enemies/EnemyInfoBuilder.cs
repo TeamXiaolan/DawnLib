@@ -29,6 +29,11 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
 
         internal CREnemyLocationInfo Build()
         {
+            if (_weights == null)
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"Enemy '{_parent.key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = ProviderTable<int?, CRMoonInfo>.Empty();
+            }
             return new CREnemyLocationInfo(_weights);
         }
     }
