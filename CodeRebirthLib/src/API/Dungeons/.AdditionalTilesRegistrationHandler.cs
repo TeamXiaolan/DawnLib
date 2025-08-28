@@ -127,18 +127,22 @@ static class AdditionalTilesRegistrationHandler
         LethalContent.TileSets.Freeze();
     }
     
-    // todo: use this in whatever editor tool generates the vanilla keys.
-    private static string FormatTileSetName(TileSet tileSet) {
+    private static string FormatTileSetName(TileSet tileSet)
+    {
         string name = NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, true);
         name = ReplaceInternalLevelNames(name).Replace("Tiles", string.Empty);
         return name;
     }
-    private static string FormatArchetypeName(DungeonArchetype dungeonArchetype) {
+
+    private static string FormatArchetypeName(DungeonArchetype dungeonArchetype)
+    {
         string name = NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, true);
         name = ReplaceInternalLevelNames(name).Replace("Archetype", string.Empty);
         return name;
     }
-    private static string FormatFlowName(DungeonFlow dungeonFlow) {
+
+    private static string FormatFlowName(DungeonFlow dungeonFlow)
+    {
         string name = NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, true);
         name = ReplaceInternalLevelNames(name);
         return name;
@@ -150,6 +154,7 @@ static class AdditionalTilesRegistrationHandler
         { "LevelTwo", "Mansion" },
         { "LevelThree", "Mineshaft" }
     };
+ 
     private static string ReplaceInternalLevelNames(string input)
     {
         foreach ((string internalName, string humanName) in _internalToHumanDungeonNames)

@@ -4,7 +4,7 @@ namespace CodeRebirthLib;
 public abstract class BaseInfoBuilder
 {
     // todo: better name!?!?
-    internal abstract void SoloAddTags(IEnumerable<NamespacedKey> newTags);
+    abstract internal void SoloAddTags(IEnumerable<NamespacedKey> newTags);
 }
 
 public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder where TInfo : INamespaced<TInfo> where TBuilder : BaseInfoBuilder<TInfo, T, TBuilder>

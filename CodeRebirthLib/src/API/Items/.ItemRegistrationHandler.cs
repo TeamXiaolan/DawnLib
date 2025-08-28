@@ -194,10 +194,12 @@ static class ItemRegistrationHandler
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)
                 {
+                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
                     bool alreadyAdded = false;
                     foreach (NamespacedKey tag in tags)
                     {
-                        if (tag.Key == tagName)
+                        if (tag.Key == normalizedTagName)
                         {
                             alreadyAdded = true;
                             break;
@@ -207,8 +209,10 @@ static class ItemRegistrationHandler
                     if (alreadyAdded)
                         continue;
 
-                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
+                    if (normalizedModName == "lethalcompany")
+                    {
+                        normalizedModName = "lethal_company";
+                    }
                     Debuggers.Items?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to item {item.itemName}");
                     tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
                 }
