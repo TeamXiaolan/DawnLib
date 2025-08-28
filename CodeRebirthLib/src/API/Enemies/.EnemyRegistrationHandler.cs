@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Internal.ModCompats;
@@ -18,37 +17,39 @@ static class EnemyRegistrationHandler
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
         On.Terminal.Awake += AddBestiaryNodes;
     }
+
     private static void AddBestiaryNodes(On.Terminal.orig_Awake orig, Terminal self)
     {
-        // todo: handle lobby reload correctly. im not sure if enemy registry has frozen now.
         TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(it => it.word == "info");
         List<TerminalKeyword> allKeywords = self.terminalNodes.allKeywords.ToList();
         List<CompatibleNoun> itemInfoNouns = infoKeyword.compatibleNouns.ToList();
-        
+
         foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (enemyInfo.HasTag(CRLibTags.IsExternal))
                 continue;
 
+            enemyInfo.BestiaryNode.creatureFileID = self.enemyFiles.Count;
+            self.enemyFiles.Add(enemyInfo.BestiaryNode);
+
+            ScanNodeProperties[] scanNodes = enemyInfo.EnemyType.enemyPrefab.GetComponentsInChildren<ScanNodeProperties>();
+            foreach (ScanNodeProperties scanNode in scanNodes)
+            {
+                scanNode.creatureScanID = enemyInfo.BestiaryNode.creatureFileID;
+            }
+
+            if (allKeywords.Contains(enemyInfo.NameKeyword))
+                continue;
+
             enemyInfo.NameKeyword.defaultVerb = infoKeyword;
             allKeywords.Add(enemyInfo.NameKeyword);
-            
             itemInfoNouns.Add(new CompatibleNoun()
             {
                 noun = enemyInfo.NameKeyword,
                 result = enemyInfo.BestiaryNode
             });
-
-            enemyInfo.BestiaryNode.creatureFileID = self.enemyFiles.Count;
-            self.enemyFiles.Add(enemyInfo.BestiaryNode);
-
-            var scanNodes = enemyInfo.EnemyType.enemyPrefab.GetComponentsInChildren<ScanNodeProperties>();
-            foreach (ScanNodeProperties scanNode in scanNodes)
-            {
-                scanNode.creatureScanID = enemyInfo.BestiaryNode.creatureFileID;
-            }
         }
-        
+
         infoKeyword.compatibleNouns = itemInfoNouns.ToArray();
         self.terminalNodes.allKeywords = allKeywords.ToArray();
         orig(self);
@@ -243,6 +244,9 @@ static class EnemyRegistrationHandler
             }
         }
 
+        Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
+        TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(it => it.word == "info");
+
         foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
@@ -274,10 +278,12 @@ static class EnemyRegistrationHandler
                 {
                     insideInfo = new CREnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
                 }
+
                 if (enemyOutsideWeightBuilder.ContainsKey(enemyType))
                 {
                     outsideInfo = new CREnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
                 }
+
                 if (enemyDaytimeWeightBuilder.ContainsKey(enemyType))
                 {
                     daytimeInfo = new CREnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
@@ -326,11 +332,28 @@ static class EnemyRegistrationHandler
                     }
                 }
 
+                TerminalNode? bestiaryNode = null;
+                TerminalKeyword? nameKeyword = null;
+
+                ScanNodeProperties scanNodeProperties = enemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
+                if (scanNodeProperties != null)
+                {
+                    int creatureScanID = scanNodeProperties.creatureScanID;
+                    foreach (CompatibleNoun compatibleNoun in infoKeyword.compatibleNouns)
+                    {
+                        if (compatibleNoun.result.creatureFileID != creatureScanID)
+                            continue;
+
+                        bestiaryNode = compatibleNoun.result;
+                        nameKeyword = compatibleNoun.noun;
+                    }
+                }
+
                 CREnemyInfo enemyInfo = new(
-                    key, tags, 
-                    enemyType, 
+                    key, tags,
+                    enemyType,
                     outsideInfo, insideInfo, daytimeInfo,
-                    null!, null! // todo: get external terminal nodes/keywords
+                    bestiaryNode, nameKeyword // todo: get external terminal nodes/keywords
                 );
                 enemyType.SetCRInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);

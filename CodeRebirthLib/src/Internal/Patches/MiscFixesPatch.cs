@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using DunGen;
 using Unity.Netcode;
@@ -16,8 +15,8 @@ static class MiscFixesPatch
     internal static void Init()
     {
         On.GameNetworkManager.Start += AddNetworkPrefabToNetworkConfig;
-        LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
         On.MenuManager.Start += DoSoundFixes;
+        LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
     }
 
     private static void DoSoundFixes(On.MenuManager.orig_Start orig, MenuManager self)

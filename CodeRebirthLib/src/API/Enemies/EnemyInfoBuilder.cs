@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CodeRebirthLib;
@@ -7,8 +6,8 @@ namespace CodeRebirthLib;
 public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInfoBuilder>
 {
     private CREnemyLocationInfo? _inside, _outside, _daytime;
-    private TerminalNode? _terminalNode;
-    private TerminalKeyword? _terminalKeyword;
+    private TerminalNode? _bestiaryNode;
+    private TerminalKeyword? _nameKeyword;
     
     public class EnemyLocationBuilder
     {
@@ -68,42 +67,42 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
 
     public EnemyInfoBuilder SetBestiaryNode(TerminalNode node)
     {
-        _terminalNode = node;
+        _bestiaryNode = node;
         return this;
     }
 
     public EnemyInfoBuilder OverrideNameKeyword(string word)
     {
-        _terminalKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-        _terminalKeyword.name = word;
-        _terminalKeyword.word = word;
+        _nameKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
+        _nameKeyword.name = word;
+        _nameKeyword.word = word;
         return this;
     }
    
     public EnemyInfoBuilder OverrideNameKeyword(TerminalKeyword keyword)
     {
-        _terminalKeyword = keyword;
+        _nameKeyword = keyword;
         return this;
     }
 
     override internal CREnemyInfo Build()
     {
-        if (_terminalNode == null)
+        if (_bestiaryNode == null)
         {
-            _terminalNode = new TerminalNodeBuilder($"{value.enemyName}BestiaryNode")
+            _bestiaryNode = new TerminalNodeBuilder($"{value.enemyName}BestiaryNode")
                 .SetDisplayText($"{value.enemyName}\n\nDanger level: Unknown\n\n[No information about this creature was found.]\n\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(35)
                 .Build();
         }
 
-        if (_terminalKeyword == null)
+        if (_nameKeyword == null)
         {
             string word = value.enemyName.ToLowerInvariant().Replace(' ', '-');
             OverrideNameKeyword(word);
         }
 
-        _terminalNode.creatureName = value.enemyName;
-        return new CREnemyInfo(key, tags, value, _outside, _inside, _daytime, _terminalNode, _terminalKeyword);
+        _bestiaryNode.creatureName = value.enemyName;
+        return new CREnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword!);
     }
 }
