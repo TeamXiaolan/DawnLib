@@ -16,7 +16,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
     public event Action BeforeFreeze = delegate { };
     public event Action OnFreeze = delegate { };
 
-    internal void Freeze()
+    virtual internal void Freeze()
     {
         if (IsFrozen)
             return;

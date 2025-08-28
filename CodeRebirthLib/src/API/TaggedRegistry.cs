@@ -15,20 +15,18 @@ public class TaggedRegistry<T> : Registry<T> where T : CRBaseInfo<T>
     public void AddAutoTagger(IAutoTagger<T> tagger)
     {
         _autoTaggers.Add(tagger);
-        foreach (T value in Values)
-        {
-            if(tagger.ShouldApply(value)) 
-                value.Internal_AddTag(tagger.Tag);
-        }
     }
 
-    override internal void Register(T value)
+    override internal void Freeze()
     {
-        base.Register(value);
-        foreach (IAutoTagger<T> tagger in _autoTaggers)
+        base.Freeze();
+        foreach (T value in Values)
         {
-            if (tagger.ShouldApply(value))
+            foreach (IAutoTagger<T> tagger in _autoTaggers)
             {
+                if(!tagger.ShouldApply(value))
+                    continue;
+                
                 value.Internal_AddTag(tagger.Tag);
             }
         }
