@@ -7,13 +7,10 @@
 - Write the new AutoTaggers in Item/Enemy/etc RegistrationHandlers.
 
 ## Bongo
-
-- Use FailedTerminalResult.OverrideName
 - Tag weights
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.
 - Figure out the interior name situation with weights.
-- Swap TerminalPredicate stuff with preloader stuff.
 
 ## Needs to be done eventually
 

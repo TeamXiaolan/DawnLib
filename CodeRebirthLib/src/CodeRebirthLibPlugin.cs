@@ -72,6 +72,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
         SaveDataPatch.Init();
+        TerminalPredicatePatch.Init();
 
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
