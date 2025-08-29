@@ -1,4 +1,4 @@
-﻿{
+{
   "EnemyKeys": {
     "__type": "CREnemyInfo",
     "Baboonhawk": "lethal_company:baboon_hawk",
@@ -180,6 +180,31 @@
     "MansionFlow": "lethal_company:mansion",
     "MineshaftFlow": "lethal_company:mineshaft"
   },
+  "DungeonTileSetKeys": {
+    "__type": "CRTileSetInfo",
+    "FacilityHallway": "lethal_company:levelonehallwaytiles",
+    "FacilityMaze": "lethal_company:levelonemaze",
+    "FacilityRoom": "lethal_company:leveloneroomtiles",
+    "MansionCap": "lethal_company:leveltwocaptiles",
+    "MansionHallway": "lethal_company:leveltwohallwaytiles",
+    "MansionHallwayB": "lethal_company:leveltwohallwaytilesb",
+    "MansionRoom": "lethal_company:leveltworoomtiles",
+    "MansionStartRooms": "lethal_company:leveltwostartrooms",
+    "MineshaftCave": "lethal_company:levelthreecavetiles",
+    "MineshaftTunnelEnd": "lethal_company:levelthreetunnelend",
+    "MineshaftTunnel": "lethal_company:levelthreetunneltiles",
+    "MineshaftStartRooms": "lethal_company:mineshaftstartrooms",
+    "StartRooms": "lethal_company:startrooms"
+  },
+  "DungeonArchetypeKeys": {
+    "__type": "CRArchetypeInfo",
+    "Facility": "lethal_company:levelonearchetype",
+    "FacilityMaze": "lethal_company:levelonearchetypemaze",
+    "MansionB": "lethal_company:leveltwoarchetypeb",
+    "MansionC": "lethal_company:leveltwoarchetypec",
+    "MineshaftCaves": "lethal_company:levelthreecaves",
+    "MineshaftTunnels": "lethal_company:levelthreetunnels"
+  },
   "MapObjectKeys": {
     "__type": "CRMapObjectInfo",
     "TurretContainer": "lethal_company:turretcontainer",
@@ -200,7 +225,7 @@
     "Tree": "lethal_company:tree"
   },
   "WeatherKeys": {
-    "__type": "CRWeatherEffectInfo",
+    "__type": "CRWeatherInfo",
     "Rollinggroundfog": "lethal_company:rolling_ground_fog",
     "Rainy": "lethal_company:rainy",
     "Stormy": "lethal_company:stormy",

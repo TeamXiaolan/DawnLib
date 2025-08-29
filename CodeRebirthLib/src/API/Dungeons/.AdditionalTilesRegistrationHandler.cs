@@ -60,13 +60,15 @@ static class AdditionalTilesRegistrationHandler
         CollectArchetypesAndTileSets();
         LethalContent.Dungeons.Freeze();
     }
-    private static void CollectArchetypesAndTileSets() {
+
+    private static void CollectArchetypesAndTileSets()
+    {
         foreach (CRDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
             foreach (DungeonArchetype dungeonArchetype in dungeonInfo.DungeonFlow.GetUsedArchetypes())
             {
                 Debuggers.Dungeons?.Log($"dungeonArchetype.name: {dungeonArchetype.name}");
-                NamespacedKey<CRArchetypeInfo> archetypeKey;
+                NamespacedKey<CRArchetypeInfo>? archetypeKey;
                 if (dungeonInfo.Key.IsVanilla())
                 {
                     string name = FormatArchetypeName(dungeonArchetype);
@@ -81,27 +83,27 @@ static class AdditionalTilesRegistrationHandler
                 {
                     archetypeKey = NamespacedKey<CRArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
                 }
-                
+
                 if (LethalContent.Archetypes.ContainsKey(archetypeKey))
                 {
                     Debuggers.Dungeons?.Log($"LethalContent.Archetypes already contains {archetypeKey}");
                     continue;
                 }
-                
+
                 CRArchetypeInfo info = new CRArchetypeInfo(archetypeKey, [CRLibTags.IsExternal], dungeonArchetype);
                 info.ParentInfo = dungeonInfo;
                 LethalContent.Archetypes.Register(info);
 
-                IEnumerable<TileSet> allTiles = [..dungeonArchetype.TileSets, ..dungeonArchetype.BranchCapTileSets];
+                IEnumerable<TileSet> allTiles = [.. dungeonArchetype.TileSets, .. dungeonArchetype.BranchCapTileSets];
                 foreach (TileSet tileSet in allTiles)
                 {
-                    NamespacedKey<CRTileSetInfo> tileSetKey;
+                    NamespacedKey<CRTileSetInfo>? tileSetKey;
                     Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
                     if (dungeonInfo.Key.IsVanilla())
                     {
                         string name = FormatTileSetName(tileSet);
                         tileSetKey = DungeonTileSetKeys.GetByReflection(name);
-                        if(tileSetKey == null)
+                        if (tileSetKey == null)
                         {
                             CodeRebirthLibPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
                             continue;
@@ -122,12 +124,12 @@ static class AdditionalTilesRegistrationHandler
                 }
             }
         }
-        
+
         LethalContent.Archetypes.Freeze();
         LethalContent.TileSets.Freeze();
     }
 
-    private static string FormatTileSetName(TileSet tileSet) // todo: use this in whatever editor tool generates the vanilla keys.
+    private static string FormatTileSetName(TileSet tileSet)
     {
         string name = NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, true);
         name = ReplaceInternalLevelNames(name).Replace("Tiles", string.Empty);
