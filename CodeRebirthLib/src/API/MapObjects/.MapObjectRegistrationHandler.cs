@@ -147,6 +147,11 @@ static class MapObjectRegistrationHandler
             string name = NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true);
             NamespacedKey<CRMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
             key ??= NamespacedKey<CRMapObjectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+            if (LethalContent.MapObjects.ContainsKey(key))
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. Skipping...");
+                continue;
+            }
 
             vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo insideMapObjectInfo);
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo outsideMapObjectInfo);

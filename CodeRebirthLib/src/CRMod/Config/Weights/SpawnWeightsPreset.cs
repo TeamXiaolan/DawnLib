@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.Internal;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;
@@ -31,7 +30,7 @@ public class SpawnWeightsPreset : IWeighted
     {
         float weight = 0;
         SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == "+" || x.GetOperation() == "-").ToList();
-        foreach (var weightTransformer in SpawnWeightsTransformers)
+        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers)
         {
             weight = weightTransformer.GetNewWeight(weight);
         }

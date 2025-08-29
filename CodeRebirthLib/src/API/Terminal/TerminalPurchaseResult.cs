@@ -1,6 +1,4 @@
-﻿using Unity.Collections;
-
-namespace CodeRebirthLib;
+﻿namespace CodeRebirthLib;
 public abstract class TerminalPurchaseResult
 {
     public static TerminalPurchaseResult Success()

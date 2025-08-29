@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using CodeRebirthLib.Internal;
 using CodeRebirthLib.Utils;
-using LethalLib.Modules;
 using UnityEngine;
 
 namespace CodeRebirthLib.CRMod;

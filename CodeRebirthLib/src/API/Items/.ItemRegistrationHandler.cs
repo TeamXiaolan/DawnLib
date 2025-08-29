@@ -174,6 +174,11 @@ static class ItemRegistrationHandler
             NamespacedKey<CRItemInfo>? key = ItemKeys.GetByReflection(name);
             key ??= NamespacedKey<CRItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
 
+            if (LethalContent.Items.ContainsKey(key))
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"Item {item.itemName} is already registered by the same creator to LethalContent. Skipping...");
+                continue;
+            }
             itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<CRMoonInfo>? weightTableBuilder);
             CRScrapItemInfo? scrapInfo = null;
             itemsWithShopInfo.TryGetValue(item, out CRShopItemInfo? shopInfo);

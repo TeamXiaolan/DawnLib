@@ -4,10 +4,10 @@
 
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.
-- Write the new AutoTaggers in Item/Enemy/etc RegistrationHandlers.
+- Weather rEGISTRETAION
 
 ## Bongo
-- Tag weights
+
 - MapObject CRInfo stuff?
 - Weather Namespace shenanigans with CRLib created weathers.
 - Figure out the interior name situation with weights.

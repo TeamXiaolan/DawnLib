@@ -267,7 +267,7 @@ static class EnemyRegistrationHandler
             foreach (SpawnableEnemyWithRarity enemyWithRarity in levelEnemies)
             {
                 EnemyType? enemyType = enemyWithRarity.enemyType;
-                if (enemyType == null)
+                if (enemyType == null || enemyType.enemyPrefab == null)
                     continue;
 
                 if (enemyType.TryGetCRInfo(out _))
@@ -276,6 +276,18 @@ static class EnemyRegistrationHandler
                 string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
                 NamespacedKey<CREnemyInfo>? key = EnemyKeys.GetByReflection(name);
                 key ??= NamespacedKey<CREnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+
+                if (LethalContent.Enemies.ContainsKey(key))
+                {
+                    CodeRebirthLibPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. Skipping...");
+                    continue;
+                }
+
+                if (!enemyType.enemyPrefab)
+                {
+                    CodeRebirthLibPlugin.Logger.LogWarning($"{enemyType.enemyName} ({enemyType.name}) didn't have a spawn prefab?");
+                    continue;
+                }
 
                 CREnemyLocationInfo? insideInfo = null;
                 CREnemyLocationInfo? outsideInfo = null;

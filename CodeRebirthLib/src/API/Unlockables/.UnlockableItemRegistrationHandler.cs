@@ -75,6 +75,11 @@ static class UnlockableRegistrationHandler
             string name = NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true);
             NamespacedKey<CRUnlockableItemInfo>? key = UnlockableItemKeys.GetByReflection(name);
             key ??= NamespacedKey<CRUnlockableItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+            if (LethalContent.Unlockables.ContainsKey(key))
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. Skipping...");
+                continue;
+            }
             int cost = 0;
             if (unlockableItem.shopSelectionNode == null && unlockableItem.alreadyUnlocked)
             {

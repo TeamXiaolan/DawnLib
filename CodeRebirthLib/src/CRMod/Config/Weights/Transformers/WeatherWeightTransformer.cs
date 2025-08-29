@@ -55,18 +55,34 @@ public class WeatherWeightTransformer : WeightTransformer
         if (!TimeOfDay.Instance.currentLevel) return currentWeight;
 
         NamespacedKey currentWeatherNamespacedKey = NamespacedKey<CRWeatherEffectInfo>.Vanilla("none");
+        IEnumerable<NamespacedKey> allTags = [];
         if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetCRInfo(out CRWeatherEffectInfo? weatherInfo))
         {
             currentWeatherNamespacedKey = weatherInfo.TypedKey;
+            allTags = weatherInfo.AllTags();
         }
 
-        if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out string operationWithWeight)) return currentWeight;
-        /*foreach (NamespacedKey tag in moonInfo.tags)
+        if (MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out string operationWithWeight))
         {
-            Could potentially have a priority system, check all valid tags and apply the lowest weight one? or an average? but would need to account for the different operations
-        }*/
+            return DoOperation(currentWeight, operationWithWeight);
+        }
 
-        return DoOperation(currentWeight, operationWithWeight);
+        List<NamespacedKey> validTagNamespacedKeys = new();
+        foreach (NamespacedKey tagNamespacedKey in allTags)
+        {
+            if (MatchingWeathersWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
+            {
+                validTagNamespacedKeys.Add(tagNamespacedKey);
+            }
+        }
+
+        if (validTagNamespacedKeys.Count > 0)
+        {
+            operationWithWeight = MatchingWeathersWithWeightAndOperationDict[validTagNamespacedKeys[0]];
+            return DoOperation(currentWeight, operationWithWeight);
+        }
+
+        return currentWeight;
     }
 
     public override string GetOperation()

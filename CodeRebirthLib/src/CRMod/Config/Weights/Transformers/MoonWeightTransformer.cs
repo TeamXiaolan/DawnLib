@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using CodeRebirthLib.Internal;
 
 namespace CodeRebirthLib.CRMod;
 
@@ -56,13 +55,27 @@ public class MoonWeightTransformer : WeightTransformer
         if (!RoundManager.Instance) return currentWeight;
         if (!RoundManager.Instance.currentLevel) return currentWeight;
         if (!RoundManager.Instance.currentLevel.TryGetCRInfo(out CRMoonInfo? moonInfo)) return currentWeight;
-        if (!MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out string operationWithWeight)) return currentWeight;
-        /*foreach (NamespacedKey tag in moonInfo.tags)
+        if (MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out string operationWithWeight))
         {
-            Could potentially have a priority system, check all valid tags and apply the lowest weight one? or an average? but would need to account for the different operations
-        }*/
+            return DoOperation(currentWeight, operationWithWeight);
+        }
 
-        return DoOperation(currentWeight, operationWithWeight);
+        List<NamespacedKey> validTagNamespacedKeys = new();
+        foreach (NamespacedKey tagNamespacedKey in moonInfo.AllTags())
+        {
+            if (MatchingMoonsWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
+            {
+                validTagNamespacedKeys.Add(tagNamespacedKey);
+            }
+        }
+
+        if (validTagNamespacedKeys.Count > 0)
+        {
+            operationWithWeight = MatchingMoonsWithWeightAndOperationDict[validTagNamespacedKeys[0]];
+            return DoOperation(currentWeight, operationWithWeight);
+        }
+
+        return currentWeight;
     }
 
     public override string GetOperation()

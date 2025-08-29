@@ -55,13 +55,27 @@ public class InteriorWeightTransformer : WeightTransformer
         if (!RoundManager.Instance.dungeonGenerator) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.TryGetCRInfo(out CRDungeonInfo? dungeonInfo)) return currentWeight;
-        if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight)) return currentWeight;
-        /*foreach (NamespacedKey tag in moonInfo.tags)
+        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight))
         {
-            Could potentially have a priority system, check all valid tags and apply the lowest weight one? or an average? but would need to account for the different operations
-        }*/
+            return DoOperation(currentWeight, operationWithWeight);
+        }
 
-        return DoOperation(currentWeight, operationWithWeight);
+        List<NamespacedKey> validTagNamespacedKeys = new();
+        foreach (NamespacedKey tagNamespacedKey in dungeonInfo.AllTags())
+        {
+            if (MatchingInteriorsWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
+            {
+                validTagNamespacedKeys.Add(tagNamespacedKey);
+            }
+        }
+
+        if (validTagNamespacedKeys.Count > 0)
+        {
+            operationWithWeight = MatchingInteriorsWithWeightAndOperationDict[validTagNamespacedKeys[0]];
+            return DoOperation(currentWeight, operationWithWeight);
+        }
+
+        return currentWeight;
     }
 
     public override string GetOperation()

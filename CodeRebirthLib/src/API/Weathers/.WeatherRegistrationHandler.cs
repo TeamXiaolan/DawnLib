@@ -21,6 +21,11 @@ static class WeatherRegistrationHandler
             string name = NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true);
             NamespacedKey<CRWeatherEffectInfo>? key = WeatherKeys.GetByReflection(name);
             key ??= NamespacedKey<CRWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+            if (LethalContent.Weathers.ContainsKey(key))
+            {
+                CodeRebirthLibPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. Skipping...");
+                continue;
+            }
             // TODO something about crlib weathers being registered with this namespace instead of code_rebirth for example
 
             CRWeatherEffectInfo weatherEffectInfo = new(key, [CRLibTags.IsExternal], weatherEffect);
