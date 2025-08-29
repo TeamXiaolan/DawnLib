@@ -2,26 +2,5 @@
   "MoonKeys": {
     "__type": "CRMoonInfo",
     "Test": "lethal_company:test"
-  },
-  "DungeonArchetypeKeys": {
-    "__type": "CRArchetypeInfo",
-    "Facility": "lethal_company:facility_archetype",
-    "FacilityMaze": "lethal_company:facility_maze_archetype",
-    "MansionB": "lethal_company:mansion_b_archetype",
-    "MansionC": "lethal_company:mansion_c_archetype",
-    "MineshaftTunnels": "lethal_company:mineshaft_tunnels_archetype",
-    "MineshaftCaves": "lethal_company:mineshaft_cave_archetype"
-  },
-  "DungeonTileSetKeys": {
-    "__type": "CRTileSetInfo",
-    "FacilityHallway": "lethal_company:facility_hallway_tiles",
-    "FacilityRoom": "lethal_company:facility_room_tiles",
-    "FacilityMaze": "lethal_company:facility_maze_tiles",
-    "MansionHallway": "lethal_company:mansion_hallway_tiles",
-    "MansionHallwayB": "lethal_company:mansion_hallway_b_tiles",
-    "MansionCap": "lethal_company:mansion_cap_tiles",
-    "MansionRoom": "lethal_company:mansion_room_tiles",
-    "MineshaftTunnel": "lethal_company:mineshaft_tunnel_tiles",
-    "MineshaftCave": "lethal_company:mineshaft_cave_tiles"
   }
 }
