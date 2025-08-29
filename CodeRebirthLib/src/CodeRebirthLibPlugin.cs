@@ -17,6 +17,7 @@ namespace CodeRebirthLib;
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency(TerminalFormatter.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 public class CodeRebirthLibPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
@@ -54,6 +55,10 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         if (LLLCompat.Enabled)
         {
             LLLCompat.Init();
+        }
+        if (TerminalFormatterCompat.Enabled)
+        {
+            TerminalFormatterCompat.Init();
         }
 
         ExtendedTOML.Init();

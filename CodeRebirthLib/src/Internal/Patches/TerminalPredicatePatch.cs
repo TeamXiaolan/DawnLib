@@ -8,14 +8,13 @@ static class TerminalPredicatePatch
 {
     internal static void Init()
     {
-        // todo: patch to use failedResult.OverrideName
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         IL.Terminal.TextPostProcess += UseFailedResultName;
     }
-    private static void UseFailedResultName(ILContext il)
+    internal static void UseFailedResultName(ILContext il)
     {
         ILCursor c = new ILCursor(il);
-        CodeRebirthLibPlugin.Logger.LogDebug($"transpiling Terminal.TextPostProcess. instructions: {c.Instrs.Count}");
+        CodeRebirthLibPlugin.Logger.LogDebug($"transpiling {il.Method.Name} with UseFailedResultName. instructions: {c.Instrs.Count}");
         c.GotoNext(
             i => i.MatchLdfld<Item>(nameof(Item.itemName))
         );
@@ -59,11 +58,6 @@ static class TerminalPredicatePatch
             
             return unlockable.unlockableName;
         });
-
-        c.Index = 0;
-        foreach(Instruction cInstr in c.Instrs) {
-            CodeRebirthLibPlugin.Logger.LogDebug(cInstr);
-        }
     }
     private static void HandlePredicate(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
     {
