@@ -8,6 +8,8 @@ public abstract class TerminalPurchaseResult
 
     public static TerminalPurchaseResult Fail(TerminalNode node, string? overrideName = null)
     {
+        // if string is "" force it to be null
+        if (string.IsNullOrEmpty(overrideName)) overrideName = null;
         return new FailedPurchaseResult(node, overrideName);
     }
 
