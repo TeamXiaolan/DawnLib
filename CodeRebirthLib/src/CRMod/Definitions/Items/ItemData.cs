@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.Serialization;
 
 namespace CodeRebirthLib.CRMod;
 [Serializable]
@@ -12,7 +13,6 @@ public class ItemData : EntityData<CRMItemReference>
     public bool generateScrapConfig;
     public bool isShopItem;
     public bool generateShopItemConfig;
-    public bool isProgressive;
-    public bool generateProgressiveConfig;
+    [FormerlySerializedAs("generateProgressiveConfig")] public bool generateDisableUnlockConfig;
     public int cost;
 }

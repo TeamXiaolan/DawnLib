@@ -30,7 +30,7 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
     {
         BoundedRange itemWorth = new(Item.minValue * 0.4f, Item.maxValue * 0.4f);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateItemConfig(section, data, itemWorth, SpawnWeights, Item.itemName);
+        Config = CreateItemConfig(section, this, data, itemWorth, SpawnWeights, Item.itemName);
 
         if (Config.Worth != null)
         {
@@ -70,15 +70,10 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
                     shopItemBuilder.OverrideReceiptNode(ShopItemPreset.OrderReceiptNode);
                     shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
                     shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
-                    
-                    // todo: probably should be better, because CRMTerminalPredicate can really be anything.
-                    // config will need to be updated though
-                    if (Config.IsProgressive?.Value ?? data.isProgressive)
-                    {
-                        Debuggers.Progressive?.Log($"Creating ProgressiveUnlockData for {Item.itemName}");
-                        if (!TerminalPredicate)
-                            TerminalPredicate = ScriptableObject.CreateInstance<ProgressivePredicate>();
 
+                    bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
+                    if (!disableUnlockRequirements && TerminalPredicate)
+                    {
                         TerminalPredicate.Register(Item.itemName);
                         shopItemBuilder.SetPurchasePredicate(TerminalPredicate);
                     }
@@ -89,7 +84,7 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
         });
     }
 
-    public static ItemConfig CreateItemConfig(ConfigContext context, ItemData data, BoundedRange defaultScrapValue, SpawnWeightsPreset spawnWeightsPreset, string itemName)
+    public static ItemConfig CreateItemConfig(ConfigContext context, CRMItemDefinition definition, ItemData data, BoundedRange defaultScrapValue, SpawnWeightsPreset spawnWeightsPreset, string itemName)
     {
         ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? context.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
         ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? context.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
@@ -100,7 +95,7 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
             InteriorSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
             WeatherSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
             IsScrapItem = isScrapItem,
-            IsProgressive = data.generateProgressiveConfig ? context.Bind($"{itemName} | Is Progressive", $"Whether {itemName} is considered a progressive purchase.", data.isProgressive) : null,
+            DisableUnlockRequirements = data.generateDisableUnlockConfig ? context.Bind($"{itemName} | Disable Unlock Requirements", $"Whether {itemName} should have it's unlock requirements disabled.", definition.TerminalPredicate != null) : null,
             Worth = isScrapItem?.Value ?? data.isScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
             IsShopItem = isShopItem,
 

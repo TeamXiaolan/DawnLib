@@ -21,7 +21,7 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
     public override void Register(CRMod mod, UnlockableData data)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateUnlockableConfig(section, data, UnlockableItem.unlockableName);
+        Config = CreateUnlockableConfig(section, this, data, UnlockableItem.unlockableName);
 
         CRLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
@@ -41,14 +41,9 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
                 }
             });
 
-            // todo: probably should be better, because CRMTerminalPredicate can really be anything.
-            // config will need to be updated though
-            if (Config.IsProgressive?.Value ?? data.isProgressive)
+            bool disableUnlockRequirements = Config.DisableUnlockRequirement?.Value ?? false;
+            if (!disableUnlockRequirements && TerminalPredicate)
             {
-                Debuggers.Progressive?.Log($"Creating ProgressiveUnlockData for {UnlockableItem.unlockableName}");
-                if (!TerminalPredicate)
-                    TerminalPredicate = ScriptableObject.CreateInstance<ProgressivePredicate>();
-
                 TerminalPredicate.Register(UnlockableItem.unlockableName);
                 builder.SetPurchasePredicate(TerminalPredicate);
             }
@@ -57,11 +52,11 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
         });
     }
 
-    public static UnlockableConfig CreateUnlockableConfig(ConfigContext context, UnlockableData data, string unlockableName)
+    public static UnlockableConfig CreateUnlockableConfig(ConfigContext context, CRMUnlockableDefinition definition, UnlockableData data, string unlockableName)
     {
         return new UnlockableConfig
         {
-            IsProgressive = data.createProgressiveConfig ? context.Bind($"{unlockableName} | Is Progressive", $"Whether {unlockableName} is considered a progressive purchase.", data.isProgressive) : null,
+            DisableUnlockRequirement = data.generateDisableUnlockRequirementConfig ? context.Bind($"{unlockableName} | Disable Unlock Requirements", $"Whether {unlockableName} should have it's unlock requirements disabled.", definition.TerminalPredicate != null) : null,
             IsDecor = context.Bind($"{unlockableName} | Is Decor", $"Whether {unlockableName} is considered a decor.", data.isDecor),
             IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
             Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", data.cost),
