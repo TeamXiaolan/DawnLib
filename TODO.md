@@ -9,7 +9,6 @@
 ## Bongo
 
 - MapObject CRInfo stuff?
-- Weather Namespace shenanigans with CRLib created weathers.
 - Figure out the interior name situation with weights.
 
 ## Needs to be done eventually

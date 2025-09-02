@@ -26,7 +26,6 @@ static class WeatherRegistrationHandler
                 CodeRebirthLibPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
-            // TODO something about crlib weathers being registered with this namespace instead of code_rebirth for example
 
             CRWeatherEffectInfo weatherEffectInfo = new(key, [CRLibTags.IsExternal], weatherEffect);
             LethalContent.Weathers.Register(weatherEffectInfo);
