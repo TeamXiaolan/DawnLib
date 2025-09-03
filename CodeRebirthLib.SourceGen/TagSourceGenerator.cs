@@ -63,6 +63,12 @@ public class TagSourceGenerator : ISourceGenerator
             @class.Members.Add(field);
         }
 
+        if (@class.Members.Count == 0)
+        {
+            // don't generate tags class if there are no tags.
+            return;
+        }
+        
         GeneratedCodeFile file = new GeneratedCodeFile()
         {
             Namespace = rootNamespace,

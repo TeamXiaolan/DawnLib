@@ -19,3 +19,4 @@ less important:
 
 - Suits
 - Fully implement dynamic costs for terminal purchases.
+- Swap tags being stored in lists to being stored in hash sets.
