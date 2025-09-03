@@ -2,10 +2,10 @@
 schemaVersion = "0.0.1"
 
 [package]
-namespace = "XuXiaolan"
-name = "CodeRebirthLib"
+namespace = "TeamXiaolan"
+name = "DawnLib"
 description = "A modern API for Lethal Company content and all sizes of mods"
-websiteUrl = "https://github.com/TeamXiaolan/CodeRebirthLib"
+websiteUrl = "https://github.com/TeamXiaolan/DawnLib"
 containsNsfwContent = false
 [package.dependencies]
 BepInEx-BepInExPack = "5.4.2100"
@@ -19,20 +19,20 @@ readme = "../README.md"
 outdir = "../Packages"
 
 [[build.copy]]
-source = "../CodeRebirthLib/bin/Release/netstandard2.1/com.github.xuuxiaolan.coderebirthlib.dll"
-target = "BepInEx/plugins/CodeRebirthLib/"
+source = "../DawnLib/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.dll"
+target = "BepInEx/plugins/DawnLib/"
 
 [[build.copy]]
-source = "../CodeRebirthLib.Preloader/bin/Release/netstandard2.1/com.github.xuuxiaolan.coderebirthlib.preloader.dll"
+source = "../DawnLib.Preloader/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.preloader.dll"
 target = "BepInEx/patchers/"
 
 [[build.copy]]
-source = "../CodeRebirthLib/data"
-target = "BepInEx/plugins/CodeRebirthLib/data/"
+source = "../DawnLib/data"
+target = "BepInEx/plugins/DawnLib/data/"
 
 [[build.copy]]
-source = "../CodeRebirthLib/res/coderebirthlibmain"
-target = "BepInEx/plugins/CodeRebirthLib/Assets/"
+source = "../DawnLib/res/coderebirthlibmain"
+target = "BepInEx/plugins/DawnLib/Assets/"
 
 [[build.copy]]
 source = "./CHANGELOG.md"
