@@ -31,6 +31,4 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 
     public DungeonFlow DungeonFlow { get; }
     public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
-
-
 }

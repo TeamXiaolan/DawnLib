@@ -74,17 +74,25 @@ static class UnlockableRegistrationHandler
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true);
             NamespacedKey<DawnUnlockableItemInfo>? key = UnlockableItemKeys.GetByReflection(name);
-            key ??= NamespacedKey<DawnUnlockableItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+            if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetUnlockableItemFromLethalLib(unlockableItem, out string lethalLibModName))
+            {
+                key = NamespacedKey<DawnUnlockableItemInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+            }
+            else if (key == null)
+            {
+                key = NamespacedKey<DawnUnlockableItemInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+            }
+
             if (LethalContent.Unlockables.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
             int cost = 0;
-            if (unlockableItem.shopSelectionNode == null && unlockableItem.alreadyUnlocked)
+            if (unlockableItem.shopSelectionNode == null && !unlockableItem.alreadyUnlocked)
             {
                 // this is probably a problem?
-                Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no shop selection node and is already unlocked. This is probably a problem.");
+                Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no shop selection node and is not already unlocked. This is probably a problem.");
             }
             else if (unlockableItem.shopSelectionNode != null)
             {

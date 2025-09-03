@@ -37,9 +37,9 @@ static class MoonRegistrationHandler
         {
             Debuggers.Moons?.Log($"Registering level: {level.PlanetName}");
             NamespacedKey<DawnMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
-            if (key == null && LLLCompat.Enabled && LLLCompat.IsExtendedLevel(level))
+            if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedLevelModName(level, out string moonModName))
             {
-                key = NamespacedKey<DawnMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+                key = NamespacedKey<DawnMoonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(moonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
             else if (key == null)
             {
@@ -47,19 +47,19 @@ static class MoonRegistrationHandler
             }
 
             List<NamespacedKey> tags = [DawnLibTags.IsExternal];
-            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
+            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(level, out List<(string tagModName, string tagName)> tagsWithModNames))
             {
-                foreach ((string modName, string tagName) in tagsWithModNames)
+                foreach ((string tagModName, string tagName) in tagsWithModNames)
                 {
-                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
+                    string normalizedTagModName = NamespacedKey.NormalizeStringForNamespacedKey(tagModName, false);
                     string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
 
-                    if (normalizedModName == "lethalcompany")
+                    if (normalizedTagModName == "lethalcompany")
                     {
-                        normalizedModName = "lethal_level_loader";
+                        normalizedTagModName = "lethal_level_loader";
                     }
-                    Debuggers.Moons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to level {level.PlanetName}");
-                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
+                    Debuggers.Moons?.Log($"Adding tag {normalizedTagModName}:{normalizedTagName} to level {level.PlanetName}");
+                    tags.Add(NamespacedKey.From(normalizedTagModName, normalizedTagName));
                 }
             }
 

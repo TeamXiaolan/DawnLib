@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using DunGen.Graph;
@@ -7,7 +6,7 @@ using LethalLevelLoader;
 
 namespace Dawn.Internal;
 
-static class LLLCompat
+static class LethalLevelLoaderCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(Plugin.ModGUID);
 
@@ -20,21 +19,55 @@ static class LLLCompat
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    public static bool IsExtendedLevel(SelectableLevel level)
+    public static bool TryGetExtendedLevelModName(SelectableLevel level, out string modName)
     {
-        if (LethalLevelLoader.LevelManager.TryGetExtendedLevel(level, out _))
+        modName = "lethal_level_loader";
+        if (LethalLevelLoader.LevelManager.TryGetExtendedLevel(level, out ExtendedLevel extendedLevel))
         {
+            modName = extendedLevel.ModName;
             return true;
         }
         return false;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    public static bool IsExtendedDungeon(DungeonFlow dungeonFlow)
+    public static bool TryGetExtendedDungeonModName(DungeonFlow dungeonFlow, out string modName)
     {
-        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out _))
+        modName = "lethal_level_loader";
+        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
         {
+            modName = extendedDungeonFlow.ModName;
             return true;
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetExtendedEnemyTypeModName(EnemyType enemyType, out string modName)
+    {
+        modName = "lethal_level_loader";
+        foreach (ExtendedEnemyType extendedEnemy in LethalLevelLoader.PatchedContent.ExtendedEnemyTypes)
+        {
+            if (extendedEnemy.EnemyType == enemyType)
+            {
+                modName = extendedEnemy.ModName;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetExtendedItemModName(Item item, out string modName)
+    {
+        modName = "lethal_level_loader";
+        foreach (ExtendedItem extendedItem in LethalLevelLoader.PatchedContent.ExtendedItems)
+        {
+            if (extendedItem.Item == item)
+            {
+                modName = extendedItem.ModName;
+                return true;
+            }
         }
         return false;
     }

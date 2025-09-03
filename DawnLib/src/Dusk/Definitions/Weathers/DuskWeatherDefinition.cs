@@ -66,7 +66,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
         WeatherManager.RegisterWeather(weather);
         DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, newImprovedWeatherEffect.VanillaWeatherEffect);
         newImprovedWeatherEffect.VanillaWeatherEffect.SetDawnInfo(weatherEffectInfo);
-        LethalContent.Weathers.Register(weatherEffectInfo); // TEMPORARY
+        LethalContent.Weathers.Register(weatherEffectInfo);
     }
 
     public override List<WeatherData> GetEntities(DuskMod mod)

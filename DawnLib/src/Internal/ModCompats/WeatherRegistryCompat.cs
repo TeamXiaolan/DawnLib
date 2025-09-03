@@ -20,4 +20,18 @@ static class WeatherRegistryCompat
         ItemRegistrationHandler.UpdateItemWeightsOnLevel(args.selectableLevel);
         MapObjectRegistrationHandler.UpdateInsideMapObjectSpawnWeightsOnLevel(args.selectableLevel);
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetWeatherFromWeatherRegistry(string weatherName, out string modName)
+    {
+        modName = "weather_registry";
+        foreach (Weather weather in WeatherManager.RegisteredWeathers)
+        {
+            if (weather.Effect.VanillaWeatherEffect.name == weatherName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

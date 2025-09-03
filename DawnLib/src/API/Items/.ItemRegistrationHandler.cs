@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
-using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
 
@@ -172,7 +171,18 @@ static class ItemRegistrationHandler
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true);
             NamespacedKey<DawnItemInfo>? key = ItemKeys.GetByReflection(name);
-            key ??= NamespacedKey<DawnItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+            if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetItemFromLethalLib(item, out string lethalLibModName))
+            {
+                key = NamespacedKey<DawnItemInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+            }
+            else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedItemModName(item, out string lethalLevelLoaderModName))
+            {
+                key = NamespacedKey<DawnItemInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLevelLoaderModName, false), NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+            }
+            else if (key == null)
+            {
+                key = NamespacedKey<DawnItemInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+            }
 
             if (LethalContent.Items.ContainsKey(key))
             {
@@ -195,7 +205,7 @@ static class ItemRegistrationHandler
             }
 
             List<NamespacedKey> tags = [DawnLibTags.IsExternal];
-            if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
+            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)
                 {

@@ -146,15 +146,23 @@ static class MapObjectRegistrationHandler
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true);
             NamespacedKey<DawnMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
-            key ??= NamespacedKey<DawnMapObjectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+            if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetMapObjectFromLethalLib(mapObject, out string lethalLibModName))
+            {
+                key = NamespacedKey<DawnMapObjectInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+            }
+            else if (key == null)
+            {
+                key = NamespacedKey<DawnMapObjectInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+            }
+
             if (LethalContent.MapObjects.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
 
-            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo insideMapObjectInfo);
-            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo outsideMapObjectInfo);
+            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
+            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
             LethalContent.MapObjects.Register(mapObjectInfo);

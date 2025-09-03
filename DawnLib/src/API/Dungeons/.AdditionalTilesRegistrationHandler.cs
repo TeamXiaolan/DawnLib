@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dawn.Internal;
 using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
@@ -40,9 +38,9 @@ static class AdditionalTilesRegistrationHandler
 
             Debuggers.Dungeons?.Log($"Registering potentially modded dungeon: {dungeonFlow.name}");
             NamespacedKey<DawnDungeonInfo> key;
-            if (LLLCompat.Enabled && LLLCompat.IsExtendedDungeon(dungeonFlow))
+            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedDungeonModName(dungeonFlow, out string dungeonModName))
             {
-                key = NamespacedKey<DawnDungeonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(dungeonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
             }
             else
             {
@@ -170,7 +168,7 @@ static class AdditionalTilesRegistrationHandler
 
     private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags)
     {
-        if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
+        if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
         {
             foreach ((string modName, string tagName) in tagsWithModNames)
             {

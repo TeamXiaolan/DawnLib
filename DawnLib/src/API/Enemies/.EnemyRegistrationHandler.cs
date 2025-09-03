@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
-using Dawn.Internal;
 using UnityEngine;
 
 namespace Dawn;
@@ -275,7 +274,18 @@ static class EnemyRegistrationHandler
 
                 string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
                 NamespacedKey<DawnEnemyInfo>? key = EnemyKeys.GetByReflection(name);
-                key ??= NamespacedKey<DawnEnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetEnemyTypeFromLethalLib(enemyType, out string lethalLibModName))
+                {
+                    key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                }
+                else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedEnemyTypeModName(enemyType, out string lethalLevelLoaderModName))
+                {
+                    key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLevelLoaderModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                }
+                else if (key == null)
+                {
+                    key = NamespacedKey<DawnEnemyInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                }
 
                 if (LethalContent.Enemies.ContainsKey(key))
                 {
@@ -309,7 +319,7 @@ static class EnemyRegistrationHandler
                 }
 
                 List<NamespacedKey> tags = [DawnLibTags.IsExternal];
-                if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
+                if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
                 {
                     foreach ((string modName, string tagName) in tagsWithModNames)
                     {

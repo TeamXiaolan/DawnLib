@@ -12,11 +12,15 @@
 - Figure out the interior name situation with weights.
 
 less important:
+
+- Generalise the Collecting of LLL tags for each registry.
 - check over all visibility (public, internal, private)
 - config stuff (NamespacedKey TOMLConverter, pretty print generics, look at patching to allow lists?)
 
 ## Needs to be done eventually
 
 - Suits
+- ESR/MRR?
+- Vehicles
 - Fully implement dynamic costs for terminal purchases.
 - Swap tags being stored in lists to being stored in hash sets.

@@ -1,3 +1,5 @@
+using Dawn.Internal;
+
 namespace Dawn;
 
 static class WeatherRegistrationHandler
@@ -20,7 +22,19 @@ static class WeatherRegistrationHandler
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true);
             NamespacedKey<DawnWeatherEffectInfo>? key = WeatherKeys.GetByReflection(name);
-            key ??= NamespacedKey<DawnWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+            if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetWeatherEffectFromLethalLib(weatherEffect.name, out string lethalLibModName))
+            {
+                key = NamespacedKey<DawnWeatherEffectInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+            }
+            else if (key == null && WeatherRegistryCompat.Enabled && WeatherRegistryCompat.TryGetWeatherFromWeatherRegistry(weatherEffect.name, out string weatherRegistryModName))
+            {
+                key = NamespacedKey<DawnWeatherEffectInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(weatherRegistryModName, false), NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+            }
+            else if (key == null)
+            {
+                key = NamespacedKey<DawnWeatherEffectInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+            }
+
             if (LethalContent.Weathers.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. Skipping...");
