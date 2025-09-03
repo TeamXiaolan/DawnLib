@@ -60,19 +60,20 @@ public class MoonWeightTransformer : WeightTransformer
             return DoOperation(currentWeight, operationWithWeight);
         }
 
-        List<NamespacedKey> validTagNamespacedKeys = new();
+        List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
         foreach (NamespacedKey tagNamespacedKey in moonInfo.AllTags())
         {
             if (MatchingMoonsWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
             {
-                validTagNamespacedKeys.Add(tagNamespacedKey);
+                orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
             }
         }
 
-        if (validTagNamespacedKeys.Count > 0)
+        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => Operation(MatchingMoonsWithWeightAndOperationDict[x]) == "+" || Operation(MatchingMoonsWithWeightAndOperationDict[x]) == "-").ToList();
+        foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
         {
-            operationWithWeight = MatchingMoonsWithWeightAndOperationDict[validTagNamespacedKeys[0]];
-            return DoOperation(currentWeight, operationWithWeight);
+            operationWithWeight = MatchingMoonsWithWeightAndOperationDict[namespacedKey];
+            currentWeight = DoOperation(currentWeight, operationWithWeight);
         }
 
         return currentWeight;
@@ -85,18 +86,6 @@ public class MoonWeightTransformer : WeightTransformer
         if (!RoundManager.Instance.currentLevel.TryGetDawnInfo(out DawnMoonInfo? moonInfo)) return string.Empty;
         if (!MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
 
-        string operation = operationWithWeight[..1];
-        if (operation == "+" || operation == "*" || operation == "/" || operation == "-")
-        {
-            return operation;
-        }
-        else if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
-        {
-            return "+";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        return Operation(operationWithWeight[..1]);
     }
 }

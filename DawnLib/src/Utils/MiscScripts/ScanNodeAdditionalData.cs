@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace Dawn.Utils;
 public class ScanNodeAdditionalData
 {
-    private static readonly Dictionary<RectTransform, ScanNodeAdditionalData> _additionalData = new(); // TODO preloader stuff
+    private static readonly Dictionary<RectTransform, ScanNodeAdditionalData> _additionalData = new();
     private RectTransform _rectTransform;
 
     private List<Image> _imagesAttached = new();

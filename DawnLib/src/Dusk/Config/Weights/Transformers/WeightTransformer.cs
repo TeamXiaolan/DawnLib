@@ -3,6 +3,7 @@ using System.Globalization;
 using Dawn.Internal;
 
 namespace Dawn.Dusk;
+
 [Serializable]
 public abstract class WeightTransformer
 {
@@ -44,6 +45,22 @@ public abstract class WeightTransformer
         {
             DawnPlugin.Logger.LogError($"Unknown operation: {operation} with WeightTransformer {this}.");
             throw new NotImplementedException();
+        }
+    }
+
+    public string Operation(string operation)
+    {
+        if (operation == "+" || operation == "*" || operation == "/" || operation == "-")
+        {
+            return operation;
+        }
+        else if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+        {
+            return "+";
+        }
+        else
+        {
+            return string.Empty;
         }
     }
 }

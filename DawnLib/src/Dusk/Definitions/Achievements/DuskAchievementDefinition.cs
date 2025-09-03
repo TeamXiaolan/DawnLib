@@ -42,7 +42,7 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     public bool Completed { get; protected set; } = false;
 
     public NamespacedKey<DuskAchievementDefinition> TypedKey => _typedKey;
-    public override NamespacedKey Key { get => TypedKey; protected set => throw new System.NotImplementedException(); } // TODO
+    public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskAchievementDefinition>(); }
 
     public virtual void LoadAchievementState(ES3Settings globalSettings)
     {

@@ -19,7 +19,6 @@ public class DuskMod
 
     private readonly string _basePath;
 
-    // todo: i dont like how many arguments are here lmao
     internal DuskMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)
     {
         Assembly = assembly;
@@ -42,7 +41,7 @@ public class DuskMod
         noCodeMod.Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID);
         foreach (var assetBundleData in noCodeMod.Content.assetBundles)
         {
-            _ = new DefaultContentHandler(noCodeMod);  // todo : i think i got pretty far in, there needs to be error handling for putting assetbundles next to eachother rather than mainbundle then Assets/subbundle
+            _ = new DefaultContentHandler(noCodeMod);
         }
         return noCodeMod;
     }

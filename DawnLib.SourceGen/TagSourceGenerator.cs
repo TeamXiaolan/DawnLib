@@ -16,6 +16,7 @@ public class TagSourceGenerator : ISourceGenerator
     {
 
     }
+
     public void Execute(GeneratorExecutionContext context)
     {
         if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out string? rootNamespace) || string.IsNullOrWhiteSpace(rootNamespace))

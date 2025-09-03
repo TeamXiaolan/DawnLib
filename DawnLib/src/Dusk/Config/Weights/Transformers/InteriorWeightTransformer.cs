@@ -60,19 +60,20 @@ public class InteriorWeightTransformer : WeightTransformer
             return DoOperation(currentWeight, operationWithWeight);
         }
 
-        List<NamespacedKey> validTagNamespacedKeys = new();
+        List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
         foreach (NamespacedKey tagNamespacedKey in dungeonInfo.AllTags())
         {
             if (MatchingInteriorsWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
             {
-                validTagNamespacedKeys.Add(tagNamespacedKey);
+                orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
             }
         }
 
-        if (validTagNamespacedKeys.Count > 0)
+        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => Operation(MatchingInteriorsWithWeightAndOperationDict[x]) == "+" || Operation(MatchingInteriorsWithWeightAndOperationDict[x]) == "-").ToList();
+        foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
         {
-            operationWithWeight = MatchingInteriorsWithWeightAndOperationDict[validTagNamespacedKeys[0]];
-            return DoOperation(currentWeight, operationWithWeight);
+            operationWithWeight = MatchingInteriorsWithWeightAndOperationDict[namespacedKey];
+            currentWeight = DoOperation(currentWeight, operationWithWeight);
         }
 
         return currentWeight;
@@ -86,18 +87,6 @@ public class InteriorWeightTransformer : WeightTransformer
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo)) return string.Empty;
         if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
 
-        string operation = operationWithWeight[..1];
-        if (operation == "+" || operation == "*" || operation == "/" || operation == "-")
-        {
-            return operation;
-        }
-        else if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
-        {
-            return "+";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        return Operation(operationWithWeight[..1]);
     }
 }

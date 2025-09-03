@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Dawn.Internal;
 using UnityEngine;
 
@@ -66,10 +67,20 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
                 tagCurveCandidates.Add(tagCurve);
             }
 
-            if (tagCurveCandidates.Count > 0)
+            List<Keyframe> averagedKeyframes = new();
+            for (float i = 0; i < 1; i += 0.01f)
             {
-                return tagCurveCandidates[0]; // TODO Do this properly
+                List<float> curveEvals = new();
+                foreach (AnimationCurve tagCurve in tagCurveCandidates)
+                {
+                    curveEvals.Add(tagCurve.Evaluate(i));
+                }
+
+                float average = curveEvals.Average();
+                averagedKeyframes.Add(new Keyframe(i, average));
             }
+
+            return new AnimationCurve(averagedKeyframes.ToArray());
         }
 
         if (isVanilla && VanillaCurve != null)

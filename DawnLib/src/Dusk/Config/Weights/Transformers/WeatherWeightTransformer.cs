@@ -67,19 +67,20 @@ public class WeatherWeightTransformer : WeightTransformer
             return DoOperation(currentWeight, operationWithWeight);
         }
 
-        List<NamespacedKey> validTagNamespacedKeys = new();
+        List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
         foreach (NamespacedKey tagNamespacedKey in allTags)
         {
             if (MatchingWeathersWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
             {
-                validTagNamespacedKeys.Add(tagNamespacedKey);
+                orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
             }
         }
 
-        if (validTagNamespacedKeys.Count > 0)
+        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => Operation(MatchingWeathersWithWeightAndOperationDict[x]) == "+" || Operation(MatchingWeathersWithWeightAndOperationDict[x]) == "-").ToList();
+        foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
         {
-            operationWithWeight = MatchingWeathersWithWeightAndOperationDict[validTagNamespacedKeys[0]];
-            return DoOperation(currentWeight, operationWithWeight);
+            operationWithWeight = MatchingWeathersWithWeightAndOperationDict[namespacedKey];
+            currentWeight = DoOperation(currentWeight, operationWithWeight);
         }
 
         return currentWeight;
@@ -98,19 +99,6 @@ public class WeatherWeightTransformer : WeightTransformer
 
         if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out string operationWithWeight)) return string.Empty;
 
-
-        string operation = operationWithWeight[..1];
-        if (operation == "+" || operation == "*" || operation == "/" || operation == "-")
-        {
-            return operation;
-        }
-        else if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
-        {
-            return "+";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        return Operation(operationWithWeight[..1]);
     }
 }
