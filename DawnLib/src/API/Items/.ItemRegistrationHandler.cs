@@ -290,13 +290,15 @@ static class ItemRegistrationHandler
             TerminalNode receiptNode = shopInfo.ReceiptNode;
             TerminalNode requestNode = shopInfo.RequestNode;
 
+            itemInfo.Item.creditsWorth = shopInfo.Cost.Provide();
+            
             receiptNode.buyItemIndex = newBuyableList.Count - 1;
-            receiptNode.itemCost = shopInfo.Cost.Provide();
+            receiptNode.itemCost = itemInfo.Item.creditsWorth;
 
             requestNode.buyItemIndex = newBuyableList.Count - 1;
             requestNode.isConfirmationNode = true;
             requestNode.overrideOptions = true;
-            requestNode.itemCost = shopInfo.Cost.Provide();
+            requestNode.itemCost = itemInfo.Item.creditsWorth;
             requestNode.terminalOptions =
             [
                 new CompatibleNoun()
