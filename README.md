@@ -1,7 +1,9 @@
 # DawnLib
+
 (was CodeRebirthLib)
 
 DawnLib is a modern API for Lethal Company content and all sizes of mods. It contains:
+
 - DawnLib API
 - DuskMod API
 - Some extra utilities
@@ -12,6 +14,7 @@ DawnLib also categorises (almost) everything in the game with keys, allowing for
 This is because of the way DawnLib supports dynamically updating weights and therefore cannot be fixed from DawnLib.
 
 ## DawnLib (All C#)
+
 ```xml
 <PackageReference Include="TeamXiaolan.DawnLib" Version="0.10.0" />
 
@@ -24,6 +27,7 @@ Most registration methods are under the `DawnLib` static class. When calling `De
 explains most settings that you can configure.
 
 Supported content:
+
 - Enemies
 - Items
 - Map Objects
@@ -31,6 +35,7 @@ Supported content:
 - Additional Tile Sets
 
 Example:
+
 ```csharp
 public static class MeltdownKeys {
   public static readonly NamespacedKey<DawnItemInfo> GeigerCounter = NamespacedKey<DawnItemInfo>.From("facility_meltdown", "geiger_counter");
@@ -46,13 +51,15 @@ DawnLib.DefineItem(MeltdownKeys.GeigerCounter, assets.geigerCounterItemDef, buil
 ```
 
 `LethalContent` is an easy way to reference vanilla/modded content:
+
 ```csharp
 EnemyType blobEnemyType = LethalContent.Enemies[EnemyKeys.Blob].EnemyType;
 ```
 
-It should be noted that the vanilla references will not be in the registry until a while after the lobby is created. 
+It should be noted that the vanilla references will not be in the registry until a while after the lobby is created.
 In order to make sure everything is ready, you can listen to a registry's "freeze" event.
-`OnFreeze` will only run once *ever* (even between lobby reloads)
+`OnFreeze` will only run once _ever_ (even between lobby reloads)
+
 ```csharp
 LethalContent.Enemies.OnFreeze += () => {
   // All vanilla content is in and no more modded content can be added.
@@ -64,7 +71,9 @@ if(LethalContent.Enemies.IsFrozen) { // or check that the registry has already b
 ```
 
 ## DuskMod (C# & Editor)
+
 The DuskMod API is more opinionated, but automatically handles:
+
 - Asset Bundle Loading
 - Config Generation
 - Skipping bundles when config is disabled
@@ -73,6 +82,7 @@ The DuskMod API is more opinionated, but automatically handles:
 - **Registering content with no code!**
 
 It also supports:
+
 - Achievements
 - Weathers (through `WeatherRegistry`)
 
