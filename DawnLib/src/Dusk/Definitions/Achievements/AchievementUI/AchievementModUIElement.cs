@@ -59,7 +59,7 @@ public class AchievementModUIElement : MonoBehaviour
             AchievementUIElement uiElement = go.GetComponent<AchievementUIElement>();
             uiElement.SetupAchievementUI(achievement);
 
-            go.name = $"CodeRebirthLib Achievement UI - {achievement.AchievementName} - {mod.Plugin.GUID}";
+            go.name = $"DawnLib Achievement UI - {achievement.AchievementName} - {mod.Plugin.GUID}";
             achievementsContainerList.Add(uiElement);
         }
 

@@ -1,7 +1,7 @@
 ﻿namespace Dawn.Dusk;
 static class DuskModConstants
 {
-    internal const string MenuName = "CodeRebirthLib";
+    internal const string MenuName = "DawnLib";
     internal const string Definitions = $"{MenuName}/Definitions";
     internal const string Achievements = $"{MenuName}/Definitions/Achievements";
     internal const string TerminalPredicates = $"{MenuName}/Terminal Predicates";

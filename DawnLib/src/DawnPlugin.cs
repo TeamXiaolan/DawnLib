@@ -5,7 +5,6 @@ using BepInEx;
 using BepInEx.Logging;
 using Dawn.Dusk;
 using Dawn.Internal;
-using Dawn.Internal;
 using Dawn.Utils;
 using PathfindingLib;
 using UnityEngine;
@@ -89,7 +88,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
 
-        Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
+        Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
 
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
         AutoDuskModHandler.AutoRegisterMods();
@@ -102,7 +101,7 @@ public class DawnPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(UnlockableUpgradeScrap), typeof(UnlockProgressiveObject), typeof(SmartAgentNavigator), typeof(DawnNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
+        var types = new Type[] { typeof(ItemUpgradeScrap), typeof(UnlockableUpgradeScrap), typeof(UnlockProgressiveObject), typeof(SmartAgentNavigator), typeof(DawnNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
         foreach (var type in types)
         {
             try
@@ -138,7 +137,7 @@ public class DawnPlugin : BaseUnityPlugin
 
     internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
     {
-        [LoadFromBundle("CodeRebirthLibNetworker.prefab")]
+        [LoadFromBundle("DawnLibNetworker.prefab")]
         public GameObject NetworkerPrefab { get; private set; } = null!;
 
         [LoadFromBundle("AchievementUICanvas.prefab")]

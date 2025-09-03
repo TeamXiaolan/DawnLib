@@ -78,7 +78,7 @@
       <change beforePath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/CREnemyAdditionalData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/CREnemyAdditionalData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/ExtraEnemyEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/ExtraEnemyEvents.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/ExtraItemEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/ExtraItemEvents.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DawnLib/src/CodeRebirthLibPlugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CodeRebirthLibPlugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DawnLib/src/DawnPlugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/DawnPlugin.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +89,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/5057895306C98AD6047AE588/CodeRebirthLib.SourceGen/CodeRebirthLib.SourceGen.KeyCollectionSourceGenerator/ItemKeys.g.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/5057895306C98AD6047AE588/DawnLib.SourceGen/DawnLib.SourceGen.KeyCollectionSourceGenerator/ItemKeys.g.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1d2f118dcc2d414d851ad189155e8faf65600/87/a0be3883/VehiclesManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/35/b4cc82e3/SpawnableOutsideObject.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/62/5bb5c43e/GameObjectChanceTable.cs" root0="FORCE_HIGHLIGHTING" />

@@ -73,7 +73,7 @@ static class AdditionalTilesRegistrationHandler
                     archetypeKey = DungeonArchetypeKeys.GetByReflection(name);
                     if (archetypeKey == null)
                     {
-                        DawnPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                        DawnPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
                         continue;
                     }
                 }
@@ -104,7 +104,7 @@ static class AdditionalTilesRegistrationHandler
                         tileSetKey = DungeonTileSetKeys.GetByReflection(name);
                         if (tileSetKey == null)
                         {
-                            DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                            DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
                             continue;
                         }
                     }
@@ -205,7 +205,7 @@ static class AdditionalTilesRegistrationHandler
             NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
             if (key == null)
             {
-                DawnPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                DawnPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
                 continue;
             }
 

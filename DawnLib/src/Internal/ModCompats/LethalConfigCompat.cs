@@ -23,7 +23,7 @@ static class LethalConfigCompat
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
-        _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "coderebirthlib.dummy.youshouldneverseethis.cfg"), false);
+        _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "dawnlib.dummy.youshouldneverseethis.cfg"), false);
         _dummyConfig.SaveOnConfigSet = false;
 
         AutoConfigGenerator.GenerateConfigForEntry += ExtendGenerateConfigForEntry;

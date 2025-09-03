@@ -1,5 +1,5 @@
 bin/
 obj/
 Packages/
-CodeRebirthLib.Editor/deps/*
+DawnLib.Editor/deps/*
 *.user

@@ -10,9 +10,9 @@ using MethodAttributes = Mono.Cecil.MethodAttributes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
 
 namespace Dawn.Preloader;
-class CodeRebirthLibPreloader
+class DawnLibPreloader
 {
-    internal static ManualLogSource Log { get; } = Logger.CreateLogSource("CodeRebirthLib.Preloader");
+    internal static ManualLogSource Log { get; } = Logger.CreateLogSource("DawnLib.Preloader");
 
     public static IEnumerable<string> TargetDLLs { get; } = new string[] { "Assembly-CSharp.dll" };
 

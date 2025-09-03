@@ -4,7 +4,6 @@
 
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.
-- Weather rEGISTRETAION
 
 ## Bongo
 

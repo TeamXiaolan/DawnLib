@@ -1,7 +1,9 @@
 # v0.1.0
+
 Hello World!
 
 ## DawnLib
+
 - Added registering content through `DawnLib`
 - Added `WeightTable` and `CurveTable` so that weights can be updated dynamically in-game.
 - Added `ITerminalPurchasePredicate` to allow some items to not be bought based on conditions.
@@ -10,7 +12,9 @@ Hello World!
 - Allow registering new tilesets to dungeons
 
 ## DuskMod
+
 **MIGRATING FROM CODEREBIRTHLIB:** You will need to remake your `Content Container`, `Mod Information` and content definitions. The general flow has not changed overall.
+
 - Reworked `Content Container`:
   - `Entity Name` (from content definitions) and `Entity Name Reference` have been removed. Instead, content can just be referenced.
   - `Asset Bundle Name` is now a dropdown.
@@ -23,5 +27,6 @@ Hello World!
 - Added `DuskAdditionalTilesDefinition`
 
 ## Utilities / Misc
+
 - Added `NetworkAudioSource`, `AssetBundleUtils`
-- Removed `ExtendedLogging` and split it into `DebugLogSources` (yes this uses SoundAPI code.)
+- Removed `ExtendedLogging` and split it into `DebugLogSources` (yes this uses SoundAPI code)
