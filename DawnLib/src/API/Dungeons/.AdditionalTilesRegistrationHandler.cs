@@ -91,6 +91,7 @@ static class AdditionalTilesRegistrationHandler
                 }
 
                 DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, [DawnLibTags.IsExternal], dungeonArchetype);
+                dungeonArchetype.SetDawnInfo(info);
                 info.ParentInfo = dungeonInfo;
                 LethalContent.Archetypes.Register(info);
 
@@ -120,6 +121,7 @@ static class AdditionalTilesRegistrationHandler
                     }
                     DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, [DawnLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
                     info.AddTileSet(tileSetInfo);
+                    tileSet.SetDawnInfo(tileSetInfo);
                     LethalContent.TileSets.Register(tileSetInfo);
                 }
             }
