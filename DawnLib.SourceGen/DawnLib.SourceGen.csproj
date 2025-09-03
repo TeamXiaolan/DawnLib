@@ -37,8 +37,8 @@
 
     <!-- NuGet Packaging -->
     <PropertyGroup>
-        <PackageId>XuXiaolan.DawnLib.SourceGen</PackageId>
-        <Description>The SourceGen branch of DawnLib.</Description>
+        <PackageId>TeamXiaolan.DawnLib.SourceGen</PackageId>
+        <Description>Source generators to simplify DawnLib.</Description>
         
         <IsPackable>true</IsPackable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

@@ -13,8 +13,8 @@
     
     <!-- NuGet Packaging -->
     <PropertyGroup>
-        <PackageId>XuXiaolan.DawnLib</PackageId>
-        <Description>A library to simplify making large LethalCompany mods.</Description>
+        <PackageId>TeamXiaolan.DawnLib</PackageId>
+        <Description>A modern API for Lethal Company content and all sizes of mods.</Description>
         
         <IsPackable>true</IsPackable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

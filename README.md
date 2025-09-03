@@ -1,26 +1,26 @@
-# CodeRebirthLib
-CodeRebirthLib is a modern API for Lethal Company content and all sizes of mods. It contains:
-- CRLib API
-- CRMod API
+# DawnLib
+(was CodeRebirthLib)
+
+DawnLib is a modern API for Lethal Company content and all sizes of mods. It contains:
+- DawnLib API
+- DuskMod API
 - Some extra utilities
 
-CodeRebirthLib also categorises (almost) everything in the game with keys, allowing for easy references to existing vanilla content.
+DawnLib also categorises (almost) everything in the game with keys, allowing for easy references to existing vanilla content.
 
-**NOTE:** Enemies/Items/etc managed through CodeRebirthLib are likely **_unsupported_** by mods like CentralConfig or LethalQuantities.
-This is because of the way CodeRebirthLib supports dynamically updating weights and therefore cannot be fixed from CodeRebirthLib.
+**NOTE:** Enemies/Items/etc managed through DawnLib are likely **_unsupported_** by mods like CentralConfig or LethalQuantities.
+This is because of the way DawnLib supports dynamically updating weights and therefore cannot be fixed from DawnLib.
 
-## CRLib (All C#)
-TODO: [CRLib Documentation](wiki)
-
+## DawnLib (All C#)
 ```xml
-<PackageReference Include="XuXiaolan.CodeRebirthLib" Version="0.10.0" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.10.0" />
 
-<!-- Optional Source Generation, mostly for when using the CRMod API -->
-<PackageReference Include="XuXiaolan.CodeRebirthLib.SourceGen" Version="0.10.0" />
+<!-- Optional Source Generation, mostly for when using the DuskMod API -->
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.10.0" />
 ```
 
-CRLib is a hands-off way to register your content. The code to switch from LethalLib to CRLib is very similar and will require minimal refactoring.
-Most registration methods are under the `CRLib` static class. When calling `DefineXXX` you are provided with a builder method that
+DawnLib is a hands-off way to register your content. The code to switch from LethalLib to DawnLib is very similar and will require minimal refactoring.
+Most registration methods are under the `DawnLib` static class. When calling `DefineXXX` you are provided with a builder method that
 explains most settings that you can configure.
 
 Supported content:
@@ -33,11 +33,11 @@ Supported content:
 Example:
 ```csharp
 public static class MeltdownKeys {
-  public static readonly NamespacedKey<CRItemInfo> GeigerCounter = NamespacedKey<CRItemInfo>.From("facility_meltdown", "geiger_counter");
+  public static readonly NamespacedKey<DawnItemInfo> GeigerCounter = NamespacedKey<DawnItemInfo>.From("facility_meltdown", "geiger_counter");
 }
 
 // In your plugin
-CRLib.DefineItem(MeltdownKeys.GeigerCounter, assets.geigerCounterItemDef, builder => builder
+DawnLib.DefineItem(MeltdownKeys.GeigerCounter, assets.geigerCounterItemDef, builder => builder
   .DefineShop(shopBuilder => shopBuilder
     .OverrideCost(90)
     .OverrideInfoNode(assets.geigerCounterNode)
@@ -63,8 +63,8 @@ if(LethalContent.Enemies.IsFrozen) { // or check that the registry has already b
 }
 ```
 
-## CRMod (C# & Editor)
-The CRMod API is more opinionated, but automatically handles:
+## DuskMod (C# & Editor)
+The DuskMod API is more opinionated, but automatically handles:
 - Asset Bundle Loading
 - Config Generation
 - Skipping bundles when config is disabled
@@ -75,8 +75,6 @@ The CRMod API is more opinionated, but automatically handles:
 It also supports:
 - Achievements
 - Weathers (through `WeatherRegistry`)
-
-TODO: [cr mod setup](wiki)
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord for help.
 
