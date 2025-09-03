@@ -11,7 +11,7 @@ namespace Dawn;
 static class MapObjectRegistrationHandler
 {
     private static int _spawnedObjects;
-    
+
     internal static void Init()
     {
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
@@ -28,7 +28,7 @@ static class MapObjectRegistrationHandler
             i => i.MatchLdloc(out _), // num2
             i => i.MatchLdcI4(0), // 0
             i => i.MatchBle(out _), // >
-            
+
             // further matching so that it doesn't need to be updated with the game as much hopefully
             i => i.MatchLdstr("OutsideLevelNavMesh")
         );

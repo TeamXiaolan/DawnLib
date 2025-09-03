@@ -116,7 +116,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
 
     private DawnScrapItemInfo? _scrapInfo;
     private DawnShopItemInfo? _shopInfo;
-    
+
     internal ItemInfoBuilder(NamespacedKey<DawnItemInfo> key, Item item) : base(key, item)
     {
     }
@@ -135,7 +135,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
         _scrapInfo = builder.Build();
         return this;
     }
-    
+
     override internal DawnItemInfo Build()
     {
         return new DawnItemInfo(key, tags, value, _scrapInfo, _shopInfo);

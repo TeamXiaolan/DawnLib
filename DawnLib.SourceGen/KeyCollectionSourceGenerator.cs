@@ -12,7 +12,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
 {
     public void Initialize(GeneratorInitializationContext context)
     {
-        
+
     }
 
     public void Execute(GeneratorExecutionContext context)
@@ -24,7 +24,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
         }
 
         List<string> alreadyGenerated = [];
-        
+
         foreach (AdditionalText? additionalFile in context.AdditionalFiles)
         {
             if (additionalFile == null)

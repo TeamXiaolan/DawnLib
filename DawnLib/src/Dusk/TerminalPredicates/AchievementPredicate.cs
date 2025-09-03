@@ -20,7 +20,7 @@ public class AchievementPredicate : DuskTerminalPredicate
         .Build();
 
     private string _id;
-    
+
     public override void Register(string id)
     {
         _id = id;

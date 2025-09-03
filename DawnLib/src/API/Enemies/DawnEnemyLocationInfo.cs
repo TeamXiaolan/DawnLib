@@ -7,6 +7,6 @@ public class DawnEnemyLocationInfo
     {
         Weights = weights;
     }
-    
+
     public ProviderTable<int?, DawnMoonInfo> Weights { get; }
 }

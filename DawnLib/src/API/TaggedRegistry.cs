@@ -5,7 +5,7 @@ namespace Dawn;
 public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
 {
     public event Action AfterTagging = delegate { };
-    
+
     private List<IAutoTagger<T>> _autoTaggers = [new VanillaAutoTagger<T>()];
     public void AddAutoTaggers(params IAutoTagger<T>[] taggers)
     {
@@ -14,7 +14,7 @@ public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
             AddAutoTagger(tagger);
         }
     }
-    
+
     public void AddAutoTagger(IAutoTagger<T> tagger)
     {
         _autoTaggers.Add(tagger);
@@ -27,9 +27,9 @@ public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
         {
             foreach (IAutoTagger<T> tagger in _autoTaggers)
             {
-                if(!tagger.ShouldApply(value))
+                if (!tagger.ShouldApply(value))
                     continue;
-                
+
                 value.Internal_AddTag(tagger.Tag);
             }
         }

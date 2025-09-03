@@ -14,7 +14,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     [SerializeField]
     private TerminalNode _failNode;
-    
+
     public bool IsUnlocked { get; private set; }
 
     private string _saveID;
@@ -28,13 +28,13 @@ public class ProgressivePredicate : DuskTerminalPredicate
         }
         _saveID = id;
     }
-    
+
     public override TerminalPurchaseResult CanPurchase()
     {
         if (IsUnlocked) return TerminalPurchaseResult.Success();
         return TerminalPurchaseResult.Fail(_failNode, _lockedName);
     }
-    
+
     public void Unlock(HUDDisplayTip? displayTip = null)
     {
         if (IsUnlocked)
@@ -47,7 +47,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
             HUDManager.Instance.DisplayTip(displayTip);
         }
     }
-    
+
     public void Load(ES3Settings settings)
     {
         IsUnlocked = ES3.Load(_saveID, false, settings);
@@ -59,7 +59,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
         Debuggers.Progressive?.Log($"Saving unlockable: {_saveID} that is unlocked: {IsUnlocked} with saveID: {_saveID}");
         ES3.Save(_saveID, IsUnlocked, settings);
     }
-    
+
     internal static List<ProgressivePredicate> AllProgressiveItems = new();
 
     internal static void LoadAll(ES3Settings settings)
@@ -77,13 +77,13 @@ public class ProgressivePredicate : DuskTerminalPredicate
             unlockData.Save(settings);
         }
     }
-    
+
     internal void SetFromServer(bool isUnlocked)
     {
         Debuggers.Progressive?.Log($"{_saveID} is being set from the server; unlocked = {isUnlocked}");
         IsUnlocked = isUnlocked;
     }
-    
+
     private static TerminalNode CreateDefaultProgressiveDenyNode()
     {
         TerminalNode node = CreateInstance<TerminalNode>();

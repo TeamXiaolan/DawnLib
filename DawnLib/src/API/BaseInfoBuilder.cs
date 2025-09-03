@@ -18,7 +18,7 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
         this.key = key;
         this.value = value;
     }
-    
+
     public TBuilder AddTag(NamespacedKey tag)
     {
         tags.Add(tag);

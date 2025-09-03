@@ -14,7 +14,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
 
     [SerializeField]
     private HUDDisplayTip _displayTip;
-    
+
     private void Start()
     {
         _interactTrigger.onInteract.AddListener(OnInteract);
@@ -58,7 +58,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 DawnPlugin.Logger.LogError($"{definition.Item.itemName} is not a shop item. It can not be progressively unlocked.");
                 return;
             }
-            
+
             if (definition.ShopInfo.PurchasePredicate is not ProgressivePredicate progressive)
             {
                 DawnPlugin.Logger.LogError($"{definition.Item.itemName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");

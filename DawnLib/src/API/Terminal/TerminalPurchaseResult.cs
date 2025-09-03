@@ -26,7 +26,7 @@ public abstract class TerminalPurchaseResult
             ReasonNode = node;
             OverrideName = overrideName;
         }
-        
+
         public string? OverrideName { get; }
         public TerminalNode ReasonNode { get; }
     }

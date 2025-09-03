@@ -56,7 +56,7 @@ static class AdditionalTilesRegistrationHandler
             dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
-        
+
         CollectArchetypesAndTileSets();
         LethalContent.Dungeons.Freeze();
     }
@@ -149,14 +149,14 @@ static class AdditionalTilesRegistrationHandler
         name = ReplaceInternalLevelNames(name);
         return name;
     }
-    
+
     private static readonly Dictionary<string, string> _internalToHumanDungeonNames = new()
     {
         { "LevelOne", "Facility" },
         { "LevelTwo", "Mansion" },
         { "LevelThree", "Mineshaft" }
     };
- 
+
     private static string ReplaceInternalLevelNames(string input)
     {
         foreach ((string internalName, string humanName) in _internalToHumanDungeonNames)
@@ -165,7 +165,7 @@ static class AdditionalTilesRegistrationHandler
         }
         return input;
     }
-    
+
     private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags)
     {
         if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
@@ -230,20 +230,20 @@ static class AdditionalTilesRegistrationHandler
             }
             foreach (DawnTileSetInfo tileSet in info.TileSets)
             {
-                if(tileSet.HasTag(DawnLibTags.IsExternal))
+                if (tileSet.HasTag(DawnLibTags.IsExternal))
                     continue;
 
                 // remove unconditionally.
                 if (archetype.BranchCapTileSets.Contains(tileSet.TileSet))
                     archetype.BranchCapTileSets.Remove(tileSet.TileSet);
-                
+
                 if (archetype.TileSets.Contains(tileSet.TileSet))
                     archetype.TileSets.Remove(tileSet.TileSet);
-                
+
                 // then if this passes, re-add to the archetype.
-                if(!tileSet.InjectionPredicate.Evaluate())
+                if (!tileSet.InjectionPredicate.Evaluate())
                     continue;
-                
+
                 if (tileSet.IsBranchCap)
                 {
                     archetype.BranchCapTileSets.Add(tileSet.TileSet);

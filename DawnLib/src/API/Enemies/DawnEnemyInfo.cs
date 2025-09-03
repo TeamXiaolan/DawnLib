@@ -22,7 +22,7 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
     public DawnEnemyLocationInfo? Outside { get; }
     public DawnEnemyLocationInfo? Inside { get; }
     public DawnEnemyLocationInfo? Daytime { get; }
-    
+
     public TerminalNode? BestiaryNode { get; }
     public TerminalKeyword? NameKeyword { get; }
 }

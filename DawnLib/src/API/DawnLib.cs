@@ -87,7 +87,8 @@ public static class DawnLib
 
     public static void ApplyTag(JSONTagDefinition definition)
     {
-        void ListenToRegistry<T>(TaggedRegistry<T> registry, NamespacedKey namespacedKey) where T : DawnBaseInfo<T> {
+        void ListenToRegistry<T>(TaggedRegistry<T> registry, NamespacedKey namespacedKey) where T : DawnBaseInfo<T>
+        {
             registry.OnFreeze += () =>
             {
                 foreach (string value in definition.Values)
@@ -109,7 +110,7 @@ public static class DawnLib
         ListenToRegistry(LethalContent.Weathers, tag);
         ListenToRegistry(LethalContent.Dungeons, tag);
         ListenToRegistry(LethalContent.Unlockables, tag);
-        
+
         Debuggers.Tags?.Log($"Scheduled applying tag: {tag}");
     }
 
@@ -121,7 +122,7 @@ public static class DawnLib
             ApplyTag(definition);
         }
     }
-    
+
     public static TerminalNodeBuilder DefineTerminalNode(string name)
     {
         return new TerminalNodeBuilder(name);

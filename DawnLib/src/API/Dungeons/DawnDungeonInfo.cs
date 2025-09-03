@@ -10,7 +10,7 @@ namespace Dawn;
 public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
     private List<DoorwaySocket> _sockets;
-    
+
     internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, List<NamespacedKey> tags, DungeonFlow dungeonFlow) : base(key, tags)
     {
         DungeonFlow = dungeonFlow;
@@ -31,6 +31,6 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 
     public DungeonFlow DungeonFlow { get; }
     public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
-    
-    
+
+
 }

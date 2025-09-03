@@ -50,7 +50,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     private DawnSuitInfo? _suitInfo;
     private DawnPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
-    
+
     internal UnlockableInfoBuilder(NamespacedKey<DawnUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
     {
     }

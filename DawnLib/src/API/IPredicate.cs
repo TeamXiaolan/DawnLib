@@ -10,7 +10,7 @@ public class ConstantPredicate : IPredicate
     public static readonly ConstantPredicate False = new(false);
 
     private bool _value;
-        
+
     private ConstantPredicate(bool value)
     {
         _value = value;

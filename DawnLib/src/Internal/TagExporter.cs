@@ -9,7 +9,7 @@ namespace Dawn.Internal;
 static class TagExporter
 {
     const string _datetimeFormat = "dd_MM_yyyy-HH_mm";
-    
+
     private static StreamWriter _outputFile;
     internal static void Init()
     {
@@ -21,7 +21,7 @@ static class TagExporter
             _outputFile.Close();
             _outputFile.Dispose();
         };
-        
+
         AddRegistry("Enemies", LethalContent.Enemies);
         AddRegistry("Moons", LethalContent.Moons);
         AddRegistry("MapObjects", LethalContent.MapObjects);
@@ -30,15 +30,17 @@ static class TagExporter
         AddRegistry("Dungeons", LethalContent.Dungeons);
         AddRegistry("Unlockables", LethalContent.Unlockables);
     }
-    
-    static string GetFileName(string extension) {
+
+    static string GetFileName(string extension)
+    {
         return $"{DateTime.Now.ToString(_datetimeFormat)}{extension}";
     }
 
-    static string GetFolder() {
+    static string GetFolder()
+    {
         return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "tag-exports");
     }
-    
+
     static void AddRegistry<T>(string name, TaggedRegistry<T> registry) where T : DawnBaseInfo<T>
     {
         registry.AfterTagging += () =>
@@ -54,8 +56,9 @@ static class TagExporter
             _outputFile.Flush();
         };
     }
-    
-    static void WriteList(StreamWriter stream, IEnumerable<string> list) {
+
+    static void WriteList(StreamWriter stream, IEnumerable<string> list)
+    {
         stream.WriteLine(string.Join("<br/>\n", list.Select(it => "- " + it)));
     }
 }

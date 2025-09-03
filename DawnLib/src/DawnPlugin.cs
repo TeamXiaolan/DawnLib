@@ -35,7 +35,7 @@ public class DawnPlugin : BaseUnityPlugin
         {
             TagExporter.Init();
         }
-        
+
         NetcodePatcher();
         if (LethalConfigCompat.Enabled)
         {
@@ -88,9 +88,9 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Tile Sets", LethalContent.TileSets, tileInfo => tileInfo.TileSet.name);
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
-        
+
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
-        
+
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
         AutoDuskModHandler.AutoRegisterMods();
     }

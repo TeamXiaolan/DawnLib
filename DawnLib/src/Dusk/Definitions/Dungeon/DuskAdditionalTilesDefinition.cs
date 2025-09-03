@@ -28,7 +28,7 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, 
     public BranchCapSetting BranchCap { get; private set; }
 
     private DawnTileSetInfo _info;
-    
+
     public override void Register(DuskMod mod, DungeonData data)
     {
         base.Register(mod);

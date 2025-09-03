@@ -1,5 +1,6 @@
 ﻿namespace Dawn.SourceGen.AST;
 
-public interface ITopLevelSymbol : ISymbol {
-	
+public interface ITopLevelSymbol : ISymbol
+{
+
 }

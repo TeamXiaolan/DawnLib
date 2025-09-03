@@ -6,7 +6,7 @@ public class TilesetInfoBuilder : BaseInfoBuilder<DawnTileSetInfo, TileSet, Tile
 {
     private bool _branchCap, _regular = true;
     private IPredicate? _predicate;
-    
+
     internal TilesetInfoBuilder(NamespacedKey<DawnTileSetInfo> key, TileSet value) : base(key, value)
     {
     }
@@ -31,8 +31,8 @@ public class TilesetInfoBuilder : BaseInfoBuilder<DawnTileSetInfo, TileSet, Tile
 
     override internal DawnTileSetInfo Build()
     {
-        if(_predicate == null) _predicate = ConstantPredicate.True;
-        
+        if (_predicate == null) _predicate = ConstantPredicate.True;
+
         // tilesets do not really need tags, its just there to carry the IsExternal flag
         return new DawnTileSetInfo(key, [], _predicate, value, _branchCap, _regular);
     }

@@ -3,120 +3,140 @@ using Dawn.SourceGen.Extensions;
 
 namespace Dawn.SourceGen.AST;
 
-public class FileWriterVisitor : ISymbolVisitor {
-	int _currentIndent;
+public class FileWriterVisitor : ISymbolVisitor
+{
+    int _currentIndent;
 
-	StringBuilder _builder = new StringBuilder();
+    StringBuilder _builder = new StringBuilder();
 
-	void AppendLine(string line) {
-		for(int i = 0; i < _currentIndent; i++) {
-			_builder.Append("\t");
-		}
+    void AppendLine(string line)
+    {
+        for (int i = 0; i < _currentIndent; i++)
+        {
+            _builder.Append("\t");
+        }
 
-		_builder.AppendLine(line);
-	}
+        _builder.AppendLine(line);
+    }
 
-	void AppendAttributes(IAttributeContainer attributeContainer) {
-		foreach(string attribute in attributeContainer.Attributes) {
-			AppendLine($"[{attribute}]");
-		}
-	}
-	
-	public void Accept(GeneratedClass @class) {
-		StringBuilder definition = new StringBuilder();
-		AppendAttributes(@class);
+    void AppendAttributes(IAttributeContainer attributeContainer)
+    {
+        foreach (string attribute in attributeContainer.Attributes)
+        {
+            AppendLine($"[{attribute}]");
+        }
+    }
 
-		definition.Append(string.Join(" ", @class.Signature()));
-		if(!string.IsNullOrEmpty(@class.DefaultConstructor))
-			definition.Append($"({@class.DefaultConstructor})");
+    public void Accept(GeneratedClass @class)
+    {
+        StringBuilder definition = new StringBuilder();
+        AppendAttributes(@class);
 
-		if(@class.Implements.Count > 0) {
-			definition.Append(" : ");
-			definition.Append(string.Join(", ", @class.Implements));
-		}
+        definition.Append(string.Join(" ", @class.Signature()));
+        if (!string.IsNullOrEmpty(@class.DefaultConstructor))
+            definition.Append($"({@class.DefaultConstructor})");
 
-		AppendLine(definition + " {");
-		_currentIndent++;
-		foreach(IClassMember member in @class.Members) {
-			member.Visit(this);
-		}
+        if (@class.Implements.Count > 0)
+        {
+            definition.Append(" : ");
+            definition.Append(string.Join(", ", @class.Implements));
+        }
 
-		_currentIndent--;
-		AppendLine("}");
-	}
+        AppendLine(definition + " {");
+        _currentIndent++;
+        foreach (IClassMember member in @class.Members)
+        {
+            member.Visit(this);
+        }
 
-	public void Accept(GeneratedEnum @enum) {
-		StringBuilder builder = new StringBuilder();
-		AppendAttributes(@enum);
-		builder.Append(string.Join(" ", @enum.Signature()));
-		
-		AppendLine(builder + " {");
-		_currentIndent++;
+        _currentIndent--;
+        AppendLine("}");
+    }
 
-		builder.Clear();
-		foreach((int i, GeneratedEnum.EnumValue value) in @enum.Values.WithIndex()) {
-			AppendAttributes(value);
-			builder.Append(value.Name);
+    public void Accept(GeneratedEnum @enum)
+    {
+        StringBuilder builder = new StringBuilder();
+        AppendAttributes(@enum);
+        builder.Append(string.Join(" ", @enum.Signature()));
 
-			if(value.Value != null) {
-				builder.Append($" = {value.Value}");
-			}
+        AppendLine(builder + " {");
+        _currentIndent++;
 
-			if(i != @enum.Values.Count - 1) {
-				builder.Append(",");
-			}
-			
-			AppendLine(builder.ToString());
-			builder.Clear();
-		}
-		
-		_currentIndent--;
-		AppendLine("}");
-	}
+        builder.Clear();
+        foreach ((int i, GeneratedEnum.EnumValue value) in @enum.Values.WithIndex())
+        {
+            AppendAttributes(value);
+            builder.Append(value.Name);
 
-	public void Accept(GeneratedCodeFile codeFile) {
-		foreach(string @using in codeFile.Usings) {
-			_builder.AppendLine($"using {@using};");
-		}
+            if (value.Value != null)
+            {
+                builder.Append($" = {value.Value}");
+            }
 
-		if(!string.IsNullOrEmpty(codeFile.Namespace))
-			_builder.AppendLine($"namespace {codeFile.Namespace};");
+            if (i != @enum.Values.Count - 1)
+            {
+                builder.Append(",");
+            }
 
-		foreach(ITopLevelSymbol symbol in codeFile.Symbols) {
-			symbol.Visit(this);
-		}
-	}
+            AppendLine(builder.ToString());
+            builder.Clear();
+        }
 
-	public void Accept(GeneratedField field) {
-		StringBuilder builder = new StringBuilder();
-		AppendAttributes(field);
-		
-		builder.Append(string.Join(" ", field.Signature()));
-		if(field.Value != null) {
-			builder.Append($" = {field.Value}");
-		}
+        _currentIndent--;
+        AppendLine("}");
+    }
 
-		builder.Append(";");
-		AppendLine(builder.ToString());
-	}
+    public void Accept(GeneratedCodeFile codeFile)
+    {
+        foreach (string @using in codeFile.Usings)
+        {
+            _builder.AppendLine($"using {@using};");
+        }
 
-	public void Accept(GeneratedMethod method) {
-		AppendAttributes(method);
-		StringBuilder definition = new StringBuilder();
-		definition.Append(string.Join(" ", method.Signature()));
-		definition.Append("(");
-		definition.Append(string.Join(", ", method.Params));
-		AppendLine(definition + ") {");
-		_currentIndent++;
-		foreach(string line in method.Body) {
-			AppendLine(line);
-		}
+        if (!string.IsNullOrEmpty(codeFile.Namespace))
+            _builder.AppendLine($"namespace {codeFile.Namespace};");
 
-		_currentIndent--;
-		AppendLine("}");
-	}
+        foreach (ITopLevelSymbol symbol in codeFile.Symbols)
+        {
+            symbol.Visit(this);
+        }
+    }
 
-	public override string ToString() {
-		return _builder.ToString();
-	}
+    public void Accept(GeneratedField field)
+    {
+        StringBuilder builder = new StringBuilder();
+        AppendAttributes(field);
+
+        builder.Append(string.Join(" ", field.Signature()));
+        if (field.Value != null)
+        {
+            builder.Append($" = {field.Value}");
+        }
+
+        builder.Append(";");
+        AppendLine(builder.ToString());
+    }
+
+    public void Accept(GeneratedMethod method)
+    {
+        AppendAttributes(method);
+        StringBuilder definition = new StringBuilder();
+        definition.Append(string.Join(" ", method.Signature()));
+        definition.Append("(");
+        definition.Append(string.Join(", ", method.Params));
+        AppendLine(definition + ") {");
+        _currentIndent++;
+        foreach (string line in method.Body)
+        {
+            AppendLine(line);
+        }
+
+        _currentIndent--;
+        AppendLine("}");
+    }
+
+    public override string ToString()
+    {
+        return _builder.ToString();
+    }
 }

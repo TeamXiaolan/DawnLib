@@ -15,7 +15,7 @@ class CodeRebirthLibPreloader
     internal static ManualLogSource Log { get; } = Logger.CreateLogSource("CodeRebirthLib.Preloader");
 
     public static IEnumerable<string> TargetDLLs { get; } = new string[] { "Assembly-CSharp.dll" };
-    
+
     public static void Patch(AssemblyDefinition assembly)
     {
         Log.LogInfo($"Patching {assembly.Name.Name}");
@@ -30,7 +30,7 @@ class CodeRebirthLibPreloader
 
             if (!attributes.Any())
                 continue;
-            
+
             foreach (InjectInterfaceAttribute attribute in attributes)
             {
                 if (!interfacesToInject.TryGetValue(attribute.FullName, out List<Type> existing))
@@ -41,16 +41,16 @@ class CodeRebirthLibPreloader
                 interfacesToInject[attribute.FullName] = existing;
             }
         }
-        
+
         Log.LogInfo($"Injecting interfaces into '{interfacesToInject.Count}' different types.");
-        
+
         foreach (TypeDefinition type in assembly.MainModule.Types)
         {
             if (!interfacesToInject.TryGetValue(type.FullName, out List<Type> interfaces))
                 continue;
 
             Log.LogInfo($"{type.Name} has {interfaces.Count} interface(s) to inject.");
-            
+
             foreach (Type @interface in interfaces)
             {
                 ImplementInterface(type, @interface);
@@ -63,17 +63,17 @@ class CodeRebirthLibPreloader
         Log.LogDebug($"Injecting {@interface.FullName} into {type.FullName}.");
 
         var module = type.Module;
-        
+
         foreach (MethodInfo method in @interface.GetMethods())
         {
             Log.LogDebug($"trying to inject {method.Name} ({method.Attributes})");
-            if(method.Attributes.HasFlag(System.Reflection.MethodAttributes.SpecialName))
+            if (method.Attributes.HasFlag(System.Reflection.MethodAttributes.SpecialName))
                 continue;
 
             type.AddMethod(
-                method.Name, 
-                MethodAttributes.Public | MethodAttributes.Virtual, 
-                module.ImportReference(method.ReturnType), 
+                method.Name,
+                MethodAttributes.Public | MethodAttributes.Virtual,
+                module.ImportReference(method.ReturnType),
                 method.GetParameters().Select(it => ToMonoCecilParameter(it, type.Module)).ToArray()
             );
         }
@@ -83,10 +83,10 @@ class CodeRebirthLibPreloader
             Log.LogDebug($"Injecting {property.Name}");
 
             var propertyType = module.ImportReference(property.PropertyType);
-            
+
             var field = new FieldDefinition($"<{property.Name}>k__BackingField", FieldAttributes.Private | FieldAttributes.InitOnly, propertyType);
             var propertyDef = new PropertyDefinition(property.Name, 0, propertyType);
-        
+
             var attributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.VtableLayoutMask | MethodAttributes.Virtual;
             var getter = new MethodDefinition($"get_{property.Name}", attributes, propertyType);
             var getterProcessor = getter.Body.GetILProcessor();
@@ -101,13 +101,13 @@ class CodeRebirthLibPreloader
             setterProcessor.Emit(OpCodes.Ldarg_1);
             setterProcessor.Emit(OpCodes.Stfld, field);
             setterProcessor.Emit(OpCodes.Ret);
-            
+
             type.Methods.Add(getter);
             type.Methods.Add(setter);
 
             propertyDef.GetMethod = getter;
             propertyDef.SetMethod = setter;
-            
+
             type.Properties.Add(propertyDef);
             type.Fields.Add(field);
         }

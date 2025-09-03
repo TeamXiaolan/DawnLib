@@ -2,31 +2,34 @@
 
 namespace Dawn.SourceGen.AST;
 
-public class GeneratedMethod(string visibility, string returnType, string name) : IClassMember, IAttributeContainer {
-	public string Visibility = visibility;
-	
-	public string ReturnType = returnType;
-	public string Name = name;
-	public List<string> Body = [];
-	public List<string> Params = [];
+public class GeneratedMethod(string visibility, string returnType, string name) : IClassMember, IAttributeContainer
+{
+    public string Visibility = visibility;
 
-	public bool IsStatic;
-	public bool IsAsync;
+    public string ReturnType = returnType;
+    public string Name = name;
+    public List<string> Body = [];
+    public List<string> Params = [];
 
-	public List<string> Signature() {
-		List<string> flags = [Visibility];
+    public bool IsStatic;
+    public bool IsAsync;
 
-		if(IsStatic) flags.Add("static");
-		if(IsAsync) flags.Add("async");
+    public List<string> Signature()
+    {
+        List<string> flags = [Visibility];
 
-		flags.Add(ReturnType);
-		flags.Add($"{Name}");
-		return flags;
-	}
+        if (IsStatic) flags.Add("static");
+        if (IsAsync) flags.Add("async");
 
-	public void Visit(ISymbolVisitor visitor) {
-		visitor.Accept(this);
-	}
+        flags.Add(ReturnType);
+        flags.Add($"{Name}");
+        return flags;
+    }
 
-	public List<string> Attributes { get; } = [];
+    public void Visit(ISymbolVisitor visitor)
+    {
+        visitor.Accept(this);
+    }
+
+    public List<string> Attributes { get; } = [];
 }

@@ -28,7 +28,7 @@ public class TerminalNodeBuilder
         _node.maxCharactersToType = maxCharacters;
         return this;
     }
-    
+
     public TerminalNode Build()
     {
         return _node;

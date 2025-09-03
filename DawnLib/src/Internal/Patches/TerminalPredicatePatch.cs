@@ -18,24 +18,24 @@ static class TerminalPredicatePatch
         c.GotoNext(
             i => i.MatchLdfld<Item>(nameof(Item.itemName))
         );
-        
+
         c.Next.OpCode = OpCodes.Nop;
 
         c.EmitDelegate<Func<Item, string>>((item) =>
         {
             if (!item.TryGetDawnInfo(out DawnItemInfo? info))
                 return item.itemName;
-            
+
             DawnShopItemInfo? shopInfo = info.ShopInfo;
             if (shopInfo == null)
                 return item.itemName;
-            
+
             TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
             {
                 return failedResult.OverrideName ?? item.itemName;
             }
-            
+
             return item.itemName;
         });
 
@@ -44,7 +44,7 @@ static class TerminalPredicatePatch
             i => i.MatchLdfld<UnlockableItem>(nameof(UnlockableItem.unlockableName))
         );
         c.Next.OpCode = OpCodes.Nop;
-        
+
         c.EmitDelegate((UnlockableItem unlockable) =>
         {
             if (!unlockable.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
@@ -55,7 +55,7 @@ static class TerminalPredicatePatch
             {
                 return failedResult.OverrideName;
             }
-            
+
             return unlockable.unlockableName;
         });
     }
@@ -84,7 +84,7 @@ static class TerminalPredicatePatch
                 DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {unlockableItem.unlockableName}");
                 return;
             }
-            
+
             purchase = info;
         }
 

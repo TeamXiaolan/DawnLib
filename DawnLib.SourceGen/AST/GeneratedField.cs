@@ -2,29 +2,32 @@
 
 namespace Dawn.SourceGen.AST;
 
-public class GeneratedField(string visibility, string type, string name) : IClassMember, IAttributeContainer {
-	public string Visibility = visibility;
-	
-	public string Type = type;
-	public string Name = name;
+public class GeneratedField(string visibility, string type, string name) : IClassMember, IAttributeContainer
+{
+    public string Visibility = visibility;
 
-	public bool IsStatic;
+    public string Type = type;
+    public string Name = name;
 
-	public string? Value;
-	
-	public List<string> Signature() {
-		List<string> flags = [Visibility];
+    public bool IsStatic;
 
-		if(IsStatic) flags.Add("static");
+    public string? Value;
 
-		flags.Add(Type);
-		flags.Add($"{Name}");
-		return flags;
-	}
-	
-	public void Visit(ISymbolVisitor visitor) {
-		visitor.Accept(this);
-	}
+    public List<string> Signature()
+    {
+        List<string> flags = [Visibility];
 
-	public List<string> Attributes { get; } = [];
+        if (IsStatic) flags.Add("static");
+
+        flags.Add(Type);
+        flags.Add($"{Name}");
+        return flags;
+    }
+
+    public void Visit(ISymbolVisitor visitor)
+    {
+        visitor.Accept(this);
+    }
+
+    public List<string> Attributes { get; } = [];
 }

@@ -2,6 +2,7 @@
 
 namespace Dawn.SourceGen.AST;
 
-public interface IAttributeContainer {
-	public List<string> Attributes { get; }
+public interface IAttributeContainer
+{
+    public List<string> Attributes { get; }
 }

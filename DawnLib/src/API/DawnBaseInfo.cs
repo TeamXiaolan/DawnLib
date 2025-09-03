@@ -5,7 +5,7 @@ namespace Dawn;
 public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : DawnBaseInfo<T>
 {
     private List<NamespacedKey> _tags;
-    
+
     protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags)
     {
         TypedKey = key;

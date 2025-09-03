@@ -12,63 +12,63 @@ namespace Dawn;
 [Serializable]
 public class NamespacedKey : INetworkSerializable
 {
-	private static readonly Regex NamespacedKeyRegex = new(@"[?!.\n\t""`\[\]'-]");
+    private static readonly Regex NamespacedKeyRegex = new(@"[?!.\n\t""`\[\]'-]");
 
-	private static readonly Dictionary<char, string> NumberWords = new()
-	{
-		{ '0', "Zero" },
-		{ '1', "One" },
-		{ '2', "Two" },
-		{ '3', "Three" },
-		{ '4', "Four" },
-		{ '5', "Five" },
-		{ '6', "Six" },
-		{ '7', "Seven" },
-		{ '8', "Eight" },
-		{ '9', "Nine" },
-	};
+    private static readonly Dictionary<char, string> NumberWords = new()
+    {
+        { '0', "Zero" },
+        { '1', "One" },
+        { '2', "Two" },
+        { '3', "Three" },
+        { '4', "Four" },
+        { '5', "Five" },
+        { '6', "Six" },
+        { '7', "Seven" },
+        { '8', "Eight" },
+        { '9', "Nine" },
+    };
 
-	internal static string NormalizeStringForNamespacedKey(string input, bool CSharpName)
-	{
-		if (string.IsNullOrEmpty(input))
-			return string.Empty;
+    internal static string NormalizeStringForNamespacedKey(string input, bool CSharpName)
+    {
+        if (string.IsNullOrEmpty(input))
+            return string.Empty;
 
-		string cleanedString = NamespacedKeyRegex.Replace(input, string.Empty);
+        string cleanedString = NamespacedKeyRegex.Replace(input, string.Empty);
 
-		StringBuilder cleanBuilder = new StringBuilder(cleanedString.Length);
-		bool foundAllBeginningDigits = false;
-		foreach (char character in cleanedString)
-		{
-			if (!foundAllBeginningDigits && (char.IsDigit(character) || character == ' '))
-			{
-				continue;
-			}
-			foundAllBeginningDigits = true;
-			cleanBuilder.Append(character);
-		}
+        StringBuilder cleanBuilder = new StringBuilder(cleanedString.Length);
+        bool foundAllBeginningDigits = false;
+        foreach (char character in cleanedString)
+        {
+            if (!foundAllBeginningDigits && (char.IsDigit(character) || character == ' '))
+            {
+                continue;
+            }
+            foundAllBeginningDigits = true;
+            cleanBuilder.Append(character);
+        }
 
-		StringBuilder actualWordBuilder = new StringBuilder(cleanBuilder.Length);
-		foreach (char character in cleanBuilder.ToString())
-		{
-			if (NumberWords.TryGetValue(character, out var word))
-				actualWordBuilder.Append(word);
-			else
-				actualWordBuilder.Append(character);
-		}
+        StringBuilder actualWordBuilder = new StringBuilder(cleanBuilder.Length);
+        foreach (char character in cleanBuilder.ToString())
+        {
+            if (NumberWords.TryGetValue(character, out var word))
+                actualWordBuilder.Append(word);
+            else
+                actualWordBuilder.Append(character);
+        }
 
-		string result = actualWordBuilder.ToString();
-		if (CSharpName)
-		{
-			result = result.Replace(" ", "");
-			result = result.Replace("_", "");
-			result = result.ToCapitalized();
-		}
-		else
-		{
-			result = result.ToLowerInvariant().Replace(" ", "_");
-		}
-		return result;
-	}
+        string result = actualWordBuilder.ToString();
+        if (CSharpName)
+        {
+            result = result.Replace(" ", "");
+            result = result.Replace("_", "");
+            result = result.ToCapitalized();
+        }
+        else
+        {
+            result = result.ToLowerInvariant().Replace(" ", "_");
+        }
+        return result;
+    }
 
     public const char Separator = ':';
     public const string VanillaNamespace = "lethal_company";

@@ -14,7 +14,7 @@ public class TagSourceGenerator : ISourceGenerator
 {
     public void Initialize(GeneratorInitializationContext context)
     {
-        
+
     }
     public void Execute(GeneratorExecutionContext context)
     {
@@ -23,13 +23,13 @@ public class TagSourceGenerator : ISourceGenerator
             context.ReportDiagnostic(Diagnostic.Create(DawnLibDiagnostics.MissingRootNamespace, Location.None));
             return;
         }
-        
+
         GeneratedClass @class = new GeneratedClass(Visibility.Public, "Tags") // todo: e.g. MeltdownTags
         {
             IsStatic = true,
             Attributes = { DawnLibSourceGenConstants.CodeGenAttribute }
         };
-        
+
         foreach (AdditionalText? additionalFile in context.AdditionalFiles)
         {
             if (additionalFile == null)
@@ -43,15 +43,15 @@ public class TagSourceGenerator : ISourceGenerator
                 continue;
 
             string fieldName = Path.GetFileName(additionalFile.Path).Split('.')[0];
-            fieldName = string.Join("",fieldName.Split('_').Select(it => it.ToCapitalized()));
-            
+            fieldName = string.Join("", fieldName.Split('_').Select(it => it.ToCapitalized()));
+
             TagDefinition definition = JsonConvert.DeserializeObject<TagDefinition>(text.ToString())!;
             string[] parts = definition.Tag.Split(':');
             GeneratedField field = new GeneratedField(Visibility.Public, "NamespacedKey", fieldName)
             {
                 IsStatic = true
             };
-            
+
             if (parts[0] == "lethal_company")
             {
                 field.Value = $"NamespacedKey.Vanilla(\"{parts[1]}\")";
@@ -68,7 +68,7 @@ public class TagSourceGenerator : ISourceGenerator
             // don't generate tags class if there are no tags.
             return;
         }
-        
+
         GeneratedCodeFile file = new GeneratedCodeFile()
         {
             Namespace = rootNamespace,
@@ -78,7 +78,7 @@ public class TagSourceGenerator : ISourceGenerator
 
         FileWriterVisitor visitor = new FileWriterVisitor();
         visitor.Accept(file);
-        
+
         context.AddSource($"{@class.Name}.g.cs", SourceText.From(visitor.ToString(), Encoding.UTF8));
     }
 }

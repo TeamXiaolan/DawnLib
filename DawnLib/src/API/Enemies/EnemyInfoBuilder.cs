@@ -8,7 +8,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
     private DawnEnemyLocationInfo? _inside, _outside, _daytime;
     private TerminalNode? _bestiaryNode;
     private TerminalKeyword? _nameKeyword;
-    
+
     public class EnemyLocationBuilder
     {
         private ProviderTable<int?, DawnMoonInfo>? _weights;
@@ -36,7 +36,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
             return new DawnEnemyLocationInfo(_weights);
         }
     }
-    
+
     internal EnemyInfoBuilder(NamespacedKey<DawnEnemyInfo> key, EnemyType enemyType) : base(key, enemyType)
     {
     }
@@ -48,7 +48,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
         _outside = builder.Build();
         return this;
     }
-    
+
     public EnemyInfoBuilder DefineInside(Action<EnemyLocationBuilder> callback)
     {
         EnemyLocationBuilder builder = new EnemyLocationBuilder(this);
@@ -56,7 +56,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
         _inside = builder.Build();
         return this;
     }
-    
+
     public EnemyInfoBuilder DefineDaytime(Action<EnemyLocationBuilder> callback)
     {
         EnemyLocationBuilder builder = new EnemyLocationBuilder(this);
@@ -78,7 +78,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
         _nameKeyword.word = word;
         return this;
     }
-   
+
     public EnemyInfoBuilder OverrideNameKeyword(TerminalKeyword keyword)
     {
         _nameKeyword = keyword;
