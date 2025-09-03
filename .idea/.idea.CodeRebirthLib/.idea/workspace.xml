@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="33769221-cdd0-4546-a14f-01d1597b8255" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeRebirthLib/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeRebirthLib/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeRebirthLib/.idea/indexLayout.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.CodeRebirthLib/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.Preloader/CodeRebirthLib.Preloader.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.Preloader/DawnLib.Preloader.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.Preloader/src/CecilHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.Preloader/src/CecilHelper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.Preloader/src/CodeRebirthLibPreloader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.Preloader/src/CodeRebirthLibPreloader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.Preloader/src/InjectInterfaceAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.Preloader/src/InjectInterfaceAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.Preloader/src/Interfaces/ICRObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.Preloader/src/Interfaces/ICRObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.Preloader/src/Interfaces/ICRScanNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.Preloader/src/Interfaces/ICRScanNode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/FileWriterVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/FileWriterVisitor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/GeneratedClass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/GeneratedClass.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/GeneratedCodeFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/GeneratedCodeFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/GeneratedEnum.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/GeneratedEnum.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/GeneratedField.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/GeneratedField.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/GeneratedMethod.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/GeneratedMethod.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/IAttributeContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/IAttributeContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/IClassMember.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/IClassMember.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/ISymbol.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/ISymbol.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/ISymbolVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/ISymbolVisitor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/ITopLevelSymbol.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/ITopLevelSymbol.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/AST/Visibility.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/AST/Visibility.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/CRLibDiagnostics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/CRLibDiagnostics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/CRLibSourceGenConstants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/CRLibSourceGenConstants.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/CodeRebirthLib.SourceGen.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/DawnLib.SourceGen.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/Extensions/IEnumerableExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/Extensions/IEnumerableExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/Extensions/StringExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/Extensions/StringExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/KeyCollectionSourceGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/KeyCollectionSourceGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/TagDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/TagDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.SourceGen/TagSourceGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.SourceGen/TagSourceGenerator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib.sln" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/CodeRebirthLib.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/DawnLib.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/CodeRebirthLib.csproj.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/DawnLib.csproj.DotSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/keys/extra.namespaced_keys.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/keys/extra.namespaced_keys.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/keys/vanilla.namespaced_keys.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/keys/vanilla.namespaced_keys.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/abandoned.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/abandoned.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/artificial.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/artificial.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/bunker.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/bunker.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/catacomb.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/catacomb.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/cavern.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/cavern.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/claustrophobic.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/claustrophobic.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/dusty.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/dusty.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/eerie.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/eerie.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/factory.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/factory.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/flooded.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/flooded.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/gothic.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/gothic.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/grand.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/grand.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/industrial.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/industrial.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/lavish.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/lavish.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/maze.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/maze.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/mechanical.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/mechanical.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/monotone.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/monotone.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/ornate.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/ornate.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/quarry.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/quarry.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/reactor.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/reactor.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/ruins.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/ruins.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/storage.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/storage.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Dungeon/withered.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Dungeon/withered.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/biped.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/biped.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/hostile.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/hostile.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/killable.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/killable.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/large.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/large.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/medium.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/medium.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/neutral.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/neutral.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/organic.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/organic.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/passive.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/passive.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/quadruped.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/quadruped.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Enemies/small.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Enemies/small.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/beast_byproduct.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/beast_byproduct.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/chargeable.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/chargeable.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/communicative.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/communicative.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/conductive.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/conductive.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/consumable.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/consumable.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/harmful.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/harmful.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/heavy_weight.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/heavy_weight.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/high_value.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/high_value.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/household.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/household.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/information.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/information.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/interactable.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/interactable.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/light_weight.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/light_weight.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/low_value.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/low_value.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/luminescent.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/luminescent.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/machine_part.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/machine_part.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/medium_value.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/medium_value.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/medium_weight.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/medium_weight.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/metal.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/metal.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/noisy.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/noisy.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/non_interactable.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/non_interactable.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/one_handed.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/one_handed.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/scrap.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/scrap.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/tool.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/tool.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/transportation.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/transportation.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/two_handed.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/two_handed.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Items/weapon.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Items/weapon.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/amethyst.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/amethyst.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/canyon.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/canyon.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/company.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/company.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/desert.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/desert.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/forest.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/forest.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/free.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/free.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/habitable.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/habitable.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/inhabited.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/inhabited.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/marsh.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/marsh.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/plains.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/plains.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/rocky.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/rocky.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/temperate.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/temperate.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/tundra.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/tundra.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/valley.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/valley.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/wasteland.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/wasteland.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/Moons/wet.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/Moons/wet.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/cold.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/cold.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/hot.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/hot.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/military.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/military.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/natural.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/natural.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/paid.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/paid.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/unimplemented.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/unimplemented.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/data/tags/vanilla.tag.json" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/data/tags/vanilla.tag.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/LethalConfig.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/LethalConfig.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_Assembly-CSharp.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_Assembly-CSharp.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_BepInEx.Preloader.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_BepInEx.Preloader.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_BepInEx.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_BepInEx.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_LethalQuantities.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_LethalQuantities.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_TerminalFormatter.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_TerminalFormatter.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_ainavt.lc.lethalconfig.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_ainavt.lc.lethalconfig.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/MMHOOK_imabatby.lethallevelloader.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/MMHOOK_imabatby.lethallevelloader.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/deps/PathfindingLib.dll" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/deps/PathfindingLib.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/res/coderebirthlibmain" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/res/coderebirthlibmain" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/res/res" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/res/res" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/BaseInfoBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/BaseInfoBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/CRBaseInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/CRBaseInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/CRLib.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/CRLib.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Data/INamespaced.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Data/INamespaced.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Data/JSONTagDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Data/JSONTagDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Data/NamespacedKey.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Data/NamespacedKey.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/.AdditionalTilesRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/.AdditionalTilesRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/CRArchetypeInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/CRArchetypeInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/CRDungeonInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/CRDungeonInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/CRTileSetInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/CRTileSetInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/DungeonArchetypeExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/DungeonArchetypeExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/DungeonFlowExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/DungeonFlowExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/TileSetExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/TileSetExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Dungeons/TilesetInfoBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Dungeons/TilesetInfoBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Enemies/.EnemyRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Enemies/.EnemyRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Enemies/CREnemyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Enemies/CREnemyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Enemies/CREnemyLocationInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Enemies/CREnemyLocationInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Enemies/EnemyInfoBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Enemies/EnemyInfoBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Enemies/EnemyTypeExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Enemies/EnemyTypeExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Exceptions/BundleException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Exceptions/BundleException.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Exceptions/MalformedAnimationCurveConfigException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Exceptions/MalformedAnimationCurveConfigException.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Exceptions/MultipleContentDefinitionsInBundle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Exceptions/MultipleContentDefinitionsInBundle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Exceptions/NoContentDefinitionInBundle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Exceptions/NoContentDefinitionInBundle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/IPredicate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/IPredicate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/IProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/IProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/.ItemRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/.ItemRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/AutoTaggers/AutoNonInteractableTagger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/AutoTaggers/AutoNonInteractableTagger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/AutoTaggers/AutoValueTagger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/AutoTaggers/AutoValueTagger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/AutoTaggers/AutoWeightTagger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/AutoTaggers/AutoWeightTagger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/CRItemInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/CRItemInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/CRScrapItemInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/CRScrapItemInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/CRShopItemInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/CRShopItemInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/ItemExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/ItemExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Items/ItemInfoBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Items/ItemInfoBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/LethalContent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/LethalContent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/.MapObjectRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/.MapObjectRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/CRInsideMapObjectInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/CRInsideMapObjectInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/CRMapObjectInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/CRMapObjectInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/CROutsideMapObjectInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/CROutsideMapObjectInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/InsideMapObjectSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/InsideMapObjectSettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/MapObjectInfoBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/MapObjectInfoBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/MapObjects/OutsideMapObjectSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/MapObjects/OutsideMapObjectSettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Moons/.MoonRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Moons/.MoonRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Moons/CRMoonInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Moons/CRMoonInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Moons/SelectableLevelExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Moons/SelectableLevelExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Registry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Registry.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/TaggedRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/TaggedRegistry.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Tags/IAutoTagger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Tags/IAutoTagger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Tags/ITaggable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Tags/ITaggable.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Tags/SimpleAutoTagger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Tags/SimpleAutoTagger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Tags/VanillaAutoTagger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Tags/VanillaAutoTagger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Terminal/ITerminalPurchase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Terminal/ITerminalPurchase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Terminal/TerminalNodeBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Terminal/TerminalNodeBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Terminal/TerminalPurchaseResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Terminal/TerminalPurchaseResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Unlockables/.UnlockableItemRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Unlockables/.UnlockableItemRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Unlockables/CRPlaceableObjectInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Unlockables/CRPlaceableObjectInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Unlockables/CRSuitInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Unlockables/CRSuitInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Unlockables/CRUnlockableItemInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Unlockables/CRUnlockableItemInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Unlockables/UnlockableItemExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Unlockables/UnlockableItemExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Unlockables/UnlockableItemInfoBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Unlockables/UnlockableItemInfoBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weathers/.WeatherRegistrationHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weathers/.WeatherRegistrationHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weathers/CRWeatherInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weathers/CRWeatherInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weathers/WeatherEffectExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weathers/WeatherEffectExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weights/CurveTableBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weights/CurveTableBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weights/IContextualProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weights/IContextualProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weights/IWeighted.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weights/IWeighted.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weights/ProviderTable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weights/ProviderTable.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weights/SimpleWeighted.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weights/SimpleWeighted.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/API/Weights/WeightTableBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/API/Weights/WeightTableBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/AssertAssetInCorrectBundle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/AssertAssetInCorrectBundle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/AssertFieldNotNull.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/AssertFieldNotNull.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/AssertNotEmpty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/AssertNotEmpty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/AssetBundleData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/AssetBundleData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/AssetBundleLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/AssetBundleLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/AssetBundleReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/AssetBundleReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/ContentContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/ContentContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/DefaultBundle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/DefaultBundle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/IAssetBundleLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/IAssetBundleLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/AssetLoading/LoadFromBundleAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/AssetLoading/LoadFromBundleAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Auto/AutoCRModHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Auto/AutoCRModHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Auto/CRModInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Auto/CRModInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Auto/DefaultContentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Auto/DefaultContentHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/CRMod.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/CRMod.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/CRModConstants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/CRModConstants.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/CRModContent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/CRModContent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/CRContentConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/CRContentConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/CRDynamicConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/CRDynamicConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/CRDynamicConfigType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/CRDynamicConfigType.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/ConfigContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/ConfigContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/ConfigManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/Weights/SpawnWeightsPreset.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/Weights/SpawnWeightsPreset.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/Weights/Transformers/InteriorWeightTransformer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/Weights/Transformers/InteriorWeightTransformer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/Weights/Transformers/MoonWeightTransformer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/Weights/Transformers/MoonWeightTransformer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/Weights/Transformers/WeatherWeightTransformer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/Weights/Transformers/WeatherWeightTransformer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/Weights/Transformers/WeightTransformer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/Weights/Transformers/WeightTransformer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Config/Weights/WeightOperation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Config/Weights/WeightOperation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/ContentHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/ContentHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/AchievementConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/AchievementConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/AchievementTriggers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/AchievementTriggers.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementModUIElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementModUIElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementUICanvas.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementUICanvas.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementUIElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementUIElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementUIGetCanvas.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/AchievementUI/AchievementUIGetCanvas.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRAchievementHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRAchievementHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMAchievementDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMAchievementDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMAchievementExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMAchievementExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMAchievementReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMAchievementReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMDiscoveryAchievementDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMDiscoveryAchievementDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMInstantAchievementDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMInstantAchievementDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMParentAchievementDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMParentAchievementDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Achievements/CRMStatAchievementDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Achievements/CRMStatAchievementDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/CRMContentDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/CRMContentDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/CRMContentReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/CRMContentReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Dungeon/CRMAdditionalTilesDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Dungeon/CRMAdditionalTilesDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Dungeon/CRMAdditionalTilesReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Dungeon/CRMAdditionalTilesReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Dungeon/DungeonConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Dungeon/DungeonConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Dungeon/DungeonData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Dungeon/DungeonData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Enemies/CREnemyAdditionalData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/CREnemyAdditionalData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Enemies/CRMEnemyDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/CRMEnemyDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Enemies/CRMEnemyReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/CRMEnemyReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Enemies/EnemyConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/EnemyConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Enemies/EnemyData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/EnemyData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Enemies/ExtraEnemyEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Enemies/ExtraEnemyEvents.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/EntityConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/EntityConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/EntityData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/EntityData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/CRMItemDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/CRMItemDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/CRMItemReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/CRMItemReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/ExtraItemEvents.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/ExtraItemEvents.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/ItemConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/ItemConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/ItemData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/ItemData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/Progressive/ItemUpgradeScrap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/Progressive/ItemUpgradeScrap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Items/ShopItemPreset.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Items/ShopItemPreset.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/MapObjects/CRMMapObjectDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/MapObjects/CRMMapObjectDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/MapObjects/CRMMapObjectReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/MapObjects/CRMMapObjectReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/MapObjects/MapObjectConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/MapObjects/MapObjectConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/MapObjects/MapObjectData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/MapObjects/MapObjectData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/MapObjects/MapObjectSpawnMechanics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/MapObjects/MapObjectSpawnMechanics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Unlockables/CRMUnlockableDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Unlockables/CRMUnlockableDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Unlockables/CRMUnlockableReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Unlockables/CRMUnlockableReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Unlockables/Progressive/UnlockableUpgradeScrap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Unlockables/Progressive/UnlockableUpgradeScrap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Unlockables/UnlockableConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Unlockables/UnlockableConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Unlockables/UnlockableData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Unlockables/UnlockableData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Weathers/CRMWeatherDefinition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Weathers/CRMWeatherDefinition.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Weathers/CRMWeatherReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Weathers/CRMWeatherReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Weathers/WeatherConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Weathers/WeatherConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/Definitions/Weathers/WeatherData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/Definitions/Weathers/WeatherData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/TerminalPredicates/AchievementPredicate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/TerminalPredicates/AchievementPredicate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/TerminalPredicates/CRMTerminalPredicate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/TerminalPredicates/CRMTerminalPredicate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CRMod/TerminalPredicates/ProgressivePredicate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CRMod/TerminalPredicates/ProgressivePredicate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/CodeRebirthLibPlugin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/CodeRebirthLibPlugin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/CodeRebirthLibConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/CodeRebirthLibConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/CodeRebirthLibNetworker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/CodeRebirthLibNetworker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Debugging.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Debugging.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ExtendedTOML/Converters/AnimationCurveConverter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ExtendedTOML/Converters/AnimationCurveConverter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ExtendedTOML/Converters/BoundedRangeConverter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ExtendedTOML/Converters/BoundedRangeConverter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ExtendedTOML/Converters/NamespacedKeyConverter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ExtendedTOML/Converters/NamespacedKeyConverter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ExtendedTOML/Converters/TOMLConverter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ExtendedTOML/Converters/TOMLConverter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ExtendedTOML/ExtendedTOML.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ExtendedTOML/ExtendedTOML.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/GoodItemScanCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/GoodItemScanCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/LLLCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/LLLCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/LethalConfigCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/LethalConfigCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/LethalQuantitiesCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/LethalQuantitiesCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/StarlancerAIFixCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/StarlancerAIFixCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/TerminalFormatterCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/TerminalFormatterCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/ModCompats/WeatherRegistryCompat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/ModCompats/WeatherRegistryCompat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/AchievementRegistrationPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/AchievementRegistrationPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/CRLibNetworkerPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/CRLibNetworkerPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/EnemyDataPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/EnemyDataPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/ExtraItemEventsPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/ExtraItemEventsPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/MiscFixesPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/MiscFixesPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/SaveDataPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/SaveDataPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/Patches/TerminalPredicatePatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/Patches/TerminalPredicatePatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Internal/TagExporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Internal/TagExporter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/AssetBundleUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/AssetBundleUtils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/BoundedRange.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/BoundedRange.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/CompatibilityBool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/CompatibilityBool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/AssemblyExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/AssemblyExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/CRRegistryExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/CRRegistryExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/ConfigFileExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/ConfigFileExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/HUDManagerExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/HUDManagerExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/IEnumerableExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/IEnumerableExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/IListExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/IListExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/NetworkObjectExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/NetworkObjectExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/PlayerCotnrollerBExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/PlayerCotnrollerBExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/RandomExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/RandomExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Extensions/StringExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Extensions/StringExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/INetworkSerializables/HUDDisplayTip.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/INetworkSerializables/HUDDisplayTip.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/INetworkSerializables/PlayerControllerReference.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/INetworkSerializables/PlayerControllerReference.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/IProgress.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/IProgress.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MainMenuUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MainMenuUtils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/AmbientNoisePlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/AmbientNoisePlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/ApplyRendererVariants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/ApplyRendererVariants.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/AudioClipsWithTime.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/AudioClipsWithTime.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/AudioSourceWithClips.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/AudioSourceWithClips.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/AutoRotate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/AutoRotate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/CRLibObjectTypeWithRarity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/CRLibObjectTypeWithRarity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/CRLibUtilities.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/CRLibUtilities.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/ChanceScript.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/ChanceScript.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/ClientNetworkTransform.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/ClientNetworkTransform.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/EnemyOnlyTriggers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/EnemyOnlyTriggers.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/ForceScanColorOnItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/ForceScanColorOnItem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/NetworkAudioSource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/NetworkAudioSource.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/OwnerNetworkAnimator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/OwnerNetworkAnimator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/PlayerOnlyTriggers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/PlayerOnlyTriggers.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/ScanNodeAdditionalData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/ScanNodeAdditionalData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/SpawnSyncedCRLibObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/SpawnSyncedCRLibObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MiscScripts/UnlockProgressiveObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MiscScripts/UnlockProgressiveObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/MoreLayerMasks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/MoreLayerMasks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/NetworkSingleton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/NetworkSingleton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Pathfinding/SmartAgentNavigator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Pathfinding/SmartAgentNavigator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/Singleton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/Singleton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeRebirthLib/src/Utils/ThunderstoreManifest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/DawnLib/src/Utils/ThunderstoreManifest.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Temp/SourceGeneratedDocuments/5057895306C98AD6047AE588/CodeRebirthLib.SourceGen/CodeRebirthLib.SourceGen.KeyCollectionSourceGenerator/ItemKeys.g.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1d2f118dcc2d414d851ad189155e8faf65600/87/a0be3883/VehiclesManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/35/b4cc82e3/SpawnableOutsideObject.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/62/5bb5c43e/GameObjectChanceTable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/8d/31e26eed/KepRemapPanel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/c0/843cd31d/TileSet.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2c456ed6dfdb487e8d590e727415cb6f9c200/fa/e041ce95/GameObjectChance.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/610b90b38fa24ebcb27a2ab11d9bce03ca708/20/11b74f3a/Int32.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/610b90b38fa24ebcb27a2ab11d9bce03ca708/fa/de20c3a6/ParameterAttributes.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4cd69effbae36e6b22ff74eb82dcd0207dac3b32453e6d0eb6488f92dd7ae88/AssemblyNameReference.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/60a6bf1e1cbf38d9185ff20accbae2c1784d3873a9fd4f5dd118a2fdb63fe/TypeReference.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a3b246e92ac58dfb81adefac3fb274beaabb9f543e819a161f058b769c7/AssemblyNameDefinition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bdc623456840ee29c99a2d4f17c3c43dea8ad0c0cfb6ade79197ca5c55956c/ParameterAttributes.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d8113917cdf6e70ad9cd6ab36d5b13924d3a8ec02aef2568208da72ed9b1b5/IMetadataScope.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e466d67f482b0e1a84e8b7a513a33ded7b5f9c89109694b34051a07150a3c/ModuleDefinition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f8f4bde0a35df4a6efc1f12f7d806e657f6c172176ed79ea7327eb43f98553/TypeDefinition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib.Preloader/src/Interfaces/ICRObject.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib.SourceGen/TagSourceGenerator.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/data/keys/extra.namespaced_keys.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/data/keys/vanilla.namespaced_keys.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/CRLib.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/.AdditionalTilesRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/CRArchetypeInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/CRTileSetInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/DungeonArchetypeExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/DungeonFlowExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/TileSetExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Dungeons/TilesetInfoBuilder.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Enemies/.EnemyRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/IPredicate.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Items/.ItemRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/LethalContent.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/MapObjects/.MapObjectRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Moons/.MoonRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Registry.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/TaggedRegistry.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Unlockables/.UnlockableItemRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Weathers/.WeatherRegistrationHandler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/API/Weights/WeightTableBuilder.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/DawnLib/src/Internal/Patches/MiscFixesPatch.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NuGet.config" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="Toolset" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2zqWvjTGOatYdGcOGhBqfppr2G4" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;restructure&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="listenPortForConnections" value="false" />
+      <option name="pid" />
+      <option name="projectPathOnTarget" />
+      <option name="runtimes">
+        <list />
+      </option>
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="33769221-cdd0-4546-a14f-01d1597b8255" name="Changes" comment="" />
+      <created>1752459316685</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1752459316685</updated>
+      <workItem from="1752459318635" duration="6267000" />
+      <workItem from="1752976312222" duration="252000" />
+      <workItem from="1752986433563" duration="1614000" />
+      <workItem from="1753089467764" duration="2391000" />
+      <workItem from="1753179309560" duration="277000" />
+      <workItem from="1753181859800" duration="174000" />
+      <workItem from="1753347818180" duration="1314000" />
+      <workItem from="1753877947637" duration="19000" />
+      <workItem from="1753877975312" duration="2119000" />
+      <workItem from="1754181531669" duration="18000" />
+      <workItem from="1754293963247" duration="32000" />
+      <workItem from="1754294006781" duration="7154000" />
+      <workItem from="1754379086645" duration="3392000" />
+      <workItem from="1754387216111" duration="3276000" />
+      <workItem from="1754462979257" duration="122000" />
+      <workItem from="1754463108710" duration="7218000" />
+      <workItem from="1754552208876" duration="888000" />
+      <workItem from="1754645877518" duration="6825000" />
+      <workItem from="1754654086906" duration="533000" />
+      <workItem from="1754689992344" duration="2962000" />
+      <workItem from="1754713948681" duration="9395000" />
+      <workItem from="1754792278182" duration="44000" />
+      <workItem from="1754792332639" duration="22164000" />
+      <workItem from="1754893048185" duration="5000" />
+      <workItem from="1754893060283" duration="90000" />
+      <workItem from="1754893157739" duration="3637000" />
+      <workItem from="1754982449846" duration="7129000" />
+      <workItem from="1755157760359" duration="49000" />
+      <workItem from="1755157820720" duration="1779000" />
+      <workItem from="1755159704525" duration="1472000" />
+      <workItem from="1755161886618" duration="1263000" />
+      <workItem from="1755166961052" duration="1509000" />
+      <workItem from="1755302582036" duration="62000" />
+      <workItem from="1755303004519" duration="2477000" />
+      <workItem from="1755310953270" duration="282000" />
+      <workItem from="1755311478273" duration="2250000" />
+      <workItem from="1755331273425" duration="365000" />
+      <workItem from="1755382077221" duration="3403000" />
+      <workItem from="1755587288588" duration="8967000" />
+      <workItem from="1755845997954" duration="38000" />
+      <workItem from="1755846047711" duration="6665000" />
+      <workItem from="1756015973505" duration="72000" />
+      <workItem from="1756016059789" duration="706000" />
+      <workItem from="1756109892846" duration="205000" />
+      <workItem from="1756110111652" duration="11154000" />
+      <workItem from="1756197656750" duration="3718000" />
+      <workItem from="1756364440816" duration="11373000" />
+      <workItem from="1756449870156" duration="6911000" />
+      <workItem from="1756610324125" duration="5645000" />
+      <workItem from="1756799249106" duration="311000" />
+      <workItem from="1756799759928" duration="177000" />
+      <workItem from="1756800369819" duration="546000" />
+      <workItem from="1756883485705" duration="435000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="UnityProjectDiscoverer">
+    <option name="hasUnityReference" value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+</project>

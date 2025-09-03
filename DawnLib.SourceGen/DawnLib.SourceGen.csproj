@@ -9,8 +9,7 @@
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsRoslynComponent>true</IsRoslynComponent>
 
-        <RootNamespace>CodeRebirthLib.SourceGen</RootNamespace>
-        <PackageId>XuXiaolan.CodeRebirthLib.SourceGen</PackageId>
+        <RootNamespace>Dawn.SourceGen</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="bin\$(Configuration)\netstandard2.0\CodeRebirthLib.SourceGen.dll"
+        <None Include="bin\$(Configuration)\netstandard2.0\DawnLib.SourceGen.dll"
             Pack="true"
             PackagePath="analyzers/dotnet/cs"
             Visible="false" />
@@ -38,8 +37,8 @@
 
     <!-- NuGet Packaging -->
     <PropertyGroup>
-        <PackageId>XuXiaolan.CodeRebirthLib.SourceGen</PackageId>
-        <Description>The SourceGen branch of CodeRebirthLib.</Description>
+        <PackageId>XuXiaolan.DawnLib.SourceGen</PackageId>
+        <Description>The SourceGen branch of DawnLib.</Description>
         
         <IsPackable>true</IsPackable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

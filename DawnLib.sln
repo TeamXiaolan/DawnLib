@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib", "CodeRebirthLib\CodeRebirthLib.csproj", "{C4F54072-A24E-46EB-A2DA-B44FC777F84F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib", "DawnLib\DawnLib.csproj", "{C4F54072-A24E-46EB-A2DA-B44FC777F84F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib.Preloader", "CodeRebirthLib.Preloader\CodeRebirthLib.Preloader.csproj", "{68672AE6-5606-46C1-835E-5E1D28BEBC10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.Preloader", "DawnLib.Preloader\DawnLib.Preloader.csproj", "{68672AE6-5606-46C1-835E-5E1D28BEBC10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRebirthLib.SourceGen", "CodeRebirthLib.SourceGen\CodeRebirthLib.SourceGen.csproj", "{527E09BF-B4C9-42A3-9C54-D37B05774D02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.SourceGen", "DawnLib.SourceGen\DawnLib.SourceGen.csproj", "{527E09BF-B4C9-42A3-9C54-D37B05774D02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
