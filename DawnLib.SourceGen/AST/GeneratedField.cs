@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib.SourceGen.AST;
+namespace Dawn.SourceGen.AST;
 
 public class GeneratedField(string visibility, string type, string name) : IClassMember, IAttributeContainer {
 	public string Visibility = visibility;

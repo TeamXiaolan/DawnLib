@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib.SourceGen.AST;
+namespace Dawn.SourceGen.AST;
 
 public class GeneratedMethod(string visibility, string returnType, string name) : IClassMember, IAttributeContainer {
 	public string Visibility = visibility;

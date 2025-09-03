@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib.SourceGen.AST;
+namespace Dawn.SourceGen.AST;
 
 public interface IAttributeContainer {
 	public List<string> Attributes { get; }

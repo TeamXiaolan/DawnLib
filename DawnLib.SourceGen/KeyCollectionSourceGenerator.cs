@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using CodeRebirthLib.SourceGen.AST;
+using Dawn.SourceGen.AST;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
 
-namespace CodeRebirthLib.SourceGen;
+namespace Dawn.SourceGen;
 [Generator]
 public class KeyCollectionSourceGenerator : ISourceGenerator
 {

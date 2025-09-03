@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using CodeRebirthLib.SourceGen.Extensions;
+using Dawn.SourceGen.Extensions;
 
-namespace CodeRebirthLib.SourceGen.AST;
+namespace Dawn.SourceGen.AST;
 
 public class FileWriterVisitor : ISymbolVisitor {
 	int _currentIndent;

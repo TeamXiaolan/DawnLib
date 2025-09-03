@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib.SourceGen.AST;
+namespace Dawn.SourceGen.AST;
 
 public class GeneratedCodeFile : ISymbol {
 	public string Namespace;

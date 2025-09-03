@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Text;
-using CodeRebirthLib.SourceGen.AST;
-using CodeRebirthLib.SourceGen.Extensions;
+using Dawn.SourceGen.AST;
+using Dawn.SourceGen.Extensions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
 
-namespace CodeRebirthLib.SourceGen;
+namespace Dawn.SourceGen;
 
 [Generator]
 public class TagSourceGenerator : ISourceGenerator

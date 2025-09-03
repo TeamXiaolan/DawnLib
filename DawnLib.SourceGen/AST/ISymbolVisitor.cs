@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib.SourceGen.AST;
+﻿namespace Dawn.SourceGen.AST;
 
 public interface ISymbolVisitor {
 	void Accept(GeneratedClass @class);

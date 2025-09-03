@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace CodeRebirthLib.SourceGen;
+namespace Dawn.SourceGen;
 public static class CRLibDiagnostics
 {
     public static readonly DiagnosticDescriptor MissingRootNamespace = new DiagnosticDescriptor(

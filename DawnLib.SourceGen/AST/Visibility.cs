@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib.SourceGen.AST;
+﻿namespace Dawn.SourceGen.AST;
 
 public static class Visibility {
 	public const string Public = "public";

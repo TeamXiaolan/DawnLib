@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib.SourceGen.AST;
+namespace Dawn.SourceGen.AST;
 
 public class GeneratedEnum(string visibility, string name) : IClassMember, IAttributeContainer, ITopLevelSymbol {
 	public class EnumValue(string name, string? value = null) : IAttributeContainer {
