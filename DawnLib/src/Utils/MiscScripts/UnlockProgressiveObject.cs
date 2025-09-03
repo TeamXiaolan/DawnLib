@@ -1,11 +1,11 @@
 using System.Linq;
-using CodeRebirthLib.CRMod;
+using Dawn.Dusk;
 using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class UnlockProgressiveObject : NetworkBehaviour
 {
     [FormerlySerializedAs("interactTrigger")]

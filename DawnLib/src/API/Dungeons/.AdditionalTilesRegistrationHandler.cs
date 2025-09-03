@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.Internal;
-using CodeRebirthLib.Internal.ModCompats;
+using Dawn.Internal;
+using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 static class AdditionalTilesRegistrationHandler
 {

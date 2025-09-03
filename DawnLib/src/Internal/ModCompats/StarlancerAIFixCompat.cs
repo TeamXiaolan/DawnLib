@@ -1,6 +1,6 @@
 using BepInEx.Bootstrap;
 
-namespace CodeRebirthLib.Internal.ModCompats;
+namespace Dawn.Internal;
 
 static class StarlancerAIFixCompat
 {

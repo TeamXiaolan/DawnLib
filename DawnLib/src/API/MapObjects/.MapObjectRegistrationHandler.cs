@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.Internal;
-using CodeRebirthLib.Utils;
+using Dawn.Internal;
+using Dawn.Utils;
 using MonoMod.Cil;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 static class MapObjectRegistrationHandler
 {

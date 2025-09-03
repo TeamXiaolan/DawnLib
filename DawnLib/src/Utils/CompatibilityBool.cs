@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public enum CompatibilityBool
 {
     Never,

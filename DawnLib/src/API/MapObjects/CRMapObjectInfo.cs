@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public sealed class CRMapObjectInfo : CRBaseInfo<CRMapObjectInfo>
 {

@@ -5,7 +5,7 @@ using DunGen;
 using DunGen.Graph;
 using UnityEngine.InputSystem.Utilities;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public class CRDungeonInfo : CRBaseInfo<CRDungeonInfo>
 {

@@ -1,10 +1,10 @@
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Utils;
+using Dawn.Dusk;
+using Dawn.Utils;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 static class CRLibNetworkerPatch
 {

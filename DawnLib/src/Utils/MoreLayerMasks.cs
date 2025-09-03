@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public static class MoreLayerMasks
 {
     public static int CollidersAndRoomAndDefaultAndInteractableAndRailingAndEnemiesAndTerrainAndHazardAndVehicleMask { get; private set; }

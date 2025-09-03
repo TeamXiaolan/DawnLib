@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace Dawn;
 public class JSONTagDefinition
 {
     public string Tag;

@@ -5,7 +5,7 @@ using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 static class ExtendedTOML
 {
     private static readonly TypeConverter _namespacedKeyConverter = WrapCRLibConverter(new NamespacedKeyConverter());

@@ -72,7 +72,7 @@ public class TagSourceGenerator : ISourceGenerator
         GeneratedCodeFile file = new GeneratedCodeFile()
         {
             Namespace = rootNamespace,
-            Usings = ["CodeRebirthLib"],
+            Usings = ["Dawn"],
             Symbols = [@class]
         };
 

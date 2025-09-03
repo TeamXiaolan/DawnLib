@@ -1,4 +1,4 @@
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public class AutoNonInteractableTagger : IAutoTagger<CRItemInfo>
 {

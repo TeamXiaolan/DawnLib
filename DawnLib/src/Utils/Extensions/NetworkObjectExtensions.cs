@@ -3,7 +3,7 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public static class NetworkObjectExtensions
 {
     public static IEnumerator WaitUntilSpawned(this NetworkObject networkObject)

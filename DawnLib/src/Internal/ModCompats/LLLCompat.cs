@@ -5,7 +5,7 @@ using BepInEx.Bootstrap;
 using DunGen.Graph;
 using LethalLevelLoader;
 
-namespace CodeRebirthLib.Internal.ModCompats;
+namespace Dawn.Internal;
 
 static class LLLCompat
 {

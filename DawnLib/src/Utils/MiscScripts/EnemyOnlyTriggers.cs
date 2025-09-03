@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class EnemyOnlyTriggers : MonoBehaviour
 {
     public EnemyAI mainScript = null!;

@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace Dawn;
 public class CREnemyLocationInfo
 {
     public CREnemyInfo ParentInfo { get; internal set; }

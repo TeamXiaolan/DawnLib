@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace Dawn;
 public interface ITerminalPurchase
 {
     IProvider<int> Cost { get; }

@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace Dawn;
 public sealed class CRScrapItemInfo
 {
     public CRItemInfo ParentInfo { get; internal set; }

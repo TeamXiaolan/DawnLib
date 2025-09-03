@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 
 public static class RandomExtensions
 {

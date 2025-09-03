@@ -3,7 +3,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class SpawnSyncedCRLibObject : MonoBehaviour
 {
     [Range(0f, 100f)]

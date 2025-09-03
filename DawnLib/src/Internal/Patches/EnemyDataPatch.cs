@@ -1,6 +1,6 @@
 using GameNetcodeStuff;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 static class EnemyDataPatch
 {

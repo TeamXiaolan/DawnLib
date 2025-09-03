@@ -1,7 +1,7 @@
 ﻿using BepInEx.Bootstrap;
 using TerminalFormatter;
 
-namespace CodeRebirthLib.Internal.ModCompats;
+namespace Dawn.Internal;
 static class TerminalFormatterCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(PluginInfo.PLUGIN_GUID);

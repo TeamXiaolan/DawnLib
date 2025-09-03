@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Internal;
+using Dawn.Dusk;
+using Dawn.Internal;
 using DunGen;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public static class CRLib
 {
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;

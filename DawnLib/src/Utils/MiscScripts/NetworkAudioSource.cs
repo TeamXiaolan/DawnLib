@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(AudioSource))]

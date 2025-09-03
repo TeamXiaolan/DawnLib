@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInfoBuilder>
 {

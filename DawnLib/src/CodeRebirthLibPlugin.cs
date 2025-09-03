@@ -3,14 +3,14 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Internal;
-using CodeRebirthLib.Internal.ModCompats;
-using CodeRebirthLib.Utils;
+using Dawn.Dusk;
+using Dawn.Internal;
+using Dawn.Internal;
+using Dawn.Utils;
 using PathfindingLib;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(WeatherRegistry.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]

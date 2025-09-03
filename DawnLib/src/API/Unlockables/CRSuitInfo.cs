@@ -1,4 +1,4 @@
-namespace CodeRebirthLib;
+namespace Dawn;
 public sealed class CRSuitInfo
 {
     public CRUnlockableItemInfo ParentInfo { get; internal set; }

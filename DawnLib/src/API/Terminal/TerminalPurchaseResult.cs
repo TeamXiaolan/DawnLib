@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace Dawn;
 public abstract class TerminalPurchaseResult
 {
     public static TerminalPurchaseResult Success()

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public class CRWeatherEffectInfo : CRBaseInfo<CRWeatherEffectInfo>
 {

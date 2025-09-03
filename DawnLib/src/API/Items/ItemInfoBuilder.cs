@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Steamworks.ServerList;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder>
 {
     public class ScrapBuilder

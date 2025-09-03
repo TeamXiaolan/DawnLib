@@ -26,7 +26,7 @@
             <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(Product)</BepInExPluginName>
             <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(Version)</BepInExPluginVersion>
             <GeneratedText><![CDATA[
-namespace CodeRebirthLib
+namespace Dawn
 {
     internal static class MyPluginInfo
     {

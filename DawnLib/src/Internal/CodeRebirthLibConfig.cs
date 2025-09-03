@@ -1,8 +1,8 @@
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Internal.ModCompats;
-using CodeRebirthLib.Utils;
+using Dawn.Dusk;
+using Dawn.Internal;
+using Dawn.Utils;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 static class CodeRebirthLibConfig
 {
     public static CompatibilityBool LethalConfigCompatibility;

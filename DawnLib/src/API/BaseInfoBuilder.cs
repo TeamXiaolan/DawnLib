@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public abstract class BaseInfoBuilder
 {
     // todo: better name!?!?

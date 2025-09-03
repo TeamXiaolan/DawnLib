@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class WeightTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggable
 {
     private List<IContextualProvider<int?, TBase>> _baseProviders = [];

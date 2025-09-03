@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.Internal;
-using CodeRebirthLib.Internal.ModCompats;
+using Dawn.Internal;
+using Dawn.Internal;
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 static class MoonRegistrationHandler
 {

@@ -3,7 +3,7 @@ using System.Linq;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 static class TerminalPredicatePatch
 {
     internal static void Init()

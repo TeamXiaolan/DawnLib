@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 static class MiscFixesPatch
 {

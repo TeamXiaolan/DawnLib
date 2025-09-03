@@ -1,7 +1,7 @@
 using System;
 using Unity.Netcode;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 [Serializable]
 public class HUDDisplayTip(string header, string body, HUDDisplayTip.AlertType type = HUDDisplayTip.AlertType.Hint) : INetworkSerializable
 {

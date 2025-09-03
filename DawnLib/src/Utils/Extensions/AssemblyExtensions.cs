@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public static class AssemblyExtensions
 {
     public static IEnumerable<Type> GetLoadableTypes(this Assembly assembly)

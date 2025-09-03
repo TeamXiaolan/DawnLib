@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public sealed class CROutsideMapObjectInfo
 {

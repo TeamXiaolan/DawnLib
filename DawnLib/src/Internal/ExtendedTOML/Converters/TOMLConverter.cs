@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 public abstract class TOMLConverter
 {
     public abstract Type ConvertingType { get; }

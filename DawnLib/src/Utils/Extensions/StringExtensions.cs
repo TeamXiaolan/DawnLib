@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public static class StringExtensions
 {
     public static string ToCapitalized(this string input)

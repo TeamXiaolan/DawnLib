@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 [Serializable]
 public class OutsideMapObjectSettings

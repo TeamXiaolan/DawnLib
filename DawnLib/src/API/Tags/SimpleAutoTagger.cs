@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class SimpleAutoTagger<T>(NamespacedKey tag, Func<T, bool> predicate) : IAutoTagger<T> where T : CRBaseInfo<T>
 {
 

@@ -1,7 +1,7 @@
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class AutoRotate : MonoBehaviour
 {
     [SerializeField]

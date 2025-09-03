@@ -1,4 +1,4 @@
-namespace CodeRebirthLib;
+namespace Dawn;
 
 static class WeatherRegistrationHandler
 {

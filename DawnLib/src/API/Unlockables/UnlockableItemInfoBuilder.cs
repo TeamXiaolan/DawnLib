@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
 {
     public class SuitBuilder

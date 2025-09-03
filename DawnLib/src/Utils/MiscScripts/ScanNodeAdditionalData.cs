@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CodeRebirthLib.Internal.ModCompats;
+using Dawn.Internal;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class ScanNodeAdditionalData
 {
     private static readonly Dictionary<RectTransform, ScanNodeAdditionalData> _additionalData = new(); // TODO preloader stuff

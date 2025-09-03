@@ -1,8 +1,8 @@
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Utils;
+using Dawn.Dusk;
+using Dawn.Utils;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 static class AchievementRegistrationPatch
 {

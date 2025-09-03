@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject, MapObjectInfoBuilder>
 {

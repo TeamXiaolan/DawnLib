@@ -1,6 +1,6 @@
-using CodeRebirthLib.Utils;
+using Dawn.Utils;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public class AutoWeightTagger(NamespacedKey tag, BoundedRange range) : IAutoTagger<CRItemInfo>
 {

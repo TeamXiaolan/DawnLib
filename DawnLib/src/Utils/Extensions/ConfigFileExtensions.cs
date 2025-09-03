@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Configuration;
-using CodeRebirthLib.CRMod;
+using Dawn.Dusk;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public static class ConfigFileExtensions
 {
     public static void ClearUnusedEntries(this ConfigFile configFile)

@@ -1,9 +1,9 @@
 using System.Linq;
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Internal;
+using Dawn.Dusk;
+using Dawn.Internal;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 static class UnlockableRegistrationHandler
 {

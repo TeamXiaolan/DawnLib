@@ -1,4 +1,4 @@
-﻿namespace CodeRebirthLib;
+﻿namespace Dawn;
 public sealed class CRShopItemInfo : ITerminalPurchase
 {
     public CRItemInfo ParentInfo { get; internal set; }

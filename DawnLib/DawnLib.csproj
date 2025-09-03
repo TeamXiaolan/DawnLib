@@ -13,7 +13,7 @@
     
     <!-- NuGet Packaging -->
     <PropertyGroup>
-        <PackageId>XuXiaolan.CodeRebirthLib</PackageId>
+        <PackageId>XuXiaolan.DawnLib</PackageId>
         <Description>A library to simplify making large LethalCompany mods.</Description>
         
         <IsPackable>true</IsPackable>

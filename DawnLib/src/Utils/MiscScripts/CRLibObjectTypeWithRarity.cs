@@ -1,6 +1,6 @@
 using System;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 
 [Serializable]
 public class CRLibObjectTypeWithRarity

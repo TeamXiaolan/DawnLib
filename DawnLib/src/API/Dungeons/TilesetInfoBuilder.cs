@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DunGen;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, TilesetInfoBuilder>
 {
     private bool _branchCap, _regular = true;

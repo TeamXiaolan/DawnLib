@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBaseInfo<T>
 {
     private List<NamespacedKey> _tags;

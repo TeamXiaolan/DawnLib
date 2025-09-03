@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class RegistryFrozenException() : Exception("Registry is frozen")
 {
 }

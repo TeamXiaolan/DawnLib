@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class TaggedRegistry<T> : Registry<T> where T : CRBaseInfo<T>
 {
     public event Action AfterTagging = delegate { };

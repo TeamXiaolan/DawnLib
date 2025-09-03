@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
-using CodeRebirthLib.Utils;
+using Dawn.Utils;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 [Serializable]
 public class NamespacedKey : INetworkSerializable

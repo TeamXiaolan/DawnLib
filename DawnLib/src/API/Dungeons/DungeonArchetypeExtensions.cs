@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 using DunGen;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public static class DungeonArchetypeExtensions
 {

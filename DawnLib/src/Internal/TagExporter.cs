@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 static class TagExporter
 {
     const string _datetimeFormat = "dd_MM_yyyy-HH_mm";

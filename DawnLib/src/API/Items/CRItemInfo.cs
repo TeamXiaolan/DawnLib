@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public sealed class CRItemInfo : CRBaseInfo<CRItemInfo>
 {
     internal CRItemInfo(NamespacedKey<CRItemInfo> key, List<NamespacedKey> tags, Item item, CRScrapItemInfo? scrapItemInfo, CRShopItemInfo? shopItemInfo) : base(key, tags)

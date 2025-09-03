@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using CodeRebirthLib.Internal.ModCompats;
+using Dawn.Internal;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)

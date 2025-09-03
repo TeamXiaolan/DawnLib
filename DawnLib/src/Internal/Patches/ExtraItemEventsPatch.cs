@@ -1,4 +1,4 @@
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 static class ExtraItemEventsPatch
 {

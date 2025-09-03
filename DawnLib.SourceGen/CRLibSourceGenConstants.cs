@@ -1,4 +1,4 @@
-﻿using CodeRebirthLib;
+﻿using Dawn;
 
 namespace Dawn.SourceGen;
 public static class CRLibSourceGenConstants

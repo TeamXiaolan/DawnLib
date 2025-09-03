@@ -1,7 +1,7 @@
 using GameNetcodeStuff;
 using UnityEngine;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class PlayerOnlyTriggers : MonoBehaviour
 {
     public EnemyAI mainScript = null!;

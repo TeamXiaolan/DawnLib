@@ -1,8 +1,8 @@
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 public class AmbientNoisePlayer : MonoBehaviour
 {
     [Header("Audio")]

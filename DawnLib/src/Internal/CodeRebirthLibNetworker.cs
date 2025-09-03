@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.CRMod;
-using CodeRebirthLib.Utils;
+using Dawn.Dusk;
+using Dawn.Utils;
 using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
 {

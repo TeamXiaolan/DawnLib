@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BepInEx.Configuration;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 
 [SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
 internal static class Debuggers

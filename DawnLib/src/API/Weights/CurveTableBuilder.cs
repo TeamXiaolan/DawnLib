@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class CurveTableBuilder<TBase> where TBase : INamespaced<TBase>, ITaggable
 {
     private List<IContextualProvider<AnimationCurve?, TBase>> _baseProviders = [];

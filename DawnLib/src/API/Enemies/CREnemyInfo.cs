@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
 {

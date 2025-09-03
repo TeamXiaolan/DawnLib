@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using BepInEx.Logging;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class MalformedAnimationCurveConfigException(string pair) : Exception
 {
     public string Pair { get; } = pair;

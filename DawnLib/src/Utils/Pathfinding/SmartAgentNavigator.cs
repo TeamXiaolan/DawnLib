@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 using PathfindingLib.API.SmartPathfinding;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 
 public struct GenericPath<T>(T generic, float pathLength)
 {

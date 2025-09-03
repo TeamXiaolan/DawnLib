@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public interface ITaggable
 {
     bool HasTag(NamespacedKey tag);

@@ -88,7 +88,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                 GeneratedCodeFile file = new GeneratedCodeFile()
                 {
                     Namespace = rootNamespace,
-                    Usings = ["CodeRebirthLib"],
+                    Usings = ["Dawn"],
                     Symbols = [@class]
                 };
 

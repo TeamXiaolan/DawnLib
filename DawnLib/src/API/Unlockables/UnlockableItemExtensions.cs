@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public static class UnlockableItemExtensions
 {

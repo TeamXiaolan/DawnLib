@@ -1,10 +1,10 @@
 using System.Collections;
-using CodeRebirthLib.Internal;
+using Dawn.Internal;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 
 [DefaultExecutionOrder(-999)]
 public class ChanceScript : NetworkBehaviour

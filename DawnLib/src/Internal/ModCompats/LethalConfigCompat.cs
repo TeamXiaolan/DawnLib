@@ -4,13 +4,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
-using CodeRebirthLib.Utils;
+using Dawn.Utils;
 using LethalConfig;
 using LethalConfig.ConfigItems;
 using On.LethalConfig.AutoConfig;
 using UnityEngine;
 
-namespace CodeRebirthLib.Internal.ModCompats;
+namespace Dawn.Internal;
 static class LethalConfigCompat
 {
     internal const string VERSION = "1.4.6";

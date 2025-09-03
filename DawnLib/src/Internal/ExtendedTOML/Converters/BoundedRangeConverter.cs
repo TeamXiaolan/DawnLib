@@ -1,7 +1,7 @@
 ﻿
-using CodeRebirthLib.Utils;
+using Dawn.Utils;
 
-namespace CodeRebirthLib.Internal;
+namespace Dawn.Internal;
 class BoundedRangeConverter : TOMLConverter<BoundedRange>
 {
     protected override string ConvertToString(BoundedRange range)

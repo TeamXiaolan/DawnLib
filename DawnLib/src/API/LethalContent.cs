@@ -1,5 +1,5 @@
 ﻿
-namespace CodeRebirthLib;
+namespace Dawn;
 
 public static class LethalContent
 {

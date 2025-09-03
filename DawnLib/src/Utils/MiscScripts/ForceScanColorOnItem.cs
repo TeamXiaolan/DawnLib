@@ -1,9 +1,9 @@
-using CodeRebirthLib.Internal.ModCompats;
+using Dawn.Internal;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeRebirthLib.Utils;
+namespace Dawn.Utils;
 
 public class ForceScanColorOnItem : MonoBehaviour
 {

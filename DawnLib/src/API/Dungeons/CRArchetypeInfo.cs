@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using DunGen;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 public class CRArchetypeInfo : CRBaseInfo<CRArchetypeInfo>
 {
     public DungeonArchetype DungeonArchetype { get; }

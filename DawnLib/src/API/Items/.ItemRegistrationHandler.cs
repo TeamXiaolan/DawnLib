@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CodeRebirthLib.Internal;
-using CodeRebirthLib.Internal.ModCompats;
-using CodeRebirthLib.Utils;
+using Dawn.Internal;
+using Dawn.Internal;
+using Dawn.Utils;
 using UnityEngine;
 
-namespace CodeRebirthLib;
+namespace Dawn;
 
 static class ItemRegistrationHandler
 {
