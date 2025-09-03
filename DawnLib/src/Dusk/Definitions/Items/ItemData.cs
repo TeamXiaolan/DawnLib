@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 namespace Dawn.Dusk;
 [Serializable]
-public class ItemData : EntityData<CRMItemReference>
+public class ItemData : EntityData<DuskItemReference>
 {
     public string moonSpawnWeights;
     public string interiorSpawnWeights;

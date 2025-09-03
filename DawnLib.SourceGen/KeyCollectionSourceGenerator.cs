@@ -19,7 +19,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
     {
         if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out string? rootNamespace) || string.IsNullOrWhiteSpace(rootNamespace))
         {
-            context.ReportDiagnostic(Diagnostic.Create(CRLibDiagnostics.MissingRootNamespace, Location.None));
+            context.ReportDiagnostic(Diagnostic.Create(DawnLibDiagnostics.MissingRootNamespace, Location.None));
             return;
         }
 
@@ -82,7 +82,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                         ]
                     };
                     @class.Members.Add(getReflectionMethod);
-                    @class.Attributes.Add(CRLibSourceGenConstants.CodeGenAttribute);
+                    @class.Attributes.Add(DawnLibSourceGenConstants.CodeGenAttribute);
                 }
 
                 GeneratedCodeFile file = new GeneratedCodeFile()

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Dawn.Dusk;
 public class DefaultContentHandler : ContentHandler
 {
-    public DefaultContentHandler(CRMod mod) : base(mod)
+    public DefaultContentHandler(DuskMod mod) : base(mod)
     {
         foreach (AssetBundleData bundleData in mod.Content.assetBundles)
         {
@@ -18,7 +18,7 @@ public class DefaultContentHandler : ContentHandler
             {
                 mod.Logger?.LogError($"The bundle: {bundleData.configName} is not defined at plugins/{Path.GetRelativePath(Paths.PluginPath, path)}.");
 
-                if (mod.TryGetRelativeFile(out string incorrectPath, bundleData.assetBundleName)) // check if it is instead next to the .crmod file
+                if (mod.TryGetRelativeFile(out string incorrectPath, bundleData.assetBundleName)) // check if it is instead next to the .duskmod file
                 {
                     mod.Logger?.LogError($"The bundle is instead defined at plugins/{Path.GetRelativePath(Paths.PluginPath, incorrectPath)}. It should be in an Assets/ subfolder.");
                 }

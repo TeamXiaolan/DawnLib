@@ -35,7 +35,7 @@ static class AdditionalTilesRegistrationHandler
             if (dungeonFlow == null)
                 continue;
 
-            if (dungeonFlow.TryGetCRInfo(out _))
+            if (dungeonFlow.TryGetDawnInfo(out _))
                 continue;
 
             Debuggers.Dungeons?.Log($"Registering potentially modded dungeon: {dungeonFlow.name}");
@@ -53,7 +53,7 @@ static class AdditionalTilesRegistrationHandler
 
             CollectLLLTags(dungeonFlow, tags);
             DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
-            dungeonFlow.SetCRInfo(dungeonInfo);
+            dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
         
@@ -198,7 +198,7 @@ static class AdditionalTilesRegistrationHandler
             if (dungeonFlow == null)
                 continue;
 
-            if (dungeonFlow.TryGetCRInfo(out _))
+            if (dungeonFlow.TryGetDawnInfo(out _))
                 continue;
 
             string name = FormatFlowName(dungeonFlow);
@@ -213,7 +213,7 @@ static class AdditionalTilesRegistrationHandler
 
             CollectLLLTags(dungeonFlow, tags);
             DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
-            dungeonFlow.SetCRInfo(dungeonInfo);
+            dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
         orig(self);
@@ -223,7 +223,7 @@ static class AdditionalTilesRegistrationHandler
     {
         foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
         {
-            if (!archetype.TryGetCRInfo(out DawnArchetypeInfo? info))
+            if (!archetype.TryGetDawnInfo(out DawnArchetypeInfo? info))
             {
                 DawnPlugin.Logger.LogWarning("what? archetype didn't have crinfo by the time we're trying to inject tile sets.");
                 continue;

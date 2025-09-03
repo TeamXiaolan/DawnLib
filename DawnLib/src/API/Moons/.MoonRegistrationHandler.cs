@@ -75,7 +75,7 @@ static class MoonRegistrationHandler
                 }
             }
             DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, nameKeyword);
-            level.SetCRInfo(moonInfo);
+            level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
         LethalContent.Moons.Freeze();
@@ -90,7 +90,7 @@ static class MoonRegistrationHandler
         }
 
         DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, null, null);
-        self.currentLevel.SetCRInfo(testMoonInfo);
+        self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
     }

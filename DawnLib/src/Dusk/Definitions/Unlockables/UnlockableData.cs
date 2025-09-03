@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 namespace Dawn.Dusk;
 [Serializable]
-public class UnlockableData : EntityData<CRMUnlockableReference>
+public class UnlockableData : EntityData<DuskUnlockableReference>
 {
     public int cost;
     public bool isShipUpgrade;

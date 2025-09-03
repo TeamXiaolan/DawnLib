@@ -10,7 +10,7 @@ public static class TileSetExtensions
 {
     public static NamespacedKey<DawnTileSetInfo> ToNamespacedKey(this TileSet tileSet)
     {
-        if (!tileSet.TryGetCRInfo(out DawnTileSetInfo? tileSetInfo))
+        if (!tileSet.TryGetDawnInfo(out DawnTileSetInfo? tileSetInfo))
         {
             Debuggers.Moons?.Log($"TileSet {tileSet} has no CRInfo");
             throw new Exception();
@@ -18,16 +18,16 @@ public static class TileSetExtensions
         return tileSetInfo.TypedKey;
     }
 
-    internal static bool TryGetCRInfo(this TileSet tileSet, [NotNullWhen(true)] out DawnTileSetInfo? tileSetInfo)
+    internal static bool TryGetDawnInfo(this TileSet tileSet, [NotNullWhen(true)] out DawnTileSetInfo? tileSetInfo)
     {
         object newObject = tileSet;
-        tileSetInfo = (DawnTileSetInfo)((ICRObject)newObject).CRInfo;
+        tileSetInfo = (DawnTileSetInfo)((IDawnObject)newObject).DawnInfo;
         return tileSetInfo != null;
     }
 
-    internal static void SetCRInfo(this TileSet tileSet, DawnTileSetInfo tileSetInfo)
+    internal static void SetDawnInfo(this TileSet tileSet, DawnTileSetInfo tileSetInfo)
     {
         object newObject = tileSet;
-        ((ICRObject)newObject).CRInfo = tileSetInfo;
+        ((IDawnObject)newObject).DawnInfo = tileSetInfo;
     }
 }

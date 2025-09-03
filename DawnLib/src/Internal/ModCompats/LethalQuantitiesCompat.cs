@@ -14,13 +14,13 @@ static class LethalQuantitiesCompat
 
     private static bool _useLQConverter;
     private static TypeConverter _lqConverter;
-    private static TypeConverter _crlibConverter;
+    private static TypeConverter _dawnConverter;
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
         _lqConverter = new AnimationCurveTypeConverter();
-        _crlibConverter = ExtendedTOML.WrapCRLibConverter(new AnimationCurveConverter());
+        _dawnConverter = ExtendedTOML.WrapConverter(new AnimationCurveConverter());
 
         On.LethalQuantities.Patches.RoundManagerPatch.onStartPrefix += MarkShouldUseLQConverter;
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += ReplaceAnimationCurveConverter;
@@ -38,7 +38,7 @@ static class LethalQuantitiesCompat
         }
         else
         {
-            return _crlibConverter;
+            return _dawnConverter;
         }
     }
 

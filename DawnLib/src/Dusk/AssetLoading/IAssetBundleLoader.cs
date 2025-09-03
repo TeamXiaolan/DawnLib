@@ -2,6 +2,6 @@
 namespace Dawn.Dusk;
 public interface IAssetBundleLoader
 {
-    CRMContentDefinition[] Content { get; }
+    DuskContentDefinition[] Content { get; }
     AssetBundleData? AssetBundleData { get; set; }
 }

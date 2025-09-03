@@ -23,7 +23,7 @@ static class TerminalPredicatePatch
 
         c.EmitDelegate<Func<Item, string>>((item) =>
         {
-            if (!item.TryGetCRInfo(out DawnItemInfo? info))
+            if (!item.TryGetDawnInfo(out DawnItemInfo? info))
                 return item.itemName;
             
             DawnShopItemInfo? shopInfo = info.ShopInfo;
@@ -47,7 +47,7 @@ static class TerminalPredicatePatch
         
         c.EmitDelegate((UnlockableItem unlockable) =>
         {
-            if (!unlockable.TryGetCRInfo(out DawnUnlockableItemInfo? info))
+            if (!unlockable.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
                 return unlockable.unlockableName;
 
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
@@ -65,7 +65,7 @@ static class TerminalPredicatePatch
         if (node.buyItemIndex != -1)
         {
             Item buyingItem = self.buyableItemsList[node.buyItemIndex];
-            if (!buyingItem.TryGetCRInfo(out DawnItemInfo? info))
+            if (!buyingItem.TryGetDawnInfo(out DawnItemInfo? info))
             {
                 DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {buyingItem.itemName}");
                 return;
@@ -79,7 +79,7 @@ static class TerminalPredicatePatch
         if (node.shipUnlockableID != -1)
         {
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
-            if (!unlockableItem.TryGetCRInfo(out DawnUnlockableItemInfo? info))
+            if (!unlockableItem.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
             {
                 DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {unlockableItem.unlockableName}");
                 return;

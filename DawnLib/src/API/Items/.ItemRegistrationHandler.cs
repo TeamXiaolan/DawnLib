@@ -167,7 +167,7 @@ static class ItemRegistrationHandler
 
         foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            if (item.TryGetCRInfo(out _))
+            if (item.TryGetDawnInfo(out _))
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true);
@@ -211,7 +211,7 @@ static class ItemRegistrationHandler
                 }
             }
             DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo);
-            item.SetCRInfo(itemInfo);
+            item.SetDawnInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }
 

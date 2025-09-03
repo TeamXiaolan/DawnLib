@@ -8,7 +8,7 @@ using MonoMod.Cil;
 namespace Dawn.Internal;
 static class ExtendedTOML
 {
-    private static readonly TypeConverter _namespacedKeyConverter = WrapCRLibConverter(new NamespacedKeyConverter());
+    private static readonly TypeConverter _namespacedKeyConverter = WrapConverter(new NamespacedKeyConverter());
     private static readonly List<TOMLConverter> _converters =
     [
         new BoundedRangeConverter(),
@@ -26,7 +26,7 @@ static class ExtendedTOML
                 continue;
             }
 
-            TomlTypeConverter.AddConverter(converter.ConvertingType, WrapCRLibConverter(converter));
+            TomlTypeConverter.AddConverter(converter.ConvertingType, WrapConverter(converter));
             DawnPlugin.Logger.LogInfo($"[ExtendedTOML] Registered converter for '{converter.ConvertingType.Name}'");
         }
 
@@ -78,7 +78,7 @@ static class ExtendedTOML
         return orig(valuetype);
     }
 
-    internal static TypeConverter WrapCRLibConverter(TOMLConverter converter)
+    internal static TypeConverter WrapConverter(TOMLConverter converter)
     {
         return new TypeConverter
         {

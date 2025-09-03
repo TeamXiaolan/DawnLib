@@ -20,7 +20,7 @@ public class ChanceScript : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (CodeRebirthLibNetworker.Instance == null)
+        if (DawnNetworker.Instance == null)
         {
             DawnPlugin.Logger.LogWarning($"CodeRebirthLibNetworker.Instance is null! I really hope you're starting up the round right now");
             StartCoroutine(DelayRandomThing());
@@ -40,7 +40,7 @@ public class ChanceScript : NetworkBehaviour
 
     private IEnumerator DelayRandomThing()
     {
-        yield return new WaitUntil(() => CodeRebirthLibNetworker.Instance != null);
+        yield return new WaitUntil(() => DawnNetworker.Instance != null);
         if (IsServer)
         {
             int randomNumber = UnityEngine.Random.Range(0, 100) + 1;

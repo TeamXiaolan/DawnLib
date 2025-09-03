@@ -56,7 +56,7 @@ public class WeatherWeightTransformer : WeightTransformer
 
         NamespacedKey currentWeatherNamespacedKey = NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
         IEnumerable<NamespacedKey> allTags = [];
-        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetCRInfo(out DawnWeatherEffectInfo? weatherInfo))
+        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetDawnInfo(out DawnWeatherEffectInfo? weatherInfo))
         {
             currentWeatherNamespacedKey = weatherInfo.TypedKey;
             allTags = weatherInfo.AllTags();
@@ -91,7 +91,7 @@ public class WeatherWeightTransformer : WeightTransformer
         if (!TimeOfDay.Instance.currentLevel) return string.Empty;
 
         NamespacedKey currentWeatherNamespacedKey = NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
-        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetCRInfo(out DawnWeatherEffectInfo? weatherInfo))
+        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None && TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].TryGetDawnInfo(out DawnWeatherEffectInfo? weatherInfo))
         {
             currentWeatherNamespacedKey = weatherInfo.TypedKey;
         }

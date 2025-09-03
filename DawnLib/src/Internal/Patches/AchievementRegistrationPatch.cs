@@ -16,13 +16,13 @@ static class AchievementRegistrationPatch
     private static void SaveAchievementData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);
-        CRAchievementHandler.SaveAll();
+        DuskAchievementHandler.SaveAll();
     }
 
     private static void LoadAchievementDataWithUI(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
-        CRAchievementHandler.LoadAll();
+        DuskAchievementHandler.LoadAll();
         DoAchievementUI(self);
     }
 
@@ -52,6 +52,6 @@ static class AchievementRegistrationPatch
     private static void SaveAchievementData(On.GameNetworkManager.orig_SaveLocalPlayerValues orig, GameNetworkManager self)
     {
         orig(self);
-        CRAchievementHandler.SaveAll();
+        DuskAchievementHandler.SaveAll();
     }
 }

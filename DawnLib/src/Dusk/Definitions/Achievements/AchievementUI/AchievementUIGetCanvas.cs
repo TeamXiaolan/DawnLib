@@ -15,19 +15,19 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
     [SerializeField]
     private GameObject achievementContent = null!;
 
-    private Queue<CRMAchievementDefinition> achievementQueue = new();
+    private Queue<DuskAchievementDefinition> achievementQueue = new();
 
     private void Start()
     {
-        CRAchievementHandler.OnAchievementUnlocked += QueuePopup;
+        DuskAchievementHandler.OnAchievementUnlocked += QueuePopup;
     }
 
     private void OnDestroy()
     {
-        CRAchievementHandler.OnAchievementUnlocked -= QueuePopup;
+        DuskAchievementHandler.OnAchievementUnlocked -= QueuePopup;
     }
 
-    internal void QueuePopup(CRMAchievementDefinition achievement)
+    internal void QueuePopup(DuskAchievementDefinition achievement)
     {
         achievementQueue.Enqueue(achievement);
         if (achievementContent.transform.childCount == 0)

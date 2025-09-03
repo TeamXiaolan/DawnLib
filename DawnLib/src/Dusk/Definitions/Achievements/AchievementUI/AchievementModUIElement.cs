@@ -36,7 +36,7 @@ public class AchievementModUIElement : MonoBehaviour
         achievementModUIElements.Remove(this);
     }
 
-    internal void SetupModUI(CRMod mod)
+    internal void SetupModUI(DuskMod mod)
     {
         _modNameText.text = mod.ModInformation.ModName;
         if (mod.ModInformation.ModIcon != null)
@@ -45,11 +45,11 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        List<CRMAchievementDefinition> sortedAchievements = CRModContent.Achievements.Values
+        List<DuskAchievementDefinition> sortedAchievements = DuskModContent.Achievements.Values
             .OrderByDescending(a => a.AchievementName)
             .ToList();
 
-        foreach (CRMAchievementDefinition achievement in sortedAchievements)
+        foreach (DuskAchievementDefinition achievement in sortedAchievements)
         {
             Debuggers.Achievements?.Log($"Adding achievement: {achievement.AchievementName}");
 

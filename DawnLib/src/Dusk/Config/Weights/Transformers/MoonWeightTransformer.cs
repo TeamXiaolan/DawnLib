@@ -54,7 +54,7 @@ public class MoonWeightTransformer : WeightTransformer
     {
         if (!RoundManager.Instance) return currentWeight;
         if (!RoundManager.Instance.currentLevel) return currentWeight;
-        if (!RoundManager.Instance.currentLevel.TryGetCRInfo(out DawnMoonInfo? moonInfo)) return currentWeight;
+        if (!RoundManager.Instance.currentLevel.TryGetDawnInfo(out DawnMoonInfo? moonInfo)) return currentWeight;
         if (MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out string operationWithWeight))
         {
             return DoOperation(currentWeight, operationWithWeight);
@@ -82,7 +82,7 @@ public class MoonWeightTransformer : WeightTransformer
     {
         if (!RoundManager.Instance) return string.Empty;
         if (!RoundManager.Instance.currentLevel) return string.Empty;
-        if (!RoundManager.Instance.currentLevel.TryGetCRInfo(out DawnMoonInfo? moonInfo)) return string.Empty;
+        if (!RoundManager.Instance.currentLevel.TryGetDawnInfo(out DawnMoonInfo? moonInfo)) return string.Empty;
         if (!MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
 
         string operation = operationWithWeight[..1];

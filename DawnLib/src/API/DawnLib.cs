@@ -40,7 +40,7 @@ public static class DawnLib
         TilesetInfoBuilder builder = new(key, tileSet);
         callback(builder);
         DawnTileSetInfo tileSetInfo = builder.Build();
-        tileSet.SetCRInfo(tileSetInfo);
+        tileSet.SetDawnInfo(tileSetInfo);
         LethalContent.TileSets.Register(tileSetInfo);
         return tileSetInfo;
     }
@@ -60,7 +60,7 @@ public static class DawnLib
         UnlockableInfoBuilder builder = new(key, unlockableItem);
         callback(builder);
         DawnUnlockableItemInfo unlockableItemInfo = builder.Build();
-        unlockableItem.SetCRInfo(unlockableItemInfo);
+        unlockableItem.SetDawnInfo(unlockableItemInfo);
         LethalContent.Unlockables.Register(unlockableItemInfo);
         return unlockableItemInfo;
     }
@@ -70,7 +70,7 @@ public static class DawnLib
         ItemInfoBuilder builder = new(key, item);
         callback(builder);
         DawnItemInfo itemInfo = builder.Build();
-        item.SetCRInfo(itemInfo);
+        item.SetDawnInfo(itemInfo);
         LethalContent.Items.Register(itemInfo);
         return itemInfo;
     }
@@ -80,7 +80,7 @@ public static class DawnLib
         EnemyInfoBuilder builder = new(key, enemy);
         callback(builder);
         DawnEnemyInfo enemyInfo = builder.Build();
-        enemy.SetCRInfo(enemyInfo);
+        enemy.SetDawnInfo(enemyInfo);
         LethalContent.Enemies.Register(enemyInfo);
         return enemyInfo;
     }

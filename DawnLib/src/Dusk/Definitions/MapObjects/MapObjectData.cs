@@ -2,7 +2,7 @@ using System;
 
 namespace Dawn.Dusk;
 [Serializable]
-public class MapObjectData : EntityData<CRMMapObjectReference>
+public class MapObjectData : EntityData<DuskMapObjectReference>
 {
     public bool isInsideHazard;
     public bool createInsideHazardConfig;

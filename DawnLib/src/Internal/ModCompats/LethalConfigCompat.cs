@@ -17,7 +17,7 @@ static class LethalConfigCompat
 
     private static ConfigFile _dummyConfig;
     private static readonly FieldInfo _typedValueField = typeof(ConfigEntry<>).GetField("_typedValue", BindingFlags.Instance | BindingFlags.NonPublic);
-    public static bool Enabled => Chainloader.PluginInfos.ContainsKey(PluginInfo.Guid) && CodeRebirthLibConfig.LethalConfigCompatibility.ShouldRunCompatibility(VERSION, Chainloader.PluginInfos[PluginInfo.Guid].Metadata.Version);
+    public static bool Enabled => Chainloader.PluginInfos.ContainsKey(PluginInfo.Guid) && DawnConfig.LethalConfigCompatibility.ShouldRunCompatibility(VERSION, Chainloader.PluginInfos[PluginInfo.Guid].Metadata.Version);
 
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]

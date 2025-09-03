@@ -38,16 +38,16 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
 
     private void AddAllAchievementsToContents()
     {
-        foreach (var crMod in CRMod.AllMods)
+        foreach (var duskMod in DuskMod.AllMods)
         {
             // instantiate a mod element if it has ANY achievements
-            if (CRModContent.Achievements.Values.Where(a => a.Mod == crMod).Count() > 0)
+            if (DuskModContent.Achievements.Values.Where(a => a.Mod == duskMod).Count() > 0)
             {
                 var uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
                 AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();
                 modUIElement._achievementsContainer = _achievementContents;
                 _modUIElements.Add(modUIElement);
-                modUIElement.SetupModUI(crMod);
+                modUIElement.SetupModUI(duskMod);
             }
         }
 

@@ -14,9 +14,9 @@ public class AutoRotate : MonoBehaviour
 
     private void Start()
     {
-        float _rotationSpeedX = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
-        float _rotationSpeedY = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
-        float _rotationSpeedZ = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
+        float _rotationSpeedX = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
+        float _rotationSpeedY = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
+        float _rotationSpeedZ = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
         _rotation = new Vector3(_rotationSpeedX, _rotationSpeedY, _rotationSpeedZ);
     }
 

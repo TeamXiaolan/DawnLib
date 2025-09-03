@@ -52,7 +52,7 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
             return curve;
         }
 
-        if (level.TryGetCRInfo(out DawnMoonInfo? moonInfo))
+        if (level.TryGetDawnInfo(out DawnMoonInfo? moonInfo))
         {
             List<AnimationCurve> tagCurveCandidates = new();
             foreach ((string tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)

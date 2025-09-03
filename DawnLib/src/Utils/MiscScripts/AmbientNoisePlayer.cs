@@ -22,7 +22,7 @@ public class AmbientNoisePlayer : MonoBehaviour
 
     public void Start()
     {
-        _idleTimer = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
+        _idleTimer = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
         if (!_playOnStart)
             return;
 
@@ -46,8 +46,8 @@ public class AmbientNoisePlayer : MonoBehaviour
         if (_idleAudioClips.audioClips.Length <= 0)
             return;
 
-        _idleTimer = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
-        _ambientAudioSource.PlayOneShot(_idleAudioClips.audioClips[CodeRebirthLibNetworker.Instance!.CRLibRandom.Next(_idleAudioClips.audioClips.Length)]);
+        _idleTimer = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
+        _ambientAudioSource.PlayOneShot(_idleAudioClips.audioClips[DawnNetworker.Instance!.DawnLibRandom.Next(_idleAudioClips.audioClips.Length)]);
         _onAmbientSoundPlayed.Invoke();
     }
 
@@ -58,7 +58,7 @@ public class AmbientNoisePlayer : MonoBehaviour
 
     public void ResetAmbientTimer()
     {
-        _idleTimer = CodeRebirthLibNetworker.Instance!.CRLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
+        _idleTimer = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
     }
 
     public void ForcePlayAmbientSound()

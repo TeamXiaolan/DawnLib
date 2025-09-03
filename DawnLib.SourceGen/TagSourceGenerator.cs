@@ -20,14 +20,14 @@ public class TagSourceGenerator : ISourceGenerator
     {
         if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out string? rootNamespace) || string.IsNullOrWhiteSpace(rootNamespace))
         {
-            context.ReportDiagnostic(Diagnostic.Create(CRLibDiagnostics.MissingRootNamespace, Location.None));
+            context.ReportDiagnostic(Diagnostic.Create(DawnLibDiagnostics.MissingRootNamespace, Location.None));
             return;
         }
         
         GeneratedClass @class = new GeneratedClass(Visibility.Public, "Tags") // todo: e.g. MeltdownTags
         {
             IsStatic = true,
-            Attributes = { CRLibSourceGenConstants.CodeGenAttribute }
+            Attributes = { DawnLibSourceGenConstants.CodeGenAttribute }
         };
         
         foreach (AdditionalText? additionalFile in context.AdditionalFiles)

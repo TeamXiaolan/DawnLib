@@ -29,9 +29,9 @@ public class DawnPlugin : BaseUnityPlugin
         Logger = base.Logger;
         Debuggers.Bind(Config);
         ConfigManager = new ConfigManager(Config);
-        CodeRebirthLibConfig.Bind(ConfigManager);
+        DawnConfig.Bind(ConfigManager);
 
-        if (CodeRebirthLibConfig.CreateTagExport)
+        if (DawnConfig.CreateTagExport)
         {
             TagExporter.Init();
         }
@@ -72,7 +72,7 @@ public class DawnPlugin : BaseUnityPlugin
         WeatherRegistrationHandler.Init();
 
         AchievementRegistrationPatch.Init();
-        CRLibNetworkerPatch.Init();
+        DawnNetworkerPatch.Init();
         EnemyDataPatch.Init();
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
@@ -92,7 +92,7 @@ public class DawnPlugin : BaseUnityPlugin
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
         
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
-        AutoCRModHandler.AutoRegisterMods();
+        AutoDuskModHandler.AutoRegisterMods();
     }
 
     internal static string RelativePath(params string[] folders)
@@ -102,7 +102,7 @@ public class DawnPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(UnlockableUpgradeScrap), typeof(UnlockProgressiveObject), typeof(SmartAgentNavigator), typeof(CodeRebirthLibNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
+        var types = new Type[] { typeof(UnlockableUpgradeScrap), typeof(UnlockProgressiveObject), typeof(SmartAgentNavigator), typeof(DawnNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
         foreach (var type in types)
         {
             try

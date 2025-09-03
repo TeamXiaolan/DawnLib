@@ -99,7 +99,7 @@ static class EnemyRegistrationHandler
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
-        if (!self.enemyType.TryGetCRInfo(out DawnEnemyInfo? enemyInfo))
+        if (!self.enemyType.TryGetDawnInfo(out DawnEnemyInfo? enemyInfo))
             return;
 
         if (enemyInfo.HasTag(DawnLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
@@ -270,7 +270,7 @@ static class EnemyRegistrationHandler
                 if (enemyType == null || enemyType.enemyPrefab == null)
                     continue;
 
-                if (enemyType.TryGetCRInfo(out _))
+                if (enemyType.TryGetDawnInfo(out _))
                     continue;
 
                 string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
@@ -348,7 +348,7 @@ static class EnemyRegistrationHandler
                     outsideInfo, insideInfo, daytimeInfo,
                     bestiaryNode, nameKeyword
                 );
-                enemyType.SetCRInfo(enemyInfo);
+                enemyType.SetDawnInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);
             }
 

@@ -21,7 +21,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
     private AssetBundle? _bundle;
 
-    protected AssetBundleLoader(CRMod mod, string filePath) : this(mod.Assembly, filePath)
+    protected AssetBundleLoader(DuskMod mod, string filePath) : this(mod.Assembly, filePath)
     {
     }
 
@@ -72,17 +72,17 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             }
         }
 
-        Content = bundle.LoadAllAssets<CRMContentDefinition>();
+        Content = bundle.LoadAllAssets<DuskContentDefinition>();
 
         // Sort content
         List<Type> definitionOrder = [
-            typeof(CRMWeatherDefinition),
-            typeof(CRMMapObjectDefinition),
-            typeof(CRMEnemyDefinition),
-            typeof(CRMUnlockableDefinition),
-            typeof(CRMItemDefinition),
-            typeof(CRMAdditionalTilesDefinition),
-            typeof(CRMAchievementDefinition),
+            typeof(DuskWeatherDefinition),
+            typeof(DuskMapObjectDefinition),
+            typeof(DuskEnemyDefinition),
+            typeof(DuskUnlockableDefinition),
+            typeof(DuskItemDefinition),
+            typeof(DuskAdditionalTilesDefinition),
+            typeof(DuskAchievementDefinition),
         ];
 
         Content = Content.OrderBy(it =>
@@ -94,7 +94,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
     }
 
     public AssetBundleData? AssetBundleData { get; set; } = null;
-    public CRMContentDefinition[] Content { get; }
+    public DuskContentDefinition[] Content { get; }
     public Dictionary<string, ConfigEntryBase> ConfigEntries => Content.SelectMany(c => c.generalConfigs).ToDictionary(it => it.Key, it => it.Value); // TODO please do better than me here
 
     public ConfigEntry<T> GetConfig<T>(string configName)
@@ -110,7 +110,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             return true;
         }
 
-        if (Debuggers.CRMContentDefinition != null)
+        if (Debuggers.Dusk != null)
         {
             Content.FirstOrDefault()?.Mod.Logger?.LogWarning($"TryGetConfig: '{configName}' does not exist on '{Content}', returning false and entry will be null");
         }

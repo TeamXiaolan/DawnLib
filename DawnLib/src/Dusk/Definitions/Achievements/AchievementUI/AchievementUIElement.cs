@@ -46,12 +46,12 @@ public class AchievementUIElement : MonoBehaviour
     internal EventTrigger? eventTrigger = null;
 
 
-    internal CRMAchievementDefinition achievementDefinition = null!;
+    internal DuskAchievementDefinition achievementDefinition = null!;
 
-    public void SetupAchievementUI(CRMAchievementDefinition definition)
+    public void SetupAchievementUI(DuskAchievementDefinition definition)
     {
         achievementDefinition = definition;
-        CRAchievementHandler.UpdateUIElement(this, definition);
+        DuskAchievementHandler.UpdateUIElement(this, definition);
     }
 
     public void ResetAchievementProgress()

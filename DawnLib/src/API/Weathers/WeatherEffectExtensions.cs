@@ -9,7 +9,7 @@ public static class WeatherEffectExtensions
 {
     public static NamespacedKey<DawnWeatherEffectInfo> ToNamespacedKey(this WeatherEffect weatherEffect)
     {
-        if (!weatherEffect.TryGetCRInfo(out DawnWeatherEffectInfo? weatherEffectInfo))
+        if (!weatherEffect.TryGetDawnInfo(out DawnWeatherEffectInfo? weatherEffectInfo))
         {
             Debuggers.Weathers?.Log($"WeatherEffect {weatherEffect} has no CRInfo");
             throw new Exception();
@@ -17,14 +17,14 @@ public static class WeatherEffectExtensions
         return weatherEffectInfo.TypedKey;
     }
 
-    internal static bool TryGetCRInfo(this WeatherEffect weatherEffect, [NotNullWhen(true)] out DawnWeatherEffectInfo? weatherEffectInfo)
+    internal static bool TryGetDawnInfo(this WeatherEffect weatherEffect, [NotNullWhen(true)] out DawnWeatherEffectInfo? weatherEffectInfo)
     {
-        weatherEffectInfo = (DawnWeatherEffectInfo)((ICRObject)weatherEffect).CRInfo;
+        weatherEffectInfo = (DawnWeatherEffectInfo)((IDawnObject)weatherEffect).DawnInfo;
         return weatherEffectInfo != null;
     }
 
-    internal static void SetCRInfo(this WeatherEffect weatherEffect, DawnWeatherEffectInfo weatherEffectInfo)
+    internal static void SetDawnInfo(this WeatherEffect weatherEffect, DawnWeatherEffectInfo weatherEffectInfo)
     {
-        ((ICRObject)weatherEffect).CRInfo = weatherEffectInfo;
+        ((IDawnObject)weatherEffect).DawnInfo = weatherEffectInfo;
     }
 }

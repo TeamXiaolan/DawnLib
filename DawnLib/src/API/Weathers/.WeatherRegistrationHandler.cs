@@ -15,7 +15,7 @@ static class WeatherRegistrationHandler
 
         foreach (WeatherEffect weatherEffect in TimeOfDay.Instance.effects)
         {
-            if (weatherEffect.TryGetCRInfo(out _))
+            if (weatherEffect.TryGetDawnInfo(out _))
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true);

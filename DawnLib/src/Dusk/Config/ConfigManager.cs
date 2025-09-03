@@ -37,7 +37,7 @@ public class ConfigManager(ConfigFile file)
         return file.Bind(CleanStringForConfig(header), CleanStringForConfig(name), DynamicConfigType, Description);
     }
 
-    public ConfigEntryBase CreateDynamicConfig(CRDynamicConfig configDefinition, ConfigContext context)
+    public ConfigEntryBase CreateDynamicConfig(DuskDynamicConfig configDefinition, ConfigContext context)
     {
         ConfigEntryBase Bind<T>(T defaultValue)
         {
@@ -46,12 +46,12 @@ public class ConfigManager(ConfigFile file)
 
         return configDefinition.DynamicConfigType switch
         {
-            CRDynamicConfigType.String => Bind(configDefinition.defaultString),
-            CRDynamicConfigType.Int => Bind(configDefinition.defaultInt),
-            CRDynamicConfigType.Bool => Bind(configDefinition.defaultBool),
-            CRDynamicConfigType.Float => Bind(configDefinition.defaultFloat),
-            CRDynamicConfigType.BoundedRange => Bind(configDefinition.defaultBoundedRange),
-            CRDynamicConfigType.AnimationCurve => Bind(configDefinition.defaultAnimationCurve),
+            DuskDynamicConfigType.String => Bind(configDefinition.defaultString),
+            DuskDynamicConfigType.Int => Bind(configDefinition.defaultInt),
+            DuskDynamicConfigType.Bool => Bind(configDefinition.defaultBool),
+            DuskDynamicConfigType.Float => Bind(configDefinition.defaultFloat),
+            DuskDynamicConfigType.BoundedRange => Bind(configDefinition.defaultBoundedRange),
+            DuskDynamicConfigType.AnimationCurve => Bind(configDefinition.defaultAnimationCurve),
             _ => throw new ArgumentOutOfRangeException($"DynamicConfigType of '{configDefinition.DynamicConfigType}' is not yet internally implemented!!"),
         };
     }

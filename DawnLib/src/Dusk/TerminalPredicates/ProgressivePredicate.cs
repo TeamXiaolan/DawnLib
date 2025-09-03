@@ -6,8 +6,8 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dawn.Dusk;
-[CreateAssetMenu(menuName = $"{CRModConstants.TerminalPredicates}/Progressive Unlockable", fileName = "New Progressive Predicate", order = CRModConstants.PredicateOrder)]
-public class ProgressivePredicate : CRMTerminalPredicate
+[CreateAssetMenu(menuName = $"{DuskModConstants.TerminalPredicates}/Progressive Unlockable", fileName = "New Progressive Predicate", order = DuskModConstants.PredicateOrder)]
+public class ProgressivePredicate : DuskTerminalPredicate
 {
     [SerializeField]
     string _lockedName = "???";

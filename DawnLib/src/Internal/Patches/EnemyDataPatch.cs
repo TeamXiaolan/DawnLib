@@ -1,4 +1,5 @@
 using GameNetcodeStuff;
+using Dawn.Utils;
 
 namespace Dawn.Internal;
 
@@ -12,7 +13,7 @@ static class EnemyDataPatch
 
     private static void HandleEnemyDeathData(On.EnemyAI.orig_HitEnemy orig, EnemyAI self, int force, PlayerControllerB playerWhoHit, bool playHitSFX, int hitID)
     {
-        CREnemyAdditionalData data = CREnemyAdditionalData.CreateOrGet(self);
+        DawnEnemyAdditionalData data = DawnEnemyAdditionalData.CreateOrGet(self);
         ExtraEnemyEvents events = null;
         ExtraEnemyEvents.eventListeners.TryGetValue(self, out events);
 
@@ -37,6 +38,6 @@ static class EnemyDataPatch
     private static void CreateAdditionalEnemyData(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
         orig(self);
-        CREnemyAdditionalData.CreateOrGet(self);
+        DawnEnemyAdditionalData.CreateOrGet(self);
     }
 }

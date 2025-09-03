@@ -6,14 +6,14 @@ namespace Dawn.Dusk;
 public class AchievementTriggers : MonoBehaviour
 {
     [SerializeField]
-    private CRMAchievementReference _reference = default!;
+    private DuskAchievementReference _reference = default!;
 
     [SerializeField]
     private UnityEvent _onAchievementCompleted = new UnityEvent();
 
     public void TryCompleteAchievement()
     {
-        if (CRModContent.Achievements.TryTriggerAchievement(_reference.Resolve().TypedKey))
+        if (DuskModContent.Achievements.TryTriggerAchievement(_reference.Resolve().TypedKey))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -21,7 +21,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryIncrementAchievement(float amountToIncrement)
     {
-        if (CRModContent.Achievements.TryIncrementAchievement(_reference.Resolve().TypedKey, amountToIncrement))
+        if (DuskModContent.Achievements.TryIncrementAchievement(_reference.Resolve().TypedKey, amountToIncrement))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -29,7 +29,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryDiscoverMoreProgressAchievement(string uniqueStringID)
     {
-        if (CRModContent.Achievements.TryDiscoverMoreProgressAchievement(_reference.Resolve().TypedKey, uniqueStringID))
+        if (DuskModContent.Achievements.TryDiscoverMoreProgressAchievement(_reference.Resolve().TypedKey, uniqueStringID))
         {
             _onAchievementCompleted.Invoke();
         }

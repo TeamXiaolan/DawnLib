@@ -2,8 +2,8 @@
 
 namespace Dawn.Dusk;
 
-[CreateAssetMenu(menuName = $"{CRModConstants.TerminalPredicates}/Achievement Unlock Requirement", fileName = "New Achievement Predicate", order = CRModConstants.PredicateOrder)]
-public class AchievementPredicate : CRMTerminalPredicate
+[CreateAssetMenu(menuName = $"{DuskModConstants.TerminalPredicates}/Achievement Unlock Requirement", fileName = "New Achievement Predicate", order = DuskModConstants.PredicateOrder)]
+public class AchievementPredicate : DuskTerminalPredicate
 {
     [SerializeField]
     string _lockedName = "";
@@ -12,7 +12,7 @@ public class AchievementPredicate : CRMTerminalPredicate
     private TerminalNode _failNode;
 
     [SerializeReference]
-    private CRMAchievementReference _achievement;
+    private DuskAchievementReference _achievement;
 
     private static readonly TerminalNode FailedResolve = new TerminalNodeBuilder("AchievementPredicateInternalFail")
         .SetDisplayText("Couldn't find the achievement required, check the logs for more information\n\n")
@@ -29,7 +29,7 @@ public class AchievementPredicate : CRMTerminalPredicate
     }
     public override TerminalPurchaseResult CanPurchase()
     {
-        if (!_achievement.TryResolve(out CRMAchievementDefinition definition))
+        if (!_achievement.TryResolve(out DuskAchievementDefinition definition))
         {
             DawnPlugin.Logger.LogError($"Failed to resolve the achievement definition for '{_achievement.Key}'. Unlock Requirement id = {_id}.");
             return TerminalPurchaseResult.Fail(FailedResolve);

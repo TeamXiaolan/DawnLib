@@ -3,7 +3,7 @@ using System;
 namespace Dawn.Dusk;
 
 [Serializable]
-public class EnemyData : EntityData<CRMEnemyReference>
+public class EnemyData : EntityData<DuskEnemyReference>
 {
     public string moonSpawnWeights;
     public string interiorSpawnWeights;

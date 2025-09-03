@@ -4,6 +4,6 @@ using UnityEngine;
 namespace Dawn.Dusk;
 
 [Serializable]
-public class DungeonData : EntityData<CRMAdditionalTilesReference>
+public class DungeonData : EntityData<DuskAdditionalTilesReference>
 {
 }

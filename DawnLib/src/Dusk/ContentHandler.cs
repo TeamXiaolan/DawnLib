@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Dawn.Dusk;
-public abstract class ContentHandler(CRMod mod)
+public abstract class ContentHandler(DuskMod mod)
 {
     [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     protected bool IsContentEnabled(string bundleName)
@@ -40,11 +40,11 @@ public abstract class ContentHandler(CRMod mod)
         if (!isEnabled && !forceEnabled)
             return false;
 
-        ConstructorInfo? constructorInfo = typeof(TAsset).GetConstructor([typeof(CRMod), typeof(string)]);
+        ConstructorInfo? constructorInfo = typeof(TAsset).GetConstructor([typeof(DuskMod), typeof(string)]);
 
         if (constructorInfo == null)
         {
-            mod.Logger?.LogError($"{typeof(TAsset).Name} is not properly setup to handle TryLoadContentBundle. It must have a constructor with (CRMod, string) as arguments!");
+            mod.Logger?.LogError($"{typeof(TAsset).Name} is not properly setup to handle TryLoadContentBundle. It must have a constructor with (DuskMod, string) as arguments!");
             return false;
         }
 
@@ -57,8 +57,8 @@ public abstract class ContentHandler(CRMod mod)
 
     protected void LoadAllContent(IAssetBundleLoader bundle)
     {
-        CRMContentDefinition[] definitions = bundle.Content;
-        foreach (CRMContentDefinition definition in definitions)
+        DuskContentDefinition[] definitions = bundle.Content;
+        foreach (DuskContentDefinition definition in definitions)
         {
             definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(mod);
@@ -86,7 +86,7 @@ public abstract class ContentHandler(CRMod mod)
 
 public abstract class ContentHandler<T> : ContentHandler where T : ContentHandler<T>
 {
-    public ContentHandler(CRMod mod) : base(mod)
+    public ContentHandler(DuskMod mod) : base(mod)
     {
         Instance = (T)this;
     }

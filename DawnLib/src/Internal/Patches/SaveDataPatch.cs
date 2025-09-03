@@ -5,50 +5,50 @@ static class SaveDataPatch
     internal static void Init()
     {
         On.DeleteFileButton.DeleteFile += ResetSaveFile;
-        On.GameNetworkManager.SaveItemsInShip += SaveCRLibData;
+        On.GameNetworkManager.SaveItemsInShip += SaveData;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
-        On.StartOfRound.AutoSaveShipData += SaveCRLibData;
+        On.StartOfRound.AutoSaveShipData += SaveData;
     }
 
-    private static void SaveCRLibData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
+    private static void SaveData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);
-        CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
+        DawnNetworker.Instance?.SaveData();
     }
 
     private static void ResetSaveFile(On.GameNetworkManager.orig_ResetSavedGameValues orig, GameNetworkManager self)
     {
         orig(self);
         ES3Settings settings;
-        if (CodeRebirthLibNetworker.Instance != null)
+        if (DawnNetworker.Instance != null)
         {
-            settings = CodeRebirthLibNetworker.Instance.SaveSettings;
+            settings = DawnNetworker.Instance.SaveSettings;
         }
         else
         {
-            settings = new ES3Settings($"CRLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
+            settings = new ES3Settings($"DawnLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
         }
-        CodeRebirthLibNetworker.ResetCodeRebirthLibData(settings);
+        DawnNetworker.ResetData(settings);
     }
 
-    private static void SaveCRLibData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
+    private static void SaveData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
     {
         orig(self);
-        CodeRebirthLibNetworker.Instance?.SaveCodeRebirthLibData();
+        DawnNetworker.Instance?.SaveData();
     }
 
     private static void ResetSaveFile(On.DeleteFileButton.orig_DeleteFile orig, DeleteFileButton self)
     {
         orig(self);
         ES3Settings settings;
-        if (CodeRebirthLibNetworker.Instance != null)
+        if (DawnNetworker.Instance != null)
         {
-            settings = CodeRebirthLibNetworker.Instance.SaveSettings;
+            settings = DawnNetworker.Instance.SaveSettings;
         }
         else
         {
-            settings = new ES3Settings($"CRLibLCSaveFile{self.fileToDelete + 1}", ES3.EncryptionType.None);
+            settings = new ES3Settings($"DawnLibLCSaveFile{self.fileToDelete + 1}", ES3.EncryptionType.None);
         }
-        CodeRebirthLibNetworker.ResetCodeRebirthLibData(settings);
+        DawnNetworker.ResetData(settings);
     }
 }

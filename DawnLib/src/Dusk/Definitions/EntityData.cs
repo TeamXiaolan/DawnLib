@@ -11,7 +11,7 @@ public abstract class EntityData
 }
 
 [Serializable]
-public abstract class EntityData<T> : EntityData where T : CRMContentReference, new()
+public abstract class EntityData<T> : EntityData where T : DuskContentReference, new()
 {
     [FormerlySerializedAs("reference")]
     [SerializeReference]

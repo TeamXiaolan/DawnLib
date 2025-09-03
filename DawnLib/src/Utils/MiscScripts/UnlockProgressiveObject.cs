@@ -38,7 +38,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
         PlayerControllerB player = reference; // implict cast
         if (player.currentlyHeldObjectServer is UnlockableUpgradeScrap unlockableUpgradeScrap)
         {
-            DawnUnlockableItemInfo definition = unlockableUpgradeScrap.CRUnlockableReference.Resolve();
+            DawnUnlockableItemInfo definition = unlockableUpgradeScrap.UnlockableReference.Resolve();
             if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
 
             if (definition.PurchasePredicate is not ProgressivePredicate progressive)
@@ -50,7 +50,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
         }
         else if (player.currentlyHeldObjectServer is ItemUpgradeScrap itemUpgradeScrap)
         {
-            DawnItemInfo definition = itemUpgradeScrap.CRItemReference.Resolve();
+            DawnItemInfo definition = itemUpgradeScrap.ItemReference.Resolve();
             if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
 
             if (definition.ShopInfo == null)

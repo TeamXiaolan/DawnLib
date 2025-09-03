@@ -18,7 +18,7 @@ internal static class Debuggers
     internal static DebugLogSource? AssetLoading;
     internal static DebugLogSource? Weights;
     internal static DebugLogSource? Achievements;
-    internal static DebugLogSource? CRMContentDefinition;
+    internal static DebugLogSource? Dusk;
     internal static DebugLogSource? Progressive;
     internal static DebugLogSource? ExtendedTOML;
     internal static DebugLogSource? LethalConfig;
