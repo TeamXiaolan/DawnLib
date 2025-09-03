@@ -2,11 +2,11 @@
 using Dawn.Internal;
 
 namespace Dawn;
-public abstract class CRBaseInfo<T> : INamespaced<T>, ITaggable where T : CRBaseInfo<T>
+public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : DawnBaseInfo<T>
 {
     private List<NamespacedKey> _tags;
     
-    protected CRBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags)
+    protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags)
     {
         TypedKey = key;
         _tags = tags;

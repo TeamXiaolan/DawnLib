@@ -33,12 +33,12 @@ internal static class Debuggers
             if (file.Bind("InternalDebugging", fieldInfo.Name, false, "Enable/Disable this DebugLogSource. Should only be true if you know what you are doing or have been asked to.").Value)
             {
                 fieldInfo.SetValue(null, new DebugLogSource(fieldInfo.Name));
-                CodeRebirthLibPlugin.Logger.LogDebug($"created a DebugLogSource for {fieldInfo.Name}!");
+                DawnPlugin.Logger.LogDebug($"created a DebugLogSource for {fieldInfo.Name}!");
             }
             else
             {
                 fieldInfo.SetValue(null, null);
-                CodeRebirthLibPlugin.Logger.LogDebug($"no DebugLogSource for {fieldInfo.Name}.");
+                DawnPlugin.Logger.LogDebug($"no DebugLogSource for {fieldInfo.Name}.");
             }
         }
     }
@@ -48,6 +48,6 @@ internal class DebugLogSource(string title)
 {
     internal void Log(object message)
     {
-        CodeRebirthLibPlugin.Logger.LogDebug($"[Debug-{title}] {message}");
+        DawnPlugin.Logger.LogDebug($"[Debug-{title}] {message}");
     }
 }

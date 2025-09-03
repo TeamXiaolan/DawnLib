@@ -13,9 +13,9 @@ static class MoonRegistrationHandler
     internal static void Init()
     {
         LethalContent.Moons.AddAutoTaggers(
-            new SimpleAutoTagger<CRMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
-            new SimpleAutoTagger<CRMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost == 0),
-            new SimpleAutoTagger<CRMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost > 0)
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost == 0),
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost > 0)
         );
 
         using (new DetourContext(priority: int.MaxValue))
@@ -36,17 +36,17 @@ static class MoonRegistrationHandler
         foreach (SelectableLevel level in self.levels)
         {
             Debuggers.Moons?.Log($"Registering level: {level.PlanetName}");
-            NamespacedKey<CRMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
+            NamespacedKey<DawnMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
             if (key == null && LLLCompat.Enabled && LLLCompat.IsExtendedLevel(level))
             {
-                key = NamespacedKey<CRMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+                key = NamespacedKey<DawnMoonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
             else if (key == null)
             {
-                key = NamespacedKey<CRMoonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+                key = NamespacedKey<DawnMoonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
 
-            List<NamespacedKey> tags = [CRLibTags.IsExternal];
+            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
             if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(level, out List<(string modName, string tagName)> tagsWithModNames))
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)
@@ -74,7 +74,7 @@ static class MoonRegistrationHandler
                     break;
                 }
             }
-            CRMoonInfo moonInfo = new CRMoonInfo(key, tags, level, routeNode, nameKeyword);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, nameKeyword);
             level.SetCRInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -89,7 +89,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        CRMoonInfo testMoonInfo = new(MoonKeys.Test, [CRLibTags.IsExternal], self.currentLevel, null, null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, null, null);
         self.currentLevel.SetCRInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);

@@ -81,7 +81,7 @@ public class NetworkAudioSource : NetworkBehaviour
         {
             if (isOneShot)
             {
-                CodeRebirthLibPlugin.Logger.LogError($"NetworkAudioSource failure on {gameObject.name}. PlayOneShot requires SyncClipFromPool = true.");
+                DawnPlugin.Logger.LogError($"NetworkAudioSource failure on {gameObject.name}. PlayOneShot requires SyncClipFromPool = true.");
                 return;
             }
         }
@@ -125,7 +125,7 @@ public class NetworkAudioSource : NetworkBehaviour
 
         if (isFromOwner && _requiresOwnership)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning("Received Play Packet from non-owner. Dropping");
+            DawnPlugin.Logger.LogWarning("Received Play Packet from non-owner. Dropping");
             return;
         }
         ActOnPlayPacket(packet);

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Dawn.Dusk;
 
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = $"{CRModConstants.Definitions}/Unlockable Definition")]
-public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUnlockableItemInfo>
+public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, DawnUnlockableItemInfo>
 {
     public const string REGISTRY_ID = "unlockables";
 
@@ -23,7 +23,7 @@ public class CRMUnlockableDefinition : CRMContentDefinition<UnlockableData, CRUn
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateUnlockableConfig(section, this, data, UnlockableItem.unlockableName);
 
-        CRLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
+        DawnLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
             builder.SetCost(Config.Cost.Value);
             builder.DefineShop(shopBuilder =>

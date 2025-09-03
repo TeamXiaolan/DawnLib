@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Dawn.Dusk;
 
-public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, CRMoonInfo>
+public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, DawnMoonInfo>
 {
     public MapObjectSpawnMechanics(string configString)
     {
@@ -52,7 +52,7 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, CRMo
             return curve;
         }
 
-        if (level.TryGetCRInfo(out CRMoonInfo? moonInfo))
+        if (level.TryGetCRInfo(out DawnMoonInfo? moonInfo))
         {
             List<AnimationCurve> tagCurveCandidates = new();
             foreach ((string tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)
@@ -90,7 +90,7 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, CRMo
         return AnimationCurve.Constant(0, 1, 0); // Default case if no curve matches
     }
 
-    public AnimationCurve? Provide(CRMoonInfo info)
+    public AnimationCurve? Provide(DawnMoonInfo info)
     {
         return CurveFunction(info.Level);
     }

@@ -7,11 +7,11 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
 
-public class CRDungeonInfo : CRBaseInfo<CRDungeonInfo>
+public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
     private List<DoorwaySocket> _sockets;
     
-    internal CRDungeonInfo(NamespacedKey<CRDungeonInfo> key, List<NamespacedKey> tags, DungeonFlow dungeonFlow) : base(key, tags)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, List<NamespacedKey> tags, DungeonFlow dungeonFlow) : base(key, tags)
     {
         DungeonFlow = dungeonFlow;
         _sockets = new();

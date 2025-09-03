@@ -3,19 +3,19 @@ using UnityEngine;
 
 namespace Dawn;
 
-public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInfoBuilder>
+public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyInfoBuilder>
 {
-    private CREnemyLocationInfo? _inside, _outside, _daytime;
+    private DawnEnemyLocationInfo? _inside, _outside, _daytime;
     private TerminalNode? _bestiaryNode;
     private TerminalKeyword? _nameKeyword;
     
     public class EnemyLocationBuilder
     {
-        private ProviderTable<int?, CRMoonInfo>? _weights;
+        private ProviderTable<int?, DawnMoonInfo>? _weights;
         private EnemyInfoBuilder _parent;
-        public EnemyLocationBuilder SetWeights(Action<WeightTableBuilder<CRMoonInfo>> callback)
+        public EnemyLocationBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo>> callback)
         {
-            WeightTableBuilder<CRMoonInfo> builder = new WeightTableBuilder<CRMoonInfo>();
+            WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
             callback(builder);
             _weights = builder.Build();
             return this;
@@ -26,18 +26,18 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
             _parent = parent;
         }
 
-        internal CREnemyLocationInfo Build()
+        internal DawnEnemyLocationInfo Build()
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Enemy '{_parent.key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<int?, CRMoonInfo>.Empty();
+                DawnPlugin.Logger.LogWarning($"Enemy '{_parent.key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
             }
-            return new CREnemyLocationInfo(_weights);
+            return new DawnEnemyLocationInfo(_weights);
         }
     }
     
-    internal EnemyInfoBuilder(NamespacedKey<CREnemyInfo> key, EnemyType enemyType) : base(key, enemyType)
+    internal EnemyInfoBuilder(NamespacedKey<DawnEnemyInfo> key, EnemyType enemyType) : base(key, enemyType)
     {
     }
 
@@ -85,7 +85,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
         return this;
     }
 
-    override internal CREnemyInfo Build()
+    override internal DawnEnemyInfo Build()
     {
         if (_bestiaryNode == null)
         {
@@ -103,6 +103,6 @@ public class EnemyInfoBuilder : BaseInfoBuilder<CREnemyInfo, EnemyType, EnemyInf
         }
 
         _bestiaryNode.creatureName = value.enemyName;
-        return new CREnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword!);
+        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword!);
     }
 }

@@ -28,11 +28,11 @@ static class AchievementRegistrationPatch
 
     private static void DoAchievementUI(MenuManager menuManager)
     {
-        var canvas = GameObject.Instantiate(CodeRebirthLibPlugin.Main.AchievementUICanvasPrefab, menuManager.transform.parent.Find("MenuContainer"));
+        var canvas = GameObject.Instantiate(DawnPlugin.Main.AchievementUICanvasPrefab, menuManager.transform.parent.Find("MenuContainer"));
         canvas.GetComponent<AchievementUICanvas>()._menuManager = menuManager;
 
         if (AchievementUIGetCanvas.Instance == null)
-            Object.Instantiate(CodeRebirthLibPlugin.Main.AchievementGetUICanvasPrefab);
+            Object.Instantiate(DawnPlugin.Main.AchievementGetUICanvasPrefab);
 
         var menuContainer = GameObject.Find("MenuContainer");
         if (!menuContainer)

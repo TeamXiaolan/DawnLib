@@ -34,7 +34,7 @@ public class SpawnSyncedCRLibObject : MonoBehaviour
 
         if (spawnableObjectsList.Count <= 0)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"No prefabs found for spawning in game object: {this.gameObject.name}");
+            DawnPlugin.Logger.LogWarning($"No prefabs found for spawning in game object: {this.gameObject.name}");
             return;
         }
 
@@ -43,7 +43,7 @@ public class SpawnSyncedCRLibObject : MonoBehaviour
         // Instantiate and spawn the object on the network.
         if (prefabToSpawn == null)
         {
-            CodeRebirthLibPlugin.Logger.LogError($"Did you really set something to spawn at a weight of 0? Couldn't find prefab for spawning: {string.Join(", ", objectTypesWithRarity.Select(objectType => objectType.NamespacedMapObjectKey))}");
+            DawnPlugin.Logger.LogError($"Did you really set something to spawn at a weight of 0? Couldn't find prefab for spawning: {string.Join(", ", objectTypesWithRarity.Select(objectType => objectType.NamespacedMapObjectKey))}");
             return;
         }
 

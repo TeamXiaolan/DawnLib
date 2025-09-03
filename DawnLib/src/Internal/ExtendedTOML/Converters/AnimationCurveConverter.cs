@@ -28,7 +28,7 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
             {
                 return new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, result));
             }
-            CodeRebirthLibPlugin.Logger.LogError($"Invalid key-value pairs format: {keyValuePairs}");
+            DawnPlugin.Logger.LogError($"Invalid key-value pairs format: {keyValuePairs}");
             return AnimationCurve.Constant(0, 1, 0);
         }
         List<Keyframe> keyframes = new();

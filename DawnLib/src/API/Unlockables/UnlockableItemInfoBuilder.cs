@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Dawn;
-public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
+public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
 {
     public class SuitBuilder
     {
@@ -13,9 +13,9 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, Unloc
             _parentBuilder = parent;
         }
 
-        internal CRSuitInfo Build()
+        internal DawnSuitInfo Build()
         {
-            return new CRSuitInfo();
+            return new DawnSuitInfo();
         }
     }
 
@@ -40,18 +40,18 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, Unloc
             return this;
         }
 
-        internal CRPlaceableObjectInfo Build()
+        internal DawnPlaceableObjectInfo Build()
         {
-            return new CRPlaceableObjectInfo();
+            return new DawnPlaceableObjectInfo();
         }
     }
 
     private int? _cost;
-    private CRSuitInfo? _suitInfo;
-    private CRPlaceableObjectInfo? _placeableObjectInfo;
+    private DawnSuitInfo? _suitInfo;
+    private DawnPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
     
-    internal UnlockableInfoBuilder(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
+    internal UnlockableInfoBuilder(NamespacedKey<DawnUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
     {
     }
 
@@ -83,12 +83,12 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, Unloc
         return this;
     }
 
-    override internal CRUnlockableItemInfo Build()
+    override internal DawnUnlockableItemInfo Build()
     {
         int cost = 0;
         if (_cost == null && value.shopSelectionNode == null)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Unlockable: '{key}' didn't set cost. If you intend to have no cost, call .SetCost(0) or provide a ShopSelectionNode with a cost inside to use.");
+            DawnPlugin.Logger.LogWarning($"Unlockable: '{key}' didn't set cost. If you intend to have no cost, call .SetCost(0) or provide a ShopSelectionNode with a cost inside to use.");
         }
         else if (_cost == null)
         {
@@ -96,6 +96,6 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<CRUnlockableItemInfo, Unloc
         }
 
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-        return new CRUnlockableItemInfo(_purchasePredicate, key, tags, value, new SimpleProvider<int>(cost), _suitInfo, _placeableObjectInfo);
+        return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, new SimpleProvider<int>(cost), _suitInfo, _placeableObjectInfo);
     }
 }

@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace Dawn;
 
-public sealed class CRInsideMapObjectInfo
+public sealed class DawnInsideMapObjectInfo
 {
-    public CRMapObjectInfo ParentInfo { get; internal set; }
+    public DawnMapObjectInfo ParentInfo { get; internal set; }
 
-    internal CRInsideMapObjectInfo(ProviderTable<AnimationCurve?, CRMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, bool spawnFacingWall, bool spawnWithBackToWall, bool spawnWithBackFlushAgainstWall, bool requireDistanceBetweenSpawns, bool disallowSpawningNearEntrances)
+    internal DawnInsideMapObjectInfo(ProviderTable<AnimationCurve?, DawnMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, bool spawnFacingWall, bool spawnWithBackToWall, bool spawnWithBackFlushAgainstWall, bool requireDistanceBetweenSpawns, bool disallowSpawningNearEntrances)
     {
         SpawnWeights = spawnWeights;
         SpawnFacingAwayFromWall = spawnFacingAwayFromWall;
@@ -17,7 +17,7 @@ public sealed class CRInsideMapObjectInfo
         DisallowSpawningNearEntrances = disallowSpawningNearEntrances;
     }
 
-    public ProviderTable<AnimationCurve?, CRMoonInfo> SpawnWeights { get; }
+    public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; }
     public bool SpawnFacingAwayFromWall { get; }
     public bool SpawnFacingWall { get; }
     public bool SpawnWithBackToWall { get; }

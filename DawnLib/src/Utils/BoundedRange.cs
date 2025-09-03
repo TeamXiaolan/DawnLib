@@ -19,7 +19,7 @@ public class BoundedRange
 
         if (Min > Max)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Min ({Min}) is bigger than Max ({Max}), setting Min to {Max}");
+            DawnPlugin.Logger.LogWarning($"Min ({Min}) is bigger than Max ({Max}), setting Min to {Max}");
             Min = Max;
         }
     }

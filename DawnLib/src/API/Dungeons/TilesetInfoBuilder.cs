@@ -2,12 +2,12 @@
 using DunGen;
 
 namespace Dawn;
-public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, TilesetInfoBuilder>
+public class TilesetInfoBuilder : BaseInfoBuilder<DawnTileSetInfo, TileSet, TilesetInfoBuilder>
 {
     private bool _branchCap, _regular = true;
     private IPredicate? _predicate;
     
-    internal TilesetInfoBuilder(NamespacedKey<CRTileSetInfo> key, TileSet value) : base(key, value)
+    internal TilesetInfoBuilder(NamespacedKey<DawnTileSetInfo> key, TileSet value) : base(key, value)
     {
     }
 
@@ -29,11 +29,11 @@ public class TilesetInfoBuilder : BaseInfoBuilder<CRTileSetInfo, TileSet, Tilese
         return this;
     }
 
-    override internal CRTileSetInfo Build()
+    override internal DawnTileSetInfo Build()
     {
         if(_predicate == null) _predicate = ConstantPredicate.True;
         
         // tilesets do not really need tags, its just there to carry the IsExternal flag
-        return new CRTileSetInfo(key, [], _predicate, value, _branchCap, _regular);
+        return new DawnTileSetInfo(key, [], _predicate, value, _branchCap, _regular);
     }
 }

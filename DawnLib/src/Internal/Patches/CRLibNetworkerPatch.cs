@@ -24,13 +24,13 @@ static class CRLibNetworkerPatch
             {
                 if (!CodeRebirthLibNetworker.Instance)
                 {
-                    GameObject networkerInstance = Object.Instantiate(CodeRebirthLibPlugin.Main.NetworkerPrefab);
+                    GameObject networkerInstance = Object.Instantiate(DawnPlugin.Main.NetworkerPrefab);
                     SceneManager.MoveGameObjectToScene(networkerInstance, self.gameObject.scene);
                     networkerInstance.GetComponent<NetworkObject>().Spawn();
                 }
             }
 
-            if (AchievementUIGetCanvas.Instance == null) Object.Instantiate(CodeRebirthLibPlugin.Main.AchievementGetUICanvasPrefab);
+            if (AchievementUIGetCanvas.Instance == null) Object.Instantiate(DawnPlugin.Main.AchievementGetUICanvasPrefab);
         });
     }
 }

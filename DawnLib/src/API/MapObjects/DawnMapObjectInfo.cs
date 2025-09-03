@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Dawn;
 
-public sealed class CRMapObjectInfo : CRBaseInfo<CRMapObjectInfo>
+public sealed class DawnMapObjectInfo : DawnBaseInfo<DawnMapObjectInfo>
 {
-    internal CRMapObjectInfo(NamespacedKey<CRMapObjectInfo> key, List<NamespacedKey> tags, GameObject mapObject, CRInsideMapObjectInfo? insideInfo, CROutsideMapObjectInfo? outsideInfo) : base(key, tags)
+    internal DawnMapObjectInfo(NamespacedKey<DawnMapObjectInfo> key, List<NamespacedKey> tags, GameObject mapObject, DawnInsideMapObjectInfo? insideInfo, DawnOutsideMapObjectInfo? outsideInfo) : base(key, tags)
     {
         MapObject = mapObject;
         InsideInfo = insideInfo;
@@ -17,7 +17,7 @@ public sealed class CRMapObjectInfo : CRBaseInfo<CRMapObjectInfo>
     }
 
     public GameObject MapObject { get; }
-    public CRInsideMapObjectInfo? InsideInfo { get; }
-    public CROutsideMapObjectInfo? OutsideInfo { get; }
+    public DawnInsideMapObjectInfo? InsideInfo { get; }
+    public DawnOutsideMapObjectInfo? OutsideInfo { get; }
     public bool HasNetworkObject { get; }
 }

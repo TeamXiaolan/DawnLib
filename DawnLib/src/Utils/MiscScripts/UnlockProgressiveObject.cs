@@ -38,37 +38,37 @@ public class UnlockProgressiveObject : NetworkBehaviour
         PlayerControllerB player = reference; // implict cast
         if (player.currentlyHeldObjectServer is UnlockableUpgradeScrap unlockableUpgradeScrap)
         {
-            CRUnlockableItemInfo definition = unlockableUpgradeScrap.CRUnlockableReference.Resolve();
+            DawnUnlockableItemInfo definition = unlockableUpgradeScrap.CRUnlockableReference.Resolve();
             if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
 
             if (definition.PurchasePredicate is not ProgressivePredicate progressive)
             {
-                CodeRebirthLibPlugin.Logger.LogError($"{definition.UnlockableItem.unlockableName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
+                DawnPlugin.Logger.LogError($"{definition.UnlockableItem.unlockableName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
                 return;
             }
             progressive.Unlock(_displayTip);
         }
         else if (player.currentlyHeldObjectServer is ItemUpgradeScrap itemUpgradeScrap)
         {
-            CRItemInfo definition = itemUpgradeScrap.CRItemReference.Resolve();
+            DawnItemInfo definition = itemUpgradeScrap.CRItemReference.Resolve();
             if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
 
             if (definition.ShopInfo == null)
             {
-                CodeRebirthLibPlugin.Logger.LogError($"{definition.Item.itemName} is not a shop item. It can not be progressively unlocked.");
+                DawnPlugin.Logger.LogError($"{definition.Item.itemName} is not a shop item. It can not be progressively unlocked.");
                 return;
             }
             
             if (definition.ShopInfo.PurchasePredicate is not ProgressivePredicate progressive)
             {
-                CodeRebirthLibPlugin.Logger.LogError($"{definition.Item.itemName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
+                DawnPlugin.Logger.LogError($"{definition.Item.itemName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
                 return;
             }
             progressive.Unlock(_displayTip);
         }
         else
         {
-            CodeRebirthLibPlugin.Logger.LogError("UnlockableUpgradeScrap is null, how did you even get here????");
+            DawnPlugin.Logger.LogError("UnlockableUpgradeScrap is null, how did you even get here????");
         }
     }
 }

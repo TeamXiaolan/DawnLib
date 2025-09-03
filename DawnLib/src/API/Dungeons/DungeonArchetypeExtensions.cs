@@ -8,9 +8,9 @@ namespace Dawn;
 
 public static class DungeonArchetypeExtensions
 {
-    public static NamespacedKey<CRArchetypeInfo> ToNamespacedKey(this DungeonArchetype archetype)
+    public static NamespacedKey<DawnArchetypeInfo> ToNamespacedKey(this DungeonArchetype archetype)
     {
-        if (!archetype.TryGetCRInfo(out CRArchetypeInfo? tileSetInfo))
+        if (!archetype.TryGetCRInfo(out DawnArchetypeInfo? tileSetInfo))
         {
             Debuggers.Dungeons?.Log($"Archetype {archetype} has no CRInfo");
             throw new Exception();
@@ -18,14 +18,14 @@ public static class DungeonArchetypeExtensions
         return tileSetInfo.TypedKey;
     }
 
-    internal static bool TryGetCRInfo(this DungeonArchetype archetype, [NotNullWhen(true)] out CRArchetypeInfo? tileSetInfo)
+    internal static bool TryGetCRInfo(this DungeonArchetype archetype, [NotNullWhen(true)] out DawnArchetypeInfo? tileSetInfo)
     {
         object newObject = archetype;
-        tileSetInfo = (CRArchetypeInfo)((ICRObject)newObject).CRInfo;
+        tileSetInfo = (DawnArchetypeInfo)((ICRObject)newObject).CRInfo;
         return tileSetInfo != null;
     }
 
-    internal static void SetCRInfo(this DungeonArchetype archetype, CRArchetypeInfo tileSetInfo)
+    internal static void SetCRInfo(this DungeonArchetype archetype, DawnArchetypeInfo tileSetInfo)
     {
         object newObject = archetype;
         ((ICRObject)newObject).CRInfo = tileSetInfo;

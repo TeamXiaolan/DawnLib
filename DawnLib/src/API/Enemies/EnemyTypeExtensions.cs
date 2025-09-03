@@ -7,9 +7,9 @@ namespace Dawn;
 
 public static class EnemyTypeExtensions
 {
-    public static NamespacedKey<CREnemyInfo> ToNamespacedKey(this EnemyType enemyType)
+    public static NamespacedKey<DawnEnemyInfo> ToNamespacedKey(this EnemyType enemyType)
     {
-        if (!enemyType.TryGetCRInfo(out CREnemyInfo? moonInfo))
+        if (!enemyType.TryGetCRInfo(out DawnEnemyInfo? moonInfo))
         {
             Debuggers.Enemies?.Log($"EnemyType {enemyType} has no CRInfo");
             throw new Exception();
@@ -17,13 +17,13 @@ public static class EnemyTypeExtensions
         return moonInfo.TypedKey;
     }
 
-    internal static bool TryGetCRInfo(this EnemyType enemyType, [NotNullWhen(true)] out CREnemyInfo? moonInfo)
+    internal static bool TryGetCRInfo(this EnemyType enemyType, [NotNullWhen(true)] out DawnEnemyInfo? moonInfo)
     {
-        moonInfo = (CREnemyInfo)((ICRObject)enemyType).CRInfo;
+        moonInfo = (DawnEnemyInfo)((ICRObject)enemyType).CRInfo;
         return moonInfo != null;
     }
 
-    internal static void SetCRInfo(this EnemyType enemyType, CREnemyInfo moonInfo)
+    internal static void SetCRInfo(this EnemyType enemyType, DawnEnemyInfo moonInfo)
     {
         ((ICRObject)enemyType).CRInfo = moonInfo;
     }

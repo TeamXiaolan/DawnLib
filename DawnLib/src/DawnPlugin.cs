@@ -18,7 +18,7 @@ namespace Dawn;
 [BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency(TerminalFormatter.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
-public class CodeRebirthLibPlugin : BaseUnityPlugin
+public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static ConfigManager ConfigManager { get; private set; } = null!;
@@ -91,7 +91,7 @@ public class CodeRebirthLibPlugin : BaseUnityPlugin
         
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "coderebirthlibmain"));
         
-        CRLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
+        DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
         AutoCRModHandler.AutoRegisterMods();
     }
 

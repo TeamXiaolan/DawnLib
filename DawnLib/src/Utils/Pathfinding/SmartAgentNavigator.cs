@@ -70,7 +70,7 @@ public class SmartAgentNavigator : NetworkBehaviour
     {
         if (_agentState == AgentState.NotSet)
         {
-            CodeRebirthLibPlugin.Logger.LogError($"{this.name} is not initialized yet! Please call `SetAllValues` first.");
+            DawnPlugin.Logger.LogError($"{this.name} is not initialized yet! Please call `SetAllValues` first.");
             return false;
         }
         return _agentState == AgentState.Outside;
@@ -244,7 +244,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         {
             action(TList);
             checkPathsRoutine = null;
-            CodeRebirthLibPlugin.Logger.LogError($"{this.gameObject.name} has no points to check paths for, report this along with what was happening.");
+            DawnPlugin.Logger.LogError($"{this.gameObject.name} has no points to check paths for, report this along with what was happening.");
             yield break;
         }
         Debuggers.Pathfinding?.Log($"Checking paths for {listSize} objects");
@@ -253,7 +253,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         {
             if (!checkPathsTask.IsResultReady(i))
             {
-                CodeRebirthLibPlugin.Logger.LogError($"Result for task index: {i} on {this.gameObject.name} is not ready");
+                DawnPlugin.Logger.LogError($"Result for task index: {i} on {this.gameObject.name} is not ready");
                 continue;
             }
             Debuggers.Pathfinding?.Log($"Checking result for task index: {i}, is result ready: {checkPathsTask.IsResultReady(i)}, result: {checkPathsTask.GetResult(i)}");
@@ -478,7 +478,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         int listSize = _roamingPointsVectorList.Count;
         if (listSize == 0)
         {
-            CodeRebirthLibPlugin.Logger.LogError($"Roaming points list is empty for {this.gameObject.name}, this means that the moon has basically no nodes, and no navmesh around where this entity spawned, no idea how else this could happen, report this with more logs and a detail of what was happening");
+            DawnPlugin.Logger.LogError($"Roaming points list is empty for {this.gameObject.name}, this means that the moon has basically no nodes, and no navmesh around where this entity spawned, no idea how else this could happen, report this with more logs and a detail of what was happening");
             yield break;
         }
         Debuggers.Pathfinding?.Log($"Checking paths for {listSize} objects");
@@ -487,7 +487,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         {
             if (!roamingTask.IsResultReady(i))
             {
-                CodeRebirthLibPlugin.Logger.LogError($"Roaming task {i} is not ready");
+                DawnPlugin.Logger.LogError($"Roaming task {i} is not ready");
                 continue;
             }
 

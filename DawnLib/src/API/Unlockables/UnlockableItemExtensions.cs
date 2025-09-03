@@ -8,9 +8,9 @@ namespace Dawn;
 
 public static class UnlockableItemExtensions
 {
-    public static NamespacedKey<CRUnlockableItemInfo> ToNamespacedKey(this UnlockableItem unlockableItem)
+    public static NamespacedKey<DawnUnlockableItemInfo> ToNamespacedKey(this UnlockableItem unlockableItem)
     {
-        if (!unlockableItem.TryGetCRInfo(out CRUnlockableItemInfo? unlockableItemInfo))
+        if (!unlockableItem.TryGetCRInfo(out DawnUnlockableItemInfo? unlockableItemInfo))
         {
             Debuggers.Unlockables?.Log($"UnlockableItem {unlockableItem} has no CRInfo");
             throw new Exception();
@@ -18,13 +18,13 @@ public static class UnlockableItemExtensions
         return unlockableItemInfo.TypedKey;
     }
 
-    internal static bool TryGetCRInfo(this UnlockableItem unlockableItem, [NotNullWhen(true)] out CRUnlockableItemInfo? unlockableItemInfo)
+    internal static bool TryGetCRInfo(this UnlockableItem unlockableItem, [NotNullWhen(true)] out DawnUnlockableItemInfo? unlockableItemInfo)
     {
-        unlockableItemInfo = (CRUnlockableItemInfo)((ICRObject)unlockableItem).CRInfo;
+        unlockableItemInfo = (DawnUnlockableItemInfo)((ICRObject)unlockableItem).CRInfo;
         return unlockableItemInfo != null;
     }
 
-    internal static void SetCRInfo(this UnlockableItem unlockableItem, CRUnlockableItemInfo unlockableItemInfo)
+    internal static void SetCRInfo(this UnlockableItem unlockableItem, DawnUnlockableItemInfo unlockableItemInfo)
     {
         ((ICRObject)unlockableItem).CRInfo = unlockableItemInfo;
     }

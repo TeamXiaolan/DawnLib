@@ -1,6 +1,6 @@
 {
   "EnemyKeys": {
-    "__type": "CREnemyInfo",
+    "__type": "DawnEnemyInfo",
     "Baboonhawk": "lethal_company:baboon_hawk",
     "Blob": "lethal_company:blob",
     "BushWolf": "lethal_company:bush_wolf",
@@ -32,7 +32,7 @@
     "Spring": "lethal_company:spring"
   },
   "UnlockableItemKeys": {
-    "__type": "CRUnlockableItemInfo",
+    "__type": "DawnUnlockableItemInfo",
     "Orangesuit": "lethal_company:orange_suit",
     "Greensuit": "lethal_company:green_suit",
     "Hazardsuit": "lethal_company:hazard_suit",
@@ -69,7 +69,7 @@
     "Doghouse": "lethal_company:dog_house"
   },
   "ItemKeys": {
-    "__type": "CRItemInfo",
+    "__type": "DawnItemInfo",
     "MagicSevenball": "lethal_company:magic_seven_ball",
     "Airhorn": "lethal_company:airhorn",
     "Egg": "lethal_company:egg",
@@ -157,7 +157,7 @@
     "ZedDog": "lethal_company:zed_dog"
   },
   "MoonKeys": {
-    "__type": "CRMoonInfo",
+    "__type": "DawnMoonInfo",
     "Adamance": "lethal_company:adamance",
     "Artifice": "lethal_company:artifice",
     "Assurance": "lethal_company:assurance",
@@ -173,7 +173,7 @@
     "Vow": "lethal_company:vow"
   },
   "DungeonKeys": {
-    "__type": "CRDungeonInfo",
+    "__type": "DawnDungeonInfo",
     "FacilityFlow": "lethal_company:facility",
     "FacilityFlowThreeExits": "lethal_company:facility_three_exits",
     "FacilityFlowExtraLarge": "lethal_company:facility_extra_large",
@@ -181,7 +181,7 @@
     "MineshaftFlow": "lethal_company:mineshaft"
   },
   "DungeonTileSetKeys": {
-    "__type": "CRTileSetInfo",
+    "__type": "DawnTileSetInfo",
     "FacilityHallway": "lethal_company:levelonehallwaytiles",
     "FacilityMaze": "lethal_company:levelonemaze",
     "FacilityRoom": "lethal_company:leveloneroomtiles",
@@ -197,7 +197,7 @@
     "StartRooms": "lethal_company:startrooms"
   },
   "DungeonArchetypeKeys": {
-    "__type": "CRArchetypeInfo",
+    "__type": "DawnArchetypeInfo",
     "Facility": "lethal_company:levelonearchetype",
     "FacilityMaze": "lethal_company:levelonearchetypemaze",
     "MansionB": "lethal_company:leveltwoarchetypeb",
@@ -206,7 +206,7 @@
     "MineshaftTunnels": "lethal_company:levelthreetunnels"
   },
   "MapObjectKeys": {
-    "__type": "CRMapObjectInfo",
+    "__type": "DawnMapObjectInfo",
     "TurretContainer": "lethal_company:turretcontainer",
     "Landmine": "lethal_company:landmine",
     "SpikeRoofTrapHazard": "lethal_company:spikerooftraphazard",
@@ -225,7 +225,7 @@
     "Tree": "lethal_company:tree"
   },
   "WeatherKeys": {
-    "__type": "CRWeatherEffectInfo",
+    "__type": "DawnWeatherEffectInfo",
     "Rollinggroundfog": "lethal_company:rolling_ground_fog",
     "Rainy": "lethal_company:rainy",
     "Stormy": "lethal_company:stormy",

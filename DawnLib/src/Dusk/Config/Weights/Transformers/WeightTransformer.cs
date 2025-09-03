@@ -42,7 +42,7 @@ public abstract class WeightTransformer
         }
         else
         {
-            CodeRebirthLibPlugin.Logger.LogError($"Unknown operation: {operation} with WeightTransformer {this}.");
+            DawnPlugin.Logger.LogError($"Unknown operation: {operation} with WeightTransformer {this}.");
             throw new NotImplementedException();
         }
     }

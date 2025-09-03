@@ -34,7 +34,7 @@ public static class CRLibUtilities
 
         if (selectedObject == null)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Could not find a valid object to spawn of type {typeof(T).Name}!");
+            DawnPlugin.Logger.LogWarning($"Could not find a valid object to spawn of type {typeof(T).Name}!");
             return default;
         }
         return selectedObject;

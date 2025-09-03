@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Dawn.Dusk;
 
 [CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = $"{CRModConstants.Definitions}/Additional Tiles Definition")]
-public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CRTileSetInfo>
+public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, DawnTileSetInfo>
 {
     [Flags]
     public enum BranchCapSetting
@@ -22,22 +22,22 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
     public TileSet TilesToAdd { get; private set; }
 
     [field: SerializeField]
-    public List<NamespacedKey<CRArchetypeInfo>> archetypeKeys = new();
+    public List<NamespacedKey<DawnArchetypeInfo>> archetypeKeys = new();
 
     [field: SerializeField]
     public BranchCapSetting BranchCap { get; private set; }
 
-    private CRTileSetInfo _info;
+    private DawnTileSetInfo _info;
     
     public override void Register(CRMod mod, DungeonData data)
     {
         base.Register(mod);
         foreach (GameObjectChance chance in TilesToAdd.TileWeights.Weights)
         {
-            CRLib.FixDoorwaySockets(chance.Value);
+            DawnLib.FixDoorwaySockets(chance.Value);
         }
 
-        _info = CRLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
+        _info = DawnLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
             ApplyTagsTo(builder);
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
@@ -46,9 +46,9 @@ public class CRMAdditionalTilesDefinition : CRMContentDefinition<DungeonData, CR
 
         LethalContent.Archetypes.BeforeFreeze += () =>
         {
-            foreach (NamespacedKey<CRArchetypeInfo> key in archetypeKeys)
+            foreach (NamespacedKey<DawnArchetypeInfo> key in archetypeKeys)
             {
-                if (LethalContent.Archetypes.TryGetValue(key, out CRArchetypeInfo dungeonInfo))
+                if (LethalContent.Archetypes.TryGetValue(key, out DawnArchetypeInfo dungeonInfo))
                 {
                     dungeonInfo.AddTileSet(_info);
                 }

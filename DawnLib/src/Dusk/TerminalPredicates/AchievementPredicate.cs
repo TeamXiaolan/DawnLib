@@ -31,7 +31,7 @@ public class AchievementPredicate : CRMTerminalPredicate
     {
         if (!_achievement.TryResolve(out CRMAchievementDefinition definition))
         {
-            CodeRebirthLibPlugin.Logger.LogError($"Failed to resolve the achievement definition for '{_achievement.Key}'. Unlock Requirement id = {_id}.");
+            DawnPlugin.Logger.LogError($"Failed to resolve the achievement definition for '{_achievement.Key}'. Unlock Requirement id = {_id}.");
             return TerminalPurchaseResult.Fail(FailedResolve);
         }
 

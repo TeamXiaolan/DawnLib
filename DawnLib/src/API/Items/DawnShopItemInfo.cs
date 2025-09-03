@@ -1,9 +1,9 @@
 ﻿namespace Dawn;
-public sealed class CRShopItemInfo : ITerminalPurchase
+public sealed class DawnShopItemInfo : ITerminalPurchase
 {
-    public CRItemInfo ParentInfo { get; internal set; }
+    public DawnItemInfo ParentInfo { get; internal set; }
 
-    internal CRShopItemInfo(ITerminalPurchasePredicate predicate, TerminalNode? infoNode, TerminalNode requestNode, TerminalNode receiptNode, IProvider<int> cost)
+    internal DawnShopItemInfo(ITerminalPurchasePredicate predicate, TerminalNode? infoNode, TerminalNode requestNode, TerminalNode receiptNode, IProvider<int> cost)
     {
         PurchasePredicate = predicate;
         InfoNode = infoNode;

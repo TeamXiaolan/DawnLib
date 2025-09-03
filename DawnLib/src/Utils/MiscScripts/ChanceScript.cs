@@ -22,7 +22,7 @@ public class ChanceScript : NetworkBehaviour
         base.OnNetworkSpawn();
         if (CodeRebirthLibNetworker.Instance == null)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"CodeRebirthLibNetworker.Instance is null! I really hope you're starting up the round right now");
+            DawnPlugin.Logger.LogWarning($"CodeRebirthLibNetworker.Instance is null! I really hope you're starting up the round right now");
             StartCoroutine(DelayRandomThing());
             return;
         }

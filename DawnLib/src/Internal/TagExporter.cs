@@ -39,7 +39,7 @@ static class TagExporter
         return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "tag-exports");
     }
     
-    static void AddRegistry<T>(string name, TaggedRegistry<T> registry) where T : CRBaseInfo<T>
+    static void AddRegistry<T>(string name, TaggedRegistry<T> registry) where T : DawnBaseInfo<T>
     {
         registry.AfterTagging += () =>
         {

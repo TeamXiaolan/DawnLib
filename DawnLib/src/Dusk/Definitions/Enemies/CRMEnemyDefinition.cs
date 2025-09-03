@@ -15,7 +15,7 @@ public enum SpawnTable
 }
 
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = $"{CRModConstants.Definitions}/Enemy Definition")]
-public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
+public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, DawnEnemyInfo>
 {
     public const string REGISTRY_ID = "enemies";
 
@@ -48,7 +48,7 @@ public class CRMEnemyDefinition : CRMContentDefinition<EnemyData, CREnemyInfo>
 
         SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
 
-        CRLib.DefineEnemy(TypedKey, EnemyType, builder =>
+        DawnLib.DefineEnemy(TypedKey, EnemyType, builder =>
         {
             if (SpawnTable.HasFlag(SpawnTable.Daytime))
             {

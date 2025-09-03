@@ -3,35 +3,35 @@ using System.Collections.Generic;
 using Steamworks.ServerList;
 
 namespace Dawn;
-public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder>
+public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuilder>
 {
     public class ScrapBuilder
     {
         private ItemInfoBuilder _parentBuilder;
 
-        private ProviderTable<int?, CRMoonInfo>? _weights;
+        private ProviderTable<int?, DawnMoonInfo>? _weights;
 
         internal ScrapBuilder(ItemInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
-        public ScrapBuilder SetWeights(Action<WeightTableBuilder<CRMoonInfo>> callback)
+        public ScrapBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo>> callback)
         {
-            WeightTableBuilder<CRMoonInfo> builder = new WeightTableBuilder<CRMoonInfo>();
+            WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
             callback(builder);
             _weights = builder.Build();
             return this;
         }
 
-        internal CRScrapItemInfo Build()
+        internal DawnScrapItemInfo Build()
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder.value.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<int?, CRMoonInfo>.Empty();
+                DawnPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder.value.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
             }
-            return new CRScrapItemInfo(_weights);
+            return new DawnScrapItemInfo(_weights);
         }
     }
 
@@ -78,7 +78,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder
             return this;
         }
 
-        internal CRShopItemInfo Build()
+        internal DawnShopItemInfo Build()
         {
             if (_receiptNode == null)
             {
@@ -110,14 +110,14 @@ public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder
             _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
             _costOverride ??= _parentBuilder.value.creditsWorth;
 
-            return new CRShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, new SimpleProvider<int>(_costOverride.Value));
+            return new DawnShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, new SimpleProvider<int>(_costOverride.Value));
         }
     }
 
-    private CRScrapItemInfo? _scrapInfo;
-    private CRShopItemInfo? _shopInfo;
+    private DawnScrapItemInfo? _scrapInfo;
+    private DawnShopItemInfo? _shopInfo;
     
-    internal ItemInfoBuilder(NamespacedKey<CRItemInfo> key, Item item) : base(key, item)
+    internal ItemInfoBuilder(NamespacedKey<DawnItemInfo> key, Item item) : base(key, item)
     {
     }
 
@@ -136,8 +136,8 @@ public class ItemInfoBuilder : BaseInfoBuilder<CRItemInfo, Item, ItemInfoBuilder
         return this;
     }
     
-    override internal CRItemInfo Build()
+    override internal DawnItemInfo Build()
     {
-        return new CRItemInfo(key, tags, value, _scrapInfo, _shopInfo);
+        return new DawnItemInfo(key, tags, value, _scrapInfo, _shopInfo);
     }
 }

@@ -39,13 +39,13 @@ static class MapObjectRegistrationHandler
 
     private static void FreezeMapObjectContents()
     {
-        Dictionary<GameObject, CurveTableBuilder<CRMoonInfo>> insideWeightsByPrefab = new();
-        Dictionary<GameObject, CurveTableBuilder<CRMoonInfo>> outsideWeightsByPrefab = new();
+        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo>> insideWeightsByPrefab = new();
+        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo>> outsideWeightsByPrefab = new();
 
         Dictionary<GameObject, InsideMapObjectSettings> insidePlacementByPrefab = new();
         Dictionary<GameObject, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
 
-        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
             foreach (SpawnableMapObject mapObject in level.spawnableMapObjects)
@@ -54,9 +54,9 @@ static class MapObjectRegistrationHandler
                 if (prefab == null)
                     continue;
 
-                if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<CRMoonInfo> builder))
+                if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo> builder))
                 {
-                    builder = new CurveTableBuilder<CRMoonInfo>();
+                    builder = new CurveTableBuilder<DawnMoonInfo>();
                     insideWeightsByPrefab[prefab] = builder;
 
                     if (!insidePlacementByPrefab.ContainsKey(prefab))
@@ -83,9 +83,9 @@ static class MapObjectRegistrationHandler
                     continue;
 
                 GameObject prefab = spawnable.prefabToSpawn;
-                if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<CRMoonInfo> builder))
+                if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo> builder))
                 {
-                    builder = new CurveTableBuilder<CRMoonInfo>();
+                    builder = new CurveTableBuilder<DawnMoonInfo>();
                     outsideWeightsByPrefab[prefab] = builder;
 
                     if (!outsidePlacementByPrefab.ContainsKey(prefab))
@@ -101,14 +101,14 @@ static class MapObjectRegistrationHandler
             }
         }
 
-        Dictionary<GameObject, CRInsideMapObjectInfo> vanillaInsideMapObjectsDict = new();
+        Dictionary<GameObject, DawnInsideMapObjectInfo> vanillaInsideMapObjectsDict = new();
         foreach (var kvp in insideWeightsByPrefab)
         {
             GameObject prefab = kvp.Key;
-            ProviderTable<AnimationCurve?, CRMoonInfo> table = kvp.Value.Build();
+            ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
 
             insidePlacementByPrefab.TryGetValue(prefab, out InsideMapObjectSettings mapObjectSettings);
-            CRInsideMapObjectInfo insideInfo = new(
+            DawnInsideMapObjectInfo insideInfo = new(
                 table,
                 mapObjectSettings.spawnFacingAwayFromWall,
                 mapObjectSettings.spawnFacingWall,
@@ -121,13 +121,13 @@ static class MapObjectRegistrationHandler
             vanillaInsideMapObjectsDict[prefab] = insideInfo;
         }
 
-        Dictionary<GameObject, CROutsideMapObjectInfo> vanillaOutsideMapObjectsDict = new();
+        Dictionary<GameObject, DawnOutsideMapObjectInfo> vanillaOutsideMapObjectsDict = new();
         foreach (var kvp in outsideWeightsByPrefab)
         {
             GameObject prefab = kvp.Key;
-            ProviderTable<AnimationCurve?, CRMoonInfo> table = kvp.Value.Build();
+            ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
             outsidePlacementByPrefab.TryGetValue(prefab, out OutsideMapObjectSettings mapObjectSettings);
-            CROutsideMapObjectInfo outsideInfo = new(
+            DawnOutsideMapObjectInfo outsideInfo = new(
                 table,
                 mapObjectSettings.AlignWithTerrain
             );
@@ -145,18 +145,18 @@ static class MapObjectRegistrationHandler
                 continue; // TODO This is not that great, pls find something better
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true);
-            NamespacedKey<CRMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
-            key ??= NamespacedKey<CRMapObjectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+            NamespacedKey<DawnMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
+            key ??= NamespacedKey<DawnMapObjectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
             if (LethalContent.MapObjects.ContainsKey(key))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
 
-            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out CRInsideMapObjectInfo insideMapObjectInfo);
-            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out CROutsideMapObjectInfo outsideMapObjectInfo);
+            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo insideMapObjectInfo);
+            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo outsideMapObjectInfo);
 
-            CRMapObjectInfo mapObjectInfo = new(key, [CRLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
+            DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
             LethalContent.MapObjects.Register(mapObjectInfo);
         }
         LethalContent.MapObjects.Freeze();
@@ -172,10 +172,10 @@ static class MapObjectRegistrationHandler
     {
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
-        foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.HasTag(CRLibTags.IsExternal))
+            if (outsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
@@ -184,7 +184,7 @@ static class MapObjectRegistrationHandler
         _spawnedObjects = 0;
     }
 
-    private static void HandleSpawningOutsideObjects(CROutsideMapObjectInfo outsideInfo, System.Random everyoneRandom, System.Random serverOnlyRandom)
+    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, System.Random everyoneRandom, System.Random serverOnlyRandom)
     {
         SelectableLevel level = RoundManager.Instance.currentLevel;
         GameObject prefabToSpawn = outsideInfo.ParentInfo.MapObject;
@@ -254,10 +254,10 @@ static class MapObjectRegistrationHandler
         if (!LethalContent.MapObjects.IsFrozen)
             return;
 
-        foreach (CRMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
-            CRInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
-            if (insideInfo == null || mapObjectInfo.HasTag(CRLibTags.IsExternal))
+            DawnInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
+            if (insideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
@@ -267,12 +267,12 @@ static class MapObjectRegistrationHandler
 
     private static void RegisterMapObjects()
     {
-        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
             foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
             {
-                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(CRLibTags.IsExternal))
+                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
                     continue;
 
                 SpawnableMapObject spawnableMapObject = new()

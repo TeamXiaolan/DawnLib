@@ -27,7 +27,7 @@ static class ExtendedTOML
             }
 
             TomlTypeConverter.AddConverter(converter.ConvertingType, WrapCRLibConverter(converter));
-            CodeRebirthLibPlugin.Logger.LogInfo($"[ExtendedTOML] Registered converter for '{converter.ConvertingType.Name}'");
+            DawnPlugin.Logger.LogInfo($"[ExtendedTOML] Registered converter for '{converter.ConvertingType.Name}'");
         }
 
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += SupplyNamespacedKeyConverter;

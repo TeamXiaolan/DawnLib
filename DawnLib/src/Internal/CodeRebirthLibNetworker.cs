@@ -50,7 +50,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
     private void RequestProgressiveUnlockableStatesServerRpc(PlayerControllerReference requester, uint[] expectedOrder)
     {
         PlayerControllerB player = requester;
-        CodeRebirthLibPlugin.Logger.LogDebug($"Sending states of progressive unlockables for player: '{player.playerUsername}'");
+        DawnPlugin.Logger.LogDebug($"Sending states of progressive unlockables for player: '{player.playerUsername}'");
         bool[] values = new bool[expectedOrder.Length];
 
         for (int i = 0; i < expectedOrder.Length; i++)
@@ -64,7 +64,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
             }
             else
             {
-                CodeRebirthLibPlugin.Logger.LogError($"client requested progressive data status of a non-existing unlockable!!! (index: {i}, networkID: {unlockableNetworkId})");
+                DawnPlugin.Logger.LogError($"client requested progressive data status of a non-existing unlockable!!! (index: {i}, networkID: {unlockableNetworkId})");
                 values[i] = false;
             }
         }
@@ -108,7 +108,7 @@ public class CodeRebirthLibNetworker : NetworkSingleton<CodeRebirthLibNetworker>
         {
             if (!entrance.FindExitPoint())
             {
-                CodeRebirthLibPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation is installed)");
+                DawnPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation is installed)");
             }
         }
     }

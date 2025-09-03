@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Dawn;
-public static class CRLib
+public static class DawnLib
 {
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
 
@@ -35,51 +35,51 @@ public static class CRLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
-    public static CRTileSetInfo DefineTileSet(NamespacedKey<CRTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
+    public static DawnTileSetInfo DefineTileSet(NamespacedKey<DawnTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)
     {
         TilesetInfoBuilder builder = new(key, tileSet);
         callback(builder);
-        CRTileSetInfo tileSetInfo = builder.Build();
+        DawnTileSetInfo tileSetInfo = builder.Build();
         tileSet.SetCRInfo(tileSetInfo);
         LethalContent.TileSets.Register(tileSetInfo);
         return tileSetInfo;
     }
 
-    public static CRMapObjectInfo DefineMapObject(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
+    public static DawnMapObjectInfo DefineMapObject(NamespacedKey<DawnMapObjectInfo> key, GameObject mapObject, Action<MapObjectInfoBuilder> callback)
     {
         MapObjectInfoBuilder builder = new(key, mapObject);
         callback(builder);
         // TODO what to do here?
-        CRMapObjectInfo info = builder.Build();
+        DawnMapObjectInfo info = builder.Build();
         LethalContent.MapObjects.Register(info);
         return info;
     }
 
-    public static CRUnlockableItemInfo DefineUnlockable(NamespacedKey<CRUnlockableItemInfo> key, UnlockableItem unlockableItem, Action<UnlockableInfoBuilder> callback)
+    public static DawnUnlockableItemInfo DefineUnlockable(NamespacedKey<DawnUnlockableItemInfo> key, UnlockableItem unlockableItem, Action<UnlockableInfoBuilder> callback)
     {
         UnlockableInfoBuilder builder = new(key, unlockableItem);
         callback(builder);
-        CRUnlockableItemInfo unlockableItemInfo = builder.Build();
+        DawnUnlockableItemInfo unlockableItemInfo = builder.Build();
         unlockableItem.SetCRInfo(unlockableItemInfo);
         LethalContent.Unlockables.Register(unlockableItemInfo);
         return unlockableItemInfo;
     }
 
-    public static CRItemInfo DefineItem(NamespacedKey<CRItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
+    public static DawnItemInfo DefineItem(NamespacedKey<DawnItemInfo> key, Item item, Action<ItemInfoBuilder> callback)
     {
         ItemInfoBuilder builder = new(key, item);
         callback(builder);
-        CRItemInfo itemInfo = builder.Build();
+        DawnItemInfo itemInfo = builder.Build();
         item.SetCRInfo(itemInfo);
         LethalContent.Items.Register(itemInfo);
         return itemInfo;
     }
 
-    public static CREnemyInfo DefineEnemy(NamespacedKey<CREnemyInfo> key, EnemyType enemy, Action<EnemyInfoBuilder> callback)
+    public static DawnEnemyInfo DefineEnemy(NamespacedKey<DawnEnemyInfo> key, EnemyType enemy, Action<EnemyInfoBuilder> callback)
     {
         EnemyInfoBuilder builder = new(key, enemy);
         callback(builder);
-        CREnemyInfo enemyInfo = builder.Build();
+        DawnEnemyInfo enemyInfo = builder.Build();
         enemy.SetCRInfo(enemyInfo);
         LethalContent.Enemies.Register(enemyInfo);
         return enemyInfo;
@@ -87,7 +87,7 @@ public static class CRLib
 
     public static void ApplyTag(JSONTagDefinition definition)
     {
-        void ListenToRegistry<T>(TaggedRegistry<T> registry, NamespacedKey namespacedKey) where T : CRBaseInfo<T> {
+        void ListenToRegistry<T>(TaggedRegistry<T> registry, NamespacedKey namespacedKey) where T : DawnBaseInfo<T> {
             registry.OnFreeze += () =>
             {
                 foreach (string value in definition.Values)

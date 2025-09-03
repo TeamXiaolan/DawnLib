@@ -2,9 +2,9 @@
 
 namespace Dawn;
 
-public class CRMoonInfo : CRBaseInfo<CRMoonInfo>
+public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 {
-    internal CRMoonInfo(NamespacedKey<CRMoonInfo> key, List<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword) : base(key, tags)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, List<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword) : base(key, tags)
     {
         Level = level;
         RouteNode = routeNode;

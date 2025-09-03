@@ -39,20 +39,20 @@ static class AdditionalTilesRegistrationHandler
                 continue;
 
             Debuggers.Dungeons?.Log($"Registering potentially modded dungeon: {dungeonFlow.name}");
-            NamespacedKey<CRDungeonInfo> key;
+            NamespacedKey<DawnDungeonInfo> key;
             if (LLLCompat.Enabled && LLLCompat.IsExtendedDungeon(dungeonFlow))
             {
-                key = NamespacedKey<CRDungeonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From("lethal_level_loader", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
             }
             else
             {
-                key = NamespacedKey<CRDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
             }
 
-            List<NamespacedKey> tags = [CRLibTags.IsExternal];
+            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
             CollectLLLTags(dungeonFlow, tags);
-            CRDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
+            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
             dungeonFlow.SetCRInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
@@ -63,25 +63,25 @@ static class AdditionalTilesRegistrationHandler
 
     private static void CollectArchetypesAndTileSets()
     {
-        foreach (CRDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
             foreach (DungeonArchetype dungeonArchetype in dungeonInfo.DungeonFlow.GetUsedArchetypes())
             {
                 Debuggers.Dungeons?.Log($"dungeonArchetype.name: {dungeonArchetype.name}");
-                NamespacedKey<CRArchetypeInfo>? archetypeKey;
+                NamespacedKey<DawnArchetypeInfo>? archetypeKey;
                 if (dungeonInfo.Key.IsVanilla())
                 {
                     string name = FormatArchetypeName(dungeonArchetype);
                     archetypeKey = DungeonArchetypeKeys.GetByReflection(name);
                     if (archetypeKey == null)
                     {
-                        CodeRebirthLibPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                        DawnPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
                         continue;
                     }
                 }
                 else
                 {
-                    archetypeKey = NamespacedKey<CRArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
+                    archetypeKey = NamespacedKey<DawnArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
                 }
 
                 if (LethalContent.Archetypes.ContainsKey(archetypeKey))
@@ -90,14 +90,14 @@ static class AdditionalTilesRegistrationHandler
                     continue;
                 }
 
-                CRArchetypeInfo info = new CRArchetypeInfo(archetypeKey, [CRLibTags.IsExternal], dungeonArchetype);
+                DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, [DawnLibTags.IsExternal], dungeonArchetype);
                 info.ParentInfo = dungeonInfo;
                 LethalContent.Archetypes.Register(info);
 
                 IEnumerable<TileSet> allTiles = [.. dungeonArchetype.TileSets, .. dungeonArchetype.BranchCapTileSets];
                 foreach (TileSet tileSet in allTiles)
                 {
-                    NamespacedKey<CRTileSetInfo>? tileSetKey;
+                    NamespacedKey<DawnTileSetInfo>? tileSetKey;
                     Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
                     if (dungeonInfo.Key.IsVanilla())
                     {
@@ -105,20 +105,20 @@ static class AdditionalTilesRegistrationHandler
                         tileSetKey = DungeonTileSetKeys.GetByReflection(name);
                         if (tileSetKey == null)
                         {
-                            CodeRebirthLibPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                            DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
                             continue;
                         }
                     }
                     else
                     {
-                        tileSetKey = NamespacedKey<CRTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
+                        tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
                     }
                     if (LethalContent.TileSets.ContainsKey(tileSetKey))
                     {
                         Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
                         continue;
                     }
-                    CRTileSetInfo tileSetInfo = new CRTileSetInfo(tileSetKey, [CRLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
+                    DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, [DawnLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
                     info.AddTileSet(tileSetInfo);
                     LethalContent.TileSets.Register(tileSetInfo);
                 }
@@ -202,17 +202,17 @@ static class AdditionalTilesRegistrationHandler
                 continue;
 
             string name = FormatFlowName(dungeonFlow);
-            NamespacedKey<CRDungeonInfo>? key = DungeonKeys.GetByReflection(name);
+            NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
             if (key == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
+                DawnPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but CodeRebirthLib couldn't get a corresponding NamespacedKey!");
                 continue;
             }
 
-            List<NamespacedKey> tags = [CRLibTags.IsExternal];
+            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
             CollectLLLTags(dungeonFlow, tags);
-            CRDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
+            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
             dungeonFlow.SetCRInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
@@ -223,14 +223,14 @@ static class AdditionalTilesRegistrationHandler
     {
         foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
         {
-            if (!archetype.TryGetCRInfo(out CRArchetypeInfo? info))
+            if (!archetype.TryGetCRInfo(out DawnArchetypeInfo? info))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning("what? archetype didn't have crinfo by the time we're trying to inject tile sets.");
+                DawnPlugin.Logger.LogWarning("what? archetype didn't have crinfo by the time we're trying to inject tile sets.");
                 continue;
             }
-            foreach (CRTileSetInfo tileSet in info.TileSets)
+            foreach (DawnTileSetInfo tileSet in info.TileSets)
             {
-                if(tileSet.HasTag(CRLibTags.IsExternal))
+                if(tileSet.HasTag(DawnLibTags.IsExternal))
                     continue;
 
                 // remove unconditionally.

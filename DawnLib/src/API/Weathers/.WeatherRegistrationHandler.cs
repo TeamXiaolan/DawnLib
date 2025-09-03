@@ -19,15 +19,15 @@ static class WeatherRegistrationHandler
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true);
-            NamespacedKey<CRWeatherEffectInfo>? key = WeatherKeys.GetByReflection(name);
-            key ??= NamespacedKey<CRWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+            NamespacedKey<DawnWeatherEffectInfo>? key = WeatherKeys.GetByReflection(name);
+            key ??= NamespacedKey<DawnWeatherEffectInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
             if (LethalContent.Weathers.ContainsKey(key))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
 
-            CRWeatherEffectInfo weatherEffectInfo = new(key, [CRLibTags.IsExternal], weatherEffect);
+            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect);
             LethalContent.Weathers.Register(weatherEffectInfo);
         }
         LethalContent.Weathers.Freeze();

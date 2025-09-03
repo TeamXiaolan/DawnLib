@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 namespace Dawn.Dusk;
 
 [CreateAssetMenu(fileName = "New Item Definition", menuName = $"{CRModConstants.Definitions}/Item Definition")]
-public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
+public class CRMItemDefinition : CRMContentDefinition<ItemData, DawnItemInfo>
 {
     public const string REGISTRY_ID = "items";
 
@@ -52,7 +52,7 @@ public class CRMItemDefinition : CRMContentDefinition<ItemData, CRItemInfo>
 
         SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
 
-        CRLib.DefineItem(TypedKey, Item, builder =>
+        DawnLib.DefineItem(TypedKey, Item, builder =>
         {
             if (Config.IsScrapItem?.Value ?? data.isScrap)
             {

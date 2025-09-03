@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Dawn;
 
-public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
+public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
 {
-    internal CREnemyInfo(NamespacedKey<CREnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, CREnemyLocationInfo? outside, CREnemyLocationInfo? inside, CREnemyLocationInfo? daytime, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword) : base(key, tags)
+    internal DawnEnemyInfo(NamespacedKey<DawnEnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, DawnEnemyLocationInfo? outside, DawnEnemyLocationInfo? inside, DawnEnemyLocationInfo? daytime, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword) : base(key, tags)
     {
         EnemyType = enemyType;
         Outside = outside;
@@ -19,9 +19,9 @@ public sealed class CREnemyInfo : CRBaseInfo<CREnemyInfo>
 
     public EnemyType EnemyType { get; }
 
-    public CREnemyLocationInfo? Outside { get; }
-    public CREnemyLocationInfo? Inside { get; }
-    public CREnemyLocationInfo? Daytime { get; }
+    public DawnEnemyLocationInfo? Outside { get; }
+    public DawnEnemyLocationInfo? Inside { get; }
+    public DawnEnemyLocationInfo? Daytime { get; }
     
     public TerminalNode? BestiaryNode { get; }
     public TerminalKeyword? NameKeyword { get; }

@@ -7,7 +7,7 @@ using WeatherRegistry.Modules;
 namespace Dawn.Dusk;
 
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = $"{CRModConstants.Definitions}/Weather Definition")]
-public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherEffectInfo>
+public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, DawnWeatherEffectInfo>
 {
     public const string REGISTRY_ID = "weathers";
 
@@ -64,7 +64,7 @@ public class CRMWeatherDefinition : CRMContentDefinition<WeatherData, CRWeatherE
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
-        CRWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, newImprovedWeatherEffect.VanillaWeatherEffect);
+        DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, newImprovedWeatherEffect.VanillaWeatherEffect);
         newImprovedWeatherEffect.VanillaWeatherEffect.SetCRInfo(weatherEffectInfo);
         LethalContent.Weathers.Register(weatherEffectInfo); // TEMPORARY
     }

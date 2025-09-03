@@ -2,10 +2,10 @@ using Dawn.Utils;
 
 namespace Dawn;
 
-public class AutoWeightTagger(NamespacedKey tag, BoundedRange range) : IAutoTagger<CRItemInfo>
+public class AutoWeightTagger(NamespacedKey tag, BoundedRange range) : IAutoTagger<DawnItemInfo>
 {
     public NamespacedKey Tag => tag;
-    public bool ShouldApply(CRItemInfo info)
+    public bool ShouldApply(DawnItemInfo info)
     {
         return range.IsInRange(info.Item.weight);
     }

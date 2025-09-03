@@ -3,20 +3,20 @@ using System;
 namespace Dawn.Dusk;
 
 [Serializable]
-public class CRMEnemyReference : CRMContentReference<CRMEnemyDefinition, CREnemyInfo>
+public class CRMEnemyReference : CRMContentReference<CRMEnemyDefinition, DawnEnemyInfo>
 {
     public CRMEnemyReference() : base()
     { }
 
-    public CRMEnemyReference(NamespacedKey<CREnemyInfo> key) : base(key)
+    public CRMEnemyReference(NamespacedKey<DawnEnemyInfo> key) : base(key)
     { }
 
-    public override bool TryResolve(out CREnemyInfo info)
+    public override bool TryResolve(out DawnEnemyInfo info)
     {
         return LethalContent.Enemies.TryGetValue(TypedKey, out info);
     }
 
-    public override CREnemyInfo Resolve()
+    public override DawnEnemyInfo Resolve()
     {
         return LethalContent.Enemies[TypedKey];
     }

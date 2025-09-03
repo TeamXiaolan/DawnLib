@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Dawn;
 
-public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject, MapObjectInfoBuilder>
+public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObject, MapObjectInfoBuilder>
 {
     public class InsideBuilder
     {
@@ -12,7 +12,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject,
 
         // maybe replace this (vvv) with a SpawnableMapObject Builder?
         private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances; // this feels like it should be one SO or some data thing instead of a million bools
-        private ProviderTable<AnimationCurve?, CRMoonInfo>? _weights;
+        private ProviderTable<AnimationCurve?, DawnMoonInfo>? _weights;
 
         internal InsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -55,22 +55,22 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject,
             return this;
         }
 
-        public InsideBuilder SetWeights(Action<CurveTableBuilder<CRMoonInfo>> callback)
+        public InsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo>> callback)
         {
-            CurveTableBuilder<CRMoonInfo> builder = new CurveTableBuilder<CRMoonInfo>();
+            CurveTableBuilder<DawnMoonInfo> builder = new CurveTableBuilder<DawnMoonInfo>();
             callback(builder);
             _weights = builder.Build();
             return this;
         }
 
-        internal CRInsideMapObjectInfo Build()
+        internal DawnInsideMapObjectInfo Build()
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<AnimationCurve?, CRMoonInfo>.Empty();
+                DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo>.Empty();
             }
-            return new CRInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
+            return new DawnInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
         }
     }
 
@@ -79,7 +79,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject,
         private MapObjectInfoBuilder _parentBuilder;
 
         private bool _alignWithTerrain;
-        private ProviderTable<AnimationCurve?, CRMoonInfo>? _weights;
+        private ProviderTable<AnimationCurve?, DawnMoonInfo>? _weights;
 
         internal OutsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -93,30 +93,30 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject,
             return this;
         }
 
-        public OutsideBuilder SetWeights(Action<CurveTableBuilder<CRMoonInfo>> callback)
+        public OutsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo>> callback)
         {
-            CurveTableBuilder<CRMoonInfo> builder = new CurveTableBuilder<CRMoonInfo>();
+            CurveTableBuilder<DawnMoonInfo> builder = new CurveTableBuilder<DawnMoonInfo>();
             callback(builder);
             _weights = builder.Build();
             return this;
         }
 
-        internal CROutsideMapObjectInfo Build()
+        internal DawnOutsideMapObjectInfo Build()
         {
             if (_weights == null)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<AnimationCurve?, CRMoonInfo>.Empty();
+                DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
+                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo>.Empty();
             }
-            return new CROutsideMapObjectInfo(_weights, _alignWithTerrain);
+            return new DawnOutsideMapObjectInfo(_weights, _alignWithTerrain);
         }
     }
 
 
-    private CRInsideMapObjectInfo? _insideInfo;
-    private CROutsideMapObjectInfo? _outsideInfo;
+    private DawnInsideMapObjectInfo? _insideInfo;
+    private DawnOutsideMapObjectInfo? _outsideInfo;
 
-    internal MapObjectInfoBuilder(NamespacedKey<CRMapObjectInfo> key, GameObject mapObject) : base(key, mapObject)
+    internal MapObjectInfoBuilder(NamespacedKey<DawnMapObjectInfo> key, GameObject mapObject) : base(key, mapObject)
     {
     }
 
@@ -136,8 +136,8 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<CRMapObjectInfo, GameObject,
         return this;
     }
 
-    override internal CRMapObjectInfo Build()
+    override internal DawnMapObjectInfo Build()
     {
-        return new CRMapObjectInfo(key, tags, value, _insideInfo, _outsideInfo);
+        return new DawnMapObjectInfo(key, tags, value, _insideInfo, _outsideInfo);
     }
 }

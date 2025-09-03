@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Dawn;
-public class SimpleAutoTagger<T>(NamespacedKey tag, Func<T, bool> predicate) : IAutoTagger<T> where T : CRBaseInfo<T>
+public class SimpleAutoTagger<T>(NamespacedKey tag, Func<T, bool> predicate) : IAutoTagger<T> where T : DawnBaseInfo<T>
 {
 
     public NamespacedKey Tag => tag;

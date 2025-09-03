@@ -2,10 +2,10 @@
 using DunGen;
 
 namespace Dawn;
-public class CRTileSetInfo : CRBaseInfo<CRTileSetInfo>
+public class DawnTileSetInfo : DawnBaseInfo<DawnTileSetInfo>
 {
     
-    internal CRTileSetInfo(NamespacedKey<CRTileSetInfo> key, List<NamespacedKey> tags, IPredicate injectionRule, TileSet tileSet, bool isBranchCap, bool isRegular) : base(key, tags)
+    internal DawnTileSetInfo(NamespacedKey<DawnTileSetInfo> key, List<NamespacedKey> tags, IPredicate injectionRule, TileSet tileSet, bool isBranchCap, bool isRegular) : base(key, tags)
     {
         TileSet = tileSet;
         IsBranchCap = isBranchCap;

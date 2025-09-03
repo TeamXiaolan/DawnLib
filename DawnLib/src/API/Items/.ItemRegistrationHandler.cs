@@ -13,15 +13,15 @@ static class ItemRegistrationHandler
     {
         LethalContent.Items.AddAutoTaggers(
             new AutoNonInteractableTagger(),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, itemInfo => itemInfo.Item.isConductiveMetal),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Noisy, itemInfo => itemInfo.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Interactable, itemInfo => !itemInfo.HasTag(Tags.NonInteractable) && !itemInfo.HasTag(Tags.Noisy)),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Paid, itemInfo => itemInfo.ShopInfo != null),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Scrap, itemInfo => itemInfo.ScrapInfo != null),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Chargeable, itemInfo => itemInfo.Item.requiresBattery),
-            new SimpleAutoTagger<CRItemInfo>(Tags.TwoHanded, itemInfo => itemInfo.Item.twoHanded),
-            new SimpleAutoTagger<CRItemInfo>(Tags.OneHanded, itemInfo => !itemInfo.Item.twoHanded),
-            new SimpleAutoTagger<CRItemInfo>(Tags.Weapon, itemInfo => itemInfo.Item.isDefensiveWeapon),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Conductive, itemInfo => itemInfo.Item.isConductiveMetal),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Noisy, itemInfo => itemInfo.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Interactable, itemInfo => !itemInfo.HasTag(Tags.NonInteractable) && !itemInfo.HasTag(Tags.Noisy)),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Paid, itemInfo => itemInfo.ShopInfo != null),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Scrap, itemInfo => itemInfo.ScrapInfo != null),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Chargeable, itemInfo => itemInfo.Item.requiresBattery),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.TwoHanded, itemInfo => itemInfo.Item.twoHanded),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.OneHanded, itemInfo => !itemInfo.Item.twoHanded),
+            new SimpleAutoTagger<DawnItemInfo>(Tags.Weapon, itemInfo => itemInfo.Item.isDefensiveWeapon),
             new AutoValueTagger(Tags.LowValue, new BoundedRange(0, 100)),
             new AutoValueTagger(Tags.MediumValue, new BoundedRange(100, 200)),
             new AutoValueTagger(Tags.HighValue, new BoundedRange(200, int.MaxValue)),
@@ -53,10 +53,10 @@ static class ItemRegistrationHandler
         if (!LethalContent.Items.IsFrozen)
             return;
 
-        foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
-            CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.HasTag(CRLibTags.IsExternal))
+            DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
+            if (scrapInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             Debuggers.Items?.Log($"Updating {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
@@ -69,17 +69,17 @@ static class ItemRegistrationHandler
         if (LethalContent.Items.IsFrozen)
             return;
 
-        Dictionary<Item, WeightTableBuilder<CRMoonInfo>> itemWeightBuilder = new();
-        Dictionary<Item, CRShopItemInfo> itemsWithShopInfo = new();
-        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+        Dictionary<Item, WeightTableBuilder<DawnMoonInfo>> itemWeightBuilder = new();
+        Dictionary<Item, DawnShopItemInfo> itemsWithShopInfo = new();
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
 
             foreach (var itemWithRarity in level.spawnableScrap)
             {
-                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
+                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     itemWeightBuilder[itemWithRarity.spawnableItem] = weightTableBuilder;
                 }
                 weightTableBuilder.AddWeight(moonInfo.TypedKey, itemWithRarity.rarity);
@@ -161,7 +161,7 @@ static class ItemRegistrationHandler
             }
 
             receiptNode = requestNode.terminalOptions[0].result;
-            CRShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
+            DawnShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
             itemsWithShopInfo[buyableItem] = shopInfo;
         }
 
@@ -171,17 +171,17 @@ static class ItemRegistrationHandler
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true);
-            NamespacedKey<CRItemInfo>? key = ItemKeys.GetByReflection(name);
-            key ??= NamespacedKey<CRItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+            NamespacedKey<DawnItemInfo>? key = ItemKeys.GetByReflection(name);
+            key ??= NamespacedKey<DawnItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
 
             if (LethalContent.Items.ContainsKey(key))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Item {item.itemName} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"Item {item.itemName} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
-            itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<CRMoonInfo>? weightTableBuilder);
-            CRScrapItemInfo? scrapInfo = null;
-            itemsWithShopInfo.TryGetValue(item, out CRShopItemInfo? shopInfo);
+            itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
+            DawnScrapItemInfo? scrapInfo = null;
+            itemsWithShopInfo.TryGetValue(item, out DawnShopItemInfo? shopInfo);
 
             if (weightTableBuilder != null)
             {
@@ -190,11 +190,11 @@ static class ItemRegistrationHandler
 
             if (!item.spawnPrefab)
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"{item.itemName} ({item.name}) didn't have a spawn prefab?");
+                DawnPlugin.Logger.LogWarning($"{item.itemName} ({item.name}) didn't have a spawn prefab?");
                 continue;
             }
 
-            List<NamespacedKey> tags = [CRLibTags.IsExternal];
+            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
             if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)
@@ -210,7 +210,7 @@ static class ItemRegistrationHandler
                     tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
                 }
             }
-            CRItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo);
+            DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo);
             item.SetCRInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }
@@ -221,13 +221,13 @@ static class ItemRegistrationHandler
 
     private static void RegisterScrapItemsToAllLevels()
     {
-        foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
-            CRScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.HasTag(CRLibTags.IsExternal))
+            DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
+            if (scrapInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
-            foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
             {
                 SelectableLevel level = moonInfo.Level;
                 SpawnableItemWithRarity spawnDef = new()
@@ -259,10 +259,10 @@ static class ItemRegistrationHandler
         List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
         StartOfRound startOfRound = GameObject.FindFirstObjectByType<StartOfRound>();
 
-        foreach (CRItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
-            CRShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || itemInfo.HasTag(CRLibTags.IsExternal))
+            DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
+            if (shopInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();

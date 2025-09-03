@@ -11,10 +11,10 @@ static class EnemyRegistrationHandler
     internal static void Init()
     {
         LethalContent.Enemies.AddAutoTaggers(
-            new SimpleAutoTagger<CREnemyInfo>(Tags.Killable, info => info.EnemyType.canDie),
-            new SimpleAutoTagger<CREnemyInfo>(Tags.Small, info => info.EnemyType.EnemySize == EnemySize.Tiny),
-            new SimpleAutoTagger<CREnemyInfo>(Tags.Medium, info => info.EnemyType.EnemySize == EnemySize.Medium),
-            new SimpleAutoTagger<CREnemyInfo>(Tags.Large, info => info.EnemyType.EnemySize == EnemySize.Giant)
+            new SimpleAutoTagger<DawnEnemyInfo>(Tags.Killable, info => info.EnemyType.canDie),
+            new SimpleAutoTagger<DawnEnemyInfo>(Tags.Small, info => info.EnemyType.EnemySize == EnemySize.Tiny),
+            new SimpleAutoTagger<DawnEnemyInfo>(Tags.Medium, info => info.EnemyType.EnemySize == EnemySize.Medium),
+            new SimpleAutoTagger<DawnEnemyInfo>(Tags.Large, info => info.EnemyType.EnemySize == EnemySize.Giant)
         );
 
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
@@ -31,9 +31,9 @@ static class EnemyRegistrationHandler
         List<TerminalKeyword> allKeywords = self.terminalNodes.allKeywords.ToList();
         List<CompatibleNoun> itemInfoNouns = infoKeyword.compatibleNouns.ToList();
 
-        foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(CRLibTags.IsExternal) || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
+            if (enemyInfo.HasTag(DawnLibTags.IsExternal) || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
                 continue;
 
             enemyInfo.BestiaryNode.creatureFileID = self.enemyFiles.Count;
@@ -65,9 +65,9 @@ static class EnemyRegistrationHandler
     private static void AddEnemiesToDebugList(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
     {
         SelectableLevel testLevel = LethalContent.Moons[MoonKeys.Test].Level;
-        foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(CRLibTags.IsExternal))
+            if (enemyInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             SpawnableEnemyWithRarity spawnDef = new()
@@ -99,10 +99,10 @@ static class EnemyRegistrationHandler
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
-        if (!self.enemyType.TryGetCRInfo(out CREnemyInfo? enemyInfo))
+        if (!self.enemyType.TryGetCRInfo(out DawnEnemyInfo? enemyInfo))
             return;
 
-        if (enemyInfo.HasTag(CRLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
+        if (enemyInfo.HasTag(DawnLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
             return;
@@ -177,9 +177,9 @@ static class EnemyRegistrationHandler
         if (!LethalContent.Enemies.IsFrozen)
             return;
 
-        foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(CRLibTags.IsExternal))
+            if (enemyInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
@@ -202,23 +202,23 @@ static class EnemyRegistrationHandler
 
     private static void RegisterEnemies()
     {
-        Dictionary<EnemyType, WeightTableBuilder<CRMoonInfo>> enemyInsideWeightBuilder = new();
-        Dictionary<EnemyType, WeightTableBuilder<CRMoonInfo>> enemyOutsideWeightBuilder = new();
-        Dictionary<EnemyType, WeightTableBuilder<CRMoonInfo>> enemyDaytimeWeightBuilder = new();
+        Dictionary<EnemyType, WeightTableBuilder<DawnMoonInfo>> enemyInsideWeightBuilder = new();
+        Dictionary<EnemyType, WeightTableBuilder<DawnMoonInfo>> enemyOutsideWeightBuilder = new();
+        Dictionary<EnemyType, WeightTableBuilder<DawnMoonInfo>> enemyDaytimeWeightBuilder = new();
 
-        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
-            NamespacedKey<CRMoonInfo> moonKey = moonInfo.TypedKey;
+            NamespacedKey<DawnMoonInfo> moonKey = moonInfo.TypedKey;
 
             foreach (var enemyWithRarity in level.Enemies)
             {
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (!enemyInsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
+                if (!enemyInsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     enemyInsideWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
                 }
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
@@ -229,9 +229,9 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (!enemyOutsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
+                if (!enemyOutsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     enemyOutsideWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
                 }
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
@@ -242,9 +242,9 @@ static class EnemyRegistrationHandler
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (!enemyDaytimeWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<CRMoonInfo> weightTableBuilder))
+                if (!enemyDaytimeWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<CRMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     enemyDaytimeWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
                 }
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
@@ -254,7 +254,7 @@ static class EnemyRegistrationHandler
         Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
         TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(it => it.word == "info");
 
-        foreach (CRMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
             List<SpawnableEnemyWithRarity> levelEnemies =
@@ -274,41 +274,41 @@ static class EnemyRegistrationHandler
                     continue;
 
                 string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
-                NamespacedKey<CREnemyInfo>? key = EnemyKeys.GetByReflection(name);
-                key ??= NamespacedKey<CREnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                NamespacedKey<DawnEnemyInfo>? key = EnemyKeys.GetByReflection(name);
+                key ??= NamespacedKey<DawnEnemyInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
 
                 if (LethalContent.Enemies.ContainsKey(key))
                 {
-                    CodeRebirthLibPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. Skipping...");
+                    DawnPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. Skipping...");
                     continue;
                 }
 
                 if (!enemyType.enemyPrefab)
                 {
-                    CodeRebirthLibPlugin.Logger.LogWarning($"{enemyType.enemyName} ({enemyType.name}) didn't have a spawn prefab?");
+                    DawnPlugin.Logger.LogWarning($"{enemyType.enemyName} ({enemyType.name}) didn't have a spawn prefab?");
                     continue;
                 }
 
-                CREnemyLocationInfo? insideInfo = null;
-                CREnemyLocationInfo? outsideInfo = null;
-                CREnemyLocationInfo? daytimeInfo = null;
+                DawnEnemyLocationInfo? insideInfo = null;
+                DawnEnemyLocationInfo? outsideInfo = null;
+                DawnEnemyLocationInfo? daytimeInfo = null;
 
                 if (enemyInsideWeightBuilder.ContainsKey(enemyType))
                 {
-                    insideInfo = new CREnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
+                    insideInfo = new DawnEnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
                 }
 
                 if (enemyOutsideWeightBuilder.ContainsKey(enemyType))
                 {
-                    outsideInfo = new CREnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
+                    outsideInfo = new DawnEnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
                 }
 
                 if (enemyDaytimeWeightBuilder.ContainsKey(enemyType))
                 {
-                    daytimeInfo = new CREnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
+                    daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
                 }
 
-                List<NamespacedKey> tags = [CRLibTags.IsExternal];
+                List<NamespacedKey> tags = [DawnLibTags.IsExternal];
                 if (LLLCompat.Enabled && LLLCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
                 {
                     foreach ((string modName, string tagName) in tagsWithModNames)
@@ -342,7 +342,7 @@ static class EnemyRegistrationHandler
                     }
                 }
 
-                CREnemyInfo enemyInfo = new(
+                DawnEnemyInfo enemyInfo = new(
                     key, tags,
                     enemyType,
                     outsideInfo, insideInfo, daytimeInfo,
@@ -352,9 +352,9 @@ static class EnemyRegistrationHandler
                 LethalContent.Enemies.Register(enemyInfo);
             }
 
-            foreach (CREnemyInfo enemyInfo in LethalContent.Enemies.Values)
+            foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
-                if (enemyInfo.HasTag(CRLibTags.IsExternal))
+                if (enemyInfo.HasTag(DawnLibTags.IsExternal))
                     continue;
 
                 if (enemyInfo.Outside != null)
@@ -370,7 +370,7 @@ static class EnemyRegistrationHandler
         LethalContent.Enemies.Freeze();
     }
 
-    private static void TryAddToEnemyList(CREnemyInfo enemyInfo, List<SpawnableEnemyWithRarity> list)
+    private static void TryAddToEnemyList(DawnEnemyInfo enemyInfo, List<SpawnableEnemyWithRarity> list)
     {
         SpawnableEnemyWithRarity spawnDef = new()
         {

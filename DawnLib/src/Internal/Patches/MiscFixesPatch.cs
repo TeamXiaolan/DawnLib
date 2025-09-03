@@ -52,7 +52,7 @@ static class MiscFixesPatch
     private static void FixTileSetSockets()
     {
         Dictionary<string, DoorwaySocket> mapped = new(); // improve performance
-        foreach (CRDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
             foreach (DoorwaySocket socket in dungeonInfo.Sockets)
             {

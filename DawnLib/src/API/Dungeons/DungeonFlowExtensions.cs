@@ -8,9 +8,9 @@ namespace Dawn;
 
 public static class DungeonFlowExtensions
 {
-    public static NamespacedKey<CRDungeonInfo> ToNamespacedKey(this DungeonFlow dungeonFlow)
+    public static NamespacedKey<DawnDungeonInfo> ToNamespacedKey(this DungeonFlow dungeonFlow)
     {
-        if (!dungeonFlow.TryGetCRInfo(out CRDungeonInfo? dungeonInfo))
+        if (!dungeonFlow.TryGetCRInfo(out DawnDungeonInfo? dungeonInfo))
         {
             Debuggers.Dungeons?.Log($"DungeonFlow {dungeonFlow} has no CRInfo");
             throw new Exception();
@@ -18,14 +18,14 @@ public static class DungeonFlowExtensions
         return dungeonInfo.TypedKey;
     }
 
-    internal static bool TryGetCRInfo(this DungeonFlow dungeonFlow, [NotNullWhen(true)] out CRDungeonInfo? dungeonInfo)
+    internal static bool TryGetCRInfo(this DungeonFlow dungeonFlow, [NotNullWhen(true)] out DawnDungeonInfo? dungeonInfo)
     {
         object newObject = dungeonFlow;
-        dungeonInfo = (CRDungeonInfo)((ICRObject)newObject).CRInfo;
+        dungeonInfo = (DawnDungeonInfo)((ICRObject)newObject).CRInfo;
         return dungeonInfo != null;
     }
 
-    internal static void SetCRInfo(this DungeonFlow dungeonFlow, CRDungeonInfo dungeonInfo)
+    internal static void SetCRInfo(this DungeonFlow dungeonFlow, DawnDungeonInfo dungeonInfo)
     {
         object newObject = dungeonFlow;
         ((ICRObject)newObject).CRInfo = dungeonInfo;

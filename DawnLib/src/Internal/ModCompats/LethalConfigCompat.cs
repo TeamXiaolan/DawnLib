@@ -65,7 +65,7 @@ static class LethalConfigCompat
         }
         catch (Exception exception)
         {
-            CodeRebirthLibPlugin.Logger.LogError($"Caught actual LethalConfig error: \n{exception}");
+            DawnPlugin.Logger.LogError($"Caught actual LethalConfig error: \n{exception}");
             return null;
         }
     }

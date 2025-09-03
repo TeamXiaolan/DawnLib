@@ -142,7 +142,7 @@ public class CRMod
     {
         if (Assembly == null)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Tried to Register Content Handlers for {Plugin.Name} but it is a no-code CRMod!");
+            DawnPlugin.Logger.LogWarning($"Tried to Register Content Handlers for {Plugin.Name} but it is a no-code CRMod!");
             return;
         }
 

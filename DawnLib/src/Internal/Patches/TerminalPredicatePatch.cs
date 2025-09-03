@@ -14,7 +14,7 @@ static class TerminalPredicatePatch
     internal static void UseFailedResultName(ILContext il)
     {
         ILCursor c = new ILCursor(il);
-        CodeRebirthLibPlugin.Logger.LogDebug($"transpiling {il.Method.Name} with UseFailedResultName. instructions: {c.Instrs.Count}");
+        DawnPlugin.Logger.LogDebug($"transpiling {il.Method.Name} with UseFailedResultName. instructions: {c.Instrs.Count}");
         c.GotoNext(
             i => i.MatchLdfld<Item>(nameof(Item.itemName))
         );
@@ -23,10 +23,10 @@ static class TerminalPredicatePatch
 
         c.EmitDelegate<Func<Item, string>>((item) =>
         {
-            if (!item.TryGetCRInfo(out CRItemInfo? info))
+            if (!item.TryGetCRInfo(out DawnItemInfo? info))
                 return item.itemName;
             
-            CRShopItemInfo? shopInfo = info.ShopInfo;
+            DawnShopItemInfo? shopInfo = info.ShopInfo;
             if (shopInfo == null)
                 return item.itemName;
             
@@ -47,7 +47,7 @@ static class TerminalPredicatePatch
         
         c.EmitDelegate((UnlockableItem unlockable) =>
         {
-            if (!unlockable.TryGetCRInfo(out CRUnlockableItemInfo? info))
+            if (!unlockable.TryGetCRInfo(out DawnUnlockableItemInfo? info))
                 return unlockable.unlockableName;
 
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
@@ -65,13 +65,13 @@ static class TerminalPredicatePatch
         if (node.buyItemIndex != -1)
         {
             Item buyingItem = self.buyableItemsList[node.buyItemIndex];
-            if (!buyingItem.TryGetCRInfo(out CRItemInfo? info))
+            if (!buyingItem.TryGetCRInfo(out DawnItemInfo? info))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Couldn't get CR info for {buyingItem.itemName}");
+                DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {buyingItem.itemName}");
                 return;
             }
 
-            CRShopItemInfo? shopItemInfo = info.ShopInfo;
+            DawnShopItemInfo? shopItemInfo = info.ShopInfo;
 
             if (shopItemInfo != null)
                 purchase = shopItemInfo;
@@ -79,9 +79,9 @@ static class TerminalPredicatePatch
         if (node.shipUnlockableID != -1)
         {
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
-            if (!unlockableItem.TryGetCRInfo(out CRUnlockableItemInfo? info))
+            if (!unlockableItem.TryGetCRInfo(out DawnUnlockableItemInfo? info))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"Couldn't get CR info for {unlockableItem.unlockableName}");
+                DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {unlockableItem.unlockableName}");
                 return;
             }
             

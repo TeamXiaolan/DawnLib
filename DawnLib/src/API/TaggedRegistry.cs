@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Dawn;
-public class TaggedRegistry<T> : Registry<T> where T : CRBaseInfo<T>
+public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
 {
     public event Action AfterTagging = delegate { };
     

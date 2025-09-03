@@ -49,13 +49,13 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             switch (asset)
             {
                 case GameObject gameObject:
-                    CRLib.FixMixerGroups(gameObject);
+                    DawnLib.FixMixerGroups(gameObject);
                     Debuggers.AssetLoading?.Log($"Fixed Mixer Groups: {gameObject.name}");
 
                     if (gameObject.GetComponent<NetworkObject>() == null)
                         continue;
 
-                    CRLib.RegisterNetworkPrefab(gameObject);
+                    DawnLib.RegisterNetworkPrefab(gameObject);
                     Debuggers.AssetLoading?.Log($"Registered Network Prefab: {gameObject.name}");
                     break;
                 case VideoClip videoClip:
@@ -126,13 +126,13 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
         if (_bundle == null)
         {
-            CodeRebirthLibPlugin.Logger.LogError("Tried to unload bundle twice?");
+            DawnPlugin.Logger.LogError("Tried to unload bundle twice?");
             throw new NullReferenceException();
         }
 
         if (_hasVideoClips)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this warning from happening, unloading stopped.");
+            DawnPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this warning from happening, unloading stopped.");
             foreach (string videoClipName in _videoClipNames)
             {
                 Debuggers.AssetLoading?.Log($"VideoClip Name: {videoClipName}");
@@ -142,7 +142,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
         if (_hasNonPreloadAudioClips)
         {
-            CodeRebirthLibPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip, unloading stopped.");
+            DawnPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip, unloading stopped.");
             foreach (string audioClipName in _audioClipNames)
             {
                 Debuggers.AssetLoading?.Log($"AudioClip Name: {audioClipName}");

@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Dawn;
 
-public sealed class CRUnlockableItemInfo : CRBaseInfo<CRUnlockableItemInfo>, ITerminalPurchase
+public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo>, ITerminalPurchase
 {
-    internal CRUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<CRUnlockableItemInfo> key, List<NamespacedKey> tags, UnlockableItem unlockableItem, IProvider<int> cost, CRSuitInfo? suitInfo, CRPlaceableObjectInfo? placeableObjectInfo) : base(key, tags)
+    internal DawnUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnUnlockableItemInfo> key, List<NamespacedKey> tags, UnlockableItem unlockableItem, IProvider<int> cost, DawnSuitInfo? suitInfo, DawnPlaceableObjectInfo? placeableObjectInfo) : base(key, tags)
     {
         PurchasePredicate = predicate;
         UnlockableItem = unlockableItem;
@@ -18,6 +18,6 @@ public sealed class CRUnlockableItemInfo : CRBaseInfo<CRUnlockableItemInfo>, ITe
     public UnlockableItem UnlockableItem { get; }
     public IProvider<int> Cost { get; }
     public ITerminalPurchasePredicate PurchasePredicate { get; }
-    public CRSuitInfo? SuitInfo { get; }
-    public CRPlaceableObjectInfo? PlaceableObjectInfo { get; }
+    public DawnSuitInfo? SuitInfo { get; }
+    public DawnPlaceableObjectInfo? PlaceableObjectInfo { get; }
 }

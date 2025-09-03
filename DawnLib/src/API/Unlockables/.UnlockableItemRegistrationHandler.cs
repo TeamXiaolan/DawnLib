@@ -29,10 +29,10 @@ static class UnlockableRegistrationHandler
         int latestUnlockableID = latestValidUnlockable.shopSelectionNode.shipUnlockableID;
         Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
-        foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
-            CRPlaceableObjectInfo? placeableObjectInfo = unlockableInfo.PlaceableObjectInfo;
-            if (placeableObjectInfo == null || unlockableInfo.HasTag(CRLibTags.IsExternal))
+            DawnPlaceableObjectInfo? placeableObjectInfo = unlockableInfo.PlaceableObjectInfo;
+            if (placeableObjectInfo == null || unlockableInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
@@ -58,10 +58,10 @@ static class UnlockableRegistrationHandler
             latestUnlockableID++;
         }
 
-        foreach (CRUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
-            CRSuitInfo? suitInfo = unlockableInfo.SuitInfo;
-            if (suitInfo == null || unlockableInfo.HasTag(CRLibTags.IsExternal))
+            DawnSuitInfo? suitInfo = unlockableInfo.SuitInfo;
+            if (suitInfo == null || unlockableInfo.HasTag(DawnLibTags.IsExternal))
                 continue; // also ensure not to register vanilla stuff again
 
             // TODO Suits
@@ -73,11 +73,11 @@ static class UnlockableRegistrationHandler
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true);
-            NamespacedKey<CRUnlockableItemInfo>? key = UnlockableItemKeys.GetByReflection(name);
-            key ??= NamespacedKey<CRUnlockableItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+            NamespacedKey<DawnUnlockableItemInfo>? key = UnlockableItemKeys.GetByReflection(name);
+            key ??= NamespacedKey<DawnUnlockableItemInfo>.From("modded_please_replace_this_later", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
             if (LethalContent.Unlockables.ContainsKey(key))
             {
-                CodeRebirthLibPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
             int cost = 0;
@@ -91,18 +91,18 @@ static class UnlockableRegistrationHandler
                 cost = unlockableItem.shopSelectionNode.itemCost;
             }
 
-            CRSuitInfo? suitInfo = null;
+            DawnSuitInfo? suitInfo = null;
             if (unlockableItem.suitMaterial != null)
             {
-                suitInfo = new CRSuitInfo();
+                suitInfo = new DawnSuitInfo();
             }
-            CRPlaceableObjectInfo? placeableObjectInfo = null;
+            DawnPlaceableObjectInfo? placeableObjectInfo = null;
             if (unlockableItem.prefabObject != null)
             {
-                placeableObjectInfo = new CRPlaceableObjectInfo();
+                placeableObjectInfo = new DawnPlaceableObjectInfo();
             }
 
-            CRUnlockableItemInfo unlockableItemInfo = new(new AlwaysAvaliableTerminalPredicate(), key, [CRLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo);
+            DawnUnlockableItemInfo unlockableItemInfo = new(new AlwaysAvaliableTerminalPredicate(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo);
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 

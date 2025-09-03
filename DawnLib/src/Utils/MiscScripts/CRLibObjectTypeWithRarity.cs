@@ -5,6 +5,6 @@ namespace Dawn.Utils;
 [Serializable]
 public class CRLibObjectTypeWithRarity
 {
-    public NamespacedKey<CRMapObjectInfo> NamespacedMapObjectKey;
+    public NamespacedKey<DawnMapObjectInfo> NamespacedMapObjectKey;
     public int Rarity;
 }

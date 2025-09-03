@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 namespace Dawn.Dusk;
 
 [CreateAssetMenu(fileName = "New Map Definition", menuName = $"{CRModConstants.Definitions}/Map Object Definition")]
-public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapObjectInfo>
+public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, DawnMapObjectInfo>
 {
     public const string REGISTRY_ID = "map_objects";
 
@@ -32,7 +32,7 @@ public class CRMMapObjectDefinition : CRMContentDefinition<MapObjectData, CRMapO
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMapObjectConfig(section, data, MapObjectName);
 
-        CRLib.DefineMapObject(TypedKey, GameObject, builder =>
+        DawnLib.DefineMapObject(TypedKey, GameObject, builder =>
         {
             if (Config.InsideHazard?.Value ?? data.isInsideHazard)
             {

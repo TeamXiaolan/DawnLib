@@ -3,18 +3,18 @@
 namespace Dawn.Dusk;
 
 [Serializable]
-public class CRMItemReference : CRMContentReference<CRMItemDefinition, CRItemInfo>
+public class CRMItemReference : CRMContentReference<CRMItemDefinition, DawnItemInfo>
 {
     public CRMItemReference() : base()
     { }
-    public CRMItemReference(NamespacedKey<CRItemInfo> key) : base(key)
+    public CRMItemReference(NamespacedKey<DawnItemInfo> key) : base(key)
     { }
-    public override bool TryResolve(out CRItemInfo info)
+    public override bool TryResolve(out DawnItemInfo info)
     {
         return LethalContent.Items.TryGetValue(TypedKey, out info);
     }
 
-    public override CRItemInfo Resolve()
+    public override DawnItemInfo Resolve()
     {
         return LethalContent.Items[TypedKey];
     }
