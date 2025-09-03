@@ -12,7 +12,7 @@ static class ItemRegistrationHandler
     internal static void Init()
     {
         LethalContent.Items.AddAutoTaggers(
-            new AutoNonInteractableTagger(Tags.NonInteractable),
+            new AutoNonInteractableTagger(),
             new SimpleAutoTagger<CRItemInfo>(Tags.Conductive, itemInfo => itemInfo.Item.isConductiveMetal),
             new SimpleAutoTagger<CRItemInfo>(Tags.Noisy, itemInfo => itemInfo.Item.spawnPrefab.GetComponent<NoisemakerProp>() != null),
             new SimpleAutoTagger<CRItemInfo>(Tags.Interactable, itemInfo => !itemInfo.HasTag(Tags.NonInteractable) && !itemInfo.HasTag(Tags.Noisy)),

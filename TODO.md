@@ -11,6 +11,10 @@
 - MapObject CRInfo stuff?
 - Figure out the interior name situation with weights.
 
+less important:
+- check over all visibility (public, internal, private)
+- config stuff (NamespacedKey TOMLConverter, pretty print generics, look at patching to allow lists?)
+
 ## Needs to be done eventually
 
 - Suits
