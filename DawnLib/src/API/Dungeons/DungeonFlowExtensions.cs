@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using CodeRebirthLib.Internal;
-using CodeRebirthLib.Preloader;
+using Dawn.Preloader.Interfaces;
 using DunGen.Graph;
 
 namespace CodeRebirthLib;

@@ -8,9 +8,8 @@ using Mono.Cecil.Cil;
 using FieldAttributes = Mono.Cecil.FieldAttributes;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using ParameterAttributes = Mono.Cecil.ParameterAttributes;
-using PropertyAttributes = Mono.Cecil.PropertyAttributes;
 
-namespace CodeRebirthLib.Preloader;
+namespace Dawn.Preloader;
 class CodeRebirthLibPreloader
 {
     internal static ManualLogSource Log { get; } = Logger.CreateLogSource("CodeRebirthLib.Preloader");

@@ -1,4 +1,4 @@
-namespace CodeRebirthLib.Preloader;
+namespace Dawn.Preloader.Interfaces;
 
 [InjectInterface("ScanNodeProperties")]
 public interface ICRScanNode

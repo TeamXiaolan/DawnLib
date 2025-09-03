@@ -4,7 +4,7 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MonoMod.Utils;
 
-namespace CodeRebirthLib.Preloader;
+namespace Dawn.Preloader;
 public static class CecilHelper
 {
     public static bool AddField(this TypeDefinition self, FieldAttributes fieldAttributes, string name, TypeReference type, Action<bool, string> logCallback = default)
