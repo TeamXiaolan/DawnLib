@@ -35,6 +35,26 @@ static class ItemRegistrationHandler
         LethalContent.Moons.OnFreeze += FreezeItemContent;
     }
 
+    internal static void UpdateAllShopItemPrices()
+    {
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
+            if(shopInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
+                continue;
+            
+            UpdateShopItemPrices(shopInfo);
+        }
+    }
+
+    static void UpdateShopItemPrices(DawnShopItemInfo shopInfo)
+    {
+        int cost = shopInfo.Cost.Provide();
+        shopInfo.ParentInfo.Item.creditsWorth = cost;
+        shopInfo.ReceiptNode.itemCost = cost;
+        shopInfo.RequestNode.itemCost = cost;
+    }
+    
     private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
     {
         UpdateItemWeightsOnLevel(self.currentLevel);
@@ -300,15 +320,12 @@ static class ItemRegistrationHandler
             TerminalNode receiptNode = shopInfo.ReceiptNode;
             TerminalNode requestNode = shopInfo.RequestNode;
 
-            itemInfo.Item.creditsWorth = shopInfo.Cost.Provide();
-            
+            UpdateShopItemPrices(shopInfo);
             receiptNode.buyItemIndex = newBuyableList.Count - 1;
-            receiptNode.itemCost = itemInfo.Item.creditsWorth;
 
             requestNode.buyItemIndex = newBuyableList.Count - 1;
             requestNode.isConfirmationNode = true;
             requestNode.overrideOptions = true;
-            requestNode.itemCost = itemInfo.Item.creditsWorth;
             requestNode.terminalOptions =
             [
                 new CompatibleNoun()

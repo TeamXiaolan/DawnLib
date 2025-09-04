@@ -40,7 +40,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
         private ItemInfoBuilder _parentBuilder;
 
         private TerminalNode? _infoNode, _requestNode, _receiptNode;
-        private int? _costOverride;
+        private IProvider<int>? _costOverride;
         private ITerminalPurchasePredicate? _purchasePredicate;
 
         internal ShopBuilder(ItemInfoBuilder parent)
@@ -49,6 +49,11 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
         }
 
         public ShopBuilder OverrideCost(int cost)
+        {
+            return OverrideCost(new SimpleProvider<int>(cost));
+        }
+
+        public ShopBuilder OverrideCost(IProvider<int> cost)
         {
             _costOverride = cost;
             return this;
@@ -108,9 +113,9 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
             }
 
             _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-            _costOverride ??= _parentBuilder.value.creditsWorth;
+            _costOverride ??= new SimpleProvider<int>(_parentBuilder.value.creditsWorth);
 
-            return new DawnShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, new SimpleProvider<int>(_costOverride.Value));
+            return new DawnShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride);
         }
     }
 

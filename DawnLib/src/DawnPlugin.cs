@@ -76,7 +76,7 @@ public class DawnPlugin : BaseUnityPlugin
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
         SaveDataPatch.Init();
-        TerminalPredicatePatch.Init();
+        TerminalPatches.Init();
 
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);

@@ -4,12 +4,18 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 
 namespace Dawn.Internal;
-static class TerminalPredicatePatch
+static class TerminalPatches
 {
     internal static void Init()
     {
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
+        On.Terminal.TextPostProcess += UpdateItemPrices;
         IL.Terminal.TextPostProcess += UseFailedResultName;
+    }
+    private static string UpdateItemPrices(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
+    {
+        ItemRegistrationHandler.UpdateAllShopItemPrices();
+        return orig(self, modifieddisplaytext, node);
     }
     internal static void UseFailedResultName(ILContext il)
     {
@@ -61,6 +67,8 @@ static class TerminalPredicatePatch
     }
     private static void HandlePredicate(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
     {
+        ItemRegistrationHandler.UpdateAllShopItemPrices();
+        
         ITerminalPurchase? purchase = null;
         if (node.buyItemIndex != -1)
         {
