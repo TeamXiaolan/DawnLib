@@ -47,7 +47,12 @@ static class TerminalPatches
 
             TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
 
-            return result is not TerminalPurchaseResult.HiddenPurchaseResult;
+            if (result is TerminalPurchaseResult.HiddenPurchaseResult)
+            {
+                Debuggers.Items?.Log($"Hiding {info.Key}");
+                return false;
+            }
+            return true;
         });
         c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
 
@@ -71,7 +76,12 @@ static class TerminalPatches
                 return true;
 
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
-            return result is not TerminalPurchaseResult.HiddenPurchaseResult;
+            if (result is TerminalPurchaseResult.HiddenPurchaseResult)
+            {
+                Debuggers.Unlockables?.Log($"Hiding {info.Key}");
+                return false;
+            }
+            return true;
         });
         c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
     }
@@ -104,6 +114,10 @@ static class TerminalPatches
             TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
             {
+                if (failedResult.OverrideName != null)
+                {
+                    Debuggers.Items?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
+                }
                 return failedResult.OverrideName ?? item.itemName;
             }
 
@@ -124,6 +138,10 @@ static class TerminalPatches
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
             {
+                if (failedResult.OverrideName != null)
+                {
+                    Debuggers.Unlockables?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
+                }
                 return failedResult.OverrideName;
             }
 
