@@ -11,6 +11,24 @@ static class UnlockableRegistrationHandler
     {
         On.Terminal.Awake += RegisterShipUnlockables;
     }
+    
+    internal static void UpdateAllUnlockablePrices()
+    {
+        foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
+        {
+            if(info.HasTag(DawnLibTags.IsExternal))
+                continue;
+            
+            UpdateUnlockablePrices(info);
+        }
+    }
+
+    static void UpdateUnlockablePrices(DawnUnlockableItemInfo info)
+    {
+        int cost = info.Cost.Provide();
+        info.RequestNode!.itemCost = cost;
+        info.ConfirmNode!.itemCost = cost;
+    }
 
     private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
     {
@@ -41,14 +59,17 @@ static class UnlockableRegistrationHandler
             shopSelectionNode.clearPreviousText = true;
             shopSelectionNode.maxCharactersToType = 25;
             shopSelectionNode.shipUnlockableID = latestUnlockableID;
-            shopSelectionNode.itemCost = unlockableInfo.Cost.Provide();
             shopSelectionNode.creatureName = unlockableInfo.UnlockableItem.unlockableName;
             shopSelectionNode.overrideOptions = true;
+            unlockableInfo.RequestNode = shopSelectionNode;
 
             CompatibleNoun confirmBuyCompatibleNoun = new();
             confirmBuyCompatibleNoun.noun = confirmPurchaseKeyword;
-            confirmBuyCompatibleNoun.result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID, unlockableInfo.Cost.Provide());
-
+            confirmBuyCompatibleNoun.result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);
+            unlockableInfo.ConfirmNode = confirmBuyCompatibleNoun.result;
+            
+            UpdateUnlockablePrices(unlockableInfo);
+            
             CompatibleNoun cancelDenyCompatibleNoun = new();
             cancelDenyCompatibleNoun.noun = denyPurchaseKeyword;
             cancelDenyCompatibleNoun.result = cancelPurchaseNode;
@@ -118,7 +139,7 @@ static class UnlockableRegistrationHandler
         orig(self);
     }
 
-    private static TerminalNode CreateUnlockableConfirmNode(UnlockableItem unlockableItem, int latestUnlockableID, int cost)
+    private static TerminalNode CreateUnlockableConfirmNode(UnlockableItem unlockableItem, int latestUnlockableID)
     {
         TerminalNode terminalNode = ScriptableObject.CreateInstance<TerminalNode>();
         terminalNode.displayText = $"Ordered the {unlockableItem.unlockableName.ToLowerInvariant()}! Your new balance is [playerCredits].\nPress [B] to rearrange objects in your ship and [V] to confirm.";
@@ -126,7 +147,6 @@ static class UnlockableRegistrationHandler
         terminalNode.maxCharactersToType = 35;
         terminalNode.shipUnlockableID = latestUnlockableID;
         terminalNode.buyUnlockable = true;
-        terminalNode.itemCost = cost;
         terminalNode.playSyncedClip = 0;
         return terminalNode;
     }

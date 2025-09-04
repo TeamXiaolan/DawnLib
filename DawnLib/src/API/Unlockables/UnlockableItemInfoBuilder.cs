@@ -46,7 +46,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
         }
     }
 
-    private int? _cost;
+    private IProvider<int>? _cost;
     private DawnSuitInfo? _suitInfo;
     private DawnPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
@@ -56,6 +56,11 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     }
 
     public UnlockableInfoBuilder SetCost(int cost)
+    {
+        return SetCost(new SimpleProvider<int>(cost));
+    }
+    
+    public UnlockableInfoBuilder SetCost(IProvider<int> cost)
     {
         _cost = cost;
         return this;
@@ -85,17 +90,18 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
 
     override internal DawnUnlockableItemInfo Build()
     {
-        int cost = 0;
-        if (_cost == null && value.shopSelectionNode == null)
+        IProvider<int>? cost = _cost;
+        if (cost == null && value.shopSelectionNode == null)
         {
+            cost = new SimpleProvider<int>(-999); // obvious wrong value
             DawnPlugin.Logger.LogWarning($"Unlockable: '{key}' didn't set cost. If you intend to have no cost, call .SetCost(0) or provide a ShopSelectionNode with a cost inside to use.");
         }
-        else if (_cost == null)
+        else if (cost == null)
         {
-            cost = value.shopSelectionNode.itemCost;
+            cost = new SimpleProvider<int>(value.shopSelectionNode.itemCost);
         }
 
         _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
-        return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, new SimpleProvider<int>(cost), _suitInfo, _placeableObjectInfo);
+        return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo);
     }
 }

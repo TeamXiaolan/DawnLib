@@ -20,4 +20,8 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
     public ITerminalPurchasePredicate PurchasePredicate { get; }
     public DawnSuitInfo? SuitInfo { get; }
     public DawnPlaceableObjectInfo? PlaceableObjectInfo { get; }
+    
+    // todo: these are currently nullable because they aren't collected from vanilla/modded sources
+    public TerminalNode? RequestNode { get; internal set; }
+    public TerminalNode? ConfirmNode { get; internal set; }
 }
