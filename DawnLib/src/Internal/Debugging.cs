@@ -25,6 +25,7 @@ internal static class Debuggers
     internal static DebugLogSource? Pathfinding;
     internal static DebugLogSource? Tags;
     internal static DebugLogSource? Dungeons;
+    internal static DebugLogSource? Patching;
 
     internal static void Bind(ConfigFile file)
     {

@@ -13,8 +13,8 @@ static class TerminalPatches
     {
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         On.Terminal.TextPostProcess += UpdateItemPrices;
-        IL.Terminal.TextPostProcess += UseFailedNameResults;
         IL.Terminal.TextPostProcess += HideResults;
+        IL.Terminal.TextPostProcess += UseFailedNameResults;
     }
     
     // this is currently a separate function because this is very specific to vanilla
@@ -22,6 +22,8 @@ static class TerminalPatches
     {
         ILCursor c = new ILCursor(il);
         ILLabel loopStart = null!; // make compiler happy with null!
+        Debuggers.Patching?.Log($"transpiling {il.Method.Name} with {nameof(HideResults)}. instructions: {c.Instrs.Count}");
+
         c.GotoNext(
             i => i.MatchLdloc(7),
             i => i.MatchLdarg(0),
@@ -30,9 +32,12 @@ static class TerminalPatches
             i => i.MatchConvI4(),
             i => i.MatchBlt(out loopStart)
         );
-        int targetIndex = c.Index - 4;
+        int targetIndex = c.Index + 2;
+        Debuggers.Patching?.Log($"target index = {targetIndex}");
 
-        c.Index = loopStart.Target.Offset;
+        Debuggers.Patching?.Log($"loopStart = {loopStart}, target = {loopStart.Target}, offset = {loopStart.Target.Offset}");
+        c.GotoLabel(loopStart);
+        c.Emit(OpCodes.Ldarg_0);
         c.EmitLdfld<Terminal>(nameof(Terminal.buyableItemsList));
         c.EmitLdloc(7);
         c.Emit(OpCodes.Ldelem_Ref);
@@ -55,17 +60,23 @@ static class TerminalPatches
             return true;
         });
         c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
+        Debuggers.Patching?.Log("did shopitem hidden patch!");
 
         c.Index = 0;
         c.GotoNext(
             i => i.MatchLdloc(14),
-            i => i.MatchLdarg(0),
-            i => i.MatchLdfld<Terminal>(nameof(Terminal.ShipDecorSelection)),
-            i => i.MatchCallvirt<List<TerminalNode>>(nameof(List<TerminalNode>.Count)),
+            i => i.MatchLdcI4(1),
+            i => i.MatchAdd(),
+            i => i.MatchStloc(14)
+        );
+        c.GotoNext(
             i => i.MatchBlt(out loopStart)
         );
-        targetIndex = c.Index - 4;
-        
+        targetIndex = c.Index + 2;
+
+        c.GotoLabel(loopStart);
+
+        c.Emit(OpCodes.Ldarg_0);
         c.EmitLdfld<Terminal>(nameof(Terminal.ShipDecorSelection));
         c.EmitLdloc(14);
         c.EmitCallvirt<List<TerminalNode>>("get_Item");
@@ -97,64 +108,72 @@ static class TerminalPatches
     {
         ILCursor c = new ILCursor(il);
         DawnPlugin.Logger.LogDebug($"transpiling {il.Method.Name} with {nameof(UseFailedNameResults)}. instructions: {c.Instrs.Count}");
-        c.GotoNext(
+        if (c.TryGotoNext(
             i => i.MatchLdfld<Item>(nameof(Item.itemName))
-        );
-        c.Next.OpCode = OpCodes.Nop;
-
-        c.EmitDelegate<Func<Item, string>>((item) =>
+        ))
         {
-            if (!item.TryGetDawnInfo(out DawnItemInfo? info))
-                return item.itemName;
+            c.Next.OpCode = OpCodes.Nop;
 
-            DawnShopItemInfo? shopInfo = info.ShopInfo;
-            if (shopInfo == null)
-                return item.itemName;
-
-            TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
-            if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+            c.EmitDelegate<Func<Item, string>>((item) =>
             {
-                if (failedResult.OverrideName != null)
-                {
-                    Debuggers.Items?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
-                }
-                return failedResult.OverrideName ?? item.itemName;
-            }
+                if (!item.TryGetDawnInfo(out DawnItemInfo? info))
+                    return item.itemName;
 
-            return item.itemName;
-        });
+                DawnShopItemInfo? shopInfo = info.ShopInfo;
+                if (shopInfo == null)
+                    return item.itemName;
+
+                TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
+                if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+                {
+                    if (failedResult.OverrideName != null)
+                    {
+                        Debuggers.Items?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
+                    }
+                    return failedResult.OverrideName ?? item.itemName;
+                }
+
+                return item.itemName;
+            });
+        }
 
         c.Index = 0;
-        c.GotoNext(
+        if (c.TryGotoNext(
             i => i.MatchLdfld<UnlockableItem>(nameof(UnlockableItem.unlockableName))
-        );
-        c.Next.OpCode = OpCodes.Nop;
-
-        c.EmitDelegate((UnlockableItem unlockable) =>
+        ))
         {
-            if (!unlockable.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
-                return unlockable.unlockableName;
+            c.Next.OpCode = OpCodes.Nop;
 
-            TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
-            if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+            c.EmitDelegate((UnlockableItem unlockable) =>
             {
-                if (failedResult.OverrideName != null)
-                {
-                    Debuggers.Unlockables?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
-                }
-                return failedResult.OverrideName;
-            }
+                if (!unlockable.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
+                    return unlockable.unlockableName;
 
-            return unlockable.unlockableName;
-        });
+                TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
+                if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+                {
+                    if (failedResult.OverrideName != null)
+                    {
+                        Debuggers.Unlockables?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
+                    }
+                    return failedResult.OverrideName;
+                }
+
+                return unlockable.unlockableName;
+            });
+        }
     }
     private static void HandlePredicate(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
     {
+        Debuggers.Patching?.Log($"HandlePredicate: {node}");
+        
         ItemRegistrationHandler.UpdateAllShopItemPrices();
         
         ITerminalPurchase? purchase = null;
         if (node.buyItemIndex != -1)
         {
+            Debuggers.Patching?.Log($"buyItemIndex = {node.buyItemIndex}");
+
             Item buyingItem = self.buyableItemsList[node.buyItemIndex];
             if (!buyingItem.TryGetDawnInfo(out DawnItemInfo? info))
             {
@@ -169,6 +188,9 @@ static class TerminalPatches
         }
         if (node.shipUnlockableID != -1)
         {
+            Debuggers.Patching?.Log($"shipUnlockableID = {node.shipUnlockableID}");
+
+            
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
             if (!unlockableItem.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
             {
@@ -182,20 +204,25 @@ static class TerminalPatches
         // preform predicate
         if (purchase != null)
         {
+            Debuggers.Patching?.Log($"has predicate");
+
             TerminalPurchaseResult result = purchase.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
             {
+                Debuggers.Patching?.Log($"predicate fail");
+
                 orig(self, failedResult.ReasonNode);
                 return;
             }
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {
-                orig(self,
-                    new TerminalNodeBuilder("hidden purchase")
-                        .SetDisplayText("You're not supposed to be here") // TODO
-                        .Build()
-                ); 
-                return;
+                Debuggers.Patching?.Log($"predicate hidden");
+                
+                self.LoadNewNode(new TerminalNodeBuilder("hidden purchase")
+                    .SetDisplayText("You're not supposed to be here") // TODO
+                    .Build()
+                );
+                return; // skip orig
             }
         }
 
