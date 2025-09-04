@@ -23,6 +23,9 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
     [field: SerializeField]
     public DuskTerminalPredicate TerminalPredicate { get; private set; }
 
+    [field: SerializeField]
+    public DuskPricingStrategy OverridePricingStrategy { get; private set; }
+    
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
 
@@ -69,13 +72,23 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
                     shopItemBuilder.OverrideRequestNode(ShopItemPreset.OrderRequestNode);
                     shopItemBuilder.OverrideReceiptNode(ShopItemPreset.OrderReceiptNode);
                     shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
-                    shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
-
+                    
                     bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
                     if (!disableUnlockRequirements && TerminalPredicate)
                     {
                         TerminalPredicate.Register(Item.itemName);
                         shopItemBuilder.SetPurchasePredicate(TerminalPredicate);
+                    }
+
+                    // todo: config?
+                    if (OverridePricingStrategy)
+                    {
+                        OverridePricingStrategy.Register(Key);
+                        shopItemBuilder.OverrideCost(OverridePricingStrategy);
+                    }
+                    else
+                    {
+                        shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
                     }
                 });
             }

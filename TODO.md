@@ -4,6 +4,7 @@
 
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.
+- configs for pricing strategies (DuskItemDefinition, DuskUnlockableDefinition)
 
 ## Bongo
 
@@ -24,3 +25,4 @@ less important:
 - ESR/MRR?
 - Vehicles
 - Swap tags being stored in lists to being stored in hash sets.
+- get RequestNode, ConfirmNode for DawnUnlockableInfo
