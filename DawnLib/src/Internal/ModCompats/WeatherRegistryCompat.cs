@@ -34,4 +34,10 @@ static class WeatherRegistryCompat
         }
         return false;
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool IsWeatherManagerReady()
+    {
+        return WeatherManager.IsSetupFinished;
+    }
 }

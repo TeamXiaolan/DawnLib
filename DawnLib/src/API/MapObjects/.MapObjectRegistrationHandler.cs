@@ -259,7 +259,7 @@ static class MapObjectRegistrationHandler
 
     internal static void UpdateInsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.MapObjects.IsFrozen)
+        if (!LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
@@ -278,7 +278,7 @@ static class MapObjectRegistrationHandler
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
-            foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
+            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
             {
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
                     continue;

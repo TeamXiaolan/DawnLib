@@ -68,20 +68,23 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
                 tagCurveCandidates.Add(tagCurve);
             }
 
-            List<Keyframe> averagedKeyframes = new();
-            for (float i = 0; i < 1; i += 0.01f)
+            if (tagCurveCandidates.Count > 0)
             {
-                List<float> curveEvals = new();
-                foreach (AnimationCurve tagCurve in tagCurveCandidates)
+                List<Keyframe> averagedKeyframes = new();
+                for (float i = 0; i < 1; i += 0.01f)
                 {
-                    curveEvals.Add(tagCurve.Evaluate(i));
+                    List<float> curveEvals = new();
+                    foreach (AnimationCurve tagCurve in tagCurveCandidates)
+                    {
+                        curveEvals.Add(tagCurve.Evaluate(i));
+                    }
+
+                    float average = curveEvals.Average();
+                    averagedKeyframes.Add(new Keyframe(i, average));
                 }
 
-                float average = curveEvals.Average();
-                averagedKeyframes.Add(new Keyframe(i, average));
+                return new AnimationCurve(averagedKeyframes.ToArray());
             }
-
-            return new AnimationCurve(averagedKeyframes.ToArray());
         }
 
         if (isVanilla && VanillaCurve != null)

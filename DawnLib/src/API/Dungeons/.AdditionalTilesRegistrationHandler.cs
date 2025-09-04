@@ -10,7 +10,7 @@ static class AdditionalTilesRegistrationHandler
 {
     internal static void Init()
     {
-        On.RoundManager.Awake += CollectVanillaDungeons;
+        On.StartOfRound.Awake += CollectVanillaDungeons;
         On.RoundManager.Start += CollectModdedDungeons;
         On.DunGen.RuntimeDungeon.Generate += (orig, self) =>
         {
@@ -185,7 +185,7 @@ static class AdditionalTilesRegistrationHandler
         }
     }
 
-    private static void CollectVanillaDungeons(On.RoundManager.orig_Awake orig, RoundManager self)
+    private static void CollectVanillaDungeons(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         if (LethalContent.Dungeons.IsFrozen)
         {
@@ -193,7 +193,7 @@ static class AdditionalTilesRegistrationHandler
             return;
         }
 
-        foreach (DungeonFlow dungeonFlow in self.dungeonFlowTypes.Select(it => it.dungeonFlow))
+        foreach (DungeonFlow dungeonFlow in self.transform.parent.GetComponentInChildren<RoundManager>().dungeonFlowTypes.Select(it => it.dungeonFlow))
         {
             if (dungeonFlow == null)
                 continue;

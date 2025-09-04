@@ -69,7 +69,7 @@ static class ItemRegistrationHandler
 
     internal static void UpdateItemWeightsOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.Items.IsFrozen)
+        if (!LethalContent.Items.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
