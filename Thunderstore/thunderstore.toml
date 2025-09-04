@@ -31,7 +31,7 @@ source = "../DawnLib/data"
 target = "BepInEx/plugins/DawnLib/data/"
 
 [[build.copy]]
-source = "../DawnLib/res/coderebirthlibmain"
+source = "../DawnLib/res/dawnlibmain"
 target = "BepInEx/plugins/DawnLib/Assets/"
 
 [[build.copy]]
