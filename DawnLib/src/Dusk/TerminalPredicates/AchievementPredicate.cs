@@ -39,6 +39,7 @@ public class AchievementPredicate : DuskTerminalPredicate
         {
             return TerminalPurchaseResult.Success();
         }
-        return TerminalPurchaseResult.Fail(_failNode, _lockedName);
+        return TerminalPurchaseResult.Fail(_failNode)
+            .SetOverrideName(_lockedName);
     }
 }

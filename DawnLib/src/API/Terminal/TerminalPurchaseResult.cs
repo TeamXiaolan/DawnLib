@@ -11,11 +11,9 @@ public abstract class TerminalPurchaseResult
         return HiddenPurchaseResult.Instance;
     }
 
-    public static FailedPurchaseResult Fail(TerminalNode node, string? overrideName = null)
+    public static FailedPurchaseResult Fail(TerminalNode node)
     {
-        // if string is "" force it to be null
-        if (string.IsNullOrEmpty(overrideName)) overrideName = null;
-        return new FailedPurchaseResult(node, overrideName);
+        return new FailedPurchaseResult(node);
     }
 
     public class SuccessPurchaseResult : TerminalPurchaseResult
@@ -26,14 +24,24 @@ public abstract class TerminalPurchaseResult
 
     public class FailedPurchaseResult : TerminalPurchaseResult
     {
-        internal FailedPurchaseResult(TerminalNode node, string? overrideName)
+        internal FailedPurchaseResult(TerminalNode node)
         {
             ReasonNode = node;
-            OverrideName = overrideName;
         }
 
-        public string? OverrideName { get; }
+        public string? OverrideName { get; private set; } = null;
         public TerminalNode ReasonNode { get; }
+
+        public FailedPurchaseResult SetOverrideName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                // don't update it
+                return this;
+            }
+            OverrideName = name;
+            return this;
+        }
     }
 
     public class HiddenPurchaseResult : TerminalPurchaseResult

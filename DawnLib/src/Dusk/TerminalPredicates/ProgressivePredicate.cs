@@ -32,7 +32,8 @@ public class ProgressivePredicate : DuskTerminalPredicate
     public override TerminalPurchaseResult CanPurchase()
     {
         if (IsUnlocked) return TerminalPurchaseResult.Success();
-        return TerminalPurchaseResult.Fail(_failNode, _lockedName);
+        return TerminalPurchaseResult.Fail(_failNode)
+            .SetOverrideName(_lockedName);
     }
 
     public void Unlock(HUDDisplayTip? displayTip = null)
