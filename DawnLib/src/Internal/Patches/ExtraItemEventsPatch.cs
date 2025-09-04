@@ -1,3 +1,5 @@
+using Dawn.Utils;
+
 namespace Dawn.Internal;
 
 static class ExtraItemEventsPatch

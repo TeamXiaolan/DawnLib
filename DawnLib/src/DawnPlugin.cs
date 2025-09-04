@@ -3,7 +3,6 @@ using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
-using Dawn.Dusk;
 using Dawn.Internal;
 using Dawn.Utils;
 using PathfindingLib;
@@ -20,15 +19,12 @@ namespace Dawn;
 public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
-    internal static ConfigManager ConfigManager { get; private set; } = null!;
-    internal static MainAssets Main { get; private set; } = null!;
 
     private void Awake()
     {
         Logger = base.Logger;
         Debuggers.Bind(Config);
-        ConfigManager = new ConfigManager(Config);
-        DawnConfig.Bind(ConfigManager);
+        DawnConfig.Bind(Config);
 
         if (DawnConfig.CreateTagExport)
         {
@@ -70,8 +66,6 @@ public class DawnPlugin : BaseUnityPlugin
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
 
-        AchievementRegistrationPatch.Init();
-        DawnNetworkerPatch.Init();
         EnemyDataPatch.Init();
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
@@ -88,10 +82,8 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
 
-        Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
 
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
-        AutoDuskModHandler.AutoRegisterMods();
     }
 
     internal static string RelativePath(params string[] folders)
@@ -101,7 +93,7 @@ public class DawnPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(ItemUpgradeScrap), typeof(UnlockableUpgradeScrap), typeof(UnlockProgressiveObject), typeof(SmartAgentNavigator), typeof(DawnNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
+        var types = new Type[] { typeof(SmartAgentNavigator), typeof(DawnNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
         foreach (var type in types)
         {
             try
@@ -133,17 +125,5 @@ public class DawnPlugin : BaseUnityPlugin
                 Logger.LogDebug($"{key} -> {nameGetter(value)}");
             }
         };
-    }
-
-    internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
-    {
-        [LoadFromBundle("DawnLibNetworker.prefab")]
-        public GameObject NetworkerPrefab { get; private set; } = null!;
-
-        [LoadFromBundle("AchievementUICanvas.prefab")]
-        public GameObject AchievementUICanvasPrefab { get; private set; } = null!;
-
-        [LoadFromBundle("AchievementGetUICanvas.prefab")]
-        public GameObject AchievementGetUICanvasPrefab { get; private set; } = null!;
     }
 }
