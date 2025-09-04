@@ -1,12 +1,17 @@
 ﻿namespace Dawn;
 public abstract class TerminalPurchaseResult
 {
-    public static TerminalPurchaseResult Success()
+    public static SuccessPurchaseResult Success()
     {
         return SuccessPurchaseResult.Instance;
     }
 
-    public static TerminalPurchaseResult Fail(TerminalNode node, string? overrideName = null)
+    public static HiddenPurchaseResult Hidden()
+    {
+        return HiddenPurchaseResult.Instance;
+    }
+
+    public static FailedPurchaseResult Fail(TerminalNode node, string? overrideName = null)
     {
         // if string is "" force it to be null
         if (string.IsNullOrEmpty(overrideName)) overrideName = null;
@@ -29,5 +34,11 @@ public abstract class TerminalPurchaseResult
 
         public string? OverrideName { get; }
         public TerminalNode ReasonNode { get; }
+    }
+
+    public class HiddenPurchaseResult : TerminalPurchaseResult
+    {
+        internal static HiddenPurchaseResult Instance { get; } = new HiddenPurchaseResult();
+        private HiddenPurchaseResult() { }
     }
 }

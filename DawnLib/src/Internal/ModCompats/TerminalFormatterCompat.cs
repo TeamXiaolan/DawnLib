@@ -9,6 +9,6 @@ static class TerminalFormatterCompat
     internal static void Init()
     {
         // teehee maxxing :3
-        IL.TerminalFormatter.Nodes.Store.GetNodeText += TerminalPatches.UseFailedResultName;
+        IL.TerminalFormatter.Nodes.Store.GetNodeText += TerminalPatches.UseFailedNameResults;
     }
 }
