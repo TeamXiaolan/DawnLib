@@ -69,6 +69,11 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
         return Completed;
     }
 
+    internal bool TryCompleteFromServer()
+    {
+        return TryCompleteAchievement();
+    }
+
     public virtual void ResetProgress()
     {
         Completed = false;

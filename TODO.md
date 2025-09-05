@@ -4,17 +4,19 @@
 
 - configs for pricing strategies (DuskItemDefinition, DuskUnlockableDefinition)
 - get RequestNode, ConfirmNode for DawnUnlockableInfo
-- allow achievements completion to be synced (with a toggle, probably only instant?)
 - ESR/MRR?
 - Vehicles
+- Suits
 
 less important:
 
 - Add a special finished border for each achievement mod.
-- Add a normal border for each achievement mod.- Suits
+- Add a normal border for each achievement mod.
 
 ## Bongo
 
+- Savedata for duskmod networker
+- iserializable networkers
 - Figure out the interior name situation with weights.
 
 less important:
