@@ -39,7 +39,8 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
             {
                 builder.SetCost(Config.Cost.Value);
             }
-            builder.DefineShop(shopBuilder =>
+
+            builder.DefinePlaceableObject(shopBuilder =>
             {
                 shopBuilder.Build();
                 if (Config.IsShipUpgrade?.Value ?? data.isShipUpgrade)

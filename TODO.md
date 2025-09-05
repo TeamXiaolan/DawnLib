@@ -2,7 +2,6 @@
 
 ## Xu
 
-- get RequestNode, ConfirmNode for DawnUnlockableInfo
 - ESR/MRR?
 - Vehicles
 - Suits

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace Dawn;
 public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
@@ -50,6 +50,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     private DawnSuitInfo? _suitInfo;
     private DawnPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
+    private TerminalNode? _requestNode, _confirmNode;
 
     internal UnlockableInfoBuilder(NamespacedKey<DawnUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
     {
@@ -66,7 +67,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
         return this;
     }
 
-    public UnlockableInfoBuilder DefineShop(Action<PlaceableObjectBuilder> callback)
+    public UnlockableInfoBuilder DefinePlaceableObject(Action<PlaceableObjectBuilder> callback)
     {
         PlaceableObjectBuilder builder = new(this);
         callback(builder);

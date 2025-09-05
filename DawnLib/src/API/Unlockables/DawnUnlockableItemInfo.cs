@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dawn;
 
@@ -13,6 +14,8 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
         PlaceableObjectInfo = placeableObjectInfo;
         if (PlaceableObjectInfo != null) PlaceableObjectInfo.ParentInfo = this;
         Cost = cost;
+        RequestNode = unlockableItem.shopSelectionNode;
+        ConfirmNode = unlockableItem.shopSelectionNode?.terminalOptions.Where(x => x.noun.word == "confirm").FirstOrDefault()?.result;
     }
 
     public UnlockableItem UnlockableItem { get; }
@@ -21,7 +24,6 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
     public DawnSuitInfo? SuitInfo { get; }
     public DawnPlaceableObjectInfo? PlaceableObjectInfo { get; }
     
-    // todo: these are currently nullable because they aren't collected from vanilla/modded sources
     public TerminalNode? RequestNode { get; internal set; }
     public TerminalNode? ConfirmNode { get; internal set; }
 }

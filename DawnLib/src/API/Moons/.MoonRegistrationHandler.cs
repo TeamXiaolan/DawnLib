@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
-using Dawn.Internal;
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -14,8 +13,8 @@ static class MoonRegistrationHandler
     {
         LethalContent.Moons.AddAutoTaggers(
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
-            new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost == 0),
-            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode.itemCost > 0)
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost == 0),
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost > 0)
         );
 
         using (new DetourContext(priority: int.MaxValue))

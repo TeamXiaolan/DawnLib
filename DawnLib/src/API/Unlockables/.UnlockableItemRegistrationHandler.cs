@@ -15,7 +15,7 @@ static class UnlockableRegistrationHandler
     {
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
         {
-            if(info.HasTag(DawnLibTags.IsExternal))
+            if (info.HasTag(DawnLibTags.IsExternal))
                 continue;
             
             UpdateUnlockablePrices(info);
@@ -25,8 +25,15 @@ static class UnlockableRegistrationHandler
     static void UpdateUnlockablePrices(DawnUnlockableItemInfo info)
     {
         int cost = info.Cost.Provide();
-        info.RequestNode!.itemCost = cost;
-        info.ConfirmNode!.itemCost = cost;
+        if (info.RequestNode != null)
+        {
+            info.RequestNode.itemCost = cost;
+        }
+
+        if (info.ConfirmNode != null)
+        {
+            info.ConfirmNode.itemCost = cost;
+        }
     }
 
     private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
@@ -108,6 +115,7 @@ static class UnlockableRegistrationHandler
                 DawnPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. Skipping...");
                 continue;
             }
+
             int cost = 0;
             if (unlockableItem.shopSelectionNode == null && !unlockableItem.alreadyUnlocked)
             {
