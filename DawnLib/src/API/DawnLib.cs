@@ -123,9 +123,4 @@ public static class DawnLib
             ApplyTag(definition);
         }
     }
-
-    public static TerminalNodeBuilder DefineTerminalNode(string name)
-    {
-        return new TerminalNodeBuilder(name);
-    }
 }

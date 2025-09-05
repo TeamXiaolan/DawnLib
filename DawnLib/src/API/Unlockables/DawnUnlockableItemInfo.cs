@@ -15,7 +15,7 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
         if (PlaceableObjectInfo != null) PlaceableObjectInfo.ParentInfo = this;
         Cost = cost;
         RequestNode = unlockableItem.shopSelectionNode;
-        ConfirmNode = unlockableItem.shopSelectionNode?.terminalOptions.Where(x => x.noun.word == "confirm").FirstOrDefault()?.result;
+        ConfirmNode = unlockableItem.shopSelectionNode?.terminalOptions.FirstOrDefault()?.result;
     }
 
     public UnlockableItem UnlockableItem { get; }

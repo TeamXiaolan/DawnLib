@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Dawn;
 public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
@@ -50,7 +49,6 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     private DawnSuitInfo? _suitInfo;
     private DawnPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
-    private TerminalNode? _requestNode, _confirmNode;
 
     internal UnlockableInfoBuilder(NamespacedKey<DawnUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
     {
@@ -91,6 +89,21 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
 
     override internal DawnUnlockableItemInfo Build()
     {
+        if (!value.alreadyUnlocked && !value.shopSelectionNode)
+        {
+            CompatibleNoun confirmBuyCompatibleNoun = new();
+            CompatibleNoun cancelDenyCompatibleNoun = new();
+
+            value.shopSelectionNode = new TerminalNodeBuilder($"{value.unlockableName}ShopSelectionNode")
+                .SetDisplayText($"You have requested to order {value.unlockableName.ToLowerInvariant()}.\nTotal cost of item: [totalCost].\n\nPlease CONFIRM or DENY.\n")
+                .SetMaxCharactersToType(15)
+                .SetShipUnlockableIndex(-1)
+                .SetCreatureName(value.unlockableName)
+                .SetOverrideOptions(true)
+                .SetTerminalOptions([confirmBuyCompatibleNoun, cancelDenyCompatibleNoun])
+                .Build();
+        }
+
         IProvider<int>? cost = _cost;
         if (cost == null && value.shopSelectionNode == null)
         {
@@ -101,6 +114,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
         {
             cost = new SimpleProvider<int>(value.shopSelectionNode.itemCost);
         }
+
 
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo);

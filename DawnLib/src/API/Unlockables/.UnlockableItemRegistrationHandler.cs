@@ -55,43 +55,23 @@ static class UnlockableRegistrationHandler
 
         foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
-            DawnPlaceableObjectInfo? placeableObjectInfo = unlockableInfo.PlaceableObjectInfo;
-            if (placeableObjectInfo == null || unlockableInfo.HasTag(DawnLibTags.IsExternal))
+            if (unlockableInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
 
             StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
-            TerminalNode shopSelectionNode = ScriptableObject.CreateInstance<TerminalNode>(); // unsure if its relevant but for some reason some ship upgrades dont have this, might not be needed and game might auto generate them.
-            shopSelectionNode.displayText = $"You have requested to order a {unlockableInfo.UnlockableItem.unlockableName.ToLowerInvariant()}.\nTotal cost of item: [totalCost].\n\nPlease CONFIRM or DENY.";
-            shopSelectionNode.clearPreviousText = true;
-            shopSelectionNode.maxCharactersToType = 25;
-            shopSelectionNode.shipUnlockableID = latestUnlockableID;
-            shopSelectionNode.creatureName = unlockableInfo.UnlockableItem.unlockableName;
-            shopSelectionNode.overrideOptions = true;
-            unlockableInfo.RequestNode = shopSelectionNode;
+            if (unlockableInfo.UnlockableItem.alreadyUnlocked || unlockableInfo.RequestNode == null)
+                continue;
 
-            CompatibleNoun confirmBuyCompatibleNoun = new();
-            confirmBuyCompatibleNoun.noun = confirmPurchaseKeyword;
-            confirmBuyCompatibleNoun.result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);
-            unlockableInfo.ConfirmNode = confirmBuyCompatibleNoun.result;
-            
-            UpdateUnlockablePrices(unlockableInfo);
-            
-            CompatibleNoun cancelDenyCompatibleNoun = new();
-            cancelDenyCompatibleNoun.noun = denyPurchaseKeyword;
-            cancelDenyCompatibleNoun.result = cancelPurchaseNode;
-
-            shopSelectionNode.terminalOptions = [confirmBuyCompatibleNoun, cancelDenyCompatibleNoun];
-            unlockableInfo.UnlockableItem.shopSelectionNode = shopSelectionNode;
+            unlockableInfo.RequestNode.shipUnlockableID = latestUnlockableID;
             latestUnlockableID++;
-        }
 
-        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
-        {
-            DawnSuitInfo? suitInfo = unlockableInfo.SuitInfo;
-            if (suitInfo == null || unlockableInfo.HasTag(DawnLibTags.IsExternal))
-                continue; // also ensure not to register vanilla stuff again
+            UpdateUnlockablePrices(unlockableInfo);
 
-            // TODO Suits
+            unlockableInfo.RequestNode.terminalOptions[0].noun = confirmPurchaseKeyword;
+            unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);            
+            
+            unlockableInfo.RequestNode.terminalOptions[1].noun = denyPurchaseKeyword;
+            unlockableInfo.RequestNode.terminalOptions[1].result = cancelPurchaseNode;
         }
 
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
@@ -148,13 +128,15 @@ static class UnlockableRegistrationHandler
 
     private static TerminalNode CreateUnlockableConfirmNode(UnlockableItem unlockableItem, int latestUnlockableID)
     {
-        TerminalNode terminalNode = ScriptableObject.CreateInstance<TerminalNode>();
-        terminalNode.displayText = $"Ordered the {unlockableItem.unlockableName.ToLowerInvariant()}! Your new balance is [playerCredits].\nPress [B] to rearrange objects in your ship and [V] to confirm.";
-        terminalNode.clearPreviousText = true;
-        terminalNode.maxCharactersToType = 35;
-        terminalNode.shipUnlockableID = latestUnlockableID;
-        terminalNode.buyUnlockable = true;
-        terminalNode.playSyncedClip = 0;
+        TerminalNode terminalNode = new TerminalNodeBuilder($"{unlockableItem.unlockableName}ConfirmNode")
+            .SetDisplayText($"Ordered the {unlockableItem.unlockableName.ToLowerInvariant()}! Your new balance is [playerCredits].\nPress [B] to rearrange objects in your ship and [V] to confirm.")
+            .SetClearPreviousText(true)
+            .SetMaxCharactersToType(35)
+            .SetShipUnlockableIndex(latestUnlockableID)
+            .SetBuyUnlockable(true)
+            .SetPlaySyncedClip(0)
+            .Build();
+
         return terminalNode;
     }
 }

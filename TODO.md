@@ -14,8 +14,7 @@ less important:
 ## Bongo
 
 - Savedata for duskmod networker
-- iserializable networkers
-- Figure out the interior name situation with weights.
+- iserializable networkers for definitions.
 
 less important:
 
