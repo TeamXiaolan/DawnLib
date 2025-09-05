@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 
@@ -23,6 +24,7 @@ public class WeatherWeightTransformer : WeightTransformer
             return string.Empty;
 
         string MatchingWeatherWithWeight = string.Join(",", MatchingWeathersWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        Debuggers.Weights?.Log($"MatchingWeatherWithWeight: {MatchingWeatherWithWeight}");
         return $"{MatchingWeatherWithWeight}";
     }
 

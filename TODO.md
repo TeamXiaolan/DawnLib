@@ -2,14 +2,16 @@
 
 ## Xu
 
-- Add a special finished border for each achievement mod.
-- Add a normal border for each achievement mod.
 - configs for pricing strategies (DuskItemDefinition, DuskUnlockableDefinition)
 - get RequestNode, ConfirmNode for DawnUnlockableInfo
 - allow achievements completion to be synced (with a toggle, probably only instant?)
-- Suits
 - ESR/MRR?
 - Vehicles
+
+less important:
+
+- Add a special finished border for each achievement mod.
+- Add a normal border for each achievement mod.- Suits
 
 ## Bongo
 

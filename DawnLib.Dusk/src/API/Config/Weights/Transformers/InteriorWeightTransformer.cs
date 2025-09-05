@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 [Serializable]
@@ -23,6 +25,7 @@ public class InteriorWeightTransformer : WeightTransformer
             return string.Empty;
 
         string MatchingInteriorWithWeight = string.Join(",", MatchingInteriorsWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        Debuggers.Weights?.Log($"MatchingInteriorWithWeight: {MatchingInteriorWithWeight}");
         return $"{MatchingInteriorWithWeight}";
     }
 

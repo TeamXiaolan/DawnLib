@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 
@@ -24,6 +25,7 @@ public class MoonWeightTransformer : WeightTransformer
             return string.Empty;
 
         string MatchingMoonWithWeight = string.Join(",", MatchingMoonsWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        Debuggers.Weights?.Log($"MatchingMoonWithWeight: {MatchingMoonWithWeight}");
         return $"{MatchingMoonWithWeight}";
     }
 
