@@ -141,8 +141,11 @@ static class MapObjectRegistrationHandler
 
         foreach (GameObject mapObject in vanillaMapObjects)
         {
-            if (LethalContent.MapObjects.Values.Any(x => x.MapObject == mapObject))
-                continue; // TODO This is not that great, pls find something better
+            if (mapObject.TryGetComponent(out DawnInfoContainer<DawnMapObjectInfo> _))
+            {
+                Debuggers.MapObjects?.Log($"Already registered {mapObject}");
+                continue;
+            }
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true);
             NamespacedKey<DawnMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
@@ -165,6 +168,8 @@ static class MapObjectRegistrationHandler
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
+            DawnInfoContainer<DawnMapObjectInfo> container = mapObject.AddComponent<DawnInfoContainer<DawnMapObjectInfo>>();
+            container.Value = mapObjectInfo;
             LethalContent.MapObjects.Register(mapObjectInfo);
         }
         LethalContent.MapObjects.Freeze();

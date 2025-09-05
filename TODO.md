@@ -8,7 +8,6 @@
 
 ## Bongo
 
-- MapObject CRInfo stuff?
 - Figure out the interior name situation with weights.
 
 less important:

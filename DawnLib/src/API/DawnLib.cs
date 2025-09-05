@@ -48,8 +48,10 @@ public static class DawnLib
     {
         MapObjectInfoBuilder builder = new(key, mapObject);
         callback(builder);
-        // TODO what to do here?
         DawnMapObjectInfo info = builder.Build();
+        DawnInfoContainer<DawnMapObjectInfo> container = mapObject.AddComponent<DawnInfoContainer<DawnMapObjectInfo>>();
+        container.Value = info;
+        
         LethalContent.MapObjects.Register(info);
         return info;
     }

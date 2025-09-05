@@ -22,13 +22,9 @@ public class SpawnSyncedDawnLibObject : MonoBehaviour
         List<(GameObject objectType, float weight)> spawnableObjectsList = new();
         foreach (var objectTypeWithRarity in objectTypesWithRarity)
         {
-            foreach (var mapObjectInfo in LethalContent.MapObjects.Values)
+            if (LethalContent.MapObjects.TryGetValue(objectTypeWithRarity.NamespacedMapObjectKey, out DawnMapObjectInfo info))
             {
-                if (!objectTypeWithRarity.NamespacedMapObjectKey.Equals(mapObjectInfo.Key))
-                    continue;
-
-                spawnableObjectsList.Add((mapObjectInfo.MapObject, objectTypeWithRarity.Rarity));
-                break;
+                spawnableObjectsList.Add((info.MapObject, objectTypeWithRarity.Rarity));
             }
         }
 
