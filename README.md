@@ -16,10 +16,10 @@ This is because of the way DawnLib supports dynamically updating weights and the
 ## DawnLib (All C#)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.10.0" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.1.0" />
 
 <!-- Optional Source Generation, mostly for when using the DuskMod API -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.10.0" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.1.0" />
 ```
 
 DawnLib is a hands-off way to register your content. The code to switch from LethalLib to DawnLib is very similar and will require minimal refactoring.
@@ -71,6 +71,13 @@ if(LethalContent.Enemies.IsFrozen) { // or check that the registry has already b
 ```
 
 ## DuskMod (C# & Editor)
+```xml
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.1.0" />
+<PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.1.0" />
+
+<!-- Optional Source Generation -->
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.1.0" />
+```
 
 The DuskMod API is more opinionated, but automatically handles:
 
