@@ -2,7 +2,6 @@
 
 ## Xu
 
-- configs for pricing strategies (DuskItemDefinition, DuskUnlockableDefinition)
 - get RequestNode, ConfirmNode for DawnUnlockableInfo
 - ESR/MRR?
 - Vehicles

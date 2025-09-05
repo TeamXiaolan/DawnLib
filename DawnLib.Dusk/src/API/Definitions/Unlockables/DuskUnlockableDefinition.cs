@@ -29,9 +29,10 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
     
         DawnLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
-            // todo: config
-            if (PricingStrategy)
+            bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;
+            if (PricingStrategy && !disablePricingStrategy)
             {
+                PricingStrategy.Register(Key);
                 builder.SetCost(PricingStrategy);
             }
             else
@@ -68,7 +69,8 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
     {
         return new UnlockableConfig
         {
-            DisableUnlockRequirement = data.generateDisableUnlockRequirementConfig ? context.Bind($"{unlockableName} | Disable Unlock Requirements", $"Whether {unlockableName} should have it's unlock requirements disabled.", definition.TerminalPredicate != null) : null,
+            DisablePricingStrategy = data.generateDisablePricingStrategyConfig ? context.Bind($"{unlockableName} | Disable Pricing Strategy", $"Whether {unlockableName} should have it's pricing strategy disabled.", false) : null,
+            DisableUnlockRequirement = data.generateDisableUnlockRequirementConfig ? context.Bind($"{unlockableName} | Disable Unlock Requirements", $"Whether {unlockableName} should have it's unlock requirements disabled.", false) : null,
             IsDecor = context.Bind($"{unlockableName} | Is Decor", $"Whether {unlockableName} is considered a decor.", data.isDecor),
             IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
             Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", data.cost),

@@ -25,7 +25,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
     public DuskTerminalPredicate TerminalPredicate { get; private set; }
 
     [field: SerializeField]
-    public DuskPricingStrategy OverridePricingStrategy { get; private set; }
+    public DuskPricingStrategy PricingStrategy { get; private set; }
     
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
@@ -43,7 +43,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
             if (configValue.Min == -1 || configValue.Max == -1)
             {
                 mod.Logger?.LogInfo($"Migrating scrap value of {Item.itemName} from -1,-1.");
-                Config.Worth.Value = itemWorth; // itemWorth hasn't been updated here, so by setting a new value, it effectively changes from -1,-1 to the default item worth from above.
+                Config.Worth.Value = itemWorth;
             }
             else
             {
@@ -81,11 +81,11 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
                         shopItemBuilder.SetPurchasePredicate(TerminalPredicate);
                     }
 
-                    // todo: config?
-                    if (OverridePricingStrategy)
+                    bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;
+                    if (PricingStrategy && !disablePricingStrategy)
                     {
-                        OverridePricingStrategy.Register(Key);
-                        shopItemBuilder.OverrideCost(OverridePricingStrategy);
+                        PricingStrategy.Register(Key);
+                        shopItemBuilder.OverrideCost(PricingStrategy);
                     }
                     else
                     {
@@ -109,7 +109,8 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
             InteriorSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
             WeatherSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
             IsScrapItem = isScrapItem,
-            DisableUnlockRequirements = data.generateDisableUnlockConfig ? context.Bind($"{itemName} | Disable Unlock Requirements", $"Whether {itemName} should have it's unlock requirements disabled.", definition.TerminalPredicate != null) : null,
+            DisableUnlockRequirements = data.generateDisableUnlockConfig ? context.Bind($"{itemName} | Disable Unlock Requirements", $"Whether {itemName} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = data.generateDisablePricingStrategyConfig ? context.Bind($"{itemName} | Disable Pricing Strategy", $"Whether {itemName} should have it's pricing strategy disabled.", false) : null,
             Worth = isScrapItem?.Value ?? data.isScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
             IsShopItem = isShopItem,
 

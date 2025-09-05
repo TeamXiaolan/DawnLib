@@ -14,5 +14,6 @@ public class ItemData : EntityData<DuskItemReference>
     public bool isShopItem;
     public bool generateShopItemConfig;
     [FormerlySerializedAs("generateProgressiveConfig")] public bool generateDisableUnlockConfig;
+    public bool generateDisablePricingStrategyConfig;
     public int cost;
 }

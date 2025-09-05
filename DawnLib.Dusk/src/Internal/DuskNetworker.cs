@@ -12,7 +12,7 @@ namespace Dusk.Internal;
 public class DuskNetworker : NetworkSingleton<DuskNetworker>
 {
     // todo: maybe own save settings for dusk?
-    internal ES3Settings SaveSettings => DawnNetworker.Instance.SaveSettings;
+    internal ES3Settings SaveSettings => DawnNetworker.Instance!.SaveSettings;
 
     public IEnumerator Start()
     {
