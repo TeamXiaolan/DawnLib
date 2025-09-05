@@ -141,7 +141,7 @@ static class MapObjectRegistrationHandler
 
         foreach (GameObject mapObject in vanillaMapObjects)
         {
-            if (mapObject.TryGetComponent(out DawnInfoContainer<DawnMapObjectInfo> _))
+            if (mapObject.TryGetComponent(out DawnMapObjectInfoContainer _))
             {
                 Debuggers.MapObjects?.Log($"Already registered {mapObject}");
                 continue;
@@ -168,7 +168,7 @@ static class MapObjectRegistrationHandler
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
-            DawnInfoContainer<DawnMapObjectInfo> container = mapObject.AddComponent<DawnInfoContainer<DawnMapObjectInfo>>();
+            DawnMapObjectInfoContainer container = mapObject.AddComponent<DawnMapObjectInfoContainer>();
             container.Value = mapObjectInfo;
             LethalContent.MapObjects.Register(mapObjectInfo);
         }

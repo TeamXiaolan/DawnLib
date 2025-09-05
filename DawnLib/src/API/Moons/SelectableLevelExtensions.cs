@@ -23,6 +23,11 @@ public static class SelectableLevelExtensions
         return moonInfo != null;
     }
 
+    internal static DawnMoonInfo GetDawnInfo(this SelectableLevel level)
+    {
+        return (DawnMoonInfo)((IDawnObject)level).DawnInfo;
+    }
+
     internal static void SetDawnInfo(this SelectableLevel level, DawnMoonInfo moonInfo)
     {
         ((IDawnObject)level).DawnInfo = moonInfo;

@@ -28,15 +28,6 @@ public class ConfigManager(ConfigFile file)
         return CreateConfigSection(data.configName + " Options");
     }
 
-    public ConfigEntry<T> CreateGeneralConfig<T>(
-        string header,
-        string name,
-        T DynamicConfigType,
-        string Description)
-    {
-        return file.Bind(CleanStringForConfig(header), CleanStringForConfig(name), DynamicConfigType, Description);
-    }
-
     public ConfigEntryBase CreateDynamicConfig(DuskDynamicConfig configDefinition, ConfigContext context)
     {
         ConfigEntryBase Bind<T>(T defaultValue)
@@ -83,41 +74,6 @@ public class ConfigManager(ConfigFile file)
     public static AnimationCurve ParseCurve(string keyValuePairs)
     {
         return TomlTypeConverter.ConvertToValue<AnimationCurve>(keyValuePairs);
-    }
-
-    private const string illegalCharacters = ".,?!@#$%^&*()_+-=';:'\"";
-
-    private static string GetNumberlessPlanetName(string planetName)
-    {
-        if (planetName != null)
-            return new string(planetName.SkipWhile(c => !char.IsLetter(c)).ToArray());
-        else
-            return string.Empty;
-    }
-
-    private static string StripSpecialCharacters(string input)
-    {
-        string returnString = string.Empty;
-
-        foreach (char charmander in input)
-            if ((!illegalCharacters.ToCharArray().Contains(charmander) && char.IsLetterOrDigit(charmander)) || charmander.ToString() == " ")
-                returnString += charmander;
-
-        return returnString;
-    }
-
-    [Obsolete("Use DawnMoonInfo.GetConfigName instead")]
-    internal static string GetLLLNameOfLevel(string levelName)
-    {
-        // -> 10 Example
-        string newName = StripSpecialCharacters(GetNumberlessPlanetName(levelName));
-        // -> Example
-        if (!newName.EndsWith("Level", true, CultureInfo.InvariantCulture))
-            newName += "Level";
-        // -> ExampleLevel
-        newName = newName.ToLowerInvariant();
-        // -> examplelevel
-        return newName;
     }
 
     internal static ConfigFile GenerateConfigFile(BepInPlugin plugin)

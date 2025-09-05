@@ -19,6 +19,40 @@ static class AdditionalTilesRegistrationHandler
         };
     }
 
+    private static void CollectVanillaDungeons(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        if (LethalContent.Dungeons.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
+        foreach (DungeonFlow dungeonFlow in self.transform.parent.GetComponentInChildren<RoundManager>().dungeonFlowTypes.Select(it => it.dungeonFlow))
+        {
+            if (dungeonFlow == null)
+                continue;
+
+            if (dungeonFlow.TryGetDawnInfo(out _))
+                continue;
+
+            string name = FormatFlowName(dungeonFlow);
+            NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
+            if (key == null)
+            {
+                DawnPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
+                continue;
+            }
+
+            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
+
+            CollectLLLTags(dungeonFlow, tags);
+            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
+            dungeonFlow.SetDawnInfo(dungeonInfo);
+            LethalContent.Dungeons.Register(dungeonInfo);
+        }
+        orig(self);
+    }
+
     private static void CollectModdedDungeons(On.RoundManager.orig_Start orig, RoundManager self)
     {
         if (LethalContent.Dungeons.IsFrozen)
@@ -185,40 +219,6 @@ static class AdditionalTilesRegistrationHandler
         }
     }
 
-    private static void CollectVanillaDungeons(On.StartOfRound.orig_Awake orig, StartOfRound self)
-    {
-        if (LethalContent.Dungeons.IsFrozen)
-        {
-            orig(self);
-            return;
-        }
-
-        foreach (DungeonFlow dungeonFlow in self.transform.parent.GetComponentInChildren<RoundManager>().dungeonFlowTypes.Select(it => it.dungeonFlow))
-        {
-            if (dungeonFlow == null)
-                continue;
-
-            if (dungeonFlow.TryGetDawnInfo(out _))
-                continue;
-
-            string name = FormatFlowName(dungeonFlow);
-            NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
-            if (key == null)
-            {
-                DawnPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
-                continue;
-            }
-
-            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
-
-            CollectLLLTags(dungeonFlow, tags);
-            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
-            dungeonFlow.SetDawnInfo(dungeonInfo);
-            LethalContent.Dungeons.Register(dungeonInfo);
-        }
-        orig(self);
-    }
-
     internal static void TryInjectTileSets(DungeonFlow dungeonFlow)
     {
         foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
@@ -228,6 +228,7 @@ static class AdditionalTilesRegistrationHandler
                 DawnPlugin.Logger.LogWarning("what? archetype didn't have crinfo by the time we're trying to inject tile sets.");
                 continue;
             }
+
             foreach (DawnTileSetInfo tileSet in info.TileSets)
             {
                 if (tileSet.HasTag(DawnLibTags.IsExternal))

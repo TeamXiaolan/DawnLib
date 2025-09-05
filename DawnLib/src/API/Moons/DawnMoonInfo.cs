@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 namespace Dawn;
 
@@ -42,8 +41,8 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
     
     public string GetConfigName()
     {
-        // -> 10 Example
-        string newName = StripSpecialCharacters(new string(Level.PlanetName.SkipWhile(c => !char.IsLetter(c)).ToArray()));
+        // -> 10-Example
+        string newName = StripSpecialCharacters(Level.PlanetName);
         // -> Example
         if (!newName.EndsWith("Level", true, CultureInfo.InvariantCulture))
             newName += "Level";
@@ -61,15 +60,18 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
         StartOfRound.Instance.ChangeLevelServerRpc(index, terminal.groupCredits);
     }
     
-    private const string illegalCharacters = ".,?!@#$%^&*()_+-=';:'\"";
-    
     private static string StripSpecialCharacters(string input)
     {
         string returnString = string.Empty;
-
         foreach (char charmander in input)
-            if ((!illegalCharacters.ToCharArray().Contains(charmander) && char.IsLetterOrDigit(charmander)) || charmander.ToString() == " ")
-                returnString += charmander;
+        {
+            if (!char.IsLetter(charmander))
+            {
+                continue;
+            }
+
+            returnString += charmander;
+        }
 
         return returnString;
     }

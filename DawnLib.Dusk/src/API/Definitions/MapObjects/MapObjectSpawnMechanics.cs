@@ -41,53 +41,47 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
     public AnimationCurve? VanillaCurve { get; }
     public AnimationCurve? ModdedCurve { get; }
 
-    public AnimationCurve CurveFunction(SelectableLevel level)
+    public AnimationCurve CurveFunction(DawnMoonInfo moonInfo)
     {
-        if (level == null)
+        if (moonInfo == null || moonInfo.Level == null)
             return AnimationCurve.Constant(0, 1, 0);
 
-        string actualLevelName = ConfigManager.GetLLLNameOfLevel(level.name);
-        bool isVanilla = level.ToNamespacedKey().IsVanilla();
-        Debuggers.MapObjects?.Log($"Actual level name: {actualLevelName} | isVanilla: {isVanilla}");
-        if (CurvesByMoonOrTagName.TryGetValue(actualLevelName, out AnimationCurve curve))
+        if (CurvesByMoonOrTagName.TryGetValue(moonInfo.GetConfigName(), out AnimationCurve curve))
         {
             return curve;
         }
 
-        if (level.TryGetDawnInfo(out DawnMoonInfo? moonInfo))
+        List<AnimationCurve> tagCurveCandidates = new();
+        foreach ((string tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)
         {
-            List<AnimationCurve> tagCurveCandidates = new();
-            foreach ((string tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)
-            {
-                if (!NamespacedKey.TryParse(tagName, out NamespacedKey? key))
-                    continue;
+            if (!NamespacedKey.TryParse(tagName, out NamespacedKey? key))
+                continue;
 
-                if (!moonInfo.HasTag(key))
-                    continue;
+            if (!moonInfo.HasTag(key))
+                continue;
 
-                tagCurveCandidates.Add(tagCurve);
-            }
-
-            if (tagCurveCandidates.Count > 0)
-            {
-                List<Keyframe> averagedKeyframes = new();
-                for (float i = 0; i < 1; i += 0.01f)
-                {
-                    List<float> curveEvals = new();
-                    foreach (AnimationCurve tagCurve in tagCurveCandidates)
-                    {
-                        curveEvals.Add(tagCurve.Evaluate(i));
-                    }
-
-                    float average = curveEvals.Average();
-                    averagedKeyframes.Add(new Keyframe(i, average));
-                }
-
-                return new AnimationCurve(averagedKeyframes.ToArray());
-            }
+            tagCurveCandidates.Add(tagCurve);
         }
 
-        if (isVanilla && VanillaCurve != null)
+        if (tagCurveCandidates.Count > 0)
+        {
+            List<Keyframe> averagedKeyframes = new();
+            for (float i = 0; i < 1; i += 0.01f)
+            {
+                List<float> curveEvals = new();
+                foreach (AnimationCurve tagCurve in tagCurveCandidates)
+                {
+                    curveEvals.Add(tagCurve.Evaluate(i));
+                }
+
+                float average = curveEvals.Average();
+                averagedKeyframes.Add(new Keyframe(i, average));
+            }
+
+            return new AnimationCurve(averagedKeyframes.ToArray());
+        }
+
+        if (moonInfo.HasTag(Tags.Vanilla) && VanillaCurve != null)
         {
             return VanillaCurve;
         }
@@ -101,12 +95,12 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
         {
             return AllCurve;
         }
-        Debuggers.MapObjects?.Log($"Failed to find curve for level: {level}");
-        return AnimationCurve.Constant(0, 1, 0); // Default case if no curve matches
+        Debuggers.MapObjects?.Log($"Failed to find curve for level: {moonInfo.Level}");
+        return AnimationCurve.Constant(0, 1, 0);
     }
 
     public AnimationCurve? Provide(DawnMoonInfo info)
     {
-        return CurveFunction(info.Level);
+        return CurveFunction(info);
     }
 }
