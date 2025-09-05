@@ -9,12 +9,16 @@ public interface ITerminalPurchase
 public interface ITerminalPurchasePredicate
 {
     TerminalPurchaseResult CanPurchase();
+
+    public static ITerminalPurchasePredicate AlwaysSuccess() { return new ConstantTerminalPredicate(TerminalPurchaseResult.Success()); }
+    public static ITerminalPurchasePredicate AlwaysHide() { return new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden()); }
+    public static ITerminalPurchasePredicate AlwaysFail(TerminalNode fail) { return new ConstantTerminalPredicate(TerminalPurchaseResult.Fail(fail)); }
 }
 
-public class AlwaysAvaliableTerminalPredicate : ITerminalPurchasePredicate
+internal class ConstantTerminalPredicate(TerminalPurchaseResult result) : ITerminalPurchasePredicate
 {
     public TerminalPurchaseResult CanPurchase()
     {
-        return TerminalPurchaseResult.Success();
+        return result;
     }
 }

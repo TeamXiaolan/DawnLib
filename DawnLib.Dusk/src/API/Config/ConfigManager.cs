@@ -106,6 +106,7 @@ public class ConfigManager(ConfigFile file)
         return returnString;
     }
 
+    [Obsolete("Use DawnMoonInfo.GetConfigName instead")]
     internal static string GetLLLNameOfLevel(string levelName)
     {
         // -> 10 Example

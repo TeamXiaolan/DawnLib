@@ -180,7 +180,7 @@ static class ItemRegistrationHandler
             }
 
             receiptNode = requestNode.terminalOptions[0].result;
-            DawnShopItemInfo shopInfo = new(new AlwaysAvaliableTerminalPredicate(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
+            DawnShopItemInfo shopInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
             itemsWithShopInfo[buyableItem] = shopInfo;
         }
 

@@ -17,4 +17,25 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
     public TerminalNode ReceiptNode { get; }
     public IProvider<int> Cost { get; }
     public ITerminalPurchasePredicate PurchasePredicate { get; }
+    
+    public void AddToDropship(bool ignoreMax = false, int count = 1)
+    {
+        Terminal terminal = UnityEngine.Object.FindFirstObjectByType<Terminal>(); // todo :p
+
+        for (int i = 0; i < count; i++)
+        {
+            if (!ignoreMax && terminal.orderedItemsFromTerminal.Count > 12)
+            {
+                break;
+            }
+            terminal.orderedItemsFromTerminal.Add(RequestNode.buyItemIndex);
+            terminal.numberOfItemsInDropship++;
+        }
+    }
+
+    public int GetSalePercentage()
+    {
+        Terminal terminal = UnityEngine.Object.FindFirstObjectByType<Terminal>(); // todo :p
+        return terminal.itemSalesPercentages[RequestNode.buyItemIndex];
+    }
 }

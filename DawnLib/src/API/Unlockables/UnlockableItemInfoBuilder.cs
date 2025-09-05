@@ -101,7 +101,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
             cost = new SimpleProvider<int>(value.shopSelectionNode.itemCost);
         }
 
-        _purchasePredicate ??= new AlwaysAvaliableTerminalPredicate();
+        _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo);
     }
 }

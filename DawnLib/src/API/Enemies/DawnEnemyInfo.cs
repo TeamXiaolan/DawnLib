@@ -25,4 +25,13 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
 
     public TerminalNode? BestiaryNode { get; }
     public TerminalKeyword? NameKeyword { get; }
+
+    public IEnumerable<T> GetAllSpawned<T>() where T : EnemyAI
+    {
+        foreach (EnemyAI enemy in RoundManager.Instance.SpawnedEnemies)
+        {
+            if (enemy.enemyType == EnemyType)
+                yield return (T)enemy;
+        }
+    }
 }

@@ -25,3 +25,4 @@ less important:
 - Vehicles
 - Swap tags being stored in lists to being stored in hash sets.
 - get RequestNode, ConfirmNode for DawnUnlockableInfo
+- allow achievements completion to be synced (with a toggle, probably only instant?)
