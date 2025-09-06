@@ -13,9 +13,6 @@ less important:
 
 ## Bongo
 
-- Savedata for duskmod networker
-- iserializable networkers for definitions.
-
 less important:
 
 - Generalise the Collecting of LLL tags for each registry.

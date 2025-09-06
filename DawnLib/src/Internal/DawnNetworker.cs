@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,8 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal ES3Settings SaveSettings;
     public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
 
+    internal event Action OnSave = delegate { };
+
     private void Awake()
     {
         if (StartOfRound.Instance == null)
@@ -30,7 +33,10 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         ES3.DeleteFile(saveSettings);
     }
 
-    internal void SaveData() { }
+    internal void SaveData()
+    {
+        OnSave();
+    }
 
     private void OnNewRoundStart()
     {

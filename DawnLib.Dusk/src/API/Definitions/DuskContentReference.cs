@@ -1,11 +1,12 @@
 ﻿using System;
 using Dawn;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
 
 [Serializable]
-public abstract class DuskContentReference
+public abstract class DuskContentReference : INetworkSerializable
 {
     public abstract Type Type { get; }
     public abstract Type DefinitionType { get; }
@@ -13,6 +14,7 @@ public abstract class DuskContentReference
 
     [field: SerializeField]
     internal string assetGUID;
+    public abstract void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter;
 }
 
 [Serializable]
@@ -25,6 +27,13 @@ public abstract class DuskContentReference<TDef, TInfo> : DuskContentReference w
 
     protected DuskContentReference(NamespacedKey<TInfo> key)
     {
+        Key = key;
+    }
+
+    public override void NetworkSerialize<T>(BufferSerializer<T> serializer)
+    {
+        NamespacedKey key = Key;
+        serializer.SerializeNetworkSerializable(ref key);
         Key = key;
     }
 

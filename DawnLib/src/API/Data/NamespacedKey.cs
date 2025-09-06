@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -85,6 +86,12 @@ public class NamespacedKey : INetworkSerializable
         _key = key;
     }
 
+    /// <summary>
+    /// Do not use. Only for NetworkSeralizables
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public NamespacedKey() { }
+
     public static NamespacedKey From(string @namespace, string key)
     {
         return new NamespacedKey(@namespace, key);
@@ -164,6 +171,11 @@ public class NamespacedKey : INetworkSerializable
 public class NamespacedKey<T> : NamespacedKey where T : INamespaced
 {
     protected NamespacedKey(string @namespace, string key) : base(@namespace, key) { }
+    /// <summary>
+    /// Do not use. Only for NetworkSeralizables
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public NamespacedKey() { }
 
     public new static NamespacedKey<T> From(string @namespace, string key)
     {

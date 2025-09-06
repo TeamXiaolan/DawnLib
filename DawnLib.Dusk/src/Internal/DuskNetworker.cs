@@ -18,6 +18,8 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
     {
         yield return new WaitUntil(() => NetworkObject.IsSpawned);
         yield return new WaitUntil(() => GameNetworkManager.Instance.localPlayerController != null);
+        DawnNetworker.Instance!.OnSave += SaveData;
+        
         if (IsHost || IsServer)
         {
             ProgressivePredicate.LoadAll(SaveSettings);
@@ -90,7 +92,6 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         DuskModContent.Achievements[namespacedKey.AsTyped<DuskAchievementDefinition>()].TryCompleteFromServer();
     }
 
-    // TODO: save data
     internal void SaveData()
     {
         if (!IsHost) return;
