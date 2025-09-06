@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Steamworks.ServerList;
 
 namespace Dawn;
 public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuilder>

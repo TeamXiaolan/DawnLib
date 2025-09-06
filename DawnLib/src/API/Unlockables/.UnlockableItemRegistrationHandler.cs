@@ -1,6 +1,5 @@
 using System.Linq;
 using Dawn.Internal;
-using UnityEngine;
 
 namespace Dawn;
 
@@ -68,8 +67,7 @@ static class UnlockableRegistrationHandler
             UpdateUnlockablePrices(unlockableInfo);
 
             unlockableInfo.RequestNode.terminalOptions[0].noun = confirmPurchaseKeyword;
-            unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);            
-            
+            unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);
             unlockableInfo.RequestNode.terminalOptions[1].noun = denyPurchaseKeyword;
             unlockableInfo.RequestNode.terminalOptions[1].result = cancelPurchaseNode;
         }
@@ -110,7 +108,7 @@ static class UnlockableRegistrationHandler
             DawnSuitInfo? suitInfo = null;
             if (unlockableItem.suitMaterial != null)
             {
-                suitInfo = new DawnSuitInfo();
+                suitInfo = new DawnSuitInfo(unlockableItem.suitMaterial, unlockableItem.jumpAudio);
             }
             DawnPlaceableObjectInfo? placeableObjectInfo = null;
             if (unlockableItem.prefabObject != null)

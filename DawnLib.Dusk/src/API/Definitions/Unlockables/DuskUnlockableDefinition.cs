@@ -40,20 +40,33 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
                 builder.SetCost(Config.Cost.Value);
             }
 
-            builder.DefinePlaceableObject(shopBuilder =>
+            if (UnlockableItem.prefabObject != null)
             {
-                shopBuilder.Build();
-                if (Config.IsShipUpgrade?.Value ?? data.isShipUpgrade)
+                builder.DefinePlaceableObject(shopBuilder =>
                 {
-                    Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Ship Upgrade");
-                    shopBuilder.SetShipUpgrade();
-                }
-                else if (Config.IsDecor?.Value ?? data.isDecor)
+                    shopBuilder.Build();
+                    if (Config.IsShipUpgrade?.Value ?? data.isShipUpgrade)
+                    {
+                        Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Ship Upgrade");
+                        shopBuilder.SetShipUpgrade();
+                    }
+                    else if (Config.IsDecor?.Value ?? data.isDecor)
+                    {
+                        Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Decor");
+                        shopBuilder.SetDecor();
+                    }
+                });
+            }
+
+            if (UnlockableItem.suitMaterial != null)
+            {
+                builder.DefineSuit(suitBuilder =>
                 {
-                    Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Decor");
-                    shopBuilder.SetDecor();
-                }
-            });
+                    suitBuilder.OverrideSuitMaterial(UnlockableItem.suitMaterial);
+                    suitBuilder.OverrideJumpAudioClip(UnlockableItem.jumpAudio);
+                    suitBuilder.Build();
+                });
+            }
 
             bool disableUnlockRequirements = Config.DisableUnlockRequirement?.Value ?? false;
             if (!disableUnlockRequirements && TerminalPredicate)

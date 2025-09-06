@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Dawn;
 public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
@@ -7,14 +8,33 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     {
         private UnlockableInfoBuilder _parentBuilder;
 
+        private Material? _suitMaterial;
+        private AudioClip? _jumpAudioClip;
+
         internal SuitBuilder(UnlockableInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
+        internal SuitBuilder OverrideSuitMaterial(Material suitMaterial)
+        {
+            _suitMaterial = suitMaterial;
+            return this;
+        }
+
+        internal SuitBuilder OverrideJumpAudioClip(AudioClip jumpAudioClip)
+        {
+            _jumpAudioClip = jumpAudioClip;
+            return this;
+        }
+
         internal DawnSuitInfo Build()
         {
-            return new DawnSuitInfo();
+            if (_suitMaterial == null)
+            {
+                DawnPlugin.Logger.LogWarning($"Suit: '{_parentBuilder.key}' didn't set suit material.");
+            }
+            return new DawnSuitInfo(_suitMaterial, _jumpAudioClip);
         }
     }
 
