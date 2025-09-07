@@ -5,7 +5,7 @@ namespace Dawn;
 
 public sealed class DawnVehicleInfo : DawnBaseInfo<DawnVehicleInfo>, ITerminalPurchase
 {
-    internal DawnVehicleInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnVehicleInfo> key, List<NamespacedKey> tags, GameObject vehiclePrefab, GameObject stationPrefab, IProvider<int> cost) : base(key, tags)
+    internal DawnVehicleInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnVehicleInfo> key, List<NamespacedKey> tags, GameObject vehiclePrefab, GameObject stationPrefab, IProvider<int> cost, DataContainer? customData) : base(key, tags, customData)
     {
         PurchasePredicate = predicate;
         VehiclePrefab = vehiclePrefab;
