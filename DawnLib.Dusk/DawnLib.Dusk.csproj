@@ -46,6 +46,7 @@
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all"/>
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all"/>
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" PrivateAssets="all"/>
+        <ProjectReference Include="..\DawnLib.Preloader\DawnLib.Preloader.csproj" PrivateAssets="all" />
 
         <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="0.7.1" PrivateAssets="all" />
     </ItemGroup>

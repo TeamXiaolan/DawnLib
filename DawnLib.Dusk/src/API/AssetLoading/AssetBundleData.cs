@@ -23,4 +23,5 @@ public class AssetBundleData
     public List<MapObjectData> mapObjects;
     public List<UnlockableData> unlockables;
     public List<DungeonData> dungeons;
+    public List<VehicleData> vehicles;
 }

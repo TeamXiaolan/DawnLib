@@ -7,5 +7,4 @@ public sealed class DawnPlaceableObjectInfo
     internal DawnPlaceableObjectInfo()
     {
     }
-
 }

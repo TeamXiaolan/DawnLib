@@ -71,6 +71,12 @@ public class TerminalNodeBuilder
         return this;
     }
 
+    public TerminalNodeBuilder SetIsConfirmationNode(bool isConfirmationNode)
+    {
+        _node.isConfirmationNode = isConfirmationNode;
+        return this;
+    }
+
     public TerminalNodeBuilder SetBuyUnlockable(bool buyUnlockable)
     {
         _node.buyUnlockable = buyUnlockable;

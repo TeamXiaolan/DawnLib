@@ -5,4 +5,5 @@ namespace Dusk;
 public static class DuskModContent
 {
     public static Registry<DuskAchievementDefinition> Achievements = new();
+    public static Registry<DuskVehicleDefinition> Vehicles = new();
 }
