@@ -138,6 +138,6 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
 
     override internal DawnMapObjectInfo Build()
     {
-        return new DawnMapObjectInfo(key, tags, value, _insideInfo, _outsideInfo);
+        return new DawnMapObjectInfo(key, tags, value, _insideInfo, _outsideInfo, customData);
     }
 }

@@ -6,7 +6,7 @@ namespace Dawn;
 
 public sealed class DawnMapObjectInfo : DawnBaseInfo<DawnMapObjectInfo>
 {
-    internal DawnMapObjectInfo(NamespacedKey<DawnMapObjectInfo> key, List<NamespacedKey> tags, GameObject mapObject, DawnInsideMapObjectInfo? insideInfo, DawnOutsideMapObjectInfo? outsideInfo) : base(key, tags)
+    internal DawnMapObjectInfo(NamespacedKey<DawnMapObjectInfo> key, List<NamespacedKey> tags, GameObject mapObject, DawnInsideMapObjectInfo? insideInfo, DawnOutsideMapObjectInfo? outsideInfo, DataContainer? customData) : base(key, tags, customData)
     {
         MapObject = mapObject;
         InsideInfo = insideInfo;

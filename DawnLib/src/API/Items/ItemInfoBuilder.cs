@@ -141,6 +141,6 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
 
     override internal DawnItemInfo Build()
     {
-        return new DawnItemInfo(key, tags, value, _scrapInfo, _shopInfo);
+        return new DawnItemInfo(key, tags, value, _scrapInfo, _shopInfo, customData);
     }
 }

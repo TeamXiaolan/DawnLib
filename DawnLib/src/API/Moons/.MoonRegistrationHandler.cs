@@ -73,7 +73,7 @@ static class MoonRegistrationHandler
                     break;
                 }
             }
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, nameKeyword);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, nameKeyword, null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -88,7 +88,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, null, null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, null, null, null);
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);

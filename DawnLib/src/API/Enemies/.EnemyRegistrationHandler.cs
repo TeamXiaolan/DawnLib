@@ -356,7 +356,8 @@ static class EnemyRegistrationHandler
                     key, tags,
                     enemyType,
                     outsideInfo, insideInfo, daytimeInfo,
-                    bestiaryNode, nameKeyword
+                    bestiaryNode, nameKeyword,
+                    null
                 );
                 enemyType.SetDawnInfo(enemyInfo);
                 LethalContent.Enemies.Register(enemyInfo);

@@ -41,7 +41,7 @@ static class WeatherRegistrationHandler
                 continue;
             }
 
-            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect);
+            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, null);
             LethalContent.Weathers.Register(weatherEffectInfo);
         }
         LethalContent.Weathers.Freeze();

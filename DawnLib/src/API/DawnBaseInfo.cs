@@ -6,10 +6,22 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : Dawn
 {
     private List<NamespacedKey> _tags;
 
-    protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags)
+    private DataContainer? _customData;
+
+    public DataContainer CustomData
+    {
+        get
+        {
+            if (_customData == null) _customData = new DataContainer();
+            return _customData;
+        }
+    }
+
+    protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags, DataContainer? customData)
     {
         TypedKey = key;
         _tags = tags;
+        _customData = customData;
     }
 
     public NamespacedKey Key => TypedKey;

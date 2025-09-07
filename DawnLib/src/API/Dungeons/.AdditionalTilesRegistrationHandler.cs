@@ -46,7 +46,7 @@ static class AdditionalTilesRegistrationHandler
             List<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
             CollectLLLTags(dungeonFlow, tags);
-            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
+            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
             dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
@@ -84,7 +84,7 @@ static class AdditionalTilesRegistrationHandler
             List<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
             CollectLLLTags(dungeonFlow, tags);
-            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow);
+            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
             dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
@@ -122,7 +122,7 @@ static class AdditionalTilesRegistrationHandler
                     continue;
                 }
 
-                DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, [DawnLibTags.IsExternal], dungeonArchetype);
+                DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, [DawnLibTags.IsExternal], dungeonArchetype, null);
                 dungeonArchetype.SetDawnInfo(info);
                 info.ParentInfo = dungeonInfo;
                 LethalContent.Archetypes.Register(info);
@@ -151,7 +151,7 @@ static class AdditionalTilesRegistrationHandler
                         Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
                         continue;
                     }
-                    DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, [DawnLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet));
+                    DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, [DawnLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet), null);
                     info.AddTileSet(tileSetInfo);
                     tileSet.SetDawnInfo(tileSetInfo);
                     LethalContent.TileSets.Register(tileSetInfo);

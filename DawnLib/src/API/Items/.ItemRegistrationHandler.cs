@@ -240,7 +240,7 @@ static class ItemRegistrationHandler
                     tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
                 }
             }
-            DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo);
+            DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo, null);
             item.SetDawnInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
         }

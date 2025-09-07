@@ -11,7 +11,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
     private List<DoorwaySocket> _sockets;
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, List<NamespacedKey> tags, DungeonFlow dungeonFlow) : base(key, tags)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, List<NamespacedKey> tags, DungeonFlow dungeonFlow, DataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         _sockets = new();

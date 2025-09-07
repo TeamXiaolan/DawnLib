@@ -4,7 +4,7 @@ namespace Dawn;
 
 public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
 {
-    internal DawnEnemyInfo(NamespacedKey<DawnEnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, DawnEnemyLocationInfo? outside, DawnEnemyLocationInfo? inside, DawnEnemyLocationInfo? daytime, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword) : base(key, tags)
+    internal DawnEnemyInfo(NamespacedKey<DawnEnemyInfo> key, List<NamespacedKey> tags, EnemyType enemyType, DawnEnemyLocationInfo? outside, DawnEnemyLocationInfo? inside, DawnEnemyLocationInfo? daytime, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword, DataContainer? customData) : base(key, tags, customData)
     {
         EnemyType = enemyType;
         Outside = outside;

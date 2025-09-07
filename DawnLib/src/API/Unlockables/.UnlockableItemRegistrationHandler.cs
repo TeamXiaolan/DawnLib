@@ -116,7 +116,7 @@ static class UnlockableRegistrationHandler
                 placeableObjectInfo = new DawnPlaceableObjectInfo();
             }
 
-            DawnUnlockableItemInfo unlockableItemInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo);
+            DawnUnlockableItemInfo unlockableItemInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo, null);
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 

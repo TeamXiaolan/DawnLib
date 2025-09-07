@@ -103,6 +103,6 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
         }
 
         _bestiaryNode.creatureName = value.enemyName;
-        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword!);
+        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword!, customData);
     }
 }

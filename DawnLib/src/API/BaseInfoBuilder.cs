@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Dawn;
 public abstract class BaseInfoBuilder
@@ -12,6 +13,8 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
     protected NamespacedKey<TInfo> key { get; private set; }
     protected T value { get; private set; }
     protected List<NamespacedKey> tags = new();
+
+    protected DataContainer? customData = null;
 
     internal BaseInfoBuilder(NamespacedKey<TInfo> key, T value)
     {
@@ -37,6 +40,13 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
     override internal void SoloAddTags(IEnumerable<NamespacedKey> newTags)
     {
         AddTags(newTags);
+    }
+
+    public TBuilder EditCustomData(Action<DataContainer> callback)
+    {
+        if (customData == null) customData = new DataContainer();
+        callback(customData);
+        return (TBuilder)this;
     }
 
     abstract internal TInfo Build();

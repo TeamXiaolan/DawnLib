@@ -167,7 +167,7 @@ static class MapObjectRegistrationHandler
             vanillaInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
             vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
-            DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo);
+            DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo, null);
             DawnMapObjectInfoContainer container = mapObject.AddComponent<DawnMapObjectInfoContainer>();
             container.Value = mapObjectInfo;
             LethalContent.MapObjects.Register(mapObjectInfo);

@@ -34,6 +34,6 @@ public class TilesetInfoBuilder : BaseInfoBuilder<DawnTileSetInfo, TileSet, Tile
         if (_predicate == null) _predicate = ConstantPredicate.True;
 
         // tilesets do not really need tags, its just there to carry the IsExternal flag
-        return new DawnTileSetInfo(key, [], _predicate, value, _branchCap, _regular);
+        return new DawnTileSetInfo(key, [], _predicate, value, _branchCap, _regular, customData);
     }
 }
