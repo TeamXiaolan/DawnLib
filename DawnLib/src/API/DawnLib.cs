@@ -14,6 +14,7 @@ public static class DawnLib
     internal static readonly JsonSerializerSettings JSONSettings = new()
     {
         TypeNameHandling = TypeNameHandling.All,
+        Formatting = Formatting.Indented,
         Converters =
         [
             new NamespacedKeyConverter(),
