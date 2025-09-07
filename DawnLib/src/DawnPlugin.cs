@@ -57,6 +57,7 @@ public class DawnPlugin : BaseUnityPlugin
         }
 
         ExtendedTOML.Init();
+        PersistentDataHandler.Init();
 
         MoonRegistrationHandler.Init();
         AdditionalTilesRegistrationHandler.Init();

@@ -5,15 +5,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Dawn;
+using Dawn.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Dusk;
+namespace Dawn;
 
 public class PersistentDataContainer : DataContainer
 {
     private string _filePath;
-    private bool _autoSave;
+    private bool _autoSave = true;
 
     public class EditContext : IDisposable
     {
@@ -34,10 +35,13 @@ public class PersistentDataContainer : DataContainer
     
     public PersistentDataContainer(string filePath)
     {
+        Debuggers.PersistentDataContainer?.Log($"new PersistentDataContainer: {Path.GetFileName(filePath)}");
         _filePath = filePath;
         if (File.Exists(filePath))
         {
+            Debuggers.PersistentDataContainer?.Log("loading existing file");
             dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings);
+            Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
         }
     }
 
@@ -55,6 +59,16 @@ public class PersistentDataContainer : DataContainer
 
     private async Task SaveAsync()
     {
-        await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings));
+        Debuggers.PersistentDataContainer?.Log($"saving ({Path.GetFileName(_filePath)})");
+
+        try
+        {
+            await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings));
+            Debuggers.PersistentDataContainer?.Log($"saved ({Path.GetFileName(_filePath)})");
+        }
+        catch (Exception e)
+        {
+            DawnPlugin.Logger.LogError($"Error happened while trying to save PersistentDataContainer ({Path.GetFileName(_filePath)}):\n{e}");
+        }
     }
 }

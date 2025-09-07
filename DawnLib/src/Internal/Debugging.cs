@@ -26,6 +26,7 @@ internal static class Debuggers
     internal static DebugLogSource? Tags;
     internal static DebugLogSource? Dungeons;
     internal static DebugLogSource? Patching;
+    internal static DebugLogSource? PersistentDataContainer;
 
     internal static void Bind(ConfigFile file)
     {
