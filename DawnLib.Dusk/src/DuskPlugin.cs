@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -26,6 +25,7 @@ public class DuskPlugin : BaseUnityPlugin
         
         AchievementRegistrationPatch.Init();
         NetworkerPatch.Init();
+        VehicleRegistrationPatch.Init();
         
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));

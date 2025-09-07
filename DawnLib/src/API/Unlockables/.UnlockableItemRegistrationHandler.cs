@@ -9,7 +9,7 @@ static class UnlockableRegistrationHandler
     {
         On.Terminal.Awake += RegisterShipUnlockables;
     }
-    
+
     internal static void UpdateAllUnlockablePrices()
     {
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
@@ -70,6 +70,11 @@ static class UnlockableRegistrationHandler
             unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);
             unlockableInfo.RequestNode.terminalOptions[1].noun = denyPurchaseKeyword;
             unlockableInfo.RequestNode.terminalOptions[1].result = cancelPurchaseNode;
+
+            if (unlockableInfo.UnlockableItem.prefabObject.TryGetComponent(out AutoParentToShip autoParentToShip))
+            {
+                autoParentToShip.unlockableID = latestUnlockableID;
+            }
         }
 
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
