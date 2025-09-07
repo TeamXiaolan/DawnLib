@@ -52,6 +52,20 @@ public class PersistentDataContainer : DataContainer
             Task.Run(SaveAsync);
     }
 
+    public override void Clear()
+    {
+        base.Clear();
+        if (_autoSave)
+            Task.Run(SaveAsync);
+    }
+
+    public override void Remove(NamespacedKey key)
+    {
+        base.Remove(key);
+        if (_autoSave)
+            Task.Run(SaveAsync);
+    }
+
     public IDisposable LargeEdit()
     {
         return new EditContext(this);

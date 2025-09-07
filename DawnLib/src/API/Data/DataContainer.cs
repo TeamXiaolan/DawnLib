@@ -72,6 +72,16 @@ public class DataContainer
         dictionary[key] = value;
     }
 
+    public virtual void Remove(NamespacedKey key)
+    {
+        dictionary.Remove(key);
+    }
+
+    public virtual void Clear()
+    {
+        dictionary.Clear();
+    }
+
     public IEnumerable<NamespacedKey> Keys => dictionary.Keys;
     public int Count => dictionary.Count;
 }
