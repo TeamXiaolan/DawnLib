@@ -29,6 +29,9 @@ static class SaveDataPatch
             settings = new ES3Settings($"DawnLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
         }
         DawnNetworker.ResetData(settings);
+
+        PersistentDataContainer container = DawnNetworker.Instance?.ContractContainer ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        container.Clear();
     }
 
     private static void SaveData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
@@ -50,5 +53,11 @@ static class SaveDataPatch
             settings = new ES3Settings($"DawnLibLCSaveFile{self.fileToDelete + 1}", ES3.EncryptionType.None);
         }
         DawnNetworker.ResetData(settings);
+        
+        PersistentDataContainer container = DawnNetworker.Instance?.ContractContainer ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        container.Clear();
+        
+        container = DawnNetworker.Instance?.SaveContainer ?? DawnNetworker.CreateSaveContainer(GameNetworkManager.Instance.currentSaveFileName);
+        container.Clear();
     }
 }

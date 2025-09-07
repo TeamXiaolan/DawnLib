@@ -21,6 +21,26 @@ public static class DawnLib
             new NamespacedKeyDictionaryConverter()
         ]
     };
+
+    /// <summary>
+    /// This save is reset ONLY when deleting the file and remains between getting fired.
+    /// </summary>
+    /// <remarks>Note that this is not synced between players.</remarks>
+    /// <returns>The data container or null if not in-game</returns>
+    public static PersistentDataContainer? GetCurrentSave()
+    {
+        return DawnNetworker.Instance?.SaveContainer;
+    }
+    
+    /// <summary>
+    /// This save is reset on deleting the file AND getting fired.
+    /// </summary>
+    /// <remarks>Note that this is not synced between players.</remarks>
+    /// <returns>The data container or null if not in-game</returns>
+    public static PersistentDataContainer? GetCurrentContract()
+    {
+        return DawnNetworker.Instance?.ContractContainer;
+    }
     
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
