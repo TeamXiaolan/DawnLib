@@ -3,6 +3,7 @@ using System.IO;
 using Dawn.Internal;
 using DunGen;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace Dawn;
@@ -10,6 +11,16 @@ public static class DawnLib
 {
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
 
+    internal static readonly JsonSerializerSettings JSONSettings = new()
+    {
+        TypeNameHandling = TypeNameHandling.All,
+        Converters =
+        [
+            new NamespacedKeyConverter(),
+            new NamespacedKeyDictionaryConverter()
+        ]
+    };
+    
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
         if (!prefab)
