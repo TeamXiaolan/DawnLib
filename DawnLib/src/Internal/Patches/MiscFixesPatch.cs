@@ -17,6 +17,44 @@ static class MiscFixesPatch
         On.GameNetworkManager.Start += AddNetworkPrefabToNetworkConfig;
         On.MenuManager.Start += DoSoundFixes;
         LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
+        LethalContent.Items.OnFreeze += FixItemSpawnPositionTypes;
+    }
+
+    private static void FixItemSpawnPositionTypes()
+    {
+        List<ItemGroup> vanillaItemGroups = new();
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            if (!itemInfo.Key.IsVanilla())
+                continue;
+
+            foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes)
+            {
+                if (vanillaItemGroups.Contains(itemGroup))
+                    continue;
+
+                vanillaItemGroups.Add(itemGroup);
+            }
+        }
+
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            if (itemInfo.HasTag(DawnLibTags.IsExternal)) // Get rid of this if i wanna include the fix into
+                continue;
+
+            foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes.ToArray())
+            {
+                foreach (ItemGroup vanillaItemGroup in vanillaItemGroups)
+                {
+                    if (itemGroup.name == vanillaItemGroup.name)
+                    {
+                        Debuggers.Items?.Log($"Replacing non-vanilla spawn type {itemGroup.name} with original.");
+                        itemInfo.Item.spawnPositionTypes.Remove(itemGroup);
+                        itemInfo.Item.spawnPositionTypes.Add(vanillaItemGroup);
+                    }
+                }
+            }
+        }
     }
 
     private static void DoSoundFixes(On.MenuManager.orig_Start orig, MenuManager self)
