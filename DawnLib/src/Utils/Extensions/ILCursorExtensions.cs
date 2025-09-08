@@ -5,7 +5,8 @@ using MonoMod.Cil;
 namespace Dawn.Utils;
 public static class ILCursorExtensions
 {
-    public static void EmitLdfld<T>(this ILCursor c, string fieldName) {
+    public static void EmitLdfld<T>(this ILCursor c, string fieldName)
+    {
         var field = typeof(T).GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         c.Emit(OpCodes.Ldfld, field);
     }

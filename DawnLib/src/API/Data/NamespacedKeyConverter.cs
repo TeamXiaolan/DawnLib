@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Dawn;
 public class NamespacedKeyConverter : JsonConverter
@@ -47,9 +46,9 @@ public class NamespacedKeyConverter : JsonConverter
     }
     public override bool CanConvert(Type objectType)
     {
-        if (objectType == typeof(NamespacedKey)) 
+        if (objectType == typeof(NamespacedKey))
             return true;
-        if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(NamespacedKey<>)) 
+        if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(NamespacedKey<>))
             return true;
         return false;
     }

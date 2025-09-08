@@ -16,7 +16,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal event Action OnSave = delegate { };
     internal PersistentDataContainer SaveContainer { get; private set; }
     internal PersistentDataContainer ContractContainer { get; private set; }
-    
+
     private void Awake()
     {
         if (StartOfRound.Instance == null)

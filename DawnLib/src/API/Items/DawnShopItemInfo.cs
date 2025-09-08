@@ -19,7 +19,7 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
     public TerminalNode ReceiptNode { get; }
     public IProvider<int> Cost { get; }
     public ITerminalPurchasePredicate PurchasePredicate { get; }
-    
+
     public void AddToDropship(bool ignoreMax = false, int count = 1)
     {
         Terminal terminal = TerminalRefs.Instance;

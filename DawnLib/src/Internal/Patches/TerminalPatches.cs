@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Dawn.Utils;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -16,7 +14,7 @@ static class TerminalPatches
         IL.Terminal.TextPostProcess += HideResults;
         IL.Terminal.TextPostProcess += UseFailedNameResults;
     }
-    
+
     // this is currently a separate function because this is very specific to vanilla
     private static void HideResults(ILContext il)
     {
@@ -92,14 +90,14 @@ static class TerminalPatches
         });
         c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
     }
-    
-    
+
+
     private static string UpdateItemPrices(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
         ItemRegistrationHandler.UpdateAllShopItemPrices();
         return orig(self, modifieddisplaytext, node);
     }
-    
+
     internal static void UseFailedNameResults(ILContext il)
     {
         ILCursor c = new ILCursor(il);
@@ -158,9 +156,9 @@ static class TerminalPatches
     private static void HandlePredicate(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
     {
         Debuggers.Patching?.Log($"HandlePredicate: {node}");
-        
+
         ItemRegistrationHandler.UpdateAllShopItemPrices();
-        
+
         ITerminalPurchase? purchase = null;
         if (node.buyItemIndex != -1)
         {
@@ -177,7 +175,7 @@ static class TerminalPatches
         {
             Debuggers.Patching?.Log($"shipUnlockableID = {node.shipUnlockableID}");
 
-            
+
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
             DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
             purchase = info;
@@ -199,7 +197,7 @@ static class TerminalPatches
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {
                 Debuggers.Patching?.Log($"predicate hidden");
-                
+
                 self.LoadNewNode(new TerminalNodeBuilder("hidden purchase")
                     .SetDisplayText("You're not supposed to be here") // TODO
                     .Build()

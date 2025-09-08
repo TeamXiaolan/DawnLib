@@ -44,7 +44,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
         }
         return null;
     }
-    
+
     public string GetConfigName()
     {
         // -> 10-Example
@@ -62,10 +62,10 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
     {
         Terminal terminal = TerminalRefs.Instance;
         int index = Array.IndexOf(StartOfRound.Instance.levels, Level);
-        
+
         StartOfRound.Instance.ChangeLevelServerRpc(index, terminal.groupCredits);
     }
-    
+
     private static string StripSpecialCharacters(string input)
     {
         string returnString = string.Empty;
@@ -81,7 +81,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 
         return returnString;
     }
-    
+
     public IProvider<int> Cost { get; }
     public ITerminalPurchasePredicate PurchasePredicate { get; }
 }

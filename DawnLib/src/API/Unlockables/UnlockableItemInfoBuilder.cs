@@ -78,7 +78,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     {
         return SetCost(new SimpleProvider<int>(cost));
     }
-    
+
     public UnlockableInfoBuilder SetCost(IProvider<int> cost)
     {
         _cost = cost;

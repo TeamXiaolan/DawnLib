@@ -7,7 +7,7 @@ namespace Dawn;
 public class DataContainer : IDataContainer
 {
     protected Dictionary<NamespacedKey, object> dictionary = [];
-    
+
     public bool Has(NamespacedKey key)
     {
         return dictionary.ContainsKey(key);
@@ -22,7 +22,7 @@ public class DataContainer : IDataContainer
                 value = token.ToObject<T>()!;
                 return true;
             }
-            
+
             if (obj is T casted)
             {
                 value = casted;
@@ -51,7 +51,7 @@ public class DataContainer : IDataContainer
     {
         if (TryGet(key, out T? value))
             return value;
-        
+
         Set(key, defaultValue);
         return defaultValue;
     }
@@ -68,7 +68,7 @@ public class DataContainer : IDataContainer
 
     public virtual void Set<T>(NamespacedKey key, T value)
     {
-        if(value == null) throw new ArgumentNullException(nameof(value));
+        if (value == null) throw new ArgumentNullException(nameof(value));
         dictionary[key] = value;
     }
 

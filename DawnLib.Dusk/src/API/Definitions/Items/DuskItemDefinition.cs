@@ -26,7 +26,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
 
     [field: SerializeField]
     public DuskPricingStrategy PricingStrategy { get; private set; }
-    
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
 
@@ -73,7 +73,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
                     shopItemBuilder.OverrideRequestNode(ShopItemPreset.OrderRequestNode);
                     shopItemBuilder.OverrideReceiptNode(ShopItemPreset.OrderReceiptNode);
                     shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
-                    
+
                     bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
                     if (!disableUnlockRequirements && TerminalPredicate)
                     {

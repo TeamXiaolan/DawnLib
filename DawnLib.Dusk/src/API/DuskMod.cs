@@ -17,7 +17,7 @@ namespace Dusk;
 public class DuskMod
 {
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
-    
+
     private static readonly List<DuskMod> _allMods = new();
 
     private readonly string _basePath;

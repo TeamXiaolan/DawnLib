@@ -3,7 +3,6 @@ using System.IO;
 using Dawn.Internal;
 using DunGen;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace Dawn;
@@ -31,7 +30,7 @@ public static class DawnLib
     {
         return DawnNetworker.Instance?.SaveContainer;
     }
-    
+
     /// <summary>
     /// This save is reset on deleting the file AND getting fired.
     /// </summary>
@@ -41,7 +40,7 @@ public static class DawnLib
     {
         return DawnNetworker.Instance?.ContractContainer;
     }
-    
+
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
         if (!prefab)
@@ -83,7 +82,7 @@ public static class DawnLib
         DawnMapObjectInfo info = builder.Build();
         DawnMapObjectInfoContainer container = mapObject.AddComponent<DawnMapObjectInfoContainer>();
         container.Value = info;
-        
+
         LethalContent.MapObjects.Register(info);
         return info;
     }

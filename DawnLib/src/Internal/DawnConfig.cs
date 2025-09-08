@@ -11,15 +11,15 @@ static class DawnConfig
     internal static void Bind(ConfigFile file)
     {
         LethalConfigCompatibility = file.Bind(
-            "Compatibility", 
-            "Extend LethalConfig Support", 
-            CompatibilityBool.IfVersionMatches, 
+            "Compatibility",
+            "Extend LethalConfig Support",
+            CompatibilityBool.IfVersionMatches,
             $"Patches LethalConfig to enable raw editing of strings for unknown types.\nCurrent Targeted Version: {LethalConfigCompat.VERSION}"
         ).Value;
-        
+
         CreateTagExport = file.Bind(
-            "Exports", 
-            "Tag Info Export", 
+            "Exports",
+            "Tag Info Export",
             false,
             "Export a markdown file listing all tags?"
         ).Value;

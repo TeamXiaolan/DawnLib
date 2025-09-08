@@ -15,20 +15,20 @@ public class PersistentDataContainer : DataContainer
     public class EditContext : IDisposable
     {
         private PersistentDataContainer _container;
-        
+
         public EditContext(PersistentDataContainer container)
         {
             _container = container;
             _container._autoSave = false;
         }
-        
+
         public void Dispose()
         {
             _container._autoSave = true;
             Task.Run(_container.SaveAsync);
         }
     }
-    
+
     public PersistentDataContainer(string filePath)
     {
         Debuggers.PersistentDataContainer?.Log($"new PersistentDataContainer: {Path.GetFileName(filePath)}");

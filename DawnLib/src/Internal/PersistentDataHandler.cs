@@ -14,7 +14,7 @@ static class PersistentDataHandler
     {
         Directory.CreateDirectory(Path.Combine(RootPath, "PluginData"));
     }
-    
+
     internal static PersistentDataContainer Get(BaseUnityPlugin plugin)
     {
         if (_containers.TryGetValue(plugin, out PersistentDataContainer? value))
@@ -26,5 +26,5 @@ static class PersistentDataHandler
         value = new PersistentDataContainer(Path.Combine(RootPath, "PluginData", $"{pluginInfo.GUID}.dawndata"));
         _containers[plugin] = value;
         return value;
-    } 
+    }
 }

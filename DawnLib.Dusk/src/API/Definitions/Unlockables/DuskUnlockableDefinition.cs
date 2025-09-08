@@ -16,7 +16,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
 
     [field: SerializeField]
     public DuskTerminalPredicate TerminalPredicate { get; private set; }
-    
+
     [field: SerializeField]
     public DuskPricingStrategy PricingStrategy { get; private set; }
 
@@ -26,7 +26,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateUnlockableConfig(section, this, data, UnlockableItem.unlockableName);
-    
+
         DawnLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
             bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;

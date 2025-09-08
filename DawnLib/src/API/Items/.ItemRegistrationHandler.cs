@@ -44,9 +44,9 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if(shopInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
+            if (shopInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
                 continue;
-            
+
             UpdateShopItemPrices(shopInfo);
         }
     }
@@ -58,7 +58,7 @@ static class ItemRegistrationHandler
         shopInfo.ReceiptNode.itemCost = cost;
         shopInfo.RequestNode.itemCost = cost;
     }
-    
+
     private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
     {
         UpdateItemWeightsOnLevel(self.currentLevel);

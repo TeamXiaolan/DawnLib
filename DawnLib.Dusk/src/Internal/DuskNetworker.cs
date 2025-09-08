@@ -15,7 +15,7 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         yield return new WaitUntil(() => NetworkObject.IsSpawned);
         yield return new WaitUntil(() => GameNetworkManager.Instance.localPlayerController != null);
         DawnNetworker.Instance!.OnSave += SaveData;
-        
+
         if (IsHost || IsServer)
         {
             ProgressivePredicate.LoadAll(DawnLib.GetCurrentContract()!);
@@ -30,7 +30,7 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
             );
         }
     }
-    
+
     // to reduce the amount of network traffic that is sent
     [ServerRpc(RequireOwnership = false)]
     private void RequestProgressiveUnlockableStatesServerRpc(PlayerControllerReference requester, uint[] expectedOrder)

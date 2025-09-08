@@ -8,9 +8,9 @@ namespace Dusk;
 [CreateAssetMenu(menuName = $"{DuskModConstants.PricingStrategies}/Daily Pricing Strategy", fileName = "New Daily Pricing", order = DuskModConstants.PricingStrategyOrder)]
 public class DailyPricingStrategy : DuskPricingStrategy
 {
-    [SerializeField, Tooltip("The x axis represents the progress to the deadline. So 1 is company day.")] 
+    [SerializeField, Tooltip("The x axis represents the progress to the deadline. So 1 is company day.")]
     private AnimationCurve _priceCurve = AnimationCurve.Linear(0, 100, 1, 20);
-    
+
     public override void Register(NamespacedKey id)
     { }
     public override int Provide()

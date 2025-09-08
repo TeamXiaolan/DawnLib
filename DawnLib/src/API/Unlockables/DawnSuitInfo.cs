@@ -13,5 +13,5 @@ public sealed class DawnSuitInfo
     }
 
     public Material SuitMaterial { get; }
-    public AudioClip? JumpAudioClip { get;}
+    public AudioClip? JumpAudioClip { get; }
 }

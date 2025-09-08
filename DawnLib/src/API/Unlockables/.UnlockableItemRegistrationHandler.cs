@@ -16,7 +16,7 @@ static class UnlockableRegistrationHandler
         {
             if (info.HasTag(DawnLibTags.IsExternal))
                 continue;
-            
+
             UpdateUnlockablePrices(info);
         }
     }

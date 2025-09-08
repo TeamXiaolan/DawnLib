@@ -17,27 +17,27 @@ public class DuskPlugin : BaseUnityPlugin
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
 
     internal static MainAssets Main { get; private set; } = null!;
-    
+
     private void Awake()
     {
         Logger = base.Logger;
         PersistentData = this.GetPersistentDataContainer();
         Logger.LogInfo("Doing patches");
-        
+
         AchievementRegistrationPatch.Init();
         NetworkerPatch.Init();
         VehicleRegistrationPatch.Init();
-        
+
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
-        
+
         NetcodePatcher();
-        
+
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
-    
+
     private void NetcodePatcher()
     {
         var types = new Type[] { typeof(UnlockProgressiveObject), typeof(ItemUpgradeScrap), typeof(UnlockableUpgradeScrap) };
@@ -61,7 +61,7 @@ public class DuskPlugin : BaseUnityPlugin
             }
         }
     }
-    
+
     internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
     {
         [LoadFromBundle("DawnLibNetworker.prefab")]
