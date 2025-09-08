@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 
 namespace Dawn;
-public class DataContainer
+public class DataContainer : IDataContainer
 {
     protected Dictionary<NamespacedKey, object> dictionary = [];
     

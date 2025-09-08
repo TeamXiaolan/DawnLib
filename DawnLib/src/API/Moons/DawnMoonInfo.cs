@@ -6,7 +6,7 @@ namespace Dawn;
 
 public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, List<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword, DataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, List<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
         RouteNode = routeNode;

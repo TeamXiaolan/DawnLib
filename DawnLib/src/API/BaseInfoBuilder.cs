@@ -14,7 +14,7 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
     protected T value { get; private set; }
     protected List<NamespacedKey> tags = new();
 
-    protected DataContainer? customData = null;
+    protected IDataContainer? customData = null;
 
     internal BaseInfoBuilder(NamespacedKey<TInfo> key, T value)
     {
@@ -42,7 +42,7 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
         AddTags(newTags);
     }
 
-    public TBuilder EditCustomData(Action<DataContainer> callback)
+    public TBuilder EditCustomData(Action<IDataContainer> callback)
     {
         if (customData == null) customData = new DataContainer();
         callback(customData);

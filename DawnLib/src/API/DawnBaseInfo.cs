@@ -6,9 +6,9 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : Dawn
 {
     private List<NamespacedKey> _tags;
 
-    private DataContainer? _customData;
+    private IDataContainer? _customData;
 
-    public DataContainer CustomData
+    public IDataContainer CustomData
     {
         get
         {
@@ -17,7 +17,7 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : Dawn
         }
     }
 
-    protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags, DataContainer? customData)
+    protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags, IDataContainer? customData)
     {
         TypedKey = key;
         _tags = tags;
