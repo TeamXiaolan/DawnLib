@@ -45,15 +45,25 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     public NamespacedKey<DuskAchievementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskAchievementDefinition>(); }
 
-    public virtual void LoadAchievementState(ES3Settings globalSettings)
+    protected virtual AchievementSaveData GetSaveData()
     {
-        Completed = ES3.Load(Mod.Plugin.GUID + "." + AchievementName, false, globalSettings);
+        return new AchievementSaveData(Completed);
+    }
+
+    protected virtual void LoadSaveData(AchievementSaveData saveData)
+    {
+        Completed = saveData.Completed;
+    }
+
+    public void LoadAchievementState(IDataContainer dataContainer)
+    {
+        LoadSaveData(dataContainer.GetOrSetDefault(Key, GetSaveData()));
         Debuggers.Achievements?.Log($"Loaded Achievement: {AchievementName} with value: {Completed}");
     }
 
-    public virtual void SaveAchievementState(ES3Settings globalSettings)
+    public void SaveAchievementState(IDataContainer dataContainer)
     {
-        ES3.Save(Mod.Plugin.GUID + "." + AchievementName, Completed, globalSettings);
+        dataContainer.Set(Key, GetSaveData());
         Debuggers.Achievements?.Log($"Saving Achievement: {AchievementName} with value: {Completed}");
     }
 
@@ -77,7 +87,6 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     public virtual void ResetProgress()
     {
         Completed = false;
-
         DuskAchievementHandler.SaveAll();
         DuskAchievementHandler.LoadAll();
         foreach (AchievementModUIElement modUIElement in AchievementModUIElement.achievementModUIElements)

@@ -248,9 +248,7 @@ static class EnemyRegistrationHandler
             }
         }
 
-        Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
-        TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(it => it.word == "info");
-
+        TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Dawn.Internal;
 
 namespace Dawn;
 
@@ -59,7 +60,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 
     public void RouteTo()
     {
-        Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>(); // todo :p
+        Terminal terminal = TerminalRefs.Instance;
         int index = Array.IndexOf(StartOfRound.Instance.levels, Level);
         
         StartOfRound.Instance.ChangeLevelServerRpc(index, terminal.groupCredits);

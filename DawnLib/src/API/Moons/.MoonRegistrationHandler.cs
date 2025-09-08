@@ -30,8 +30,8 @@ static class MoonRegistrationHandler
         if (LethalContent.Moons.IsFrozen)
             return;
 
-        Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
-        TerminalKeyword routeKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "route");
+        Terminal terminal = TerminalRefs.Instance;
+        TerminalKeyword routeKeyword = TerminalRefs.RouteKeyword;
         foreach (SelectableLevel level in self.levels)
         {
             Debuggers.Moons?.Log($"Registering level: {level.PlanetName}");

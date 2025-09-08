@@ -8,22 +8,24 @@ namespace Dusk;
 
 static class DuskAchievementHandler
 {
-    internal static ES3Settings globalSettings = new($"DawnLib.Achievements", ES3.EncryptionType.None);
     public static event Action<DuskAchievementDefinition> OnAchievementUnlocked;
 
     internal static void LoadAll()
     {
         foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
         {
-            achievementDefinition.LoadAchievementState(globalSettings);
+            achievementDefinition.LoadAchievementState(DuskPlugin.PersistentData);
         }
     }
 
     internal static void SaveAll()
     {
-        foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
+        using (DuskPlugin.PersistentData.LargeEdit())
         {
-            achievementDefinition.SaveAchievementState(globalSettings);
+            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
+            {
+                achievementDefinition.SaveAchievementState(DuskPlugin.PersistentData);
+            }
         }
     }
 

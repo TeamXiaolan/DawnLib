@@ -77,7 +77,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
                     bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
                     if (!disableUnlockRequirements && TerminalPredicate)
                     {
-                        TerminalPredicate.Register(Item.itemName);
+                        TerminalPredicate.Register(TypedKey);
                         shopItemBuilder.SetPurchasePredicate(TerminalPredicate);
                     }
 

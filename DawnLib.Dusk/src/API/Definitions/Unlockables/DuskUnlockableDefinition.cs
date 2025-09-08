@@ -71,7 +71,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
             bool disableUnlockRequirements = Config.DisableUnlockRequirement?.Value ?? false;
             if (!disableUnlockRequirements && TerminalPredicate)
             {
-                TerminalPredicate.Register(UnlockableItem.unlockableName);
+                TerminalPredicate.Register(Key);
                 builder.SetPurchasePredicate(TerminalPredicate);
             }
 

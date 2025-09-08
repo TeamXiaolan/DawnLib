@@ -10,9 +10,6 @@ using UnityEngine;
 namespace Dusk.Internal;
 public class DuskNetworker : NetworkSingleton<DuskNetworker>
 {
-    // todo: maybe own save settings for dusk?
-    internal ES3Settings SaveSettings => DawnNetworker.Instance!.SaveSettings;
-
     public IEnumerator Start()
     {
         yield return new WaitUntil(() => NetworkObject.IsSpawned);
@@ -21,7 +18,7 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         
         if (IsHost || IsServer)
         {
-            ProgressivePredicate.LoadAll(SaveSettings);
+            ProgressivePredicate.LoadAll(DawnLib.GetCurrentContract()!);
         }
         else
         {
@@ -94,6 +91,6 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
     internal void SaveData()
     {
         if (!IsHost) return;
-        ProgressivePredicate.SaveAll(SaveSettings);
+        ProgressivePredicate.SaveAll(DawnLib.GetCurrentContract()!);
     }
 }

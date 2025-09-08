@@ -41,11 +41,9 @@ static class TerminalPatches
         c.EmitLdfld<Terminal>(nameof(Terminal.buyableItemsList));
         c.EmitLdloc(7);
         c.Emit(OpCodes.Ldelem_Ref);
-        c.EmitDelegate<Func<Item, bool>>((Item item) =>
+        c.EmitDelegate((Item item) =>
         {
-            if (!item.TryGetDawnInfo(out DawnItemInfo? info))
-                return true;
-
+            DawnItemInfo info = item.GetDawnInfo();
             DawnShopItemInfo? shopInfo = info.ShopInfo;
             if (shopInfo == null)
                 return true;
@@ -83,9 +81,7 @@ static class TerminalPatches
         c.EmitDelegate((TerminalNode unlockableNode) =>
         {
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[unlockableNode.shipUnlockableID];
-            if (!unlockableItem.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
-                return true;
-
+            DawnUnlockableItemInfo info = unlockableItem.GetDawnInfo();
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {
@@ -116,9 +112,7 @@ static class TerminalPatches
 
             c.EmitDelegate<Func<Item, string>>((item) =>
             {
-                if (!item.TryGetDawnInfo(out DawnItemInfo? info))
-                    return item.itemName;
-
+                DawnItemInfo info = item.GetDawnInfo();
                 DawnShopItemInfo? shopInfo = info.ShopInfo;
                 if (shopInfo == null)
                     return item.itemName;
@@ -146,9 +140,7 @@ static class TerminalPatches
 
             c.EmitDelegate((UnlockableItem unlockable) =>
             {
-                if (!unlockable.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
-                    return unlockable.unlockableName;
-
+                DawnUnlockableItemInfo info = unlockable.GetDawnInfo();
                 TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
@@ -175,12 +167,7 @@ static class TerminalPatches
             Debuggers.Patching?.Log($"buyItemIndex = {node.buyItemIndex}");
 
             Item buyingItem = self.buyableItemsList[node.buyItemIndex];
-            if (!buyingItem.TryGetDawnInfo(out DawnItemInfo? info))
-            {
-                DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {buyingItem.itemName}");
-                return;
-            }
-
+            DawnItemInfo info = buyingItem.GetDawnInfo();
             DawnShopItemInfo? shopItemInfo = info.ShopInfo;
 
             if (shopItemInfo != null)
@@ -192,12 +179,7 @@ static class TerminalPatches
 
             
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
-            if (!unlockableItem.TryGetDawnInfo(out DawnUnlockableItemInfo? info))
-            {
-                DawnPlugin.Logger.LogWarning($"Couldn't get CR info for {unlockableItem.unlockableName}");
-                return;
-            }
-
+            DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
             purchase = info;
         }
 

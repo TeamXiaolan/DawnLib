@@ -18,16 +18,16 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     public bool IsUnlocked { get; private set; }
 
-    private string _saveID;
-    internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(_saveID), 0);
+    private NamespacedKey _namespacedKey;
+    internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(_namespacedKey.ToString()), 0);
 
-    public override void Register(string id)
+    public override void Register(NamespacedKey namespacedKey)
     {
         if (!_failNode)
         {
             _failNode = CreateDefaultProgressiveDenyNode();
         }
-        _saveID = id;
+        _namespacedKey = namespacedKey;
     }
 
     public override TerminalPurchaseResult CanPurchase()
@@ -57,39 +57,39 @@ public class ProgressivePredicate : DuskTerminalPredicate
         }
     }
 
-    public void Load(ES3Settings settings)
+    public void Load(IDataContainer dataContainer)
     {
-        IsUnlocked = ES3.Load(_saveID, false, settings);
-        Debuggers.Progressive?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {_saveID} with saveID: {_saveID}");
+        IsUnlocked = dataContainer.GetOrSetDefault(_namespacedKey, false);
+        Debuggers.Progressive?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {_namespacedKey} with saveID: {_namespacedKey}");
     }
 
-    public void Save(ES3Settings settings)
+    public void Save(IDataContainer dataContainer)
     {
-        Debuggers.Progressive?.Log($"Saving unlockable: {_saveID} that is unlocked: {IsUnlocked} with saveID: {_saveID}");
-        ES3.Save(_saveID, IsUnlocked, settings);
+        Debuggers.Progressive?.Log($"Saving unlockable: {_namespacedKey} that is unlocked: {IsUnlocked} with saveID: {_namespacedKey}");
+        dataContainer.Set(_namespacedKey, IsUnlocked);
     }
 
     internal static List<ProgressivePredicate> AllProgressiveItems = new();
 
-    internal static void LoadAll(ES3Settings settings)
+    internal static void LoadAll(IDataContainer dataContainer)
     {
         foreach (ProgressivePredicate unlockData in AllProgressiveItems)
         {
-            unlockData.Load(settings);
+            unlockData.Load(dataContainer);
         }
     }
 
-    internal static void SaveAll(ES3Settings settings)
+    internal static void SaveAll(IDataContainer dataContainer)
     {
         foreach (ProgressivePredicate unlockData in AllProgressiveItems)
         {
-            unlockData.Save(settings);
+            unlockData.Save(dataContainer);
         }
     }
 
     internal void SetFromServer(bool isUnlocked)
     {
-        Debuggers.Progressive?.Log($"{_saveID} is being set from the server; unlocked = {isUnlocked}");
+        Debuggers.Progressive?.Log($"{_namespacedKey} is being set from the server; unlocked = {isUnlocked}");
         IsUnlocked = isUnlocked;
     }
 

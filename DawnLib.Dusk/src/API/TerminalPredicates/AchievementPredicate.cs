@@ -20,11 +20,11 @@ public class AchievementPredicate : DuskTerminalPredicate
         .SetClearPreviousText(true)
         .Build();
 
-    private string _id;
+    private NamespacedKey _namespacedKey;
 
-    public override void Register(string id)
+    public override void Register(NamespacedKey namespacedKey)
     {
-        _id = id;
+        _namespacedKey = namespacedKey;
         // i dont think anything is needed here.
         // i would've liked to get the definition from the reference here, but this could be loaded before the achievement
     }
@@ -32,7 +32,7 @@ public class AchievementPredicate : DuskTerminalPredicate
     {
         if (!_achievement.TryResolve(out DuskAchievementDefinition definition))
         {
-            DawnPlugin.Logger.LogError($"Failed to resolve the achievement definition for '{_achievement.Key}'. Unlock Requirement id = {_id}.");
+            DawnPlugin.Logger.LogError($"Failed to resolve the achievement definition for '{_achievement.Key}'. Unlock Requirement NamespacedKey = {_namespacedKey}.");
             return TerminalPurchaseResult.Fail(FailedResolve);
         }
 

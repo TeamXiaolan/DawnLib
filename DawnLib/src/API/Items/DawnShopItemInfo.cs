@@ -1,4 +1,6 @@
-﻿namespace Dawn;
+﻿using Dawn.Internal;
+
+namespace Dawn;
 public sealed class DawnShopItemInfo : ITerminalPurchase
 {
     public DawnItemInfo ParentInfo { get; internal set; }
@@ -20,7 +22,7 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
     
     public void AddToDropship(bool ignoreMax = false, int count = 1)
     {
-        Terminal terminal = UnityEngine.Object.FindFirstObjectByType<Terminal>(); // todo :p
+        Terminal terminal = TerminalRefs.Instance;
 
         for (int i = 0; i < count; i++)
         {
@@ -35,7 +37,7 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
 
     public int GetSalePercentage()
     {
-        Terminal terminal = UnityEngine.Object.FindFirstObjectByType<Terminal>(); // todo :p
+        Terminal terminal = TerminalRefs.Instance;
         return terminal.itemSalesPercentages[RequestNode.buyItemIndex];
     }
 }

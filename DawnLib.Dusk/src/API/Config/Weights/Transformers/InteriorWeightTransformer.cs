@@ -57,7 +57,7 @@ public class InteriorWeightTransformer : WeightTransformer
         if (!RoundManager.Instance) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return currentWeight;
-        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo)) return currentWeight;
+        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
         if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight))
         {
             return DoOperation(currentWeight, operationWithWeight);
@@ -87,7 +87,7 @@ public class InteriorWeightTransformer : WeightTransformer
         if (!RoundManager.Instance) return string.Empty;
         if (!RoundManager.Instance.dungeonGenerator) return string.Empty;
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return string.Empty;
-        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo)) return string.Empty;
+        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
         if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
 
         return Operation(operationWithWeight[..1]);

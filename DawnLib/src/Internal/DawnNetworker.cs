@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Dawn.Utils;
-using GameNetcodeStuff;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,13 +10,10 @@ namespace Dawn.Internal;
 public class DawnNetworker : NetworkSingleton<DawnNetworker>
 {
     internal static EntranceTeleport[] _entrancePoints = [];
-    internal System.Random DawnLibRandom = new();
-    [Obsolete]
-    internal ES3Settings SaveSettings;
     public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
 
+    internal System.Random DawnLibRandom = new();
     internal event Action OnSave = delegate { };
-
     internal PersistentDataContainer SaveContainer { get; private set; }
     internal PersistentDataContainer ContractContainer { get; private set; }
     
@@ -30,7 +24,6 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
         DawnLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
-        SaveSettings = new ES3Settings($"DawnLib{GameNetworkManager.Instance.currentSaveFileName}", ES3.EncryptionType.None);
 
         string saveId = GameNetworkManager.Instance.currentSaveFileName;
         SaveContainer = CreateSaveContainer(saveId);
@@ -41,15 +34,10 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     {
         return new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Save{id}"));
     }
+
     internal static PersistentDataContainer CreateContractContainer(string id)
     {
         return new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Contract{id}"));
-    }
-    
-    [Obsolete]
-    internal static void ResetData(ES3Settings saveSettings)
-    {
-        ES3.DeleteFile(saveSettings);
     }
 
     internal void SaveData()
@@ -60,7 +48,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     private void OnNewRoundStart()
     {
         _entrancePoints = FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.InstanceID);
-        foreach (EntranceTeleport? entrance in _entrancePoints)
+        foreach (EntranceTeleport? entrance in EntrancePoints)
         {
             if (!entrance.FindExitPoint())
             {

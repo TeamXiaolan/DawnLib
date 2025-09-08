@@ -6,28 +6,25 @@ namespace Dusk;
 [CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Stat Definition")]
 public class DuskStatAchievement : DuskAchievementDefinition, IProgress
 {
+    public class StatSaveData(bool completed, float currentProgress) : AchievementSaveData(completed)
+    {
+        public float CurrentProgress { get; } = currentProgress;
+    }
 
     [field: SerializeField]
     public float MaxProgress { get; private set; }
 
     public float CurrentProgress { get; private set; }
 
-    public override void LoadAchievementState(ES3Settings globalSettings)
+    protected override AchievementSaveData GetSaveData()
     {
-        base.LoadAchievementState(globalSettings);
-        if (Completed)
-        {
-            CurrentProgress = MaxProgress;
-            return;
-        }
-
-        CurrentProgress = ES3.Load(Mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", 0f, globalSettings);
+        return new StatSaveData(Completed, CurrentProgress);
     }
 
-    public override void SaveAchievementState(ES3Settings globalSettings)
+    protected override void LoadSaveData(AchievementSaveData saveData)
     {
-        base.SaveAchievementState(globalSettings);
-        ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentProgress", CurrentProgress, globalSettings);
+        base.LoadSaveData(saveData);
+        CurrentProgress = ((StatSaveData)saveData).CurrentProgress;
     }
 
     public override void ResetProgress()

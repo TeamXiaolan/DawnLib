@@ -12,22 +12,21 @@ public class DuskDiscoveryAchievement : DuskAchievementDefinition, IProgress
     public List<string> UniqueStringIDs { get; private set; }
 
     public List<string> CurrentlyCollectedUniqueStringIDs { get; private set; } = new List<string>();
-    public override void LoadAchievementState(ES3Settings globalSettings)
-    {
-        base.LoadAchievementState(globalSettings);
-        if (Completed)
-        {
-            CurrentlyCollectedUniqueStringIDs = UniqueStringIDs;
-            return;
-        }
 
-        CurrentlyCollectedUniqueStringIDs = ES3.Load(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", new List<string>(), globalSettings); // this error'd with expecting [ or null but found 0?
+    public class DiscoverySaveData(bool completed, List<string> currentlyCollectedUniqueStringIDs) : AchievementSaveData(completed)
+    {
+        public List<string> CurrentlyCollectedUniqueStringIDs { get; } = currentlyCollectedUniqueStringIDs;
     }
 
-    public override void SaveAchievementState(ES3Settings globalSettings)
+    protected override AchievementSaveData GetSaveData()
     {
-        base.SaveAchievementState(globalSettings);
-        ES3.Save(Mod.Plugin.GUID + "." + AchievementName + ".CurrentDiscoveryProgress", CurrentlyCollectedUniqueStringIDs, globalSettings);
+        return new DiscoverySaveData(Completed, CurrentlyCollectedUniqueStringIDs);
+    }
+
+    protected override void LoadSaveData(AchievementSaveData saveData)
+    {
+        base.LoadSaveData(saveData);
+        CurrentlyCollectedUniqueStringIDs = ((DiscoverySaveData)saveData).CurrentlyCollectedUniqueStringIDs;
     }
 
     public override void ResetProgress()

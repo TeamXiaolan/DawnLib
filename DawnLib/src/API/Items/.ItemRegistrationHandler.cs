@@ -105,9 +105,9 @@ static class ItemRegistrationHandler
             }
         }
 
-        Terminal terminal = GameObject.FindFirstObjectByType<Terminal>();
-        TerminalKeyword buyKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
-        TerminalKeyword infoKeyword = terminal.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
+        Terminal terminal = TerminalRefs.Instance;
+        TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
+        TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
 
         List<CompatibleNoun> buyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
@@ -287,7 +287,7 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
-        StartOfRound startOfRound = GameObject.FindFirstObjectByType<StartOfRound>();
+        StartOfRound startOfRound = StartOfRoundRefs.Instance;
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {

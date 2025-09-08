@@ -14,13 +14,14 @@ namespace Dusk;
 public class DuskPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
+    internal static PersistentDataContainer PersistentData { get; private set; } = null!;
 
     internal static MainAssets Main { get; private set; } = null!;
     
     private void Awake()
     {
         Logger = base.Logger;
-        
+        PersistentData = this.GetPersistentDataContainer();
         Logger.LogInfo("Doing patches");
         
         AchievementRegistrationPatch.Init();
