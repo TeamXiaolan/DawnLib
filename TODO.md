@@ -20,10 +20,8 @@ less important:
 - config stuff (NamespacedKey TOMLConverter, pretty print generics, look at patching to allow lists?)
 - Create a "Terminal Store Catalogue" class that handles formatting to remove the need for the transpiler in TerminalPatches.cs
   - Would likely be a bit more incompatible with mods like TerminalFormatter in the beginning, but API should be open enough for them to adapt
-- Swap tags being stored in lists to being stored in hash sets.
 - allow Dusk to set custom data
 - DataContainer for lobby specific info? (things like gamemode settings, etc?)
-- PersistentDataContainer for a save file (not sure where this method would go, `DawnLib.GetCurrentSave()`?)
 - look at converting current info classes to be records
 
 ## Needs to be done eventually

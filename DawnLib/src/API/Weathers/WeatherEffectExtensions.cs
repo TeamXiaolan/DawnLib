@@ -1,26 +1,18 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
-using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 
 namespace Dawn;
 
 public static class WeatherEffectExtensions
 {
-    public static NamespacedKey<DawnWeatherEffectInfo> ToNamespacedKey(this WeatherEffect weatherEffect)
+    internal static DawnWeatherEffectInfo GetDawnInfo(this WeatherEffect weatherEffect)
     {
-        if (!weatherEffect.TryGetDawnInfo(out DawnWeatherEffectInfo? weatherEffectInfo))
-        {
-            Debuggers.Weathers?.Log($"WeatherEffect {weatherEffect} has no CRInfo");
-            throw new Exception();
-        }
-        return weatherEffectInfo.TypedKey;
+        DawnWeatherEffectInfo weatherEffectInfo = (DawnWeatherEffectInfo)((IDawnObject)weatherEffect).DawnInfo;
+        return weatherEffectInfo;
     }
 
-    internal static bool TryGetDawnInfo(this WeatherEffect weatherEffect, [NotNullWhen(true)] out DawnWeatherEffectInfo? weatherEffectInfo)
+    internal static bool HasDawnInfo(this WeatherEffect weatherEffect)
     {
-        weatherEffectInfo = (DawnWeatherEffectInfo)((IDawnObject)weatherEffect).DawnInfo;
-        return weatherEffectInfo != null;
+        return weatherEffect.GetDawnInfo() != null;
     }
 
     internal static void SetDawnInfo(this WeatherEffect weatherEffect, DawnWeatherEffectInfo weatherEffectInfo)

@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
-using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 using DunGen.Graph;
 
@@ -8,21 +5,16 @@ namespace Dawn;
 
 public static class DungeonFlowExtensions
 {
-    public static NamespacedKey<DawnDungeonInfo> ToNamespacedKey(this DungeonFlow dungeonFlow)
-    {
-        if (!dungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo))
-        {
-            Debuggers.Dungeons?.Log($"DungeonFlow {dungeonFlow} has no CRInfo");
-            throw new Exception();
-        }
-        return dungeonInfo.TypedKey;
-    }
-
-    internal static bool TryGetDawnInfo(this DungeonFlow dungeonFlow, [NotNullWhen(true)] out DawnDungeonInfo? dungeonInfo)
+    public static DawnDungeonInfo GetDawnInfo(this DungeonFlow dungeonFlow)
     {
         object newObject = dungeonFlow;
-        dungeonInfo = (DawnDungeonInfo)((IDawnObject)newObject).DawnInfo;
-        return dungeonInfo != null;
+        DawnDungeonInfo dungeonInfo = (DawnDungeonInfo)((IDawnObject)newObject).DawnInfo;
+        return dungeonInfo;
+    }
+
+    internal static bool HasDawnInfo(this DungeonFlow dungeonFlow)
+    {
+        return dungeonFlow.GetDawnInfo() != null;
     }
 
     internal static void SetDawnInfo(this DungeonFlow dungeonFlow, DawnDungeonInfo dungeonInfo)

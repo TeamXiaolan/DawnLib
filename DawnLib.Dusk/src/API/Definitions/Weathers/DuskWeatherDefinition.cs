@@ -65,7 +65,8 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
 
         this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
-        DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, _tags, newImprovedWeatherEffect.VanillaWeatherEffect, null);
+        HashSet<NamespacedKey> tags = _tags.ToHashSet();
+        DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, tags, newImprovedWeatherEffect.VanillaWeatherEffect, null);
         newImprovedWeatherEffect.VanillaWeatherEffect.SetDawnInfo(weatherEffectInfo);
         LethalContent.Weathers.Register(weatherEffectInfo);
     }

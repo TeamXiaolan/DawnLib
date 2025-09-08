@@ -4,7 +4,7 @@ using Dawn.Internal;
 namespace Dawn;
 public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : DawnBaseInfo<T>
 {
-    private List<NamespacedKey> _tags;
+    private HashSet<NamespacedKey> _tags;
 
     private IDataContainer? _customData;
 
@@ -17,7 +17,7 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : Dawn
         }
     }
 
-    protected DawnBaseInfo(NamespacedKey<T> key, List<NamespacedKey> tags, IDataContainer? customData)
+    protected DawnBaseInfo(NamespacedKey<T> key, HashSet<NamespacedKey> tags, IDataContainer? customData)
     {
         TypedKey = key;
         _tags = tags;

@@ -79,7 +79,7 @@ static class ItemRegistrationHandler
                 continue;
 
             Debuggers.Items?.Log($"Updating {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
-            level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+            level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(level.GetDawnInfo()) ?? 0;
         }
     }
 
@@ -186,7 +186,7 @@ static class ItemRegistrationHandler
 
         foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            if (item.TryGetDawnInfo(out _))
+            if (item.HasDawnInfo())
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true);
@@ -224,7 +224,7 @@ static class ItemRegistrationHandler
                 continue;
             }
 
-            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
             {
                 foreach ((string modName, string tagName) in tagsWithModNames)

@@ -1,26 +1,18 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
-using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 
 namespace Dawn;
 
 public static class ItemExtensions
 {
-    public static NamespacedKey<DawnItemInfo> ToNamespacedKey(this Item item)
+    public static DawnItemInfo GetDawnInfo(this Item item)
     {
-        if (!item.TryGetDawnInfo(out DawnItemInfo? itemInfo))
-        {
-            Debuggers.Items?.Log($"Item {item} has no CRInfo");
-            throw new Exception();
-        }
-        return itemInfo.TypedKey;
+        DawnItemInfo itemInfo = (DawnItemInfo)((IDawnObject)item).DawnInfo;
+        return itemInfo;
     }
 
-    internal static bool TryGetDawnInfo(this Item item, [NotNullWhen(true)] out DawnItemInfo? itemInfo)
+    internal static bool HasDawnInfo(this Item item)
     {
-        itemInfo = (DawnItemInfo)((IDawnObject)item).DawnInfo;
-        return itemInfo != null;
+        return item.GetDawnInfo() != null;
     }
 
     internal static void SetDawnInfo(this Item item, DawnItemInfo itemInfo)

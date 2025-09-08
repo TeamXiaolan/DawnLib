@@ -79,7 +79,7 @@ static class UnlockableRegistrationHandler
 
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
         {
-            if (unlockableItem.TryGetDawnInfo(out _))
+            if (unlockableItem.HasDawnInfo())
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true);

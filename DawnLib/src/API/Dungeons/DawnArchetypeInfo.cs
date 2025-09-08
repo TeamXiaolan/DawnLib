@@ -6,7 +6,7 @@ public class DawnArchetypeInfo : DawnBaseInfo<DawnArchetypeInfo>
 {
     public DungeonArchetype DungeonArchetype { get; }
 
-    internal DawnArchetypeInfo(NamespacedKey<DawnArchetypeInfo> key, List<NamespacedKey> tags, DungeonArchetype archetype, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnArchetypeInfo(NamespacedKey<DawnArchetypeInfo> key, HashSet<NamespacedKey> tags, DungeonArchetype archetype, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonArchetype = archetype;
     }

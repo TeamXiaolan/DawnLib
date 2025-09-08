@@ -201,7 +201,7 @@ static class MapObjectRegistrationHandler
     {
         SelectableLevel level = RoundManager.Instance.currentLevel;
         GameObject prefabToSpawn = outsideInfo.ParentInfo.MapObject;
-        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? AnimationCurve.Constant(0, 1, 0);
+        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
 
         int randomNumberToSpawn;
         if (outsideInfo.ParentInfo.HasNetworkObject)
@@ -274,7 +274,7 @@ static class MapObjectRegistrationHandler
                 continue;
 
             Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
-            level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]);
+            level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo());
         }
     }
 

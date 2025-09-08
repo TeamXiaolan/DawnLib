@@ -32,9 +32,6 @@ static class AdditionalTilesRegistrationHandler
             if (dungeonFlow == null)
                 continue;
 
-            if (dungeonFlow.TryGetDawnInfo(out _))
-                continue;
-
             string name = FormatFlowName(dungeonFlow);
             NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
             if (key == null)
@@ -43,7 +40,7 @@ static class AdditionalTilesRegistrationHandler
                 continue;
             }
 
-            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
             CollectLLLTags(dungeonFlow, tags);
             DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
@@ -67,7 +64,7 @@ static class AdditionalTilesRegistrationHandler
             if (dungeonFlow == null)
                 continue;
 
-            if (dungeonFlow.TryGetDawnInfo(out _))
+            if (dungeonFlow.HasDawnInfo())
                 continue;
 
             Debuggers.Dungeons?.Log($"Registering potentially modded dungeon: {dungeonFlow.name}");
@@ -81,7 +78,7 @@ static class AdditionalTilesRegistrationHandler
                 key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
             }
 
-            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
             CollectLLLTags(dungeonFlow, tags);
             DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
@@ -200,7 +197,7 @@ static class AdditionalTilesRegistrationHandler
         return input;
     }
 
-    private static void CollectLLLTags(DungeonFlow dungeonFlow, List<NamespacedKey> tags)
+    private static void CollectLLLTags(DungeonFlow dungeonFlow, HashSet<NamespacedKey> tags)
     {
         if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
         {
@@ -223,13 +220,7 @@ static class AdditionalTilesRegistrationHandler
     {
         foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
         {
-            if (!archetype.TryGetDawnInfo(out DawnArchetypeInfo? info))
-            {
-                DawnPlugin.Logger.LogWarning("what? archetype didn't have crinfo by the time we're trying to inject tile sets.");
-                continue;
-            }
-
-            foreach (DawnTileSetInfo tileSet in info.TileSets)
+            foreach (DawnTileSetInfo tileSet in archetype.GetDawnInfo().TileSets)
             {
                 if (tileSet.HasTag(DawnLibTags.IsExternal))
                     continue;

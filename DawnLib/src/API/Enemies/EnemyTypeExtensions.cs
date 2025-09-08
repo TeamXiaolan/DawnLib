@@ -1,30 +1,22 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
-using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 
 namespace Dawn;
 
 public static class EnemyTypeExtensions
 {
-    public static NamespacedKey<DawnEnemyInfo> ToNamespacedKey(this EnemyType enemyType)
+    public static DawnEnemyInfo GetDawnInfo(this EnemyType enemyType)
     {
-        if (!enemyType.TryGetDawnInfo(out DawnEnemyInfo? moonInfo))
-        {
-            Debuggers.Enemies?.Log($"EnemyType {enemyType} has no CRInfo");
-            throw new Exception();
-        }
-        return moonInfo.TypedKey;
+        DawnEnemyInfo enemyInfo = (DawnEnemyInfo)((IDawnObject)enemyType).DawnInfo;
+        return enemyInfo;
     }
 
-    internal static bool TryGetDawnInfo(this EnemyType enemyType, [NotNullWhen(true)] out DawnEnemyInfo? moonInfo)
+    internal static bool HasDawnInfo(this EnemyType enemyType)
     {
-        moonInfo = (DawnEnemyInfo)((IDawnObject)enemyType).DawnInfo;
-        return moonInfo != null;
+        return enemyType.GetDawnInfo() != null;
     }
 
-    internal static void SetDawnInfo(this EnemyType enemyType, DawnEnemyInfo moonInfo)
+    internal static void SetDawnInfo(this EnemyType enemyType, DawnEnemyInfo enemyInfo)
     {
-        ((IDawnObject)enemyType).DawnInfo = moonInfo;
+        ((IDawnObject)enemyType).DawnInfo = enemyInfo;
     }
 }

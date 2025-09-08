@@ -45,7 +45,7 @@ static class MoonRegistrationHandler
                 key = NamespacedKey<DawnMoonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
             }
 
-            List<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(level, out List<(string tagModName, string tagName)> tagsWithModNames))
             {
                 foreach ((string tagModName, string tagName) in tagsWithModNames)

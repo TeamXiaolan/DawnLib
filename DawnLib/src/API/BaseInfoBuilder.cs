@@ -12,7 +12,7 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
 {
     protected NamespacedKey<TInfo> key { get; private set; }
     protected T value { get; private set; }
-    protected List<NamespacedKey> tags = new();
+    protected HashSet<NamespacedKey> tags = new();
 
     protected IDataContainer? customData = null;
 

@@ -98,9 +98,7 @@ static class EnemyRegistrationHandler
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
-        if (!self.enemyType.TryGetDawnInfo(out DawnEnemyInfo? enemyInfo))
-            return;
-
+        DawnEnemyInfo enemyInfo = self.enemyType.GetDawnInfo();
         if (enemyInfo.HasTag(DawnLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
@@ -184,17 +182,17 @@ static class EnemyRegistrationHandler
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
             if (enemyInfo.Outside != null)
             {
-                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Outside.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Outside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
             }
 
             if (enemyInfo.Inside != null)
             {
-                level.Enemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Inside.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.Enemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Inside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
             }
 
             if (enemyInfo.Daytime != null)
             {
-                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Daytime.Weights.GetFor(LethalContent.Moons[level.ToNamespacedKey()]) ?? 0;
+                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Daytime.Weights.GetFor(level.GetDawnInfo()) ?? 0;
             }
         }
     }
@@ -269,7 +267,7 @@ static class EnemyRegistrationHandler
                 if (enemyType == null || enemyType.enemyPrefab == null)
                     continue;
 
-                if (enemyType.TryGetDawnInfo(out _))
+                if (enemyType.HasDawnInfo())
                     continue;
 
                 string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
@@ -318,7 +316,7 @@ static class EnemyRegistrationHandler
                     daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
                 }
 
-                List<NamespacedKey> tags = [DawnLibTags.IsExternal];
+                HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
                 if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
                 {
                     foreach ((string modName, string tagName) in tagsWithModNames)

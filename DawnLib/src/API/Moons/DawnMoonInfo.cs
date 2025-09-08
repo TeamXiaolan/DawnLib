@@ -6,7 +6,7 @@ namespace Dawn;
 
 public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, List<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
         RouteNode = routeNode;
@@ -32,10 +32,15 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
     {
         LevelWeatherType type = Level.currentWeather;
         if (type == LevelWeatherType.None)
+        {
             return null;
+        }
 
         WeatherEffect effect = TimeOfDay.Instance.effects[(int)type];
-        if (effect.TryGetDawnInfo(out DawnWeatherEffectInfo? info)) return info;
+        if (effect.HasDawnInfo())
+        {
+            return effect.GetDawnInfo();
+        }
         return null;
     }
     
