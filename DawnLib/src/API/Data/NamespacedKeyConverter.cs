@@ -47,7 +47,6 @@ public class NamespacedKeyConverter : JsonConverter
     }
     public override bool CanConvert(Type objectType)
     {
-        DawnPlugin.Logger.LogDebug(objectType.Name);
         if (objectType == typeof(NamespacedKey)) 
             return true;
         if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(NamespacedKey<>)) 
