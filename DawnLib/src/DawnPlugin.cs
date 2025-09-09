@@ -5,7 +5,6 @@ using BepInEx;
 using BepInEx.Logging;
 using Dawn.Internal;
 using Dawn.Utils;
-using loaforcsSoundAPI;
 using PathfindingLib;
 using UnityEngine;
 
@@ -17,7 +16,6 @@ namespace Dawn;
 [BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency(TerminalFormatter.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency(SoundAPI.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
@@ -57,10 +55,7 @@ public class DawnPlugin : BaseUnityPlugin
         {
             TerminalFormatterCompat.Init();
         }
-        if (SoundAPICompat.Enabled)
-        {
-            SoundAPICompat.Init();
-        }
+        
 
         ExtendedTOML.Init();
         PersistentDataHandler.Init();

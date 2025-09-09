@@ -1,29 +1,12 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using loaforcsSoundAPI;
-using loaforcsSoundAPI.SoundPacks.Data.Conditions;
 
-namespace Dawn.Internal;
+namespace Dawn.Compatibility;
 static class SoundAPICompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(SoundAPI.PLUGIN_GUID);
 
-    class DawnTaggableCondition(Func<ITaggable?> generator) : Condition
-    {
-        public string Value { get; private set; }
-
-        private NamespacedKey? _key;
-        
-        public override bool Evaluate(IContext context)
-        {
-            _key ??= NamespacedKey.ForceParse(Value);
-            
-            ITaggable? taggable = generator();
-            return taggable != null && taggable.HasTag(_key);
-        }
-    }
-    
     [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     internal static void Init()
     {

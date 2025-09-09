@@ -92,9 +92,7 @@
       <Reference Include="PathfindingLib">
         <HintPath>deps\PathfindingLib.dll</HintPath>
       </Reference>
-        <Reference Include="loaforcsSoundAPI">
-            <HintPath>deps\me.loaforc.soundapi.dll</HintPath>
-        </Reference>
+        
     </ItemGroup>
     <ItemGroup>
         <None Remove="data\**\*.json" />
