@@ -64,20 +64,28 @@ public class DuskMod
         if (searchDir.EndsWith(".dll"))
             return;
 
-        var iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
-        ModInformation.ModIcon = LoadIcon(iconPath);
+        try
+        {
+            var iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
+            ModInformation.ModIcon = LoadIcon(iconPath);
 
-        var manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
-        string manifestContents = File.ReadAllText(manifestPath);
-        ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
+            var manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
+            string manifestContents = File.ReadAllText(manifestPath);
+            ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
 
-        ModInformation.ModDescription = manifest.description;
-        ModInformation.ModName = manifest.name;
-        ModInformation.AuthorName = manifest.author_name;
-        ModInformation.Version = manifest.version_number;
-        ModInformation.ExtraDependencies = manifest.dependencies;
-        ModInformation.WebsiteUrl = manifest.website_url;
-        Debuggers.Dusk?.Log($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
+            ModInformation.ModDescription = manifest.description;
+            ModInformation.ModName = manifest.name;
+            ModInformation.AuthorName = manifest.author_name;
+            ModInformation.Version = manifest.version_number;
+            ModInformation.ExtraDependencies = manifest.dependencies;
+            ModInformation.WebsiteUrl = manifest.website_url;
+            Debuggers.Dusk?.Log($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
+        }
+        catch (Exception ex)
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to load mod information, likely from locally imported mod: {ex.Message}");
+        }
+
     }
 
     private Sprite? LoadIcon(string iconPath)
