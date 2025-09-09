@@ -98,4 +98,7 @@
         <None Remove="data\**\*.json" />
         <AdditionalFiles Include="data\**\*.json" />
     </ItemGroup>
+
+    <Target Name="PublishThunderstore">
+    </Target>
 </Project>

@@ -25,4 +25,7 @@
 	<!--    <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
         <Exec Command="netcode-patch -nv 1.5.2 &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')"/>
     </Target>-->
+
+    <Target Name="PublishThunderstore">
+    </Target>
 </Project>

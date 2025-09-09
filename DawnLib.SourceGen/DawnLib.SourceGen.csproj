@@ -50,4 +50,7 @@
             <TargetPathWithTargetPlatformMoniker Include="$(PKGNewtonsoft_Json)\lib\netstandard2.0\Newtonsoft.Json.dll" IncludeRuntimeDependency="false" />
         </ItemGroup>
     </Target>
+
+    <Target Name="PublishThunderstore">
+    </Target>
 </Project>
