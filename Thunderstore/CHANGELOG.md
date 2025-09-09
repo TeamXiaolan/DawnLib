@@ -1,4 +1,12 @@
-# v0.1.0
+# v0.1.2
+
+- Disabled achievements button if there are no achievements.
+
+## v0.1.1
+
+- Fixed some editor dll stuff and separated compatiblity with soundapi into another dll.
+
+## v0.1.0
 
 Hello World!
 

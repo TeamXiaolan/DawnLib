@@ -21,6 +21,9 @@ static class AchievementRegistrationPatch
     private static void LoadAchievementDataWithUI(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
+        if (DuskModContent.Achievements.Count == 0)
+            return;
+
         DuskAchievementHandler.LoadAll();
         DoAchievementUI(self);
     }
