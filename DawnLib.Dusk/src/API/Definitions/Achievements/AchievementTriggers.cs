@@ -5,7 +5,7 @@ namespace Dusk;
 
 public class AchievementTriggers : MonoBehaviour
 {
-    [SerializeField]
+    [SerializeReference]
     private DuskAchievementReference _reference = default!;
 
     [SerializeField]
