@@ -40,7 +40,7 @@ public class DuskPlugin : BaseUnityPlugin
 
     private void NetcodePatcher()
     {
-        var types = new Type[] { typeof(UnlockProgressiveObject), typeof(ItemUpgradeScrap), typeof(UnlockableUpgradeScrap) };
+        var types = new Type[] { typeof(UnlockProgressiveObject), typeof(ItemUpgradeScrap), typeof(UnlockableUpgradeScrap), typeof(StationBase), typeof(VehicleBase) };
         foreach (var type in types)
         {
             try
