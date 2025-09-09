@@ -42,11 +42,4 @@
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
     </ItemGroup>
-
-    <!-- Package References - Game Assembly HookGen -->
-    <ItemGroup>
-        <Reference Include="MMHOOK_Assembly-CSharp">
-            <HintPath>$(MMHOOKDirectory)MMHOOK_Assembly-CSharp.dll</HintPath>
-        </Reference>
-    </ItemGroup>
 </Project>
