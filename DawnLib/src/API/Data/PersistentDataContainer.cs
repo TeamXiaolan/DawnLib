@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Dawn.Internal;
 using Newtonsoft.Json;
@@ -73,7 +74,9 @@ public class PersistentDataContainer : DataContainer
 
         try
         {
-            await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings));
+            await using FileStream stream = File.Open(_filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
+            await writer.WriteAsync(JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings));
             Debuggers.PersistentDataContainer?.Log($"saved ({Path.GetFileName(_filePath)})");
         }
         catch (Exception e)
