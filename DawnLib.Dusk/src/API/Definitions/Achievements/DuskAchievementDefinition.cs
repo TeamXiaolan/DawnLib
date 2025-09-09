@@ -27,6 +27,8 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     public TMP_ColorGradient? FinishedAchievementDescColorGradientPreset { get; private set; }
     [field: SerializeField]
     public Sprite? FinishedAchievementBackgroundIcon { get; private set; }
+    [field: SerializeField]
+    public AudioClip? FinishAchievementAudioClip { get; private set; }
 
     [field: Space(10)]
     [field: SerializeField]

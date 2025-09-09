@@ -41,6 +41,9 @@ public class AchievementUIElement : MonoBehaviour
     internal Image progressBar = null!;
 
     [SerializeField]
+    internal AudioSource audioSource = null!;
+
+    [SerializeField]
     [FormerlySerializedAs("_eventTrigger")]
     internal EventTrigger? eventTrigger = null;
 

@@ -31,17 +31,25 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
     {
         achievementQueue.Enqueue(achievement);
         if (achievementContent.transform.childCount == 0)
+        {
             StartCoroutine(ShowNextAchievement());
+        }
     }
 
     private IEnumerator ShowNextAchievement()
     {
         while (achievementQueue.Count > 0)
         {
-            var achievement = achievementQueue.Dequeue();
+            DuskAchievementDefinition achievementDefinition = achievementQueue.Dequeue();
             GameObject achievementElement = Instantiate(_achievementGetUIElementPrefab, achievementContent.transform);
-            achievementElement.GetComponent<AchievementUIElement>().SetupAchievementUI(achievement);
-            yield return new WaitForSeconds(achievement.PopupTime);
+            AchievementUIElement uiElement = achievementElement.GetComponent<AchievementUIElement>(); 
+            uiElement.SetupAchievementUI(achievementDefinition);
+            if (achievementDefinition.FinishAchievementAudioClip != null)
+            {
+                uiElement.audioSource.clip = achievementDefinition.FinishAchievementAudioClip;
+            }
+            uiElement.audioSource.Play();
+            yield return new WaitForSeconds(achievementDefinition.PopupTime);
             achievementElement.GetComponent<Animator>().SetTrigger(SlideOut);
             yield return new WaitForSeconds(3f);
             Destroy(achievementElement);
