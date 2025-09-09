@@ -33,6 +33,7 @@
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" PrivateAssets="all"/>
 
         <ProjectReference Include="..\DawnLib\DawnLib.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Dusk\DawnLib.Dusk.csproj" PrivateAssets="all" />
 
         <Reference Include="loaforcsSoundAPI">
             <HintPath>deps\me.loaforc.soundapi.dll</HintPath>
@@ -42,4 +43,12 @@
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
     </ItemGroup>
+
+    <Target Name="PackThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'" DependsOnTargets="NetcodePatch">
+        <Exec Command="dotnet tcli build --config-path &quot;$(SolutionDir)Thunderstore/thunderstore.toml&quot; --package-version $(Version)"  />
+    </Target>
+
+    <Target Name="PublishThunderstore">
+        <Exec Command="dotnet tcli publish --config-path &quot;$(SolutionDir)Thunderstore/thunderstore.toml&quot; --file &quot;$(ProjectDir)../TeamXiaolan-DawnLib-$(Version).zip&quot;" />
+    </Target>
 </Project>
