@@ -16,6 +16,8 @@ Hello World!
 - Removed `VanillaEnemies` and added `LethalContent`
 - Added `tags`
 - Allow registering new tilesets to dungeons
+- Added `PersistentDataContainer`
+- 
 
 ## DuskMod
 

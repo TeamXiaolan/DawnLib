@@ -70,6 +70,21 @@ if(LethalContent.Enemies.IsFrozen) { // or check that the registry has already b
 }
 ```
 
+### PersistentDataContainer
+`PersistentDataContainer` is an alternative to `ES3`. You can easily access save data with the `.GetPersistentDataContainer()` extension method, `.GetCurrentContract()` or `.GetCurrentSave()`
+
+```csharp
+void Awake() { // Plugin awake
+    PersistentDataContainer myContainer = this.GetPersistentDataContainer(); // use this however you want, note that 'this' is required to use the extension method in the Awake function.
+    
+    // these only return null when not in-game. these also automatically handle resetting the save
+    PersistentDataContainer? contract = DawnLib.GetCurrentContract(); // resets on: getting fired and save deletion.
+    PersistentDataContainer? save = DawnLib.GetCurrentSave(); // resets on: ONLY save deletion.
+}
+```
+
+Note: If you are going to make a large edit (calling `.Set`, `.GetOrSet`, etc multiple times) you should wrap it with `using(container.LargeEdit())`. This delays saving data to the disk until all your edits have been completed.
+
 ## DuskMod (C# & Editor)
 ```xml
 <PackageReference Include="TeamXiaolan.DawnLib" Version="0.1.0" />
@@ -92,6 +107,7 @@ It also supports:
 
 - Achievements
 - Weathers (through `WeatherRegistry`)
+- Vehicles (highly experimental)
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord for help.
 

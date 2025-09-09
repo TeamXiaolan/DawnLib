@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace Dawn.Internal;
 
-public static class TerminalRefs
+internal static class TerminalRefs
 {
     private static Terminal _instance;
     public static Terminal Instance
