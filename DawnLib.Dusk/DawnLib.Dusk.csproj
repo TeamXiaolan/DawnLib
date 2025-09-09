@@ -68,12 +68,4 @@
     <ItemGroup>
         <NetcodePatch Include="$(TargetPath)" />
     </ItemGroup>
-    
-    <Target Name="PackThunderstore" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'" DependsOnTargets="NetcodePatch">
-        <Exec Command="dotnet tcli build --config-path &quot;$(SolutionDir)Thunderstore/thunderstore.toml&quot; --package-version $(Version)"  />
-    </Target>
-
-    <Target Name="PublishThunderstore">
-        <Exec Command="dotnet tcli publish --config-path &quot;$(SolutionDir)Thunderstore/thunderstore.toml&quot; --file &quot;$(ProjectDir)../TeamXiaolan-DawnLib-$(Version).zip&quot;" />
-    </Target>
 </Project>
