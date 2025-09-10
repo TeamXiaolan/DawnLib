@@ -123,34 +123,31 @@ static class ItemRegistrationHandler
             terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
         }
 
-        foreach (var buyableItem in terminal.buyableItemsList)
+        for (int i = 0; i < terminal.buyableItemsList.Length; i++)
         {
+            Item buyableItem = terminal.buyableItemsList[i];
             TerminalNode? infoNode = null;
-            TerminalNode requestNode = null!;
+            TerminalNode? requestNode = null!;
             TerminalNode receiptNode = null!;
 
             Debuggers.Items?.Log($"Processing {buyableItem.itemName}");
             string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
-            if (simplifiedItemName.Equals("stun-grenade"))
+
+            requestNode = TerminalRefs.BuyKeyword.compatibleNouns.Where(noun => noun.result.buyItemIndex == i).Select(noun => noun.result).FirstOrDefault();
+            if (requestNode == null)
             {
-                simplifiedItemName = "stun";
+                DawnPlugin.Logger.LogWarning($"No request Node found for {buyableItem.itemName} despite it being a buyable item, this is likely the result of an item being removed from the shop items list by LethalLib, i.e. Night Vision Goggles from MoreShipUpgrades");
+                continue;
             }
-            else if (simplifiedItemName.Equals("tzp-inhalant"))
-            {
-                simplifiedItemName = "tzp";
-            }
-            else if (simplifiedItemName.Equals("radar-booster"))
-            {
-                simplifiedItemName = "radar";
-            }
-            TerminalKeyword buyKeywordOfSignificance = terminalKeywords.FirstOrDefault(keyword => keyword.word == simplifiedItemName);
+            receiptNode = requestNode.terminalOptions[0].result;
+            TerminalKeyword? buyKeywordOfSignificance = TerminalRefs.BuyKeyword.compatibleNouns.Where(noun => noun.result == requestNode).Select(noun => noun.noun).FirstOrDefault() ?? terminalKeywords.FirstOrDefault(keyword => keyword.word == simplifiedItemName);
             if (buyKeywordOfSignificance == null)
             {
-                DawnPlugin.Logger.LogWarning($"No buy keyword found for {buyableItem.itemName} despite it being a buyable item, this is likely the result of an item being removed from the shop items list by LethalLib, i.e. Night Vision Goggles from MoreShipUpgrades");
+                DawnPlugin.Logger.LogWarning($"No buy Keyword found for {buyableItem.itemName} despite it being a buyable item, this is likely the result of an item being removed from the shop items list by LethalLib, i.e. Night Vision Goggles from MoreShipUpgrades");
                 continue;
             }
 
-            foreach (var compatibleNouns in infoKeyword.compatibleNouns)
+            foreach (CompatibleNoun compatibleNouns in infoKeyword.compatibleNouns)
             {
                 if (compatibleNouns.noun == buyKeywordOfSignificance)
                 {
@@ -188,7 +185,6 @@ static class ItemRegistrationHandler
                 Debuggers.Items?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
             }
 
-            receiptNode = requestNode.terminalOptions[0].result;
             DawnShopItemInfo shopInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
             itemsWithShopInfo[buyableItem] = shopInfo;
         }
