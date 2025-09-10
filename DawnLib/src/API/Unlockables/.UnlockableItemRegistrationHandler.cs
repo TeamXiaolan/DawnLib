@@ -50,6 +50,11 @@ static class UnlockableRegistrationHandler
         int latestUnlockableID = 0;
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
         {
+            if (unlockableItem.shopSelectionNode != null)
+            {
+                Debuggers.Unlockables?.Log($"unlockableItem = {unlockableItem.unlockableName} has ID {unlockableItem.shopSelectionNode.shipUnlockableID}");
+            }
+
             if (unlockableItem.shopSelectionNode != null && unlockableItem.shopSelectionNode.shipUnlockableID > latestUnlockableID)
             {
                 latestUnlockableID = unlockableItem.shopSelectionNode.shipUnlockableID;
@@ -127,6 +132,7 @@ static class UnlockableRegistrationHandler
             }
 
             DawnUnlockableItemInfo unlockableItemInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo, null);
+            unlockableItem.SetDawnInfo(unlockableItemInfo);
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 

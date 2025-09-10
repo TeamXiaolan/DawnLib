@@ -84,7 +84,6 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
 
-
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
     }
 

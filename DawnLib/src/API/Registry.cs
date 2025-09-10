@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Dawn.Internal;
 
 namespace Dawn;
 public class RegistryFrozenException() : Exception("Registry is frozen")
