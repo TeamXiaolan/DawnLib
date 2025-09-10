@@ -1,4 +1,12 @@
-# v0.1.2
+# v0.1.4
+
+- Fixed issues with checking unlockables and unlockables not registering.
+- Fixed issues with trying to use the Achievement Predicate
+- Fixed Editor.dll issues with accessing achievements for AchievementTriggers script.
+- Fixed issues with DailyPricingStrategy accessing TimeOfDay too early.
+- Fixed issues with achievements causing a share violation error on loading multiple achievements simultaneously sometimes.
+
+## v0.1.2
 
 - Disabled achievements button if there are no achievements.
 
@@ -25,7 +33,6 @@ Hello World!
 - Added `tags`
 - Allow registering new tilesets to dungeons
 - Added `PersistentDataContainer`
-- 
 
 ## DuskMod
 

@@ -1,5 +1,5 @@
-using System.Linq;
 using Dawn.Internal;
+using MonoMod.RuntimeDetour;
 
 namespace Dawn;
 
@@ -7,7 +7,7 @@ static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
-        On.Terminal.Awake += RegisterShipUnlockables;
+        On.Terminal.Start += RegisterShipUnlockables;
     }
 
     internal static void UpdateAllUnlockablePrices()
@@ -35,7 +35,7 @@ static class UnlockableRegistrationHandler
         }
     }
 
-    private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
+    private static void RegisterShipUnlockables(On.Terminal.orig_Start orig, Terminal self)
     {
         if (LethalContent.Unlockables.IsFrozen)
         {
