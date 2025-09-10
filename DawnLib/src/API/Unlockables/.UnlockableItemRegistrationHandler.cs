@@ -43,13 +43,18 @@ static class UnlockableRegistrationHandler
             return;
         }
 
-        TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
-        TerminalKeyword confirmPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "confirm");
-        TerminalKeyword denyPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "deny");
-        TerminalNode cancelPurchaseNode = buyKeyword.compatibleNouns[0].result.terminalOptions[1].result; // TODO, I use these a couple times, maybe i should have em stored somewhere in LethalContent?
+        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmKeyword;
+        TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
+        TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
 
-        UnlockableItem latestValidUnlockable = StartOfRound.Instance.unlockablesList.unlockables.Where(unlockable => unlockable.shopSelectionNode != null).OrderBy(x => x.shopSelectionNode.shipUnlockableID).FirstOrDefault();
-        int latestUnlockableID = latestValidUnlockable.shopSelectionNode.shipUnlockableID;
+        int latestUnlockableID = 0;
+        foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
+        {
+            if (unlockableItem.shopSelectionNode != null && unlockableItem.shopSelectionNode.shipUnlockableID > latestUnlockableID)
+            {
+                latestUnlockableID = unlockableItem.shopSelectionNode.shipUnlockableID;
+            }
+        }
         Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
         foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
