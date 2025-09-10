@@ -110,6 +110,11 @@ static class TerminalPatches
 
             c.EmitDelegate<Func<Item, string>>((item) =>
             {
+                if (!item.HasDawnInfo())
+                {
+                    DawnPlugin.Logger.LogWarning($"Item: {item.itemName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
+                    return item.itemName;
+                }
                 DawnItemInfo info = item.GetDawnInfo();
                 DawnShopItemInfo? shopInfo = info.ShopInfo;
                 if (shopInfo == null)
@@ -138,6 +143,11 @@ static class TerminalPatches
 
             c.EmitDelegate((UnlockableItem unlockable) =>
             {
+                if (!unlockable.HasDawnInfo())
+                {
+                    DawnPlugin.Logger.LogWarning($"Unlockable: {unlockable.unlockableName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
+                    return unlockable.unlockableName;
+                }
                 DawnUnlockableItemInfo info = unlockable.GetDawnInfo();
                 TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
@@ -163,8 +173,14 @@ static class TerminalPatches
         if (node.buyItemIndex != -1)
         {
             Debuggers.Patching?.Log($"buyItemIndex = {node.buyItemIndex}");
-
             Item buyingItem = self.buyableItemsList[node.buyItemIndex];
+            if (!buyingItem.HasDawnInfo())
+            {
+                DawnPlugin.Logger.LogWarning($"Item: {buyingItem.itemName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
+                orig(self, node);
+                return;
+            }
+            
             DawnItemInfo info = buyingItem.GetDawnInfo();
             DawnShopItemInfo? shopItemInfo = info.ShopInfo;
 
@@ -177,6 +193,12 @@ static class TerminalPatches
 
 
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
+            if (!unlockableItem.HasDawnInfo())
+            {
+                DawnPlugin.Logger.LogWarning($"Unlockable: {unlockableItem.unlockableName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
+                orig(self, node);
+                return;
+            }
             DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
             purchase = info;
         }
