@@ -143,7 +143,12 @@ static class ItemRegistrationHandler
             {
                 simplifiedItemName = "radar";
             }
-            TerminalKeyword buyKeywordOfSignificance = terminalKeywords.First(keyword => keyword.word == simplifiedItemName);
+            TerminalKeyword buyKeywordOfSignificance = terminalKeywords.FirstOrDefault(keyword => keyword.word == simplifiedItemName);
+            if (buyKeywordOfSignificance == null)
+            {
+                DawnPlugin.Logger.LogWarning($"No buy keyword found for {buyableItem.itemName} despite it being a buyable item, this is likely the result of an item being removed from the shop items list by LethalLib, i.e. Night Vision Goggles from MoreShipUpgrades");
+                continue;
+            }
 
             foreach (var compatibleNouns in infoKeyword.compatibleNouns)
             {
