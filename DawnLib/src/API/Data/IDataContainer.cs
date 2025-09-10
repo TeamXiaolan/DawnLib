@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dawn;
 public interface IDataContainer
@@ -9,4 +10,7 @@ public interface IDataContainer
     void Set<T>(NamespacedKey key, T value);
     void Remove(NamespacedKey key);
     void Clear();
+    
+    IEnumerable<NamespacedKey> Keys { get; }
+    int Count { get; }
 }

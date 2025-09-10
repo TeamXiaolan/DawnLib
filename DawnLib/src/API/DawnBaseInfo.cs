@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Dawn.Internal;
+using ES3Types;
 
 namespace Dawn;
-public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : DawnBaseInfo<T>
+public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEvents where T : DawnBaseInfo<T>
 {
     private HashSet<NamespacedKey> _tags;
 
@@ -44,5 +45,12 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable where T : Dawn
     {
         Debuggers.Tags?.Log($"Internal_AddTag: {tag} !!!");
         _tags.Add(tag);
+    }
+    public void OnFrozen()
+    {
+        if (_customData == null)
+        {
+            _customData = FrozenEmptyDataContainer.Instance;
+        }
     }
 }

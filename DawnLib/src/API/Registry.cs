@@ -22,6 +22,15 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
 
         BeforeFreeze();
         IsFrozen = true;
+
+        foreach (T value in Values)
+        {
+            if (value is IRegistryEvents events)
+            {
+                events.OnFrozen();
+            }
+        }
+        
         OnFreeze();
     }
 
@@ -63,4 +72,9 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
 
     public IEnumerable<NamespacedKey<T>> Keys => _dictionary.Keys;
     public IEnumerable<T> Values => _dictionary.Values;
+}
+
+public interface IRegistryEvents
+{
+    void OnFrozen();
 }
