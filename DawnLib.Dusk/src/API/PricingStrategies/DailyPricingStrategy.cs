@@ -1,4 +1,5 @@
 ﻿using Dawn;
+using Dawn.Internal;
 using UnityEngine;
 
 namespace Dusk;
@@ -15,8 +16,8 @@ public class DailyPricingStrategy : DuskPricingStrategy
     { }
     public override int Provide()
     {
-        float totalTime = TimeOfDay.Instance.totalTime * 4f;
-        float progress = TimeOfDay.Instance.timeUntilDeadline / totalTime;
+        float totalTime = TimeOfDayRefs.Instance.totalTime * 4f;
+        float progress = TimeOfDayRefs.Instance.timeUntilDeadline / totalTime;
         return (int)_priceCurve.Evaluate(1 - progress);
     }
 }

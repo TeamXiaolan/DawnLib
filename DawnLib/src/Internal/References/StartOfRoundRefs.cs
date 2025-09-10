@@ -9,7 +9,14 @@ static class StartOfRoundRefs
         {
             if (_instance == null)
             {
-                _instance = UnityEngine.Object.FindFirstObjectByType<StartOfRound>();
+                if (StartOfRound.Instance != null)
+                {
+                    _instance = StartOfRound.Instance;
+                }
+                else
+                {
+                    _instance = UnityEngine.Object.FindFirstObjectByType<StartOfRound>();
+                }
             }
             return _instance;
         }
