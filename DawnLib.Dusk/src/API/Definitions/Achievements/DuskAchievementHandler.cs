@@ -12,9 +12,12 @@ static class DuskAchievementHandler
 
     internal static void LoadAll()
     {
-        foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
+        using (DuskPlugin.PersistentData.LargeEdit())
         {
-            achievementDefinition.LoadAchievementState(DuskPlugin.PersistentData);
+            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
+            {
+                achievementDefinition.LoadAchievementState(DuskPlugin.PersistentData);
+            }
         }
     }
 
