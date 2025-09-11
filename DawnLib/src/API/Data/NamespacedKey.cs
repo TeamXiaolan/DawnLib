@@ -153,8 +153,13 @@ public class NamespacedKey : INetworkSerializable
 
     public override int GetHashCode()
     {
-        // this should be like a proper hash implementation. womp womp
-        return Namespace.GetHashCode() * 5 + Key.GetHashCode();
+        unchecked
+        {
+            int hash = 13;
+            hash = hash * 17 + Namespace.GetHashCode();
+            hash = hash * 17 + Key.GetHashCode();
+            return hash;
+        }
     }
 
     public NamespacedKey<T> AsTyped<T>() where T : INamespaced
