@@ -1,7 +1,9 @@
-## v0.1.6
+# v0.1.6
+
 - Improved error handling with corrupted save data and tagging.
 - Fixed an issue with applying item spawn group tags
 - Added `ExtraScanEvents` with an `On Scan` event (requires `Scan Node Properties`)
+- Refined VehicleBase + VehicleStation code to be compatible with dropship attaching etc.
 
 ## v0.1.5
 
