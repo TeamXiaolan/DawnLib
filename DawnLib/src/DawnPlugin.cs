@@ -67,7 +67,8 @@ public class DawnPlugin : BaseUnityPlugin
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
-
+        HandleCorruptedDataPatch.Init();
+        
         EnemyDataPatch.Init();
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
@@ -84,6 +85,8 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
 
+        this.GetPersistentDataContainer().Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);
+        
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
     }
 

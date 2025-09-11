@@ -13,6 +13,8 @@ public class PersistentDataContainer : DataContainer
     private string _filePath;
     private bool _autoSave = true;
 
+    internal static List<PersistentDataContainer> HasCorruptedData { get; private set; } = [];
+    
     public class EditContext : IDisposable
     {
         private PersistentDataContainer _container;
@@ -37,7 +39,15 @@ public class PersistentDataContainer : DataContainer
         if (File.Exists(filePath))
         {
             Debuggers.PersistentDataContainer?.Log("loading existing file");
-            dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings);
+            try
+            {
+                dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings);
+            }
+            catch (Exception exception)
+            {
+                DawnPlugin.Logger.LogFatal($"Exception when loading from persistent data container ({Path.GetFileName(_filePath)}):\n{exception}");
+                HasCorruptedData.Add(this);
+            }
             Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
         }
     }
@@ -84,4 +94,11 @@ public class PersistentDataContainer : DataContainer
             DawnPlugin.Logger.LogError($"Error happened while trying to save PersistentDataContainer ({Path.GetFileName(_filePath)}):\n{e}");
         }
     }
+
+    internal void DeleteFile()
+    {
+        File.Delete(_filePath);
+    }
+    
+    public string FileName => Path.GetFileName(_filePath);
 }
