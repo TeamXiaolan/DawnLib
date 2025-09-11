@@ -78,6 +78,11 @@ static class TerminalPatches
         c.EmitCallvirt<List<TerminalNode>>("get_Item");
         c.EmitDelegate((TerminalNode unlockableNode) =>
         {
+            if (unlockableNode.shipUnlockableID < 0 || unlockableNode.shipUnlockableID > StartOfRound.Instance.unlockablesList.unlockables.Count)
+            {
+                DawnPlugin.Logger.LogWarning($"{unlockableNode.creatureName} ({unlockableNode.name}) has a ship unlockable id of {unlockableNode.shipUnlockableID} which doesn't make sense.");
+                return true;
+            }
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[unlockableNode.shipUnlockableID];
             DawnUnlockableItemInfo info = unlockableItem.GetDawnInfo();
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
