@@ -1,5 +1,6 @@
 # v0.1.7
 
+- Attempt at fixing some more file locking issues or whatever.
 - Fixed a bunch of the containers
 
 ## v0.1.6
