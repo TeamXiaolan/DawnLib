@@ -62,5 +62,5 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, 
         return mod.Content.assetBundles.SelectMany(it => it.dungeons).ToList();
     }
 
-    protected override string EntityNameReference => TilesToAdd.name;
+    protected override string EntityNameReference => TilesToAdd?.name ?? string.Empty;
 }

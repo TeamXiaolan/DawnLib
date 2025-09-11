@@ -1,6 +1,7 @@
 using System.Linq;
 
 namespace Dawn.Utils;
+
 public static class StringExtensions
 {
     public static string ToCapitalized(this string input)
@@ -9,5 +10,15 @@ public static class StringExtensions
             return string.Empty;
 
         return input.First().ToString().ToUpper() + input[1..];
+    }
+
+    public static string RemoveEnd(this string input, string end)
+    {
+        if (input.EndsWith(end))
+        {
+            return input[..^end.Length];
+        }
+
+        return input;
     }
 }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Dawn.Internal;
-using EasyTextEffects.Editor.MyBoxCopy.Extensions;
+using Dawn.Utils;
 using MonoMod.RuntimeDetour;
 
 namespace Dawn;

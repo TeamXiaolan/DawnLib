@@ -123,5 +123,5 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
         return mod.Content.assetBundles.SelectMany(it => it.items).ToList();
     }
 
-    protected override string EntityNameReference => Item.itemName;
+    protected override string EntityNameReference => Item?.itemName ?? string.Empty;
 }

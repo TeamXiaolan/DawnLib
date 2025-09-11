@@ -104,5 +104,5 @@ public class DuskEnemyDefinition : DuskContentDefinition<EnemyData, DawnEnemyInf
         // probably should be cached but i dont care anymore.
     }
 
-    protected override string EntityNameReference => EnemyType.enemyName;
+    protected override string EntityNameReference => EnemyType?.enemyName ?? string.Empty;
 }

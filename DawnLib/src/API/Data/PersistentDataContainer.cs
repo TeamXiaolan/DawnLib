@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dawn.Internal;
 using Newtonsoft.Json;
@@ -12,6 +13,8 @@ public class PersistentDataContainer : DataContainer
 {
     private string _filePath;
     private bool _autoSave = true;
+
+    private readonly SemaphoreSlim _saveLock = new(1, 1);
 
     internal static List<PersistentDataContainer> HasCorruptedData { get; private set; } = [];
     
@@ -82,16 +85,25 @@ public class PersistentDataContainer : DataContainer
     {
         Debuggers.PersistentDataContainer?.Log($"saving ({Path.GetFileName(_filePath)})");
 
+        await _saveLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            await using FileStream stream = File.Open(_filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            await using FileStream stream = new FileStream(_filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true);
+
             using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
-            await writer.WriteAsync(JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings));
+            string payload = JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings);
+            await writer.WriteAsync(payload).ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
+            await stream.FlushAsync().ConfigureAwait(false);
             Debuggers.PersistentDataContainer?.Log($"saved ({Path.GetFileName(_filePath)})");
         }
         catch (Exception e)
         {
             DawnPlugin.Logger.LogError($"Error happened while trying to save PersistentDataContainer ({Path.GetFileName(_filePath)}):\n{e}");
+        }
+        finally
+        {
+            _saveLock.Release();
         }
     }
 

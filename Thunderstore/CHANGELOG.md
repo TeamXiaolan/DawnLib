@@ -1,4 +1,8 @@
-# v0.1.6
+# v0.1.7
+
+- Fixed a bunch of the containers
+
+## v0.1.6
 
 - Improved error handling with corrupted save data and tagging.
 - Fixed an issue with applying item spawn group tags

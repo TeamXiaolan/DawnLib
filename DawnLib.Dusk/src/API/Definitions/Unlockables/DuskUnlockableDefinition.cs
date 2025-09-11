@@ -12,7 +12,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
     public const string REGISTRY_ID = "unlockables";
 
     [field: SerializeField]
-    public UnlockableItem UnlockableItem { get; private set; }
+    public UnlockableItem UnlockableItem { get; private set; } = new();
 
     [field: SerializeField]
     public DuskTerminalPredicate TerminalPredicate { get; private set; }

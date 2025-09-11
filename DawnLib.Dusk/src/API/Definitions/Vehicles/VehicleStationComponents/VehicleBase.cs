@@ -28,7 +28,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     NamespacedKey IVehicle.VehicleKey => VehicleKey;
 
-    public int RealLength { get; private set; }
+    public int RealLength { get; private set; } = 4;
     public Collider[] VehicleColliders { get; private set; }
 
     public virtual void Awake()
@@ -36,7 +36,6 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
         if (RopeAttachmentEndPoints.Length > 4)
         {
             RopeAttachmentEndPoints = RopeAttachmentEndPoints.Take(4).ToArray();
-            RealLength = 4;
         }
         else if (RopeAttachmentEndPoints.Length < 4)
         {

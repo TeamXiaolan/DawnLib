@@ -77,5 +77,5 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
         // probably should be cached but i dont care anymore.
     }
 
-    protected override string EntityNameReference => Weather.Name;
+    protected override string EntityNameReference => Weather?.Name ?? string.Empty;
 }
