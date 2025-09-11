@@ -23,5 +23,6 @@ less important:
 - allow Dusk to set custom data
 - DataContainer for lobby specific info? (things like gamemode settings, etc?)
 - look at converting current info classes to be records
+- NetworkDataContainer
 
 ## Needs to be done eventually

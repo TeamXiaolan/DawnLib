@@ -10,6 +10,20 @@ public class AutoItemGroupTagger(NamespacedKey tag, string itemGroupName) : IAut
         if (info.Item.spawnPositionTypes == null)
             return false;
 
-        return info.Item.spawnPositionTypes.Any(itemGroup => itemGroup != null && itemGroup.name == itemGroupName);
+        foreach (ItemGroup group in info.Item.spawnPositionTypes)
+        {
+            if (group == null)
+            {
+                DawnPlugin.Logger.LogWarning($"Item: {info.Key} has a null ItemGroup, why!?!?");
+                continue;
+            }
+
+            if (group.name == itemGroupName)
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

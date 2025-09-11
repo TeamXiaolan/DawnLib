@@ -1,4 +1,8 @@
-# v0.1.5
+## v0.1.6
+- Improved error handling with corrupted save data and tagging.
+- Fixed an issue with applying item spawn group tags
+
+## v0.1.5
 
 - Fixed issues with LLL shop items not being proper keyword names by LLL.
 - Fixed achievement UI sound not playing and breaking the achievements.
