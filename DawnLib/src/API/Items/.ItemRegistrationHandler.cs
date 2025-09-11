@@ -282,11 +282,12 @@ static class ItemRegistrationHandler
 
     private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
-        TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
-        TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
-        TerminalKeyword confirmPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "confirm");
-        TerminalKeyword denyPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword2 => keyword2.word == "deny");
-        TerminalNode cancelPurchaseNode = buyKeyword.compatibleNouns[0].result.terminalOptions[1].result;
+        Terminal terminal = TerminalRefs.Instance;
+        TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
+        TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
+        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
+        TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
+        TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
 
         List<Item> newBuyableList = self.buyableItemsList.ToList();
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();

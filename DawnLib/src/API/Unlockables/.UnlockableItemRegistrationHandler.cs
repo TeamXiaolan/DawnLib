@@ -43,7 +43,7 @@ static class UnlockableRegistrationHandler
             return;
         }
 
-        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmKeyword;
+        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
         TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
         TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
 

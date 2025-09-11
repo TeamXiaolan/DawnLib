@@ -15,7 +15,7 @@ internal static class TerminalRefs
                 BuyKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
                 InfoKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
                 RouteKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "route");
-                ConfirmKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "confirm");
+                ConfirmPurchaseKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "confirm");
                 DenyKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "deny");
                 CancelPurchaseNode = BuyKeyword.compatibleNouns[0].result.terminalOptions[1].result;
             }
@@ -26,7 +26,8 @@ internal static class TerminalRefs
     public static TerminalKeyword BuyKeyword { get; private set; }
     public static TerminalKeyword InfoKeyword { get; private set; }
     public static TerminalKeyword RouteKeyword { get; private set; }
-    public static TerminalKeyword ConfirmKeyword { get; private set; }
+    public static TerminalKeyword ConfirmPurchaseKeyword { get; private set; }
     public static TerminalKeyword DenyKeyword { get; private set; }
     public static TerminalNode CancelPurchaseNode { get; private set; }
+    public static int LastVehicleDelivered { get; internal set; } = -1;
 }

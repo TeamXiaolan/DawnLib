@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Unity.Netcode;
@@ -13,8 +14,16 @@ static class VehicleRegistrationPatch
 {
     internal static void Init()
     {
+        On.ItemDropship.DeliverVehicleOnServer += GetLastDuskVehicleDelivered;
         IL.ItemDropship.DeliverVehicleOnServer += DeliverDuskVehicleOnServer;
         On.Terminal.Awake += RegisterVehicles;
+    }
+
+    private static void GetLastDuskVehicleDelivered(On.ItemDropship.orig_DeliverVehicleOnServer orig, ItemDropship self)
+    {
+        TerminalRefs.LastVehicleDelivered = TerminalRefs.Instance.orderedVehicleFromTerminal;
+        DuskNetworker.Instance?.SyncVehicleDeliveredServerRpc(TerminalRefs.LastVehicleDelivered);
+        orig(self);
     }
 
     private static void DeliverDuskVehicleOnServer(ILContext il)
@@ -74,11 +83,12 @@ static class VehicleRegistrationPatch
 
     private static void RegisterVehicles(On.Terminal.orig_Awake orig, Terminal self)
     {
-        TerminalKeyword buyKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
-        TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
-        TerminalKeyword confirmPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "confirm");
-        TerminalKeyword denyPurchaseKeyword = self.terminalNodes.allKeywords.First(keyword => keyword.word == "deny");
-        TerminalNode cancelPurchaseNode = buyKeyword.compatibleNouns[0].result.terminalOptions[1].result;
+        Terminal terminal = TerminalRefs.Instance;
+        TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
+        TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
+        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
+        TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
+        TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
 
         List<TerminalKeyword> allKeywordsList = self.terminalNodes.allKeywords.ToList();
         List<CompatibleNoun> allBuyKeywordNounsList = buyKeyword.compatibleNouns.ToList();
@@ -111,7 +121,7 @@ static class VehicleRegistrationPatch
             allKeywordsList.Add(vehicleDefinition.BuyableVehiclePreset.BuyKeyword);
 
             TerminalNode confirmDuskNode = new TerminalNodeBuilder($"{vehicleDefinition.name}ConfirmPurchaseNode")
-                .SetDisplayText($"Ordered the {vehicleDefinition.VehicleDisplayName}. Your new balance is [playerCredits].\n\nWe are so confident in the quality of this product, it comes with a life-time warranty! If your Cruiser is lost or destroyed, you can get one free replacement. Items cannot be purchased while the vehicle is en route.\n")
+                .SetDisplayText($"Ordered the {vehicleDefinition.VehicleDisplayName}. Your new balance is [playerCredits].\n\nWe are so confident in the quality of this product, it comes with a life-time warranty! If your {vehicleDefinition.VehicleDisplayName} is lost or destroyed, you can get one free replacement. Items cannot be purchased while the vehicle is en route.\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(35)
                 .SetBuyVehicleIndex(currentVehicleIndex)

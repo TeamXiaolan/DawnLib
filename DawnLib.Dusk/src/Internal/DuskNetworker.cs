@@ -88,6 +88,18 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         DuskModContent.Achievements[namespacedKey.AsTyped<DuskAchievementDefinition>()].TryCompleteFromServer();
     }
 
+    [ServerRpc]
+    internal void SyncVehicleDeliveredServerRpc(int lastVehicleDelivered)
+    {
+        SyncVehicleDeliveredClientRpc(lastVehicleDelivered);
+    }
+
+    [ClientRpc]
+    private void SyncVehicleDeliveredClientRpc(int lastVehicleDelivered)
+    {
+        TerminalRefs.LastVehicleDelivered = lastVehicleDelivered;
+    }
+
     internal void SaveData()
     {
         if (!IsHost) return;

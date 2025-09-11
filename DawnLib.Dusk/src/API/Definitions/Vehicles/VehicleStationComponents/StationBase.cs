@@ -19,7 +19,7 @@ public abstract class StationBase : NetworkBehaviour, IStation
     [field: SerializeField]
     public NamespacedKey StationKey { get; private set; }
     [field: SerializeField]
-    public NamespacedKey CorrespondingVehicleKey { get; private set; }
+    public NamespacedKey<DuskVehicleDefinition> CorrespondingVehicleKey { get; private set; }
 
     public virtual void Awake()
     {

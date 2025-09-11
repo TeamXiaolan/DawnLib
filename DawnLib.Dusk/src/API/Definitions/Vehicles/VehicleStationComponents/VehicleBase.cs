@@ -1,4 +1,6 @@
+using System.Linq;
 using Dawn;
+using Dawn.Internal;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,12 +19,80 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
     public IStation? CurrentStation { get; private set; }
 
     [field: SerializeField]
-    public NamespacedKey VehicleKey { get; private set; }
+    public NamespacedKey<DuskVehicleDefinition> VehicleKey { get; private set; }
     [field: SerializeField]
     public NamespacedKey CorrespondingStationKey { get; private set; }
 
+    [field: SerializeField]
+    public Transform[] RopeAttachmentEndPoints { get; private set; }
+
+    NamespacedKey IVehicle.VehicleKey => VehicleKey;
+
+    public int RealLength { get; private set; }
+    public Collider[] VehicleColliders { get; private set; }
+
     public virtual void Awake()
     {
+        if (RopeAttachmentEndPoints.Length > 4)
+        {
+            RopeAttachmentEndPoints = RopeAttachmentEndPoints.Take(4).ToArray();
+            RealLength = 4;
+        }
+        else if (RopeAttachmentEndPoints.Length < 4)
+        {
+            RealLength = RopeAttachmentEndPoints.Length;
+            for (int i = RopeAttachmentEndPoints.Length; i < 4; i++)
+            {
+                RopeAttachmentEndPoints[i] = new GameObject($"RopeAttachmentPoint{i + 1}").transform;
+                RopeAttachmentEndPoints[i].SetParent(this.transform, false);
+                RopeAttachmentEndPoints[i].position = this.transform.position;
+            }
+        }
+
+        VehicleColliders = GetComponentsInChildren<Collider>();
+        int vehicleLayer = LayerMask.NameToLayer("Vehicle");
+        foreach (VehicleBase vehicleBase in FindObjectsOfType<VehicleBase>())
+        {
+            if (vehicleBase == this)
+                continue;
+
+            foreach (Collider collider1 in vehicleBase.VehicleColliders)
+            {
+                if (collider1.isTrigger || collider1.gameObject.layer != vehicleLayer)
+                    continue;
+
+                foreach (Collider collider2 in VehicleColliders)
+                {
+                    if (collider2.isTrigger || collider2.gameObject.layer != vehicleLayer)
+                        continue;
+
+                    Physics.IgnoreCollision(collider1, collider2);
+                }
+            }
+        }
+    }
+
+    public virtual void Update()
+    {
+    }
+
+    public virtual void LateUpdate()
+    {
+        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].BuyableVehiclePreset.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
+        {
+            for (int i = RealLength; i < 4; i++)
+            {
+                RopeAttachmentEndPoints[i].position = ItemDropshipRefs.Instance.ropes[i].transform.position;
+            }
+        }
+    }
+
+    public virtual void FixedUpdate()
+    {
+        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].BuyableVehiclePreset.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
+        {
+            this.transform.position = ItemDropshipRefs.Instance.deliverVehiclePoint.position;
+        }
     }
 
     public virtual void RequestDock(IStation? station)
