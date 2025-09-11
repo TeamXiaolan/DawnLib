@@ -27,8 +27,15 @@ public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
         {
             foreach (IAutoTagger<T> tagger in _autoTaggers)
             {
-                if (!tagger.ShouldApply(value))
-                    continue;
+                try
+                {
+                    if (!tagger.ShouldApply(value))
+                        continue;
+                }
+                catch (Exception exception)
+                {
+                    DawnPlugin.Logger.LogError($"Exception while applying tag: {tagger.Tag}\n{exception}");
+                }
 
                 value.Internal_AddTag(tagger.Tag);
             }
