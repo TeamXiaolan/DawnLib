@@ -201,18 +201,7 @@ static class AdditionalTilesRegistrationHandler
     {
         if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(dungeonFlow, out List<(string modName, string tagName)> tagsWithModNames))
         {
-            foreach ((string modName, string tagName) in tagsWithModNames)
-            {
-                string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-
-                if (normalizedModName == "lethalcompany")
-                {
-                    normalizedModName = "lethal_level_loader";
-                }
-                Debuggers.Dungeons?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to dungeon {dungeonFlow.name}");
-                tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
-            }
+            tags.AddToList(tagsWithModNames, Debuggers.Dungeons, dungeonFlow.name);
         }
     }
 

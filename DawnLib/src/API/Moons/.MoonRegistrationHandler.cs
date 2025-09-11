@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using Dawn.Internal;
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using MonoMod.RuntimeDetour;
-using UnityEngine;
 
 namespace Dawn;
 
@@ -46,21 +44,7 @@ static class MoonRegistrationHandler
             }
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(level, out List<(string tagModName, string tagName)> tagsWithModNames))
-            {
-                foreach ((string tagModName, string tagName) in tagsWithModNames)
-                {
-                    string normalizedTagModName = NamespacedKey.NormalizeStringForNamespacedKey(tagModName, false);
-                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-
-                    if (normalizedTagModName == "lethalcompany")
-                    {
-                        normalizedTagModName = "lethal_level_loader";
-                    }
-                    Debuggers.Moons?.Log($"Adding tag {normalizedTagModName}:{normalizedTagName} to level {level.PlanetName}");
-                    tags.Add(NamespacedKey.From(normalizedTagModName, normalizedTagName));
-                }
-            }
+            CollectLLLTags(level, tags);
 
             TerminalNode? routeNode = null;
             TerminalKeyword? nameKeyword = null;
@@ -92,5 +76,13 @@ static class MoonRegistrationHandler
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
+    }
+
+    private static void CollectLLLTags(SelectableLevel moon, HashSet<NamespacedKey> tags)
+    {
+        if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(moon, out List<(string modName, string tagName)> tagsWithModNames))
+        {
+            tags.AddToList(tagsWithModNames, Debuggers.Moons, moon.name);
+        }
     }
 }

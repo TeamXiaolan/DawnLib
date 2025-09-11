@@ -15,7 +15,6 @@ less important:
 less important:
 
 - Suits UI stuff for fitting em in.
-- Generalise the Collecting of LLL tags for each registry.
 - check over all visibility (public, internal, private)
 - config stuff (NamespacedKey TOMLConverter, pretty print generics, look at patching to allow lists?)
 - Create a "Terminal Store Catalogue" class that handles formatting to remove the need for the transpiler in TerminalPatches.cs

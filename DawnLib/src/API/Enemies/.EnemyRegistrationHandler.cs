@@ -315,21 +315,7 @@ static class EnemyRegistrationHandler
                 }
 
                 HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-                if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
-                {
-                    foreach ((string modName, string tagName) in tagsWithModNames)
-                    {
-                        string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                        string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-
-                        if (normalizedModName == "lethalcompany")
-                        {
-                            normalizedModName = "lethal_level_loader";
-                        }
-                        Debuggers.Enemies?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to enemy {enemyType.enemyName}");
-                        tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
-                    }
-                }
+                CollectLLLTags(enemyType, tags);
 
                 TerminalNode? bestiaryNode = null;
                 TerminalKeyword? nameKeyword = null;
@@ -375,6 +361,14 @@ static class EnemyRegistrationHandler
             }
         }
         LethalContent.Enemies.Freeze();
+    }
+
+    private static void CollectLLLTags(EnemyType enemyType, HashSet<NamespacedKey> tags)
+    {
+        if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(enemyType, out List<(string modName, string tagName)> tagsWithModNames))
+        {
+            tags.AddToList(tagsWithModNames, Debuggers.Enemies, enemyType.name);
+        }
     }
 
     private static void TryAddToEnemyList(DawnEnemyInfo enemyInfo, List<SpawnableEnemyWithRarity> list)

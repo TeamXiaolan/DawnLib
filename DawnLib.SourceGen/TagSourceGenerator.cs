@@ -27,6 +27,7 @@ public class TagSourceGenerator : ISourceGenerator
 
         GeneratedClass @class = new GeneratedClass(Visibility.Public, "Tags") // todo: e.g. MeltdownTags
         {
+            IsPartial = true,
             IsStatic = true,
             Attributes = { DawnLibSourceGenConstants.CodeGenAttribute }
         };

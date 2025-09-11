@@ -230,21 +230,7 @@ static class ItemRegistrationHandler
             }
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
-            {
-                foreach ((string modName, string tagName) in tagsWithModNames)
-                {
-                    string normalizedModName = NamespacedKey.NormalizeStringForNamespacedKey(modName, false);
-                    string normalizedTagName = NamespacedKey.NormalizeStringForNamespacedKey(tagName, false);
-
-                    if (normalizedModName == "lethalcompany")
-                    {
-                        normalizedModName = "lethal_level_loader";
-                    }
-                    Debuggers.Items?.Log($"Adding tag {normalizedModName}:{normalizedTagName} to item {item.itemName}");
-                    tags.Add(NamespacedKey.From(normalizedModName, normalizedTagName));
-                }
-            }
+            CollectLLLTags(item, tags);
             DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo, null);
             item.SetDawnInfo(itemInfo);
             LethalContent.Items.Register(itemInfo);
@@ -364,5 +350,13 @@ static class ItemRegistrationHandler
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray(); // SO so it sticks
         self.terminalNodes.allKeywords = newTerminalKeywords.ToArray(); // SO so it sticks
         orig(self);
+    }
+
+    private static void CollectLLLTags(Item item, HashSet<NamespacedKey> tags)
+    {
+        if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetAllTagsWithModNames(item, out List<(string modName, string tagName)> tagsWithModNames))
+        {
+            tags.AddToList(tagsWithModNames, Debuggers.Items, item.name);
+        }
     }
 }
