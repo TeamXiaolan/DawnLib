@@ -14,8 +14,7 @@ static class EnemyDataPatch
     private static void HandleEnemyDeathData(On.EnemyAI.orig_HitEnemy orig, EnemyAI self, int force, PlayerControllerB playerWhoHit, bool playHitSFX, int hitID)
     {
         DawnEnemyAdditionalData data = DawnEnemyAdditionalData.CreateOrGet(self);
-        ExtraEnemyEvents events = null;
-        ExtraEnemyEvents.eventListeners.TryGetValue(self, out events);
+        ExtraEnemyEvents.eventListeners.TryGetValue(self, out ExtraEnemyEvents events);
 
         if (playerWhoHit)
         {

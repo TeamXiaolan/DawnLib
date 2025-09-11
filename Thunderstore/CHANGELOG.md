@@ -1,4 +1,10 @@
-# v0.1.4
+# v0.1.5
+
+- Fixed issues with LLL shop items not being proper keyword names by LLL.
+- Fixed achievement UI sound not playing and breaking the achievements.
+- Fixed an issue where mods like MoreShipUpgrades allow LethalLib shop items to be disabled incorrectly.
+
+## v0.1.4
 
 - Fixed issues with checking unlockables and unlockables not registering.
 - Fixed issues with trying to use the Achievement Predicate
