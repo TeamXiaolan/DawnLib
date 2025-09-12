@@ -27,6 +27,7 @@ public class DuskPlugin : BaseUnityPlugin
         AchievementRegistrationPatch.Init();
         NetworkerPatch.Init();
         VehicleRegistrationPatch.Init();
+        EntityReplacementRegistrationPatch.Init();
 
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));

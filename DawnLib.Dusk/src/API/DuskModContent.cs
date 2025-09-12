@@ -6,4 +6,5 @@ public static class DuskModContent
 {
     public static Registry<DuskAchievementDefinition> Achievements = new();
     public static Registry<DuskVehicleDefinition> Vehicles = new();
+    public static Registry<DuskEntityReplacementDefinition> EntityReplacements = new();
 }

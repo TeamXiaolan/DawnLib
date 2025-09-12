@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Dawn;
 
@@ -15,6 +16,12 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
         if (Daytime != null) Daytime.ParentInfo = this;
         BestiaryNode = bestiaryNode;
         NameKeyword = nameKeyword;
+
+        EnemyAI enemyAI = enemyType.enemyPrefab.GetComponent<EnemyAI>();
+        foreach (FieldInfo fieldInfo in enemyAI.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
+        {
+            FieldNameFieldInfoDict.Add(fieldInfo.Name.ToLowerInvariant(), fieldInfo);
+        }
     }
 
     public EnemyType EnemyType { get; }
@@ -25,6 +32,8 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
 
     public TerminalNode? BestiaryNode { get; }
     public TerminalKeyword? NameKeyword { get; }
+
+    public Dictionary<string, FieldInfo> FieldNameFieldInfoDict { get; } = new();
 
     public IEnumerable<T> GetAllSpawned<T>() where T : EnemyAI
     {

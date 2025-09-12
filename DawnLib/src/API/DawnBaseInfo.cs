@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Dawn.Internal;
-using ES3Types;
 
 namespace Dawn;
 public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEvents where T : DawnBaseInfo<T>
@@ -13,7 +12,7 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
     {
         get
         {
-            if (_customData == null) _customData = new DataContainer();
+            _customData ??= new DataContainer();
             return _customData;
         }
     }
@@ -31,7 +30,8 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
     {
         return _tags.Contains(tag);
     }
-    public IEnumerable<NamespacedKey> AllTags()
+
+    public IEnumerable<NamespacedKey> AllTags() // TODO Should this not be IEnumerable but instead HashSet?
     {
         return _tags;
     }
@@ -46,6 +46,7 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
         Debuggers.Tags?.Log($"Internal_AddTag: {tag} !!!");
         _tags.Add(tag);
     }
+
     public void OnFrozen()
     {
         if (_customData == null)
