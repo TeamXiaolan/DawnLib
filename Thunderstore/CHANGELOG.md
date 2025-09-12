@@ -1,4 +1,9 @@
-# v0.1.7
+## v0.1.8
+
+- Added `On First Scan` to `ExtraScanEvents`
+- Fixed issues with other mods adding duplicate items into the list of all items
+
+## v0.1.7
 
 - Attempt at fixing some more file locking issues or whatever.
 - Fixed a bunch of the definitions being broken in editor

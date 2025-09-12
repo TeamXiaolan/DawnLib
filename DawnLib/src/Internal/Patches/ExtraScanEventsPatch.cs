@@ -14,7 +14,7 @@ static class ExtraScanEventsPatch
 
         if (self.MeetsScanNodeRequirements(node, playerscript) && node.gameObject.TryGetComponent(out ExtraScanEvents events))
         {
-            events._onScan.Invoke();
+            events.OnScan();
         }
     }
 }

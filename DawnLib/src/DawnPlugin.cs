@@ -19,6 +19,7 @@ namespace Dawn;
 public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
+    internal static PersistentDataContainer PersistentData { get; private set; } = null!;
 
     private void Awake()
     {
@@ -85,7 +86,8 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
 
-        this.GetPersistentDataContainer().Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);
+        PersistentData = this.GetPersistentDataContainer();
+        PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);
         
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
     }
