@@ -13,7 +13,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
     public const string REGISTRY_ID = "weathers";
 
     [field: SerializeField]
-    public Weather Weather { get; private set; }
+    public Weather Weather { get; private set; } // TODO
 
     public override void Register(DuskMod mod, WeatherData data)
     {

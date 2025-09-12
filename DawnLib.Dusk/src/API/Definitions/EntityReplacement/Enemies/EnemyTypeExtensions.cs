@@ -10,7 +10,7 @@ public static class EnemyTypeExtensions
         return enemyReplacementDefinition;
     }
 
-    internal static bool HasDawnInfo(this EnemyType enemyType)
+    internal static bool HasEnemyReplacement(this EnemyType enemyType)
     {
         return enemyType.GetEnemyReplacement() != null;
     }

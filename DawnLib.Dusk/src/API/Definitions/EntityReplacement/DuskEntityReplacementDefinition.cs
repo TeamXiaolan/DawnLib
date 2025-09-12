@@ -18,6 +18,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
 
     public List<StringWithAudioClip> AudioClipToReplaceWithFieldNames { get; private set; } = new();
+    public List<StringWithAudioClipArray> AudioClipToReplaceWithFieldNamesArray { get; private set; } = new();
+    public List<StringWithAudioClipList> AudioClipToReplaceWithFieldNamesList { get; private set; } = new();
 
     public override void Register(DuskMod mod)
     {
