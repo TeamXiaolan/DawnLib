@@ -285,7 +285,8 @@ static class EnemyRegistrationHandler
 
                 if (LethalContent.Enemies.ContainsKey(key))
                 {
-                    DawnPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. Skipping...");
+                    DawnPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                    enemyType.SetDawnInfo(LethalContent.Enemies[key]);
                     continue;
                 }
 

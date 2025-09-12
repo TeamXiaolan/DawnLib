@@ -211,7 +211,8 @@ static class ItemRegistrationHandler
 
             if (LethalContent.Items.ContainsKey(key))
             {
-                DawnPlugin.Logger.LogWarning($"Item {item.itemName} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"Item {item.itemName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                item.SetDawnInfo(LethalContent.Items[key]);
                 continue;
             }
             itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);

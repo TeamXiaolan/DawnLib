@@ -105,7 +105,8 @@ static class UnlockableRegistrationHandler
 
             if (LethalContent.Unlockables.ContainsKey(key))
             {
-                DawnPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                unlockableItem.SetDawnInfo(LethalContent.Unlockables[key]);
                 continue;
             }
 

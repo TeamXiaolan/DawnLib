@@ -41,6 +41,7 @@ static class TerminalPatches
         c.Emit(OpCodes.Ldelem_Ref);
         c.EmitDelegate((Item item) =>
         {
+            Debuggers.Items?.Log($"Checking {item.itemName}");
             DawnItemInfo info = item.GetDawnInfo();
             DawnShopItemInfo? shopInfo = info.ShopInfo;
             if (shopInfo == null)

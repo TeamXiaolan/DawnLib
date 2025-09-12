@@ -37,7 +37,8 @@ static class WeatherRegistrationHandler
 
             if (LethalContent.Weathers.ContainsKey(key))
             {
-                DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                weatherEffect.SetDawnInfo(LethalContent.Weathers[key]);
                 continue;
             }
 

@@ -160,7 +160,9 @@ static class MapObjectRegistrationHandler
 
             if (LethalContent.MapObjects.ContainsKey(key))
             {
-                DawnPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. Skipping...");
+                DawnPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                DawnMapObjectInfoContainer duplicateContainer = mapObject.AddComponent<DawnMapObjectInfoContainer>();
+                duplicateContainer.Value = LethalContent.MapObjects[key];
                 continue;
             }
 
