@@ -1,17 +1,19 @@
 ## v0.1.8
 
-- Added `On First Scan` to `ExtraScanEvents`
-- Fixed issues with other mods adding duplicate items into the list of all items
+- Added `On First Scan` event to `ExtraScanEvents`.
+- Fixed issues with other mods adding duplicate items into the list of all items.
+- Fixed more compatibilities with other mods.
+- Made sure to fix issues with achievement popup not working properly.
 
 ## v0.1.7
 
 - Attempt at fixing some more file locking issues or whatever.
-- Fixed a bunch of the definitions being broken in editor
+- Fixed a bunch of the definitions being broken in editor.
 
 ## v0.1.6
 
 - Improved error handling with corrupted save data and tagging.
-- Fixed an issue with applying item spawn group tags
+- Fixed an issue with applying item spawn group tags.
 - Added `ExtraScanEvents` with an `On Scan` event (requires `Scan Node Properties`)
 - Refined VehicleBase + VehicleStation code to be compatible with dropship attaching etc.
 
@@ -24,7 +26,7 @@
 ## v0.1.4
 
 - Fixed issues with checking unlockables and unlockables not registering.
-- Fixed issues with trying to use the Achievement Predicate
+- Fixed issues with trying to use the Achievement Predicate.
 - Fixed Editor.dll issues with accessing achievements for AchievementTriggers script.
 - Fixed issues with DailyPricingStrategy accessing TimeOfDay too early.
 - Fixed issues with achievements causing a share violation error on loading multiple achievements simultaneously sometimes.

@@ -20,7 +20,7 @@ public class ExtraScanEvents : MonoBehaviour
     internal void OnScan()
     {
         _onScan.Invoke();
-        if(string.IsNullOrEmpty(_saveId.Namespace) || string.IsNullOrEmpty(_saveId.Key))
+        if (string.IsNullOrEmpty(_saveId.Namespace) || string.IsNullOrEmpty(_saveId.Key))
             return;
         
         HashSet<NamespacedKey> alreadyScanned = DawnLib.GetCurrentSave()!.GetOrCreateDefault<HashSet<NamespacedKey>>(_dataKey);
