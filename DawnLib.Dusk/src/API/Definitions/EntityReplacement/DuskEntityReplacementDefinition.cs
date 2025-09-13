@@ -29,3 +29,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     protected override string EntityNameReference => TypedKey.Key;
 }
+
+public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
+{
+    public abstract void Apply(TAI ai);
+}
