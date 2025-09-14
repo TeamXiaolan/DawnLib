@@ -13,7 +13,7 @@ static class EntityReplacementRegistrationPatch
     {
         using (new DetourContext(priority: int.MaxValue))
         {
-            On.EnemyAI.Start += ReplaceEnemyEntity;
+            // On.EnemyAI.Start += ReplaceEnemyEntity;
         }
     }
 

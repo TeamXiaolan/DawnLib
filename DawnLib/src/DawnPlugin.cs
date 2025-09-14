@@ -56,7 +56,6 @@ public class DawnPlugin : BaseUnityPlugin
         {
             TerminalFormatterCompat.Init();
         }
-        
 
         ExtendedTOML.Init();
         PersistentDataHandler.Init();

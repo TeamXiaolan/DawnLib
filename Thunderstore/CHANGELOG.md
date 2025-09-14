@@ -1,4 +1,8 @@
-# v0.1.8
+# v0.1.9
+
+- Fixed an issue with some enemies like from pikmin not registering.
+
+## v0.1.8
 
 - Added `On First Scan` event to `ExtraScanEvents`.
 - Fixed issues with other mods adding duplicate items into the list of all items.
