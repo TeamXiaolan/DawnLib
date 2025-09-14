@@ -18,11 +18,11 @@ static class MoonRegistrationHandler
         using (new DetourContext(priority: int.MaxValue))
         {
             On.StartOfRound.Awake += CollectLevels;
-            On.StartOfRound.Start += CollectLevels;
+            On.QuickMenuManager.Start += CollectLevels;
         }
     }
 
-    private static void CollectLevels(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void CollectLevels(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
     {
         orig(self);
         if (LethalContent.Moons.IsFrozen)
@@ -30,7 +30,7 @@ static class MoonRegistrationHandler
 
         Terminal terminal = TerminalRefs.Instance;
         TerminalKeyword routeKeyword = TerminalRefs.RouteKeyword;
-        foreach (SelectableLevel level in self.levels)
+        foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
             Debuggers.Moons?.Log($"Registering level: {level.PlanetName}");
             NamespacedKey<DawnMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
