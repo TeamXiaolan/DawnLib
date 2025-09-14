@@ -98,6 +98,13 @@ static class EnemyRegistrationHandler
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
+        if (!self.enemyType.HasDawnInfo())
+        {
+            DawnPlugin.Logger.LogError($"Enemy with names {self.enemyType.name} and {self.enemyType.enemyName} has no DawnEnemyInfo, this means this enemy is not properly registered.");
+            orig(self);
+            return;
+        }
+
         DawnEnemyInfo enemyInfo = self.enemyType.GetDawnInfo();
         if (enemyInfo.HasTag(DawnLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
         {
