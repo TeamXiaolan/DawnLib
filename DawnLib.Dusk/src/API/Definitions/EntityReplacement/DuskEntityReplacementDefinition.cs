@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Dawn;
 using UnityEngine;
 
@@ -8,18 +7,17 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 {
     public const string REGISTRY_ID = "entityreplacements";
 
-    [field: SerializeField]
+    [field: SerializeField, InspectorName("Namespace")]
     private NamespacedKey<DuskEntityReplacementDefinition> _typedKey;
 
     [field: SerializeField]
+    public string EntityReplacementName { get; private set; }
+
+    [field: SerializeField, InspectorName("Entity to be Replaced"), UnlockedNamespacedKey, Space(5)]
     public NamespacedKey EntityToReplaceKey { get; private set; }
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
-
-    public List<StringWithAudioClip> AudioClipToReplaceWithFieldNames { get; private set; } = new();
-    public List<StringWithAudioClipArray> AudioClipToReplaceWithFieldNamesArray { get; private set; } = new();
-    public List<StringWithAudioClipList> AudioClipToReplaceWithFieldNamesList { get; private set; } = new();
 
     public override void Register(DuskMod mod)
     {
@@ -27,7 +25,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         DuskModContent.EntityReplacements.Register(this);
     }
 
-    protected override string EntityNameReference => TypedKey.Key;
+    protected override string EntityNameReference => EntityReplacementName;
 }
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class

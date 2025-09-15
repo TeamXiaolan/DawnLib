@@ -17,7 +17,7 @@ public abstract class DuskContentDefinition : ScriptableObject
     [SerializeField]
     private List<DuskDynamicConfig> _configEntries = new();
 
-    [SerializeField]
+    [SerializeField, UnlockedNamespacedKey]
     internal List<NamespacedKey> _tags = new();
 
     internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
