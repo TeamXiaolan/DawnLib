@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New Enemy Replacement Definition", menuName = $"{DuskModConstants.EntityReplacements}/Enemy Replacement Definition")]
 public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
 {
     [field: SerializeField]
