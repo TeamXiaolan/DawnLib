@@ -2,38 +2,33 @@ using UnityEngine;
 
 namespace Dusk;
 
-public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
+public abstract class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
 {
     [field: SerializeField]
-    public AudioClip? HitBodySFX { get; private set; }
+    public AudioClip? GrabSFX { get; private set; }
 
     [field: SerializeField]
-    public AudioClip HitEnemyVoiceSFX { get; private set; }
+    public AudioClip? DropSFX { get; private set; }
 
     [field: SerializeField]
-    public AudioClip DeathSFX { get; private set; }
+    public AudioClip? PocketSFX { get; private set; }
 
     [field: SerializeField]
-    public AudioClip StunSFX { get; private set; }
+    public AudioClip? ThrowSFX { get; private set; }
 
-    [field: SerializeField]
-    public AudioClip[] AnimVoiceClips { get; private set; } = [];
-
-    [field: SerializeField]
-    public AudioClip[] AudioClips { get; private set; } = [];
-
-    public override void Apply(EnemyAI enemyAI)
+    public override void Apply(GrabbableObject grabbableObject)
     {
     }
 }
 
-public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDefinition where T : EnemyAI
+public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefinition where T : GrabbableObject
 {
-    protected abstract void Apply(T enemyAI);
-    public override void Apply(EnemyAI enemyAI)
+    protected abstract void Apply(T grabbableObject);
+    public override void Apply(GrabbableObject grabbableObject)
     {
-        base.Apply(enemyAI);
-        Apply((T)enemyAI);
+        base.Apply(grabbableObject);
+        Apply((T)grabbableObject);
+
         foreach (SkinnedMeshReplacement skinnedMeshReplacement in SkinnedMeshReplacements)
         {
             if (string.IsNullOrEmpty(skinnedMeshReplacement.PathToRenderer))
@@ -41,7 +36,7 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
                 continue;
             }
 
-            GameObject? gameObject = enemyAI.transform.Find(skinnedMeshReplacement.PathToRenderer)?.gameObject;
+            GameObject? gameObject = grabbableObject.transform.Find(skinnedMeshReplacement.PathToRenderer)?.gameObject;
             if (gameObject != null)
             {
                 TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
@@ -56,7 +51,7 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
                 continue;
             }
 
-            GameObject? gameObject = enemyAI.transform.Find(meshReplacement.PathToRenderer)?.gameObject;
+            GameObject? gameObject = grabbableObject.transform.Find(meshReplacement.PathToRenderer)?.gameObject;
             if (gameObject != null)
             {
                 TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();

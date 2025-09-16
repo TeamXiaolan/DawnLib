@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Dawn;
 using UnityEngine;
 
@@ -15,6 +16,12 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     [field: SerializeField, InspectorName("Entity to be Replaced"), UnlockedNamespacedKey, Space(5)]
     public NamespacedKey EntityToReplaceKey { get; private set; }
+
+    [field: SerializeField]
+    public List<SkinnedMeshReplacement> SkinnedMeshReplacements { get; private set; }
+
+    [field: SerializeField]
+    public List<MeshReplacement> MeshReplacements { get; private set; }
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
