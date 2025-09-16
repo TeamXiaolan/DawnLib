@@ -8,11 +8,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 {
     public const string REGISTRY_ID = "entityreplacements";
 
-    [field: SerializeField, InspectorName("Namespace")]
+    [field: SerializeField, InspectorName("Namespace"), UnlockedNamespacedKey]
     private NamespacedKey<DuskEntityReplacementDefinition> _typedKey;
-
-    [field: SerializeField]
-    public string EntityReplacementName { get; private set; }
 
     [field: SerializeField, InspectorName("Entity to be Replaced"), UnlockedNamespacedKey, Space(5)]
     public NamespacedKey EntityToReplaceKey { get; private set; }
@@ -32,7 +29,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         DuskModContent.EntityReplacements.Register(this);
     }
 
-    protected override string EntityNameReference => EntityReplacementName;
+    protected override string EntityNameReference => TypedKey.Key;
 }
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class

@@ -6,8 +6,8 @@ namespace Dusk;
 [Serializable]
 public class MaterialWithIndex
 {
-    [SerializeField]
+    [field: SerializeField]
     public Material Material { get; private set; }
-    [SerializeField]
+    [field: SerializeField]
     public int Index { get; private set; }
 }

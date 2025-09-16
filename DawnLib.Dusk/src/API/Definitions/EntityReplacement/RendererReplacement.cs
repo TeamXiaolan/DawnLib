@@ -7,22 +7,22 @@ namespace Dusk;
 [Serializable]
 public class SkinnedMeshReplacement : RendererReplacement
 {
-    [SerializeField]
+    [field: SerializeField]
     public SkinnedMeshRenderer? ReplacementRenderer { get; private set; }
 }
 
 [Serializable]
 public class MeshReplacement : RendererReplacement
 {
-    [SerializeField]
+    [field: SerializeField]
     public Mesh? ReplacementMesh { get; private set; }
 }
 
 [Serializable]
 public class RendererReplacement
 {
-    [SerializeField]
+    [field: SerializeField]
     public string PathToRenderer { get; private set; }
-    [SerializeField]
+    [field: SerializeField]
     public List<MaterialWithIndex> ReplacementMaterials { get; private set; } = new();
 }
