@@ -16,6 +16,9 @@ less important:
 
 ## Bongo
 
+- Check comment in dusk enemy replacement on the nest field.
+- Rarity on the entity replacements, I think maybe it should work with like having the base default skin with a weight of 100 on All, and then other skins apply on top? im not sure but like some way to make it 100% snowy skins on snowy moons but also not having the snowy skins anywhere else and also having it allow multiple skins in one moon.
+
 less important:
 
 - Suits UI stuff for fitting em in.

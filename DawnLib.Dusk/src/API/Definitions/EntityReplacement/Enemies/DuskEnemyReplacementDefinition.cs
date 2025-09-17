@@ -5,6 +5,10 @@ namespace Dusk;
 public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
 {
     [field: SerializeField]
+    public MeshReplacement NestedMeshReplacement { get; private set; } = new(); // how do i do this? it's part of the enemytype so i cant just change it directly, and its a not always a per enemy thing like baboon hawks have groups based on one nest and old birds have a nest per old bird BEFORE the old bird spawns, might need some patches, transpilers and us predicting what variants are gonna pop out.
+
+    [field: Space(10f)]
+    [field: SerializeField]
     public AudioClip? HitBodySFX { get; private set; }
 
     [field: SerializeField]
