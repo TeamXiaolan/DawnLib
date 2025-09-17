@@ -20,6 +20,9 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     [field: SerializeField]
     public List<MeshReplacement> MeshReplacements { get; private set; }
 
+    [field: SerializeField]
+    public List<GameObjectWithPath> GameObjectAddons { get; private set; } // TODO if the gameobject has a networkobject, i need to do the finnicky network object parenting stuff? or just disable auto object parent sync
+
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
 

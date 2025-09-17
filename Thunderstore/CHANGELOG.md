@@ -1,4 +1,9 @@
-# v0.1.9
+# V0.2.0
+
+- Implemented prototype of EntityReplacementDefinition
+- Improved Editor tools a bit more in terms of NamespacedKey formatting and other areas like the package building picking up assetbundles.
+
+## v0.1.9
 
 - Fixed an issue with some enemies like from pikmin not registering.
 

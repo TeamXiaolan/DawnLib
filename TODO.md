@@ -3,6 +3,10 @@
 ## Xu
 
 - ESR/MRR?
+  - Transpilers
+  - ParticleSystem replacements
+  - Enemy Nests
+
 - Vehicles
 
 less important:

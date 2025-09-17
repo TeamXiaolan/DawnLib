@@ -33,7 +33,9 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
     public override void Apply(EnemyAI enemyAI)
     {
         base.Apply(enemyAI);
+
         Apply((T)enemyAI);
+
         foreach (SkinnedMeshReplacement skinnedMeshReplacement in SkinnedMeshReplacements)
         {
             if (string.IsNullOrEmpty(skinnedMeshReplacement.PathToRenderer))
@@ -61,6 +63,17 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
             {
                 TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
                 transferRenderer.RendererReplacement = meshReplacement;
+            }
+        }
+
+        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
+        {
+            GameObject? gameObject = enemyAI.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
+            if (gameObject != null)
+            {
+                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
+                addOn.transform.position = gameObject.transform.position;
+                addOn.transform.rotation = gameObjectAddon.Rotation * addOn.transform.rotation;
             }
         }
     }
