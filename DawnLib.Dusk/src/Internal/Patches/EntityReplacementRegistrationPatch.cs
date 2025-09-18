@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Dawn;
 using MonoMod.RuntimeDetour;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 namespace Dusk.Internal;
 
 static class EntityReplacementRegistrationPatch
 {
     private static readonly NamespacedKey Key = NamespacedKey.From("dawn_lib", "entity_replacements");
+
+    private static Random? replacementRandom = null;
 
     internal static void Init()
     {
@@ -18,6 +20,11 @@ static class EntityReplacementRegistrationPatch
         {
             On.EnemyAI.Start += ReplaceEnemyEntity;
         }
+        On.StartOfRound.SetShipReadyToLand += (orig, self) =>
+        {
+            replacementRandom = null;
+            orig(self);
+        };
     }
 
     private static void RegisterEnemyReplacements()
@@ -50,7 +57,12 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        int chosenWeight = Random.Range(0, totalWeight.Value + 1); // todo make deterministic based on seed?
+        if (replacementRandom == null)
+        {
+            replacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
+        
+        int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
