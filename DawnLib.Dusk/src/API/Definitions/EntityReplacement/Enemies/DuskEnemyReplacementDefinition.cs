@@ -1,3 +1,6 @@
+using System.Runtime.CompilerServices;
+using Dawn;
+using Dusk.Weights;
 using UnityEngine;
 
 namespace Dusk;
@@ -26,8 +29,20 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
     [field: SerializeField]
     public AudioClip[] AudioClips { get; private set; } = [];
 
+    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
+    
+    // todo: make configurable. remember were getting rid of config stuff in content container
+    public string MoonSpawnWeights;
+    public string InteriorSpawnWeights;
+    public string WeatherSpawnWeights;
+    
     public override void Apply(EnemyAI enemyAI)
     {
+        SpawnWeightsPreset preset = new SpawnWeightsPreset();
+        preset.SetupSpawnWeightsPreset(MoonSpawnWeights, InteriorSpawnWeights, WeatherSpawnWeights);
+        Weights = new WeightTableBuilder<DawnMoonInfo>()
+            .SetGlobalWeight(preset)
+            .Build();
     }
 }
 

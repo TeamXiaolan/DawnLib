@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dawn;
 using MonoMod.RuntimeDetour;
+using Random = UnityEngine.Random;
 
 namespace Dusk.Internal;
 
@@ -41,8 +42,25 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        DuskEnemyReplacementDefinition pickedEnemyReplacement = replacements[0]; // TODO rarity
-        pickedEnemyReplacement.Apply(self);
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+
+        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        if (totalWeight == null)
+        {
+            return;
+        }
+
+        int chosenWeight = Random.Range(0, totalWeight.Value + 1); // todo make deterministic based on seed?
+        foreach (DuskEnemyReplacementDefinition replacement in replacements)
+        {
+            chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
+            if(chosenWeight > 0)
+                continue;
+
+            replacement.Apply(self);
+        }
+
+        
         orig(self);
     }
 }

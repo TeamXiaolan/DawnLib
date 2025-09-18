@@ -25,7 +25,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
-
+    
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
