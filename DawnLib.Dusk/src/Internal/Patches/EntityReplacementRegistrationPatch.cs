@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using HarmonyLib;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using Random = System.Random;
 
@@ -25,8 +27,43 @@ static class EntityReplacementRegistrationPatch
             replacementRandom = null;
             orig(self);
         };
+
+        _ = new Hook(AccessTools.DeclaredMethod(typeof(EnemyAINestSpawnObject), "Awake"), OnNestSpawnAwake);
     }
 
+    private static void OnNestSpawnAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<EnemyAINestSpawnObject> orig, EnemyAINestSpawnObject self)
+    {
+        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
+        {
+            orig(self);
+            return;
+        }
+
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+
+        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        if (totalWeight == null)
+        {
+            return;
+        }
+
+        if (replacementRandom == null)
+        {
+            replacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
+        
+        int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
+        foreach (DuskEnemyReplacementDefinition replacement in replacements)
+        {
+            chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
+            if(chosenWeight > 0)
+                continue;
+
+            replacement.ApplyNest(self);
+        }
+        orig(self);
+    }
+    
     private static void RegisterEnemyReplacements()
     {
         foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)

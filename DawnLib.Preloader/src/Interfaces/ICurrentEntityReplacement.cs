@@ -1,7 +1,8 @@
 namespace Dawn.Preloader.Interfaces;
 
-[InjectInterface("EnemyType")]
-[InjectInterface("Item")]
+[InjectInterface("EnemyAI")]
+[InjectInterface("GrabbableObject")]
+[InjectInterface("EnemyAINestSpawnObject")]
 public interface ICurrentEntityReplacement
 {
     object? CurrentEntityReplacement { get; set; }

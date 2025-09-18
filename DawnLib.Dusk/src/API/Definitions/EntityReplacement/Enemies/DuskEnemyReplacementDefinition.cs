@@ -44,6 +44,56 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
             .SetGlobalWeight(preset)
             .Build();
     }
+
+    public virtual void ApplyNest(EnemyAINestSpawnObject nest)
+    {
+        EnemyType type = nest.enemyType;
+        if (type.useMinEnemyThresholdForNest)
+        {
+            return;
+        }
+        
+        foreach (SkinnedMeshReplacement skinnedMeshReplacement in SkinnedMeshReplacements)
+        {
+            if (string.IsNullOrEmpty(skinnedMeshReplacement.PathToRenderer))
+            {
+                continue;
+            }
+
+            GameObject? gameObject = nest.transform.Find(skinnedMeshReplacement.PathToRenderer)?.gameObject;
+            if (gameObject != null)
+            {
+                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
+                transferRenderer.RendererReplacement = skinnedMeshReplacement;
+            }
+        }
+
+        foreach (MeshReplacement meshReplacement in MeshReplacements)
+        {
+            if (string.IsNullOrEmpty(meshReplacement.PathToRenderer))
+            {
+                continue;
+            }
+
+            GameObject? gameObject = nest.transform.Find(meshReplacement.PathToRenderer)?.gameObject;
+            if (gameObject != null)
+            {
+                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
+                transferRenderer.RendererReplacement = meshReplacement;
+            }
+        }
+
+        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
+        {
+            GameObject? gameObject = nest.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
+            if (gameObject != null)
+            {
+                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
+                addOn.transform.position = gameObject.transform.position;
+                addOn.transform.rotation = gameObjectAddon.Rotation * addOn.transform.rotation;
+            }
+        }
+    }
 }
 
 public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDefinition where T : EnemyAI
