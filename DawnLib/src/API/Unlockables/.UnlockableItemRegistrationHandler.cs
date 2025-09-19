@@ -120,6 +120,7 @@ static class UnlockableRegistrationHandler
             }
         }
 
+        buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray();
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
         self.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
 
