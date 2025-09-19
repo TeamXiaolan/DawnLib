@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using Dawn;
 using Dusk.Weights;
 using UnityEngine;
@@ -8,20 +8,17 @@ namespace Dusk;
 public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
 {
     [field: SerializeField]
-    public MeshReplacement NestedMeshReplacement { get; private set; } = new(); // how do i do this? it's part of the enemytype so i cant just change it directly, and its a not always a per enemy thing like baboon hawks have groups based on one nest and old birds have a nest per old bird BEFORE the old bird spawns, might need some patches, transpilers and us predicting what variants are gonna pop out.
+    public List<RendererReplacement> NestedRendererReplacements { get; private set; }
 
     [field: Space(10f)]
     [field: SerializeField]
     public AudioClip? HitBodySFX { get; private set; }
 
     [field: SerializeField]
-    public AudioClip HitEnemyVoiceSFX { get; private set; }
+    public AudioClip? HitEnemyVoiceSFX { get; private set; }
 
     [field: SerializeField]
-    public AudioClip DeathSFX { get; private set; }
-
-    [field: SerializeField]
-    public AudioClip StunSFX { get; private set; }
+    public AudioClip? StunSFX { get; private set; }
 
     [field: SerializeField]
     public AudioClip[] AnimVoiceClips { get; private set; } = [];
@@ -52,47 +49,23 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
         {
             return;
         }
-        
-        foreach (SkinnedMeshReplacement skinnedMeshReplacement in SkinnedMeshReplacements)
+
+        foreach (RendererReplacement rendererReplacement in NestedRendererReplacements)
         {
-            if (string.IsNullOrEmpty(skinnedMeshReplacement.PathToRenderer))
+            if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))
             {
                 continue;
             }
 
-            GameObject? gameObject = nest.transform.Find(skinnedMeshReplacement.PathToRenderer)?.gameObject;
+            GameObject? gameObject = nest.transform.Find(rendererReplacement.PathToRenderer)?.gameObject;
             if (gameObject != null)
             {
                 TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = skinnedMeshReplacement;
+                transferRenderer.RendererReplacement = rendererReplacement;
             }
         }
 
-        foreach (MeshReplacement meshReplacement in MeshReplacements)
-        {
-            if (string.IsNullOrEmpty(meshReplacement.PathToRenderer))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = nest.transform.Find(meshReplacement.PathToRenderer)?.gameObject;
-            if (gameObject != null)
-            {
-                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = meshReplacement;
-            }
-        }
-
-        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
-        {
-            GameObject? gameObject = nest.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
-            if (gameObject != null)
-            {
-                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-                addOn.transform.position = gameObject.transform.position;
-                addOn.transform.rotation = gameObjectAddon.Rotation * addOn.transform.rotation;
-            }
-        }
+        nest.SetNestReplacement(this);
     }
 }
 
@@ -105,38 +78,28 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
 
         Apply((T)enemyAI);
 
-        foreach (SkinnedMeshReplacement skinnedMeshReplacement in SkinnedMeshReplacements)
+        foreach (RendererReplacement rendererReplacement in RendererReplacements)
         {
-            if (string.IsNullOrEmpty(skinnedMeshReplacement.PathToRenderer))
+            if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))
             {
                 continue;
             }
 
-            GameObject? gameObject = enemyAI.transform.Find(skinnedMeshReplacement.PathToRenderer)?.gameObject;
+            GameObject? gameObject = enemyAI.transform.Find(rendererReplacement.PathToRenderer)?.gameObject;
             if (gameObject != null)
             {
                 TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = skinnedMeshReplacement;
-            }
-        }
-
-        foreach (MeshReplacement meshReplacement in MeshReplacements)
-        {
-            if (string.IsNullOrEmpty(meshReplacement.PathToRenderer))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = enemyAI.transform.Find(meshReplacement.PathToRenderer)?.gameObject;
-            if (gameObject != null)
-            {
-                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = meshReplacement;
+                transferRenderer.RendererReplacement = rendererReplacement;
             }
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
+            if (string.IsNullOrEmpty(gameObjectAddon.PathToGameObject))
+            {
+                continue;
+            }
+
             GameObject? gameObject = enemyAI.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
             if (gameObject != null)
             {

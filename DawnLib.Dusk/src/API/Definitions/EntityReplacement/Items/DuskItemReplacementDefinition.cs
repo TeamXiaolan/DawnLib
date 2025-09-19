@@ -27,35 +27,37 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
     public override void Apply(GrabbableObject grabbableObject)
     {
         base.Apply(grabbableObject);
+
         Apply((T)grabbableObject);
 
-        foreach (SkinnedMeshReplacement skinnedMeshReplacement in SkinnedMeshReplacements)
+        foreach (RendererReplacement rendererReplacement in RendererReplacements)
         {
-            if (string.IsNullOrEmpty(skinnedMeshReplacement.PathToRenderer))
+            if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))
             {
                 continue;
             }
 
-            GameObject? gameObject = grabbableObject.transform.Find(skinnedMeshReplacement.PathToRenderer)?.gameObject;
+            GameObject? gameObject = grabbableObject.transform.Find(rendererReplacement.PathToRenderer)?.gameObject;
             if (gameObject != null)
             {
                 TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = skinnedMeshReplacement;
+                transferRenderer.RendererReplacement = rendererReplacement;
             }
         }
 
-        foreach (MeshReplacement meshReplacement in MeshReplacements)
+        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            if (string.IsNullOrEmpty(meshReplacement.PathToRenderer))
+            if (string.IsNullOrEmpty(gameObjectAddon.PathToGameObject))
             {
                 continue;
             }
 
-            GameObject? gameObject = grabbableObject.transform.Find(meshReplacement.PathToRenderer)?.gameObject;
+            GameObject? gameObject = grabbableObject.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
             if (gameObject != null)
             {
-                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = meshReplacement;
+                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
+                addOn.transform.position = gameObject.transform.position;
+                addOn.transform.rotation = gameObjectAddon.Rotation * addOn.transform.rotation;
             }
         }
     }

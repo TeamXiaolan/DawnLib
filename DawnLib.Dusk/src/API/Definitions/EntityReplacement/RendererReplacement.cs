@@ -1,25 +1,23 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dusk;
 
-[Serializable]
+[CreateAssetMenu(fileName = "New Skinned Mesh Replacement", menuName = $"Entity Replacements/Renderer Replacements/Skinned Mesh Replacement")]
 public class SkinnedMeshReplacement : RendererReplacement
 {
     [field: SerializeField]
     public SkinnedMeshRenderer? ReplacementRenderer { get; private set; }
 }
 
-[Serializable]
+[CreateAssetMenu(fileName = "New Mesh Replacement", menuName = $"Entity Replacements/Renderer Replacements/Mesh Replacement")]
 public class MeshReplacement : RendererReplacement
 {
     [field: SerializeField]
     public Mesh? ReplacementMesh { get; private set; }
 }
 
-[Serializable]
-public class RendererReplacement
+public class RendererReplacement : ScriptableObject
 {
     [field: SerializeField]
     public string PathToRenderer { get; private set; }

@@ -26,7 +26,9 @@ static class EntityReplacementRegistrationPatch
         using (new DetourContext(priority: int.MaxValue))
         {
             On.EnemyAI.Start += ReplaceEnemyEntity;
+            On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
         }
+
         On.StartOfRound.SetShipReadyToLand += (orig, self) =>
         {
             replacementRandom = null;
@@ -34,29 +36,29 @@ static class EntityReplacementRegistrationPatch
         };
 
         _ = new Hook(AccessTools.DeclaredMethod(typeof(EnemyAINestSpawnObject), "Awake"), OnNestSpawnAwake);
-        
+
         // this isn't great, but i don't know a better way to do it?
         // could maybe do some analysis on the game and then source generate this?
         DuskPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceAudioClips', this transpiler runs on a lot of functions, so this may take a second!");
         IL.EnemyAI.HitEnemy += DynamicallyReplaceAudioClips;
         IL.EnemyAI.SetEnemyStunned += DynamicallyReplaceAudioClips;
-        
+
         IL.BaboonBirdAI.killPlayerAnimation += DynamicallyReplaceAudioClips;
         IL.BaboonBirdAI.OnCollideWithEnemy += DynamicallyReplaceAudioClips;
         IL.BaboonBirdAI.OnCollideWithPlayer += DynamicallyReplaceAudioClips;
         IL.BaboonBirdAI.Update += DynamicallyReplaceAudioClips;
 
         IL.BushWolfEnemy.OnCollideWithEnemy += DynamicallyReplaceAudioClips;
-        
+
         IL.ButlerEnemyAI.ButlerBlowUpAndPop += DynamicallyReplaceAudioClips;
         IL.ButlerEnemyAI.StabPlayerClientRpc += DynamicallyReplaceAudioClips;
         IL.ButlerEnemyAI.Update += DynamicallyReplaceAudioClips;
 
         IL.DocileLocustBeesAI.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
         IL.DocileLocustBeesAI.Update += DynamicallyReplaceAudioClips;
-        
+
         IL.DoublewingAI.Update += DynamicallyReplaceAudioClips;
-        
+
         IL.FlowerSnakeEnemy.MakeChuckleClientRpc += DynamicallyReplaceAudioClips;
         IL.FlowerSnakeEnemy.SetClingToPlayer += DynamicallyReplaceAudioClips;
         IL.FlowerSnakeEnemy.SetFlappingLocalClient += DynamicallyReplaceAudioClips;
@@ -64,31 +66,41 @@ static class EntityReplacementRegistrationPatch
         IL.FlowerSnakeEnemy.StartLeapOnLocalClient += DynamicallyReplaceAudioClips;
         IL.FlowerSnakeEnemy.StopClingingOnLocalClient += DynamicallyReplaceAudioClips;
         IL.FlowerSnakeEnemy.StopLeapOnLocalClient += DynamicallyReplaceAudioClips;
-        
+
         IL.MaskedPlayerEnemy.killAnimation += DynamicallyReplaceAudioClips;
         IL.MaskedPlayerEnemy.SetMaskGlow += DynamicallyReplaceAudioClips;
-        
+
         IL.NutcrackerEnemyAI.HitEnemy += DynamicallyReplaceAudioClips;
         IL.NutcrackerEnemyAI.ReloadGun += DynamicallyReplaceAudioClips;
         IL.NutcrackerEnemyAI.Update += DynamicallyReplaceAudioClips;
-        
+
         IL.RadMechAI.ChangeBroadcastClipClientRpc += DynamicallyReplaceAudioClips;
         IL.RadMechAI.LateUpdate += DynamicallyReplaceAudioClips;
         IL.RadMechAI.Stomp += DynamicallyReplaceAudioClips;
-        
+
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
     }
-    
+
+    private static void ReplaceEnemyEntityUsingNest(On.EnemyAI.orig_UseNestSpawnObject orig, EnemyAI self, EnemyAINestSpawnObject nestSpawnObject)
+    {
+        orig(self, nestSpawnObject);
+        if (nestSpawnObject.HasNestReplacement())
+        {
+            DuskEnemyReplacementDefinition enemyReplacementDefinition = nestSpawnObject.GetNestReplacement()!;
+            enemyReplacementDefinition.Apply(self);
+        }
+    }
+
     // note!!! this transpiler should only be used on enemy AIs!
     private static readonly Dictionary<string, Func<EnemyAI, AudioClip, AudioClip>> clipReplacerFunctions = new()
     {
         { nameof(EnemyType.hitBodySFX), GenerateAudioClipReplacer(it => it.HitBodySFX) },
         { nameof(EnemyType.hitEnemyVoiceSFX), GenerateAudioClipReplacer(it => it.HitEnemyVoiceSFX) },
-        { nameof(EnemyType.deathSFX), GenerateAudioClipReplacer(it => it.DeathSFX) }, // isn't used in game??
         { nameof(EnemyType.stunSFX), GenerateAudioClipReplacer(it => it.StunSFX) }
     };
+
     private static void DynamicallyReplaceAudioClips(ILContext il)
     {
         Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceAudioClips)}. il count {il.Body.Instructions.Count}");
@@ -98,26 +110,29 @@ static class EntityReplacementRegistrationPatch
         // this could also probably be cleaned up significantly.
 
         // evil for loop. loop backwards so emitting doesn't fuck us over later
-        for (c.Index = c.Instrs.Count - 1; c.Index - 1 >= 0; c.Index--)
+        for (c.Index = c.Instrs.Count - 1; c.Index -1 >= 0; c.Index--)
         {
-            if(c.Next.OpCode != OpCodes.Ldfld) 
+            if (c.Next.OpCode != OpCodes.Ldfld)
                 continue;
-            
-            if(c.Next.MatchLdfld<EnemyType>(nameof(EnemyType.audioClips)))
+
+            if (c.Next.MatchLdfld<EnemyType>(nameof(EnemyType.audioClips)))
             {
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate((EnemyAI self, AudioClip[] existingAudioClips) =>
                 {
                     ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
-                    if (replacement.CurrentEntityReplacement == null) return existingAudioClips;
+                    if (replacement.CurrentEntityReplacement == null)
+                    {
+                        return existingAudioClips;
+                    }
                     return ((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement).AudioClips;
                 });
                 continue;
             }
-            
+
             foreach ((string name, var replacer) in clipReplacerFunctions)
             {
-                if(!c.Next.MatchLdfld<EnemyType>(name))
+                if (!c.Next.MatchLdfld<EnemyType>(name))
                     continue;
 
                 c.Emit(OpCodes.Ldarg_0);
@@ -159,16 +174,13 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (replacementRandom == null)
-        {
-            replacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
-        }
+        replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
         
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
-            if(chosenWeight > 0)
+            if (chosenWeight > 0)
                 continue;
 
             replacement.ApplyNest(self);
@@ -191,10 +203,15 @@ static class EntityReplacementRegistrationPatch
     }
 
     private static void ReplaceEnemyEntity(On.EnemyAI.orig_Start orig, EnemyAI self)
-    {;
+    {
+        orig(self);
         if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
         {
-            orig(self);
+            return;
+        }
+
+        if (self.HasEnemyReplacement())
+        {
             return;
         }
 
@@ -206,22 +223,16 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (replacementRandom == null)
-        {
-            replacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
-        }
+        replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
         
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
-            if(chosenWeight > 0)
+            if (chosenWeight > 0)
                 continue;
 
             replacement.Apply(self);
         }
-
-        
-        orig(self);
     }
 }

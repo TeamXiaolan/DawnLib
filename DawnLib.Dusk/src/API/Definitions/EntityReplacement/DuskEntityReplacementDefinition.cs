@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Dawn;
+using Dawn.Preloader.Interfaces;
 using UnityEngine;
 
 namespace Dusk;
@@ -15,10 +16,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public NamespacedKey EntityToReplaceKey { get; private set; }
 
     [field: SerializeField]
-    public List<SkinnedMeshReplacement> SkinnedMeshReplacements { get; private set; }
-
-    [field: SerializeField]
-    public List<MeshReplacement> MeshReplacements { get; private set; } = new();
+    public List<RendererReplacement> RendererReplacements { get; private set; } = new();
 
     [field: SerializeField]
     public List<GameObjectWithPath> GameObjectAddons { get; private set; } = new(); // TODO if the gameobject has a networkobject, i need to do the finnicky network object parenting stuff? or just disable auto object parent sync
@@ -37,5 +35,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
-    public abstract void Apply(TAI ai);
+    public virtual void Apply(TAI ai)
+    {
+        ((ICurrentEntityReplacement)ai).CurrentEntityReplacement = this;
+    }
 }
