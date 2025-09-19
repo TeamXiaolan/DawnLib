@@ -18,7 +18,7 @@ public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> target
 {
     public T? Provide(TBase info)
     {
-        return Equals(targetKey) ? value : default;
+        return Equals(info.Key, targetKey) ? value : default;
     }
 }
 
@@ -37,7 +37,7 @@ public class MatchingKeyWeightContextualProvider<TBase>(NamespacedKey<TBase> tar
 
     public int? Provide(TBase info)
     {
-        return Equals(targetKey) ? weight.GetWeight() : null;
+        return Equals(info.Key, targetKey) ? weight.GetWeight() : null;
     }
 }
 
