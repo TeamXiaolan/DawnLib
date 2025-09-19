@@ -1,5 +1,4 @@
 using Dawn.Internal;
-using MonoMod.RuntimeDetour;
 
 namespace Dawn;
 
@@ -78,6 +77,9 @@ static class UnlockableRegistrationHandler
 
             unlockableInfo.RequestNode.terminalOptions[0].noun = confirmPurchaseKeyword;
             unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);
+
+            unlockableInfo.ConfirmNode = unlockableInfo.RequestNode.terminalOptions[0].result;
+
             unlockableInfo.RequestNode.terminalOptions[1].noun = denyPurchaseKeyword;
             unlockableInfo.RequestNode.terminalOptions[1].result = cancelPurchaseNode;
 
