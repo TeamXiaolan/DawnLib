@@ -37,6 +37,7 @@ static class EntityReplacementRegistrationPatch
         
         // this isn't great, but i don't know a better way to do it?
         // could maybe do some analysis on the game and then source generate this?
+        DuskPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceAudioClips', this transpiler runs on a lot of functions, so this may take a second!");
         IL.EnemyAI.HitEnemy += DynamicallyReplaceAudioClips;
         IL.EnemyAI.SetEnemyStunned += DynamicallyReplaceAudioClips;
         
@@ -77,6 +78,7 @@ static class EntityReplacementRegistrationPatch
         
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
+        DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
     }
     
     // note!!! this transpiler should only be used on enemy AIs!
@@ -89,14 +91,14 @@ static class EntityReplacementRegistrationPatch
     };
     private static void DynamicallyReplaceAudioClips(ILContext il)
     {
-        Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceAudioClips)}");
+        Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceAudioClips)}. il count {il.Body.Instructions.Count}");
         ILCursor c = new ILCursor(il);
 
         // you probably need to do null/empty array checks as well
         // this could also probably be cleaned up significantly.
 
         // evil for loop. loop backwards so emitting doesn't fuck us over later
-        for (c.Index = c.Instrs.Count - 1; c.Index >= 0; c.Index--)
+        for (c.Index = c.Instrs.Count - 1; c.Index - 1 >= 0; c.Index--)
         {
             if(c.Next.OpCode != OpCodes.Ldfld) 
                 continue;
@@ -110,8 +112,9 @@ static class EntityReplacementRegistrationPatch
                     if (replacement.CurrentEntityReplacement == null) return existingAudioClips;
                     return ((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement).AudioClips;
                 });
+                continue;
             }
-
+            
             foreach ((string name, var replacer) in clipReplacerFunctions)
             {
                 if(!c.Next.MatchLdfld<EnemyType>(name))
@@ -119,6 +122,7 @@ static class EntityReplacementRegistrationPatch
 
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate(replacer);
+                break;
             }
         }
     }
