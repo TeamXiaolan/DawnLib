@@ -9,9 +9,47 @@ static class UnlockableRegistrationHandler
     internal static void Init()
     {
         On.Terminal.Start += RegisterShipUnlockables;
+        On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
     }
 
-    internal static void UpdateAllUnlockablePrices()
+    private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
+    {
+        if (modifiedDisplayText.Contains("[buyableItemsList]") && modifiedDisplayText.Contains("[unlockablesSelectionList]"))
+        {
+            int index = modifiedDisplayText.IndexOf(@":");
+
+            // example: "* Loud horn    //    Price: $150"
+            foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+            {
+                if (unlockableItemInfo.HasTag(DawnLibTags.IsExternal))
+                    continue;
+
+                if (!unlockableItemInfo.UnlockableItem.alwaysInStock)
+                    continue; // skip decors
+
+                string? unlockableName = unlockableItemInfo.UnlockableItem.unlockableName;
+                TerminalPurchaseResult result = unlockableItemInfo.PurchasePredicate.CanPurchase();
+                if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+                {
+                    if (!string.IsNullOrEmpty(failedResult.OverrideName))
+                    {
+                        Debuggers.Unlockables?.Log($"Overriding name of {unlockableItemInfo.Key} with {failedResult.OverrideName}");
+                    }
+                    unlockableName = failedResult.OverrideName;
+                }
+
+                UpdateUnlockablePrices(unlockableItemInfo);
+
+                string newLine = $"\n* {unlockableName ?? string.Empty}    //    Price: ${unlockableItemInfo.RequestNode?.itemCost ?? 0}";
+
+                modifiedDisplayText = modifiedDisplayText.Insert(index + 1, newLine);
+            }
+        }
+
+        return orig(self, modifiedDisplayText, node);
+    }
+
+    internal static void UpdateAllUnlockablePrices() // TODO call ths in places
     {
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
         {
