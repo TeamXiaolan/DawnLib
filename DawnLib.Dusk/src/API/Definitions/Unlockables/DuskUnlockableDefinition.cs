@@ -15,6 +15,9 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
     public UnlockableItem UnlockableItem { get; private set; } = new();
 
     [field: SerializeField]
+    public string InfoNodeText { get; private set; } = string.Empty;
+
+    [field: SerializeField]
     public DuskTerminalPredicate TerminalPredicate { get; private set; }
 
     [field: SerializeField]
@@ -74,6 +77,8 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
                 TerminalPredicate.Register(Key);
                 builder.SetPurchasePredicate(TerminalPredicate);
             }
+
+            builder.SetInfoText(InfoNodeText);
 
             ApplyTagsTo(builder);
         });

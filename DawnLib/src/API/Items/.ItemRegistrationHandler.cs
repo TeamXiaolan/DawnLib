@@ -127,7 +127,7 @@ static class ItemRegistrationHandler
         {
             Item buyableItem = terminal.buyableItemsList[i];
             TerminalNode? infoNode = null;
-            TerminalNode? requestNode = null!;
+            TerminalNode? requestNode = null;
             TerminalNode receiptNode = null!;
 
             Debuggers.Items?.Log($"Processing {buyableItem.itemName}");

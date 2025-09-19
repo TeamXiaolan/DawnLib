@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Dawn.Internal;
 
 namespace Dawn;
 
 public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo>, ITerminalPurchase
 {
-    internal DawnUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnUnlockableItemInfo> key, HashSet<NamespacedKey> tags, UnlockableItem unlockableItem, IProvider<int> cost, DawnSuitInfo? suitInfo, DawnPlaceableObjectInfo? placeableObjectInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnUnlockableItemInfo> key, HashSet<NamespacedKey> tags, UnlockableItem unlockableItem, IProvider<int> cost, DawnSuitInfo? suitInfo, DawnPlaceableObjectInfo? placeableObjectInfo, TerminalNode? requestNode, TerminalNode? confirmNode, TerminalKeyword? buyKeyword, TerminalNode? infoNode, IDataContainer? customData) : base(key, tags, customData)
     {
         PurchasePredicate = predicate;
         UnlockableItem = unlockableItem;
@@ -14,8 +15,11 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
         PlaceableObjectInfo = placeableObjectInfo;
         if (PlaceableObjectInfo != null) PlaceableObjectInfo.ParentInfo = this;
         Cost = cost;
-        RequestNode = unlockableItem.shopSelectionNode;
-        ConfirmNode = unlockableItem.shopSelectionNode?.terminalOptions.FirstOrDefault()?.result;
+
+        RequestNode = requestNode;
+        ConfirmNode = confirmNode;
+        BuyKeyword = buyKeyword;
+        InfoNode = infoNode;
     }
 
     public UnlockableItem UnlockableItem { get; }
@@ -26,4 +30,6 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
 
     public TerminalNode? RequestNode { get; internal set; }
     public TerminalNode? ConfirmNode { get; internal set; }
+    public TerminalKeyword? BuyKeyword { get; internal set; }
+    public TerminalNode? InfoNode { get; internal set; }
 }

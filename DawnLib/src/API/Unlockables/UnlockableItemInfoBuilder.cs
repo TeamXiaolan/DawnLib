@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Dawn;
@@ -69,9 +70,16 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     private DawnSuitInfo? _suitInfo;
     private DawnPlaceableObjectInfo? _placeableObjectInfo;
     private ITerminalPurchasePredicate? _purchasePredicate;
+    private string _infoNodeText = string.Empty;
 
     internal UnlockableInfoBuilder(NamespacedKey<DawnUnlockableItemInfo> key, UnlockableItem unlockableItem) : base(key, unlockableItem)
     {
+    }
+
+    public UnlockableInfoBuilder SetInfoText(string infoText)
+    {
+        _infoNodeText = infoText;
+        return this;
     }
 
     public UnlockableInfoBuilder SetCost(int cost)
@@ -124,6 +132,16 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
                 .Build();
         }
 
+        TerminalNode? infoNode = null;
+        if (!string.IsNullOrEmpty(_infoNodeText))
+        {
+            infoNode = new TerminalNodeBuilder($"{value.unlockableName}Info")
+                .SetDisplayText(_infoNodeText)
+                .SetClearPreviousText(true)
+                .SetMaxCharactersToType(35)
+                .Build();
+        }
+
         IProvider<int>? cost = _cost;
         if (cost == null && value.shopSelectionNode == null)
         {
@@ -135,8 +153,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
             cost = new SimpleProvider<int>(value.shopSelectionNode.itemCost);
         }
 
-
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
-        return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo, customData);
+        return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo, value.shopSelectionNode, value.shopSelectionNode?.terminalOptions?.FirstOrDefault()?.result, null, infoNode, customData);
     }
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Dawn.Internal;
 
 namespace Dawn;
@@ -61,6 +63,13 @@ static class UnlockableRegistrationHandler
         }
         Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
+        Terminal terminal = TerminalRefs.Instance;
+        TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
+        TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
+
+        List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
+        List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
+        List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
         foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
             if (unlockableInfo.HasTag(DawnLibTags.IsExternal))
@@ -83,11 +92,36 @@ static class UnlockableRegistrationHandler
             unlockableInfo.RequestNode.terminalOptions[1].noun = denyPurchaseKeyword;
             unlockableInfo.RequestNode.terminalOptions[1].result = cancelPurchaseNode;
 
+            unlockableInfo.BuyKeyword = new TerminalKeywordBuilder($"Buy{unlockableInfo.UnlockableItem.unlockableName}")
+                .SetWord($"{unlockableInfo.UnlockableItem.unlockableName.ToLowerInvariant()}")
+                .SetDefaultVerb(buyKeyword)
+                .Build();
+
+            newTerminalKeywords.Add(unlockableInfo.BuyKeyword);
+
+            if (unlockableInfo.InfoNode != null)
+            {
+                newInfoCompatibleNouns.Add(new CompatibleNoun()
+                {
+                    noun = unlockableInfo.BuyKeyword,
+                    result = unlockableInfo.InfoNode
+                });
+            }
+
+            newBuyCompatibleNouns.Add(new CompatibleNoun()
+            {
+                noun = unlockableInfo.BuyKeyword,
+                result = unlockableInfo.RequestNode
+            });
+
             if (unlockableInfo.UnlockableItem.prefabObject.TryGetComponent(out AutoParentToShip autoParentToShip))
             {
                 autoParentToShip.unlockableID = latestUnlockableID;
             }
         }
+
+        infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
+        self.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
 
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
         {
@@ -134,7 +168,20 @@ static class UnlockableRegistrationHandler
                 placeableObjectInfo = new DawnPlaceableObjectInfo();
             }
 
-            DawnUnlockableItemInfo unlockableItemInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo, null);
+            TerminalNode? requestNode = unlockableItem.shopSelectionNode;
+            TerminalNode? confirmNode = unlockableItem.shopSelectionNode?.terminalOptions?.FirstOrDefault()?.result;
+            TerminalKeyword? unlockableBuyKeyword = null;
+            if (requestNode != null)
+            {
+                unlockableBuyKeyword = TerminalRefs.BuyKeyword.compatibleNouns.Where(x => x.result == requestNode).Select(x => x.noun).FirstOrDefault();
+            }
+            TerminalNode? infoNode = null;
+            if (requestNode != null)
+            {
+                infoNode = infoKeyword.compatibleNouns.Where(x => x.noun == unlockableBuyKeyword)?.Select(x => x.result).FirstOrDefault();
+            }
+
+            DawnUnlockableItemInfo unlockableItemInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo, requestNode, confirmNode, unlockableBuyKeyword, infoNode, null);
             unlockableItem.SetDawnInfo(unlockableItemInfo);
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
