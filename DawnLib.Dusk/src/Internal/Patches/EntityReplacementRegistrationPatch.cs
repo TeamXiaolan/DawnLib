@@ -85,12 +85,12 @@ static class EntityReplacementRegistrationPatch
 
     private static void ReplaceEnemyEntityUsingNest(On.EnemyAI.orig_UseNestSpawnObject orig, EnemyAI self, EnemyAINestSpawnObject nestSpawnObject)
     {
-        orig(self, nestSpawnObject);
         if (nestSpawnObject.HasNestReplacement())
         {
             DuskEnemyReplacementDefinition enemyReplacementDefinition = nestSpawnObject.GetNestReplacement()!;
             enemyReplacementDefinition.Apply(self);
         }
+        orig(self, nestSpawnObject);
     }
 
     // note!!! this transpiler should only be used on enemy AIs!
