@@ -45,12 +45,6 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; }
 
-    [field: Header("Configs | Misc")]
-    [field: SerializeField]
-    public float PowerLevel { get; private set; }
-    [field: SerializeField]
-    public int MaxSpawnCount { get; private set; }
-
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public EnemyConfig Config { get; private set; }
 
@@ -109,8 +103,8 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
             WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
 
-            PowerLevel = section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", PowerLevel),
-            MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", MaxSpawnCount),
+            PowerLevel = section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", EnemyType.PowerLevel),
+            MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", EnemyType.MaxCount),
         };
     }
 
