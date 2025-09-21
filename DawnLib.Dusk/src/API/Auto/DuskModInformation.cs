@@ -25,7 +25,7 @@ public class DuskModInformation : ScriptableObject
     public string ModDescription { get; internal set; }
 
     [field: SerializeField]
-    [Tooltip("Comma separated list of dependencies that this mod depends on apart from the default CRLib, BepInEx and potentially WeatherRegistry, grab from the thunderstore page.")]
+    [Tooltip("Comma separated list of dependencies that this mod depends on apart from the default DawnLib, BepInEx and potentially WeatherRegistry, grab from the thunderstore page.")]
     public List<string> ExtraDependencies { get; internal set; } = new();
 
     [field: SerializeField]
