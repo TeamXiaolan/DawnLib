@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Dawn;
 using UnityEngine;
-using WeatherRegistry;
-using WeatherRegistry.Modules;
 
 namespace Dusk;
 
@@ -68,25 +66,25 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
             effectPermanentObject = effectPermanentObject,
         };
 
-        ImprovedWeatherEffect newImprovedWeatherEffect = new(weatherEffect);
+        WeatherRegistry.ImprovedWeatherEffect newImprovedWeatherEffect = new(weatherEffect);
         newImprovedWeatherEffect.SunAnimatorBool = SunAnimatorBool;
         newImprovedWeatherEffect.EffectObject?.SetActive(false);
         newImprovedWeatherEffect.WorldObject?.SetActive(false);
 
-        Weather weather = new($"{WeatherName}", newImprovedWeatherEffect)
+        WeatherRegistry.Weather weather = new($"{WeatherName}", newImprovedWeatherEffect)
         {
             Color = TerminalColour,
-            Config = new RegistryWeatherConfig
+            Config = new WeatherRegistry.Modules.RegistryWeatherConfig
             {
-                DefaultWeight = new IntegerConfigHandler(SpawnWeight),
-                ScrapValueMultiplier = new FloatConfigHandler(ScrapValueMultiplier),
-                ScrapAmountMultiplier = new FloatConfigHandler(ScrapAmountMultiplier),
-                FilteringOption = new BooleanConfigHandler(!IsExclude, CreateExcludeConfig),
-                LevelFilters = new LevelListConfigHandler(ExcludeOrIncludeList),
+                DefaultWeight = new WeatherRegistry.IntegerConfigHandler(SpawnWeight),
+                ScrapValueMultiplier = new WeatherRegistry.FloatConfigHandler(ScrapValueMultiplier),
+                ScrapAmountMultiplier = new WeatherRegistry.FloatConfigHandler(ScrapAmountMultiplier),
+                FilteringOption = new WeatherRegistry.BooleanConfigHandler(!IsExclude, CreateExcludeConfig),
+                LevelFilters = new WeatherRegistry.LevelListConfigHandler(ExcludeOrIncludeList),
             }
         };
 
-        WeatherManager.RegisterWeather(weather);
+        WeatherRegistry.WeatherManager.RegisterWeather(weather);
         HashSet<NamespacedKey> tags = _tags.ToHashSet();
         DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, tags, newImprovedWeatherEffect.VanillaWeatherEffect, null);
         newImprovedWeatherEffect.VanillaWeatherEffect.SetDawnInfo(weatherEffectInfo);
