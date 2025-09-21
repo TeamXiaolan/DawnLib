@@ -30,12 +30,12 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
     int CountCompleted()
     {
         int counter = 0;
-        foreach (var achievement in DuskModContent.Achievements.Values)
+        foreach (DuskAchievementDefinition achievement in DuskModContent.Achievements.Values)
         {
             if (!achievement.Completed)
                 continue;
 
-            foreach (var achievementReference in ChildrenAchievementReferences)
+            foreach (DuskAchievementReference achievementReference in ChildrenAchievementReferences)
             {
                 if (achievementReference.Resolve().AchievementName == achievement.AchievementName)
                 {

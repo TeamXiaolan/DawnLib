@@ -75,7 +75,7 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
         }
 
         Completed = true;
-        AchievementUIGetCanvas.Instance?.QueuePopup(this);
+        DuskAchievementHandler.OnAchievementUnlocked.Invoke(this);
         return Completed;
     }
 
