@@ -97,14 +97,13 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
 
     public UnlockableConfig CreateUnlockableConfig(ConfigContext context)
     {
-        string unlockableName = UnlockableItem.unlockableName;
         return new UnlockableConfig
         {
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{unlockableName} | Disable Pricing Strategy", $"Whether {unlockableName} should have it's pricing strategy disabled.", false) : null,
-            DisableUnlockRequirement = GenerateDisableUnlockRequirementConfig && TerminalPredicate ? context.Bind($"{unlockableName} | Disable Unlock Requirements", $"Whether {unlockableName} should have it's unlock requirements disabled.", false) : null,
-            IsDecor = context.Bind($"{unlockableName} | Is Decor", $"Whether {unlockableName} is considered a decor.", IsDecor),
-            IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", IsShipUpgrade),
-            Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", Cost),
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
+            DisableUnlockRequirement = GenerateDisableUnlockRequirementConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            IsDecor = context.Bind($"{EntityNameReference} | Is Decor", $"Whether {EntityNameReference} is considered a decor.", IsDecor),
+            IsShipUpgrade = context.Bind($"{EntityNameReference} | Is Ship Upgrade", $"Whether {EntityNameReference} is considered a ship upgrade.", IsShipUpgrade),
+            Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
         };
     }
 

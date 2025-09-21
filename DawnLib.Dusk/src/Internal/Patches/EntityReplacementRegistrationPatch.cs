@@ -183,7 +183,7 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
-            if(replacement.IsVanilla)
+            if (replacement.IsVanilla)
                 break;
             
             replacement.ApplyNest(self);

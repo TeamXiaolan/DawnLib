@@ -103,15 +103,14 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
 
     public EnemyConfig CreateEnemyConfig(ConfigContext section)
     {
-        string enemyName = EnemyType.enemyName;
         return new EnemyConfig
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Moon Weights", $"Preset moon weights for {enemyName}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
-            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Interior Weights", $"Preset interior weights for {enemyName}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Weather Weights", $"Preset weather weights for {enemyName}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
 
-            PowerLevel = section.Bind($"{enemyName} | Power Level", $"Power level for {enemyName}.", PowerLevel),
-            MaxSpawnCount = section.Bind($"{enemyName} | Max Spawn Count", $"Max spawn count for {enemyName}.", MaxSpawnCount),
+            PowerLevel = section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", PowerLevel),
+            MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", MaxSpawnCount),
         };
     }
 

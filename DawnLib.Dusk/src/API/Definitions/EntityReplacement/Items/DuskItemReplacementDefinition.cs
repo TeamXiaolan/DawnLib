@@ -15,10 +15,6 @@ public abstract class DuskItemReplacementDefinition : DuskEntityReplacementDefin
 
     [field: SerializeField]
     public AudioClip? ThrowSFX { get; private set; }
-
-    public override void Apply(GrabbableObject grabbableObject)
-    {
-    }
 }
 
 public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefinition where T : GrabbableObject

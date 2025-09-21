@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dawn;
 using Dusk.Weights.Transformers;
@@ -7,13 +8,8 @@ using UnityEngine;
 namespace Dusk.Weights;
 public class SpawnWeightsPreset : IWeighted
 {
-    [field: SerializeField]
     public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = new(string.Empty);
-
-    [field: SerializeField]
     public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = new(string.Empty);
-
-    [field: SerializeField]
     public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = new(string.Empty);
 
     private List<WeightTransformer> SpawnWeightsTransformers => new() { MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer };

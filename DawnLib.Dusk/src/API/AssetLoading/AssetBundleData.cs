@@ -19,17 +19,31 @@ public class AssetBundleData
     public string configName;
 
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<WeatherData> weathers;
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<EnemyData> enemies;
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<ItemData> items;
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<MapObjectData> mapObjects;
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<UnlockableData> unlockables;
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<DungeonData> dungeons;
     [Obsolete]
+    [SerializeField]
+    [HideInInspector]
     private List<VehicleData> vehicles;
 }

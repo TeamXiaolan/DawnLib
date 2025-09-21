@@ -129,24 +129,23 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
     public ItemConfig CreateItemConfig(ConfigContext context)
     {
-        string itemName = Item.itemName;
-        ConfigEntry<bool>? isScrapItem = GenerateScrapConfig ? context.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", IsScrap) : null;
-        ConfigEntry<bool>? isShopItem = GenerateShopItemConfig ? context.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", IsShopItem) : null;
+        ConfigEntry<bool>? isScrapItem = GenerateScrapConfig ? context.Bind($"{EntityNameReference} | Is Scrap", $"Whether {EntityNameReference} is a scrap item.", IsScrap) : null;
+        ConfigEntry<bool>? isShopItem = GenerateShopItemConfig ? context.Bind($"{EntityNameReference} | Is Shop Item", $"Whether {EntityNameReference} is a shop item.", IsShopItem) : null;
 
         return new ItemConfig
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Moon Weights", $"Preset moon weights for {itemName}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
-            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
 
-            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{itemName} | Disable Unlock Requirements", $"Whether {itemName} should have it's unlock requirements disabled.", false) : null,
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{itemName} | Disable Pricing Strategy", $"Whether {itemName} should have it's pricing strategy disabled.", false) : null,
+            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
 
             IsScrapItem = isScrapItem,
-            Worth = isScrapItem?.Value ?? IsScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f)) : null,
+            Worth = isScrapItem?.Value ?? IsScrap ? context.Bind($"{EntityNameReference} | Value", $"How much {EntityNameReference} is worth when spawning.", new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f)) : null,
 
             IsShopItem = isShopItem,
-            Cost = isShopItem?.Value ?? IsShopItem ? context.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", Cost) : null,
+            Cost = isShopItem?.Value ?? IsShopItem ? context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
         };
     }
 

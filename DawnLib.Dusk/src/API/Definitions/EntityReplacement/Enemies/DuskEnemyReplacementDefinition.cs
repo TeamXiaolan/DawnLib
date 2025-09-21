@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Dawn;
-using Dusk.Weights;
 using UnityEngine;
 
 namespace Dusk;
@@ -25,36 +23,6 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
 
     [field: SerializeField]
     public AudioClip[] AudioClips { get; private set; } = [];
-
-    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
-
-    // bongo todo: this is awful, and when migrating this stuff to be dawn info, this should probably be an interface or something
-    internal bool IsVanilla;
-    
-    // todo: make configurable. remember were getting rid of config stuff in content container
-    public string MoonSpawnWeights;
-    public string InteriorSpawnWeights;
-    public string WeatherSpawnWeights;
-
-    public override void Register(DuskMod mod)
-    {
-        if (IsVanilla)
-        {
-            Weights = new WeightTableBuilder<DawnMoonInfo>().SetGlobalWeight(100).Build();
-            return;
-        }
-        base.Register(mod);
-        SpawnWeightsPreset preset = new SpawnWeightsPreset();
-        preset.SetupSpawnWeightsPreset(MoonSpawnWeights, InteriorSpawnWeights, WeatherSpawnWeights);
-        Weights = new WeightTableBuilder<DawnMoonInfo>()
-            .SetGlobalWeight(preset)
-            .Build();
-    }
-
-    public override void Apply(EnemyAI enemyAI)
-    {
-        
-    }
 
     public virtual void ApplyNest(EnemyAINestSpawnObject nest)
     {

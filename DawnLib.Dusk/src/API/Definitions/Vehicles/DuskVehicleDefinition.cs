@@ -55,9 +55,9 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
     {
         return new VehicleConfig
         {
-            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{VehicleDisplayName} | Disable Unlock Requirements", $"Whether {VehicleDisplayName} should have it's unlock requirements disabled.", false) : null,
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{VehicleDisplayName} | Disable Pricing Strategy", $"Whether {VehicleDisplayName} should have it's pricing strategy disabled.", false) : null,
-            Cost = context.Bind($"{VehicleDisplayName} | Cost", $"Cost for {VehicleDisplayName} in the shop.", Cost),
+            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
+            Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
         };
     }
 

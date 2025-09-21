@@ -92,22 +92,22 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
         ConfigEntry<string>? insideCurves = null, outsideCurves = null;
         if (CreateInsideHazardConfig)
         {
-            insideHazard = section.Bind($"{MapObjectName} | Is Inside Hazard", $"Whether {MapObjectName} is an inside hazard", IsInsideHazard);
+            insideHazard = section.Bind($"{EntityNameReference} | Is Inside Hazard", $"Whether {EntityNameReference} is an inside hazard", IsInsideHazard);
         }
 
         if (CreateOutsideHazardConfig)
         {
-            outsideHazard = section.Bind($"{MapObjectName} | Is Outside Hazard", $"Whether {MapObjectName} is an outside hazard", IsOutsideHazard);
+            outsideHazard = section.Bind($"{EntityNameReference} | Is Outside Hazard", $"Whether {EntityNameReference} is an outside hazard", IsOutsideHazard);
         }
 
         if ((insideHazard?.Value ?? IsInsideHazard) && CreateInsideCurveSpawnWeightsConfig)
         {
-            insideCurves = section.Bind($"{MapObjectName} | Inside Spawn Weights", $"Curve weights for {MapObjectName} when spawning inside.", DefaultInsideCurveSpawnWeights);
+            insideCurves = section.Bind($"{EntityNameReference} | Inside Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside.", DefaultInsideCurveSpawnWeights);
         }
 
         if ((outsideHazard?.Value ?? IsOutsideHazard) && CreateOutsideCurveSpawnWeightsConfig)
         {
-            outsideCurves = section.Bind($"{MapObjectName} | Outside Spawn Weights", $"Curve weights for {MapObjectName} when spawning outside.", DefaultOutsideCurveSpawnWeights);
+            outsideCurves = section.Bind($"{EntityNameReference} | Outside Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside.", DefaultOutsideCurveSpawnWeights);
         }
 
         return new MapObjectConfig
