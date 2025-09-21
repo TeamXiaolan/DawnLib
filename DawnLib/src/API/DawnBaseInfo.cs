@@ -31,7 +31,7 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
         return _tags.Contains(tag);
     }
 
-    public IEnumerable<NamespacedKey> AllTags() // TODO Should this not be IEnumerable but instead HashSet?
+    public IEnumerable<NamespacedKey> AllTags()
     {
         return _tags;
     }

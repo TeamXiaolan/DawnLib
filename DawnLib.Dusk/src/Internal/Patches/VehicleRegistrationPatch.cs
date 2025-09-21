@@ -14,9 +14,34 @@ static class VehicleRegistrationPatch
 {
     internal static void Init()
     {
+        On.Terminal.LoadNewNodeIfAffordable += UpdatePrices;
         On.ItemDropship.DeliverVehicleOnServer += GetLastDuskVehicleDelivered;
         IL.ItemDropship.DeliverVehicleOnServer += DeliverDuskVehicleOnServer;
         On.Terminal.Awake += RegisterVehicles;
+    }
+
+    private static void UpdatePrices(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
+    {
+        UpdateAllVehiclePrices();
+        orig(self, node);
+    }
+
+    internal static void UpdateAllVehiclePrices()
+    {
+        foreach (DawnVehicleInfo info in DuskModContent.Vehicles.Values.Select(x => x.DawnVehicleInfo))
+        {
+            if (info.HasTag(DawnLibTags.IsExternal))
+                continue;
+
+            UpdateVehiclePrices(info);
+        }
+    }
+
+    static void UpdateVehiclePrices(DawnVehicleInfo info)
+    {
+        int cost = info.Cost.Provide();
+        info.BuyNode.itemCost = cost;
+        info.ConfirmPurchaseNode.itemCost = cost;
     }
 
     private static void GetLastDuskVehicleDelivered(On.ItemDropship.orig_DeliverVehicleOnServer orig, ItemDropship self)
@@ -117,8 +142,8 @@ static class VehicleRegistrationPatch
                 .SetWord(!string.IsNullOrEmpty(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}")
                 .SetDefaultVerb(buyKeyword)
                 .Build();
-            vehicleDefinition.BuyableVehiclePreset.BuyKeyword = buyDuskKeyword;
-            allKeywordsList.Add(vehicleDefinition.BuyableVehiclePreset.BuyKeyword);
+            vehicleDefinition.DawnVehicleInfo.BuyKeyword = buyDuskKeyword;
+            allKeywordsList.Add(vehicleDefinition.DawnVehicleInfo.BuyKeyword);
 
             TerminalNode confirmDuskNode = new TerminalNodeBuilder($"{vehicleDefinition.name}ConfirmPurchaseNode")
                 .SetDisplayText($"Ordered the {vehicleDefinition.VehicleDisplayName}. Your new balance is [playerCredits].\n\nWe are so confident in the quality of this product, it comes with a life-time warranty! If your {vehicleDefinition.VehicleDisplayName} is lost or destroyed, you can get one free replacement. Items cannot be purchased while the vehicle is en route.\n")
@@ -127,14 +152,14 @@ static class VehicleRegistrationPatch
                 .SetBuyVehicleIndex(currentVehicleIndex)
                 .SetItemCost(vehicleDefinition.Config.Cost.Value)
                 .Build();
-            vehicleDefinition.BuyableVehiclePreset.ConfirmPurchaseNode = confirmDuskNode;
+            vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode = confirmDuskNode;
 
             CompatibleNoun[] buyNodeNouns =
             [
                 new CompatibleNoun
                 {
                     noun = confirmPurchaseKeyword,
-                    result = vehicleDefinition.BuyableVehiclePreset.ConfirmPurchaseNode
+                    result = vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode
                 },
                 new CompatibleNoun
                 {
@@ -152,7 +177,7 @@ static class VehicleRegistrationPatch
                 .SetOverrideOptions(true)
                 .SetTerminalOptions(buyNodeNouns)
                 .Build();
-            vehicleDefinition.BuyableVehiclePreset.BuyNode = buyDuskNode;
+            vehicleDefinition.DawnVehicleInfo.BuyNode = buyDuskNode;
             CompatibleNoun buyDuskNoun = new()
             {
                 noun = buyDuskKeyword,
@@ -160,12 +185,12 @@ static class VehicleRegistrationPatch
             };
             allBuyKeywordNounsList.Add(buyDuskNoun);
 
-            if (vehicleDefinition.BuyableVehiclePreset.InfoNode != null)
+            if (vehicleDefinition.DawnVehicleInfo.InfoNode != null)
             {
                 CompatibleNoun infoCompatibleNoun = new()
                 {
-                    noun = vehicleDefinition.BuyableVehiclePreset.BuyKeyword,
-                    result = vehicleDefinition.BuyableVehiclePreset.InfoNode
+                    noun = vehicleDefinition.DawnVehicleInfo.BuyKeyword,
+                    result = vehicleDefinition.DawnVehicleInfo.InfoNode
                 };
                 allInfoKeywordNounsList.Add(infoCompatibleNoun);
             }

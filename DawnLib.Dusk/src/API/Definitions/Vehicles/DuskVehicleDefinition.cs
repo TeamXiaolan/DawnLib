@@ -1,3 +1,4 @@
+using System.Linq;
 using Dawn;
 using UnityEngine;
 
@@ -13,10 +14,10 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
     public BuyableVehiclePreset BuyableVehiclePreset { get; private set; }
 
     [field: SerializeField]
-    public DuskTerminalPredicate? TerminalPredicate { get; private set; } // todo actually use it
+    public DuskTerminalPredicate? TerminalPredicate { get; private set; }
 
     [field: SerializeField]
-    public DuskPricingStrategy? PricingStrategy { get; private set; } // todo actually use it
+    public DuskPricingStrategy? PricingStrategy { get; private set; }
 
     [field: Space(10)]
     [field: Header("Configs | Main")]
@@ -30,6 +31,7 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
     public bool GenerateDisablePricingStrategyConfig { get; private set; }
 
     public VehicleConfig Config { get; private set; }
+    public DawnVehicleInfo DawnVehicleInfo { get; private set; }
 
     NamespacedKey<DuskVehicleDefinition> INamespaced<DuskVehicleDefinition>.TypedKey => TypedKey.AsTyped<DuskVehicleDefinition>();
 
@@ -39,15 +41,16 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         Config = CreateVehicleConfig(section);
 
         Cost = Config.Cost.Value;
-        if (Config.DisableUnlockRequirements?.Value ?? false)
+        if (Config.DisableUnlockRequirements?.Value ?? false && TerminalPredicate)
         {
-            // todo?
+            TerminalPredicate = null;
         }
 
-        if (Config.DisablePricingStrategy?.Value ?? false)
+        if (Config.DisablePricingStrategy?.Value ?? false && PricingStrategy)
         {
-            // todo?
+            PricingStrategy = null;
         }
+        DawnVehicleInfo = new DawnVehicleInfo(TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess(), TypedKey, _tags.ToHashSet(), BuyableVehiclePreset.VehiclePrefab, BuyableVehiclePreset.SecondaryPrefab, BuyableVehiclePreset.StationPrefab, PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy, null);
         DuskModContent.Vehicles.Register(this);
     }
 

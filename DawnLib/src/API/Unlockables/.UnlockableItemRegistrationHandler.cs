@@ -49,7 +49,7 @@ static class UnlockableRegistrationHandler
         return orig(self, modifiedDisplayText, node);
     }
 
-    internal static void UpdateAllUnlockablePrices() // TODO call ths in places
+    internal static void UpdateAllUnlockablePrices()
     {
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
         {

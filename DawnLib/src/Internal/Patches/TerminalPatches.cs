@@ -174,6 +174,7 @@ static class TerminalPatches
         Debuggers.Patching?.Log($"HandlePredicate: {node}");
 
         ItemRegistrationHandler.UpdateAllShopItemPrices();
+        UnlockableRegistrationHandler.UpdateAllUnlockablePrices();
 
         ITerminalPurchase? purchase = null;
         if (node.buyItemIndex != -1)
@@ -191,12 +192,14 @@ static class TerminalPatches
             DawnShopItemInfo? shopItemInfo = info.ShopInfo;
 
             if (shopItemInfo != null)
+            {
                 purchase = shopItemInfo;
+            }
         }
+
         if (node.shipUnlockableID != -1)
         {
             Debuggers.Patching?.Log($"shipUnlockableID = {node.shipUnlockableID}");
-
 
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
             if (!unlockableItem.HasDawnInfo())
@@ -206,6 +209,19 @@ static class TerminalPatches
                 return;
             }
             DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
+            purchase = info;
+        }
+
+        if (node.buyVehicleIndex != -1)
+        {
+            Debuggers.Patching?.Log($"buyVehicleIndex = {node.buyVehicleIndex}");
+            BuyableVehicle buyingVehicle = self.buyableVehicles[node.buyVehicleIndex];
+            if (!buyingVehicle.HasDawnInfo())
+            {
+                orig(self, node);
+                return;
+            }
+            DawnVehicleInfo info = buyingVehicle.GetDawnInfo();
             purchase = info;
         }
 
@@ -222,6 +238,7 @@ static class TerminalPatches
                 orig(self, failedResult.ReasonNode);
                 return;
             }
+
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {
                 Debuggers.Patching?.Log($"predicate hidden");
@@ -230,6 +247,7 @@ static class TerminalPatches
                     .SetDisplayText("You're not supposed to be here") // TODO
                     .Build()
                 );
+
                 return; // skip orig
             }
         }

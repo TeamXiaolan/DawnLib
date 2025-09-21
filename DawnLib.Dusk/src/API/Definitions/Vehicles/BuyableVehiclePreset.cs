@@ -16,9 +16,4 @@ public class BuyableVehiclePreset
     public string DisplayNodeText;
 
     public string BuyKeywordText;
-
-    internal TerminalNode BuyNode;
-    internal TerminalKeyword BuyKeyword;
-    internal TerminalNode ConfirmPurchaseNode;
-    public TerminalNode? InfoNode;
 }

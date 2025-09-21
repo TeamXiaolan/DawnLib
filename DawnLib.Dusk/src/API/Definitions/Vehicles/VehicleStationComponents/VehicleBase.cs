@@ -77,7 +77,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     public virtual void LateUpdate()
     {
-        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].BuyableVehiclePreset.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
+        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
         {
             for (int i = RealLength; i < 4; i++)
             {
@@ -88,7 +88,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     public virtual void FixedUpdate()
     {
-        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].BuyableVehiclePreset.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
+        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
         {
             this.transform.position = ItemDropshipRefs.Instance.deliverVehiclePoint.position;
         }

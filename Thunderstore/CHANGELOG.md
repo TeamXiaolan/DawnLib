@@ -10,6 +10,7 @@
 - Fixed issues with UnlockableItems (i.e. ship upgrades) not showing up in the terminal.
 - Fixed .AddWeight not working properly.
 - Removed validation from the Editor.dll temporarily to move it into the `DuskContentDefinition`s themselves later.
+- Did a bit more work on vehicle registration with terminal pricing strategies and terminal predicates.
 
 ## v0.1.9
 
