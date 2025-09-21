@@ -200,12 +200,12 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
             {
-                if(!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition> list))
+                if (!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? list))
                 {
                     DuskEnemyReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
                     vanilla.IsVanilla = true;
                     vanilla.Register(null);
-                    list.Add(vanilla);
+                    list = [vanilla];
                     enemyInfo.CustomData.Set(Key, list);
                 }
                 list.Add(enemyReplacementDefinition);
@@ -243,7 +243,7 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
-            if(replacement.IsVanilla)
+            if (replacement.IsVanilla)
                 break;
                     
             replacement.Apply(self);
