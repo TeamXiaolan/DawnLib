@@ -70,8 +70,9 @@ Hello World!
 
 ## DuskMod
 
-**MIGRATING FROM CODEREBIRTHLIB:** 
-You will need to remake your `Content Container`, `Mod Information` and content definitions. 
+**MIGRATING FROM CODEREBIRTHLIB:**
+
+You will need to remake your `Content Container`, `Mod Information` and content definitions.
 The general flow has not changed overall.
 
 - Reworked `Content Container`:

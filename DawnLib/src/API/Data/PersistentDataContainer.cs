@@ -44,7 +44,7 @@ public class PersistentDataContainer : DataContainer
             Debuggers.PersistentDataContainer?.Log("loading existing file");
             try
             {
-                dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings);
+                dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings)!;
             }
             catch (Exception exception)
             {

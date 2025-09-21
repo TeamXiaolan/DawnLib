@@ -71,6 +71,7 @@ if(LethalContent.Enemies.IsFrozen) { // or check that the registry has already b
 ```
 
 ### PersistentDataContainer
+
 `PersistentDataContainer` is an alternative to `ES3`. You can easily access save data with the `.GetPersistentDataContainer()` extension method, `.GetCurrentContract()` or `.GetCurrentSave()`
 
 ```csharp
@@ -86,6 +87,7 @@ void Awake() { // Plugin awake
 Note: If you are going to make a large edit (calling `.Set`, `.GetOrSet`, etc multiple times) you should wrap it with `using(container.LargeEdit())`. This delays saving data to the disk until all your edits have been completed.
 
 ## DuskMod (C# & Editor)
+
 ```xml
 <PackageReference Include="TeamXiaolan.DawnLib" Version="0.1.0" />
 <PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.1.0" />
