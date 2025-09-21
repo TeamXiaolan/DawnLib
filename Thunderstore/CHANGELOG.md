@@ -1,7 +1,15 @@
-# V0.2.0
+# v0.2.0
 
-- Implemented prototype of EntityReplacementDefinition
+- Implemented near-complete-prototype of EntityReplacementDefinition
+  - Contains EnemyReplacementDefinition and ItemReplacementDefinition currently, but potentially more to come.
+  - Usable with custom enemies and items too, but requires the editor for the script to be auto generated, check the wiki or ask in the discord thread for DawnLib for more info.
 - Improved Editor tools a bit more in terms of NamespacedKey formatting and other areas like the package building picking up assetbundles.
+- Removed any configs or reference to `DuskContentDefinition`s from `ContentContainer`, moved all configs to the `DuskContentDefinition` itself and added a button to just migrate old configs to new places.
+- Fix parent achievements not registering other achievements as complete properly.
+- Got rid of WR dependency on the editor, so now you just need DawnLib, the DawnLib editor tool and PathfindingLib.
+- Fixed issues with UnlockableItems (i.e. ship upgrades) not showing up in the terminal.
+- Fixed .AddWeight not working properly.
+- Removed validation from the Editor.dll temporarily to move it into the `DuskContentDefinition`s themselves later.
 
 ## v0.1.9
 
