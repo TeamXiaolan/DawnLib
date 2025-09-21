@@ -10,10 +10,8 @@ using UnityEngine.Serialization;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Item Definition", menuName = $"{DuskModConstants.Definitions}/Item Definition")]
-public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
+public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 {
-    public const string REGISTRY_ID = "items";
-
     [field: FormerlySerializedAs("item")]
     [field: SerializeField]
     public Item Item { get; private set; }
@@ -27,14 +25,45 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
     [field: SerializeField]
     public DuskPricingStrategy PricingStrategy { get; private set; }
 
+    [field: Space(10)]
+    [field: Header("Configs | Spawn Weights")]
+    [field: SerializeField]
+    public string MoonSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public string InteriorSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public string WeatherSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public bool GenerateSpawnWeightsConfig { get; private set; } = true;
+
+    [field: Header("Configs | Scrap")]
+    [field: SerializeField]
+    public bool IsScrap { get; private set; }
+    [field: SerializeField]
+    public bool GenerateScrapConfig { get; private set; }
+
+    [field: Header("Configs | Shop")]
+    [field: SerializeField]
+    public bool IsShopItem { get; private set; }
+    [field: SerializeField]
+    public bool GenerateShopItemConfig { get; private set; }
+    [field: SerializeField]
+    public int Cost { get; private set; }
+
+    [field: Header("Configs | Misc")]
+    [field: SerializeField]
+    public bool GenerateDisableUnlockConfig { get; private set; }
+    [field: SerializeField]
+    public bool GenerateDisablePricingStrategyConfig { get; private set; }
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod, ItemData data)
+    public override void Register(DuskMod mod)
     {
         BoundedRange itemWorth = new(Item.minValue * 0.4f, Item.maxValue * 0.4f);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateItemConfig(section, this, data, itemWorth, SpawnWeights, Item.itemName);
+        Config = CreateItemConfig(section);
 
         if (Config.Worth != null)
         {
@@ -54,11 +83,11 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
-        SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
+        SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
 
         DawnLib.DefineItem(TypedKey, Item, builder =>
         {
-            if (Config.IsScrapItem?.Value ?? data.isScrap)
+            if (Config.IsScrapItem?.Value ?? IsScrap)
             {
                 builder.DefineScrap(scrapBuilder =>
                 {
@@ -66,7 +95,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
                 });
             }
 
-            if (Config.IsShopItem?.Value ?? data.isShopItem)
+            if (Config.IsShopItem?.Value ?? IsShopItem)
             {
                 builder.DefineShop(shopItemBuilder =>
                 {
@@ -89,7 +118,7 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
                     }
                     else
                     {
-                        shopItemBuilder.OverrideCost(Config.Cost?.Value ?? data.cost);
+                        shopItemBuilder.OverrideCost(Config.Cost?.Value ?? Cost);
                     }
                 });
             }
@@ -98,29 +127,27 @@ public class DuskItemDefinition : DuskContentDefinition<ItemData, DawnItemInfo>
         });
     }
 
-    public static ItemConfig CreateItemConfig(ConfigContext context, DuskItemDefinition definition, ItemData data, BoundedRange defaultScrapValue, SpawnWeightsPreset spawnWeightsPreset, string itemName)
+    public ItemConfig CreateItemConfig(ConfigContext context)
     {
-        ConfigEntry<bool>? isScrapItem = data.generateScrapConfig ? context.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", data.isScrap) : null;
-        ConfigEntry<bool>? isShopItem = data.generateShopItemConfig ? context.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", data.isShopItem) : null;
+        string itemName = Item.itemName;
+        ConfigEntry<bool>? isScrapItem = GenerateScrapConfig ? context.Bind($"{itemName} | Is Scrap", $"Whether {itemName} is a scrap item.", IsScrap) : null;
+        ConfigEntry<bool>? isShopItem = GenerateShopItemConfig ? context.Bind($"{itemName} | Is Shop Item", $"Whether {itemName} is a shop item.", IsShopItem) : null;
 
         return new ItemConfig
         {
-            MoonSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Moon Weights", $"Preset moon weights for {itemName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
-            InteriorSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
-            WeatherSpawnWeights = data.generateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Moon Weights", $"Preset moon weights for {itemName}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Interior Weights", $"Preset interior weights for {itemName}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{itemName} | Preset Weather Weights", $"Preset weather weights for {itemName}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
+
+            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{itemName} | Disable Unlock Requirements", $"Whether {itemName} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{itemName} | Disable Pricing Strategy", $"Whether {itemName} should have it's pricing strategy disabled.", false) : null,
+
             IsScrapItem = isScrapItem,
-            DisableUnlockRequirements = data.generateDisableUnlockConfig ? context.Bind($"{itemName} | Disable Unlock Requirements", $"Whether {itemName} should have it's unlock requirements disabled.", false) : null,
-            DisablePricingStrategy = data.generateDisablePricingStrategyConfig ? context.Bind($"{itemName} | Disable Pricing Strategy", $"Whether {itemName} should have it's pricing strategy disabled.", false) : null,
-            Worth = isScrapItem?.Value ?? data.isScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", defaultScrapValue) : null,
+            Worth = isScrapItem?.Value ?? IsScrap ? context.Bind($"{itemName} | Value", $"How much {itemName} is worth when spawning.", new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f)) : null,
+
             IsShopItem = isShopItem,
-
-            Cost = isShopItem?.Value ?? data.isShopItem ? context.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", data.cost) : null,
+            Cost = isShopItem?.Value ?? IsShopItem ? context.Bind($"{itemName} | Cost", $"Cost for {itemName} in the shop.", Cost) : null,
         };
-    }
-
-    public override List<ItemData> GetEntities(DuskMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.items).ToList();
     }
 
     protected override string EntityNameReference => Item?.itemName ?? string.Empty;

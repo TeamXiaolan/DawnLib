@@ -17,10 +17,8 @@ public enum SpawnTable
 }
 
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = $"{DuskModConstants.Definitions}/Enemy Definition")]
-public class DuskEnemyDefinition : DuskContentDefinition<EnemyData, DawnEnemyInfo>
+public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
 {
-    public const string REGISTRY_ID = "enemies";
-
     [field: FormerlySerializedAs("enemyType")]
     [field: SerializeField]
     public EnemyType EnemyType { get; private set; }
@@ -36,19 +34,36 @@ public class DuskEnemyDefinition : DuskContentDefinition<EnemyData, DawnEnemyInf
     [field: SerializeField]
     public TerminalKeyword? TerminalKeyword { get; private set; }
 
+    [field: Space(10)]
+    [field: Header("Configs | Spawn Weights")]
+    [field: SerializeField]
+    public string MoonSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public string InteriorSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public string WeatherSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public bool GenerateSpawnWeightsConfig { get; private set; }
+
+    [field: Header("Configs | Misc")]
+    [field: SerializeField]
+    public float PowerLevel { get; private set; }
+    [field: SerializeField]
+    public int MaxSpawnCount { get; private set; }
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public EnemyConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod, EnemyData data)
+    public override void Register(DuskMod mod)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateEnemyConfig(section, data, SpawnWeights, EnemyType.enemyName);
+        Config = CreateEnemyConfig(section);
 
         EnemyType enemy = EnemyType;
         enemy.MaxCount = Config.MaxSpawnCount.Value;
         enemy.PowerLevel = Config.PowerLevel.Value;
 
-        SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? data.moonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? data.interiorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? data.weatherSpawnWeights);
+        SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
 
         DawnLib.DefineEnemy(TypedKey, EnemyType, builder =>
         {
@@ -86,22 +101,18 @@ public class DuskEnemyDefinition : DuskContentDefinition<EnemyData, DawnEnemyInf
         });
     }
 
-    public static EnemyConfig CreateEnemyConfig(ConfigContext section, EnemyData data, SpawnWeightsPreset spawnWeightsPreset, string enemyName)
+    public EnemyConfig CreateEnemyConfig(ConfigContext section)
     {
+        string enemyName = EnemyType.enemyName;
         return new EnemyConfig
         {
-            MoonSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Moon Weights", $"Preset moon weights for {enemyName}.", spawnWeightsPreset.MoonSpawnWeightsTransformer.ToConfigString()) : null,
-            InteriorSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Interior Weights", $"Preset interior weights for {enemyName}.", spawnWeightsPreset.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
-            WeatherSpawnWeights = data.generateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Weather Weights", $"Preset weather weights for {enemyName}.", spawnWeightsPreset.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
-            PowerLevel = section.Bind($"{enemyName} | Power Level", $"Power level for {enemyName}.", data.powerLevel),
-            MaxSpawnCount = section.Bind($"{enemyName} | Max Spawn Count", $"Max spawn count for {enemyName}.", data.maxSpawnCount),
-        };
-    }
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Moon Weights", $"Preset moon weights for {enemyName}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
+            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Interior Weights", $"Preset interior weights for {enemyName}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{enemyName} | Preset Weather Weights", $"Preset weather weights for {enemyName}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
 
-    public override List<EnemyData> GetEntities(DuskMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.enemies).ToList();
-        // probably should be cached but i dont care anymore.
+            PowerLevel = section.Bind($"{enemyName} | Power Level", $"Power level for {enemyName}.", PowerLevel),
+            MaxSpawnCount = section.Bind($"{enemyName} | Max Spawn Count", $"Max spawn count for {enemyName}.", MaxSpawnCount),
+        };
     }
 
     protected override string EntityNameReference => EnemyType?.enemyName ?? string.Empty;

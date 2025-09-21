@@ -10,8 +10,6 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     [field: SerializeField]
     private NamespacedKey<DuskAchievementDefinition> _typedKey;
 
-    public const string REGISTRY_ID = "achievements";
-
     [field: SerializeField]
     public Sprite? AchievementIcon { get; private set; }
 

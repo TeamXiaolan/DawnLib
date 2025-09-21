@@ -2,7 +2,7 @@ using BepInEx.Configuration;
 
 namespace Dusk;
 
-public class MapObjectConfig : EntityConfig
+public class MapObjectConfig
 {
     public ConfigEntry<string>? InsideCurveSpawnWeights;
     public ConfigEntry<bool>? InsideHazard;

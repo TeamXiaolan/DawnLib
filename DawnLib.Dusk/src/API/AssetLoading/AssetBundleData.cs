@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,11 +16,4 @@ public class AssetBundleData
 
     [AssertNotEmpty]
     public string configName;
-    public List<WeatherData> weathers;
-    public List<EnemyData> enemies;
-    public List<ItemData> items;
-    public List<MapObjectData> mapObjects;
-    public List<UnlockableData> unlockables;
-    public List<DungeonData> dungeons;
-    public List<VehicleData> vehicles;
 }

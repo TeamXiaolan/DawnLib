@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Dawn;
 using Dawn.Internal;
 using UnityEngine;
@@ -7,10 +5,8 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = $"{DuskModConstants.Definitions}/Unlockable Definition")]
-public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, DawnUnlockableItemInfo>
+public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItemInfo>
 {
-    public const string REGISTRY_ID = "unlockables";
-
     [field: SerializeField]
     public UnlockableItem UnlockableItem { get; private set; } = new();
 
@@ -23,12 +19,27 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
     [field: SerializeField]
     public DuskPricingStrategy PricingStrategy { get; private set; }
 
+    [field: Space(10)]
+    [field: Header("Configs | Main")]
+    [field: SerializeField]
+    public bool IsShipUpgrade { get; private set; }
+    [field: SerializeField]
+    public bool IsDecor { get; private set; }
+    [field: SerializeField]
+    public int Cost { get; private set; }
+
+    [field: Header("Configs | Misc")]
+    [field: SerializeField]
+    public bool GenerateDisablePricingStrategyConfig { get; private set; }
+    [field: SerializeField]
+    public bool GenerateDisableUnlockRequirementConfig { get; private set; }
+
     public UnlockableConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod, UnlockableData data)
+    public override void Register(DuskMod mod)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateUnlockableConfig(section, this, data, UnlockableItem.unlockableName);
+        Config = CreateUnlockableConfig(section);
 
         DawnLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
@@ -48,12 +59,12 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
                 builder.DefinePlaceableObject(shopBuilder =>
                 {
                     shopBuilder.Build();
-                    if (Config.IsShipUpgrade?.Value ?? data.isShipUpgrade)
+                    if (Config.IsShipUpgrade?.Value ?? IsShipUpgrade)
                     {
                         Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Ship Upgrade");
                         shopBuilder.SetShipUpgrade();
                     }
-                    else if (Config.IsDecor?.Value ?? data.isDecor)
+                    else if (Config.IsDecor?.Value ?? IsDecor)
                     {
                         Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Decor");
                         shopBuilder.SetDecor();
@@ -84,21 +95,17 @@ public class DuskUnlockableDefinition : DuskContentDefinition<UnlockableData, Da
         });
     }
 
-    public static UnlockableConfig CreateUnlockableConfig(ConfigContext context, DuskUnlockableDefinition definition, UnlockableData data, string unlockableName)
+    public UnlockableConfig CreateUnlockableConfig(ConfigContext context)
     {
+        string unlockableName = UnlockableItem.unlockableName;
         return new UnlockableConfig
         {
-            DisablePricingStrategy = data.generateDisablePricingStrategyConfig ? context.Bind($"{unlockableName} | Disable Pricing Strategy", $"Whether {unlockableName} should have it's pricing strategy disabled.", false) : null,
-            DisableUnlockRequirement = data.generateDisableUnlockRequirementConfig ? context.Bind($"{unlockableName} | Disable Unlock Requirements", $"Whether {unlockableName} should have it's unlock requirements disabled.", false) : null,
-            IsDecor = context.Bind($"{unlockableName} | Is Decor", $"Whether {unlockableName} is considered a decor.", data.isDecor),
-            IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", data.isShipUpgrade),
-            Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", data.cost),
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{unlockableName} | Disable Pricing Strategy", $"Whether {unlockableName} should have it's pricing strategy disabled.", false) : null,
+            DisableUnlockRequirement = GenerateDisableUnlockRequirementConfig && TerminalPredicate ? context.Bind($"{unlockableName} | Disable Unlock Requirements", $"Whether {unlockableName} should have it's unlock requirements disabled.", false) : null,
+            IsDecor = context.Bind($"{unlockableName} | Is Decor", $"Whether {unlockableName} is considered a decor.", IsDecor),
+            IsShipUpgrade = context.Bind($"{unlockableName} | Is Ship Upgrade", $"Whether {unlockableName} is considered a ship upgrade.", IsShipUpgrade),
+            Cost = context.Bind($"{unlockableName} | Cost", $"Cost for {unlockableName} in the shop.", Cost),
         };
-    }
-
-    public override List<UnlockableData> GetEntities(DuskMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.unlockables).ToList();
     }
 
     protected override string EntityNameReference => UnlockableItem.unlockableName;

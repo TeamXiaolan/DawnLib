@@ -2,7 +2,7 @@ using BepInEx.Configuration;
 
 namespace Dusk;
 
-public class EnemyConfig : EntityConfig
+public class EnemyConfig
 {
     public ConfigEntry<int> MaxSpawnCount;
     public ConfigEntry<float> PowerLevel;

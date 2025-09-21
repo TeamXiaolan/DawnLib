@@ -94,7 +94,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
         }).ToArray();
     }
 
-    public AssetBundleData? AssetBundleData { get; set; } = null;
+    public AssetBundleData AssetBundleData { get; set; }
     public DuskContentDefinition[] Content { get; }
     public Dictionary<string, ConfigEntryBase> ConfigEntries => Content.SelectMany(c => c.generalConfigs).ToDictionary(it => it.Key, it => it.Value); // TODO please do better than me here
 

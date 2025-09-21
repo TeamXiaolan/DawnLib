@@ -1,6 +1,6 @@
 namespace Dusk;
 
-public class AchievementConfig : EntityConfig
+public class AchievementConfig
 {
 
 }

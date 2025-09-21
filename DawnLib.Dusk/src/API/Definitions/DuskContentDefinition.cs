@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Configuration;
 using Dawn;
-using Dawn.Internal;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -54,38 +51,10 @@ public abstract class DuskContentDefinition : ScriptableObject
     }
 }
 
-public abstract class DuskContentDefinition<T, TInfo> : DuskContentDefinition where T : EntityData where TInfo : INamespaced<TInfo>
+public abstract class DuskContentDefinition<TInfo> : DuskContentDefinition where TInfo : INamespaced<TInfo>
 {
     public NamespacedKey<TInfo> TypedKey => Key.AsTyped<TInfo>();
 
     [field: SerializeField, InspectorName("Namespace")]
     public override NamespacedKey Key { get; protected set; }
-
-    public override void Register(DuskMod mod)
-    {
-        try
-        {
-            Register(mod,
-                GetEntities(mod).First(it =>
-                {
-                    if (it.Key != null)
-                    {
-                        Debuggers.Dusk?.Log($"{this} | Comparing {Key} with {it.Key}.");
-                        return Equals(it.Key, Key);
-                    }
-
-                    return false; // throw?
-                }));
-        }
-        catch (InvalidOperationException ex)
-        {
-            mod.Logger?.LogError($"{this} with {Key} failed to find a matching entity. {ex.Message}");
-        }
-
-        base.Register(mod);
-    }
-
-    public abstract void Register(DuskMod mod, T data);
-
-    public abstract List<T> GetEntities(DuskMod mod);
 }

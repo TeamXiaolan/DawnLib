@@ -7,8 +7,6 @@ namespace Dusk;
 
 public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, INamespaced<DuskEntityReplacementDefinition>
 {
-    public const string REGISTRY_ID = "entityreplacements";
-
     [field: SerializeField, InspectorName("Namespace"), UnlockedNamespacedKey]
     private NamespacedKey<DuskEntityReplacementDefinition> _typedKey;
 

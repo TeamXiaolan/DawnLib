@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = $"{DuskModConstants.Definitions}/Additional Tiles Definition")]
-public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, DawnTileSetInfo>
+public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetInfo>
 {
     [Flags]
     public enum BranchCapSetting
@@ -16,8 +16,6 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, 
         Regular = 1 << 0,
         BranchCap = 1 << 1,
     }
-
-    public const string REGISTRY_ID = "additional_tiles";
 
     [field: SerializeField]
     public TileSet TilesToAdd { get; private set; }
@@ -28,9 +26,9 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, 
     [field: SerializeField]
     public BranchCapSetting BranchCap { get; private set; }
 
-    private DawnTileSetInfo _info;
+    public ItemConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod, DungeonData data)
+    public override void Register(DuskMod mod)
     {
         base.Register(mod);
         foreach (GameObjectChance chance in TilesToAdd.TileWeights.Weights)
@@ -38,7 +36,7 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, 
             DawnLib.FixDoorwaySockets(chance.Value);
         }
 
-        _info = DawnLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
+        DawnTileSetInfo tileSetInfo = DawnLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
             ApplyTagsTo(builder);
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
@@ -51,15 +49,10 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DungeonData, 
             {
                 if (LethalContent.Archetypes.TryGetValue(key, out DawnArchetypeInfo dungeonInfo))
                 {
-                    dungeonInfo.AddTileSet(_info);
+                    dungeonInfo.AddTileSet(tileSetInfo);
                 }
             }
         };
-    }
-
-    public override List<DungeonData> GetEntities(DuskMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.dungeons).ToList();
     }
 
     protected override string EntityNameReference => TilesToAdd?.name ?? string.Empty;

@@ -1,6 +1,6 @@
 namespace Dusk;
 
-public class DungeonConfig : EntityConfig
+public class DungeonConfig
 {
 
 }

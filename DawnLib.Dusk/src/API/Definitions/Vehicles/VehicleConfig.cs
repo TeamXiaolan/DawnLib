@@ -1,7 +1,7 @@
 using BepInEx.Configuration;
 
 namespace Dusk;
-public class VehicleConfig : EntityConfig
+public class VehicleConfig
 {
     public ConfigEntry<int> Cost;
     public ConfigEntry<bool>? DisableUnlockRequirements = null;

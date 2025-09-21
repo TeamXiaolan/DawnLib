@@ -8,19 +8,42 @@ using WeatherRegistry.Modules;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = $"{DuskModConstants.Definitions}/Weather Definition")]
-public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeatherEffectInfo>
+public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo>
 {
-    public const string REGISTRY_ID = "weathers";
-
     [field: SerializeField]
-    public Weather Weather { get; private set; } // TODO
+    public string WeatherName { get; private set; }
+    [field: SerializeField]
+    public GameObject TemporaryEffectObject { get; private set; }
+    [field: SerializeField]
+    public GameObject PermanentEffectObject { get; private set; }
+    [field: SerializeField]
+    public string SunAnimatorBool { get; private set; }
+    [field: SerializeField]
+    public Color TerminalColour { get; private set; }
 
-    public override void Register(DuskMod mod, WeatherData data)
+    [field: Space(10)]
+    [field: Header("Configs | Main")]
+    [field: SerializeField]
+    public int SpawnWeight { get; private set; }
+    [field: SerializeField]
+    public float ScrapValueMultiplier { get; private set; }
+    [field: SerializeField]
+    public float ScrapAmountMultiplier { get; private set; }
+
+    [field: Header("Configs | Misc")]
+    [field: SerializeField]
+    public bool IsExclude { get; private set; }
+    [field: SerializeField]
+    public bool CreateExcludeConfig { get; private set; }
+    [field: SerializeField]
+    public string ExcludeOrIncludeList { get; private set; }
+
+    public override void Register(DuskMod mod)
     {
         GameObject? effectObject = null;
-        if (Weather.Effect.EffectObject != null)
+        if (TemporaryEffectObject != null)
         {
-            effectObject = Instantiate(Weather.Effect.EffectObject);
+            effectObject = Instantiate(TemporaryEffectObject);
             if (effectObject != null)
             {
                 effectObject.hideFlags = HideFlags.HideAndDontSave;
@@ -29,9 +52,9 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
         }
 
         GameObject? effectPermanentObject = null;
-        if (Weather.Effect.WorldObject != null)
+        if (PermanentEffectObject != null)
         {
-            effectPermanentObject = Instantiate(Weather.Effect.WorldObject);
+            effectPermanentObject = Instantiate(PermanentEffectObject);
             if (effectPermanentObject != null)
             {
                 effectPermanentObject.hideFlags = HideFlags.HideAndDontSave;
@@ -46,24 +69,23 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
         };
 
         ImprovedWeatherEffect newImprovedWeatherEffect = new(weatherEffect);
-        newImprovedWeatherEffect.SunAnimatorBool = Weather.Effect.SunAnimatorBool;
+        newImprovedWeatherEffect.SunAnimatorBool = SunAnimatorBool;
         newImprovedWeatherEffect.EffectObject?.SetActive(false);
         newImprovedWeatherEffect.WorldObject?.SetActive(false);
 
-        Weather weather = new($"{Weather.Name}", newImprovedWeatherEffect)
+        Weather weather = new($"{WeatherName}", newImprovedWeatherEffect)
         {
-            Color = Weather.Color,
+            Color = TerminalColour,
             Config = new RegistryWeatherConfig
             {
-                DefaultWeight = new IntegerConfigHandler(data.spawnWeight),
-                ScrapValueMultiplier = new FloatConfigHandler(data.scrapValueMultiplier),
-                ScrapAmountMultiplier = new FloatConfigHandler(data.scrapMultiplier),
-                FilteringOption = new BooleanConfigHandler(!data.isExclude, data.createExcludeConfig),
-                LevelFilters = new LevelListConfigHandler(data.excludeOrIncludeList),
+                DefaultWeight = new IntegerConfigHandler(SpawnWeight),
+                ScrapValueMultiplier = new FloatConfigHandler(ScrapValueMultiplier),
+                ScrapAmountMultiplier = new FloatConfigHandler(ScrapAmountMultiplier),
+                FilteringOption = new BooleanConfigHandler(!IsExclude, CreateExcludeConfig),
+                LevelFilters = new LevelListConfigHandler(ExcludeOrIncludeList),
             }
         };
 
-        this.Weather = weather;
         WeatherManager.RegisterWeather(weather);
         HashSet<NamespacedKey> tags = _tags.ToHashSet();
         DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, tags, newImprovedWeatherEffect.VanillaWeatherEffect, null);
@@ -71,11 +93,5 @@ public class DuskWeatherDefinition : DuskContentDefinition<WeatherData, DawnWeat
         LethalContent.Weathers.Register(weatherEffectInfo);
     }
 
-    public override List<WeatherData> GetEntities(DuskMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.weathers).ToList();
-        // probably should be cached but i dont care anymore.
-    }
-
-    protected override string EntityNameReference => Weather?.Name ?? string.Empty;
+    protected override string EntityNameReference => WeatherName;
 }

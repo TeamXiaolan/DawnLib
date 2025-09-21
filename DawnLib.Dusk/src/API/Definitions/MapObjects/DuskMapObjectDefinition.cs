@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Configuration;
 using Dawn;
 using UnityEngine;
@@ -8,10 +6,8 @@ using UnityEngine.Serialization;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Map Definition", menuName = $"{DuskModConstants.Definitions}/Map Object Definition")]
-public class DuskMapObjectDefinition : DuskContentDefinition<MapObjectData, DawnMapObjectInfo>
+public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 {
-    public const string REGISTRY_ID = "map_objects";
-
     [field: FormerlySerializedAs("gameObject")]
     [field: SerializeField]
     public GameObject GameObject { get; private set; }
@@ -26,18 +22,41 @@ public class DuskMapObjectDefinition : DuskContentDefinition<MapObjectData, Dawn
     [field: SerializeField]
     public OutsideMapObjectSettings OutsideMapObjectSettings { get; private set; }
 
+    [field: Space(10)]
+    [field: Header("Configs | Inside")]
+    [field: SerializeField]
+    public bool IsInsideHazard { get; private set; }
+    [field: SerializeField]
+    public bool CreateInsideHazardConfig { get; private set; }
+
+    [field: SerializeField]
+    public string DefaultInsideCurveSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public bool CreateInsideCurveSpawnWeightsConfig { get; private set; }
+
+    [field: Header("Configs | Outside")]
+    [field: SerializeField]
+    public bool IsOutsideHazard { get; private set; }
+    [field: SerializeField]
+    public bool CreateOutsideHazardConfig { get; private set; }
+
+    [field: SerializeField]
+    public string DefaultOutsideCurveSpawnWeights { get; private set; }
+    [field: SerializeField]
+    public bool CreateOutsideCurveSpawnWeightsConfig { get; private set; }
+
     public MapObjectConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod, MapObjectData data)
+    public override void Register(DuskMod mod)
     {
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateMapObjectConfig(section, data, MapObjectName);
+        Config = CreateMapObjectConfig(section);
 
         DawnLib.DefineMapObject(TypedKey, GameObject, builder =>
         {
-            if (Config.InsideHazard?.Value ?? data.isInsideHazard)
+            if (Config.InsideHazard?.Value ?? IsInsideHazard)
             {
-                MapObjectSpawnMechanics InsideSpawnMechanics = new(Config.InsideCurveSpawnWeights?.Value ?? data.defaultInsideCurveSpawnWeights);
+                MapObjectSpawnMechanics InsideSpawnMechanics = new(Config.InsideCurveSpawnWeights?.Value ?? DefaultInsideCurveSpawnWeights);
                 builder.DefineInside(insideBuilder =>
                 {
                     insideBuilder.OverrideSpawnFacingWall(InsideMapObjectSettings.spawnFacingWall);
@@ -55,7 +74,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<MapObjectData, Dawn
 
             builder.DefineOutside(outsideBuilder =>
             {
-                MapObjectSpawnMechanics OutsideSpawnMechanics = new(Config.OutsideCurveSpawnWeights?.Value ?? data.defaultOutsideCurveSpawnWeights);
+                MapObjectSpawnMechanics OutsideSpawnMechanics = new(Config.OutsideCurveSpawnWeights?.Value ?? DefaultOutsideCurveSpawnWeights);
                 outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
                 outsideBuilder.SetWeights(weightBuilder =>
                 {
@@ -67,21 +86,29 @@ public class DuskMapObjectDefinition : DuskContentDefinition<MapObjectData, Dawn
         });
     }
 
-    public static MapObjectConfig CreateMapObjectConfig(ConfigContext section, MapObjectData data, string objectName)
+    public MapObjectConfig CreateMapObjectConfig(ConfigContext section)
     {
         ConfigEntry<bool>? insideHazard = null, outsideHazard = null;
         ConfigEntry<string>? insideCurves = null, outsideCurves = null;
-        if (data.createInsideHazardConfig)
-            insideHazard = section.Bind($"{objectName} | Is Inside Hazard", $"Whether {objectName} is an inside hazard", data.isInsideHazard);
+        if (CreateInsideHazardConfig)
+        {
+            insideHazard = section.Bind($"{MapObjectName} | Is Inside Hazard", $"Whether {MapObjectName} is an inside hazard", IsInsideHazard);
+        }
 
-        if (data.createOutsideHazardConfig)
-            outsideHazard = section.Bind($"{objectName} | Is Outside Hazard", $"Whether {objectName} is an outside hazard", data.isOutsideHazard);
+        if (CreateOutsideHazardConfig)
+        {
+            outsideHazard = section.Bind($"{MapObjectName} | Is Outside Hazard", $"Whether {MapObjectName} is an outside hazard", IsOutsideHazard);
+        }
 
-        if ((insideHazard?.Value ?? data.isInsideHazard) && data.createInsideCurveSpawnWeightsConfig)
-            insideCurves = section.Bind($"{objectName} | Inside Spawn Weights", $"Curve weights for {objectName} when spawning inside.", data.defaultInsideCurveSpawnWeights);
+        if ((insideHazard?.Value ?? IsInsideHazard) && CreateInsideCurveSpawnWeightsConfig)
+        {
+            insideCurves = section.Bind($"{MapObjectName} | Inside Spawn Weights", $"Curve weights for {MapObjectName} when spawning inside.", DefaultInsideCurveSpawnWeights);
+        }
 
-        if ((outsideHazard?.Value ?? data.isOutsideHazard) && data.createOutsideCurveSpawnWeightsConfig)
-            outsideCurves = section.Bind($"{objectName} | Outside Spawn Weights", $"Curve weights for {objectName} when spawning outside.", data.defaultOutsideCurveSpawnWeights);
+        if ((outsideHazard?.Value ?? IsOutsideHazard) && CreateOutsideCurveSpawnWeightsConfig)
+        {
+            outsideCurves = section.Bind($"{MapObjectName} | Outside Spawn Weights", $"Curve weights for {MapObjectName} when spawning outside.", DefaultOutsideCurveSpawnWeights);
+        }
 
         return new MapObjectConfig
         {
@@ -90,11 +117,6 @@ public class DuskMapObjectDefinition : DuskContentDefinition<MapObjectData, Dawn
             InsideCurveSpawnWeights = insideCurves,
             OutsideCurveSpawnWeights = outsideCurves,
         };
-    }
-
-    public override List<MapObjectData> GetEntities(DuskMod mod)
-    {
-        return mod.Content.assetBundles.SelectMany(it => it.mapObjects).ToList();
     }
 
     protected override string EntityNameReference => MapObjectName;

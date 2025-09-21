@@ -2,7 +2,7 @@ using BepInEx.Configuration;
 using Dawn.Utils;
 
 namespace Dusk;
-public class ItemConfig : EntityConfig
+public class ItemConfig
 {
     public ConfigEntry<int>? Cost;
     public ConfigEntry<bool>? IsScrapItem;
