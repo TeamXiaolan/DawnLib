@@ -183,6 +183,9 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
+            if(replacement.IsVanilla)
+                break;
+            
             replacement.ApplyNest(self);
         }
         orig(self);
@@ -197,7 +200,15 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
             {
-                enemyInfo.CustomData.GetOrCreateDefault<List<DuskEnemyReplacementDefinition>>(Key).Add(enemyReplacementDefinition);
+                if(!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition> list))
+                {
+                    DuskEnemyReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
+                    vanilla.IsVanilla = true;
+                    vanilla.Register(null);
+                    list.Add(vanilla);
+                    enemyInfo.CustomData.Set(Key, list);
+                }
+                list.Add(enemyReplacementDefinition);
             }
         }
     }
@@ -232,6 +243,9 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
+            if(replacement.IsVanilla)
+                break;
+                    
             replacement.Apply(self);
         }
     }
