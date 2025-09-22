@@ -63,7 +63,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                     insideBuilder.OverrideSpawnFacingAwayFromWall(InsideMapObjectSettings.spawnFacingAwayFromWall);
                     insideBuilder.OverrideRequireDistanceBetweenSpawns(InsideMapObjectSettings.requireDistanceBetweenSpawns);
                     insideBuilder.OverrideDisallowSpawningNearEntrances(InsideMapObjectSettings.disallowSpawningNearEntrances);
-                    insideBuilder.OverrideSpawnWithBackToWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
+                    insideBuilder.OverrideSpawnWithBackToWall(InsideMapObjectSettings.spawnWithBackToWall);
                     insideBuilder.OverrideSpawnWithBackFlushAgainstWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
                     insideBuilder.SetWeights(weightBuilder =>
                     {

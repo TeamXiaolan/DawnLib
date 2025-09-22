@@ -50,6 +50,7 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         {
             PricingStrategy = null;
         }
+
         DawnVehicleInfo = new DawnVehicleInfo(TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess(), TypedKey, _tags.ToHashSet(), BuyableVehiclePreset.VehiclePrefab, BuyableVehiclePreset.SecondaryPrefab, BuyableVehiclePreset.StationPrefab, PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy, null);
         DuskModContent.Vehicles.Register(this);
     }
