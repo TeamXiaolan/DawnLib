@@ -6,6 +6,7 @@ using Dawn;
 using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 using HarmonyLib;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
@@ -171,7 +172,7 @@ static class EntityReplacementRegistrationPatch
     }
 
     // note!!! this transpiler should only be used on enemy AIs!
-    private static readonly Dictionary<string, Func<EnemyAI, AudioClip, AudioClip>> clipReplacerFunctions = new()
+    private static readonly Dictionary<string, Func<AudioClip, EnemyAI, AudioClip>> clipReplacerFunctions = new()
     {
         { nameof(EnemyType.hitBodySFX), GenerateAudioClipReplacer(it => it.HitBodySFX) },
         { nameof(EnemyType.hitEnemyVoiceSFX), GenerateAudioClipReplacer(it => it.HitEnemyVoiceSFX) },
@@ -186,16 +187,17 @@ static class EntityReplacementRegistrationPatch
         // you probably need to do null/empty array checks as well
         // this could also probably be cleaned up significantly.
 
-        // evil for loop. loop backwards so emitting doesn't fuck us over later
-        for (c.Index = c.Instrs.Count - 1; c.Index -1 >= 0; c.Index--)
+        // evil for loop.
+        for (; c.Index < c.Instrs.Count; c.Index++)
         {
             if (c.Next.OpCode != OpCodes.Ldfld)
                 continue;
 
             if (c.Next.MatchLdfld<EnemyType>(nameof(EnemyType.audioClips)))
             {
+                c.Index++;
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate((EnemyAI self, AudioClip[] existingAudioClips) =>
+                c.EmitDelegate<Func<AudioClip[], EnemyAI, AudioClip[]>>((existingAudioClips, self) =>
                 {
                     if (!self.HasEnemyReplacement())
                     {
@@ -211,6 +213,7 @@ static class EntityReplacementRegistrationPatch
                 if (!c.Next.MatchLdfld<EnemyType>(name))
                     continue;
 
+                c.Index++;
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate(replacer);
                 break;
@@ -218,9 +221,9 @@ static class EntityReplacementRegistrationPatch
         }
     }
 
-    static Func<EnemyAI, AudioClip, AudioClip> GenerateAudioClipReplacer(Func<DuskEnemyReplacementDefinition, AudioClip> generator)
+    static Func<AudioClip, EnemyAI, AudioClip> GenerateAudioClipReplacer(Func<DuskEnemyReplacementDefinition, AudioClip> generator)
     {
-        return (self, existing) =>
+        return (existing, self) =>
         {
             ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
             if (replacement.CurrentEntityReplacement == null) 
