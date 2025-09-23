@@ -1,4 +1,8 @@
-# v0.2.0
+# v0.2.1
+
+- Fixed some issues with the Entity Replacements bricking the game, yw.
+
+## v0.2.0
 
 - Implemented near-complete-prototype of EntityReplacementDefinition
   - Contains EnemyReplacementDefinition and ItemReplacementDefinition currently, but potentially more to come.
