@@ -23,9 +23,11 @@ static class EntityReplacementRegistrationPatch
     internal static void Init()
     {
         LethalContent.Enemies.BeforeFreeze += RegisterEnemyReplacements;
+        LethalContent.Items.BeforeFreeze += RegisterItemReplacements;
         using (new DetourContext(priority: int.MaxValue))
         {
             On.EnemyAI.Start += ReplaceEnemyEntity;
+            On.GrabbableObject.Start += ReplaceGrabbableObject;
             On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
         }
 
@@ -83,6 +85,81 @@ static class EntityReplacementRegistrationPatch
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
     }
 
+    private static void RegisterItemReplacements()
+    {
+        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+        {
+            if (entityReplacementDefinition is not DuskItemReplacementDefinition itemReplacementDefinition)
+                continue;
+
+            if (LethalContent.Items.TryGetValue(itemReplacementDefinition.EntityToReplaceKey, out DawnItemInfo itemInfo))
+            {
+                if (!itemInfo.CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? list))
+                {
+                    DuskItemReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
+                    vanilla.IsVanilla = true;
+                    vanilla.Register(null);
+                    list = [vanilla];
+                    itemInfo.CustomData.Set(Key, list);
+                }
+                list.Add(itemReplacementDefinition);
+            }
+        }
+    }
+
+    private static void ReplaceGrabbableObject(On.GrabbableObject.orig_Start orig, GrabbableObject self)
+    {
+        if (!self.itemProperties.HasDawnInfo())
+        {
+            orig(self);
+            return;
+        }
+
+        if (!self.itemProperties.GetDawnInfo().CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? replacements))
+        {
+            orig(self);
+            return;
+        }
+
+        if (self.HasGrabbableObjectReplacement())
+        {
+            orig(self);
+            return;
+        }
+
+        // todo: save the current skin and try to restore it if this runs in orbit
+        if (StartOfRound.Instance.inShipPhase)
+        {
+            orig(self);
+            return;
+        }
+
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+
+        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        if (totalWeight == null)
+        {
+            orig(self);
+            return;
+        }
+
+        replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
+
+        int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
+        foreach (DuskItemReplacementDefinition replacement in replacements)
+        {
+            chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
+            if (chosenWeight > 0)
+                continue;
+
+            if (replacement.IsVanilla)
+                break;
+
+            replacement.Apply(self);
+        }
+        orig(self);
+    }
+
     private static void ReplaceEnemyEntityUsingNest(On.EnemyAI.orig_UseNestSpawnObject orig, EnemyAI self, EnemyAINestSpawnObject nestSpawnObject)
     {
         if (nestSpawnObject.HasNestReplacement())
@@ -120,12 +197,11 @@ static class EntityReplacementRegistrationPatch
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate((EnemyAI self, AudioClip[] existingAudioClips) =>
                 {
-                    ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
-                    if (replacement.CurrentEntityReplacement == null)
+                    if (!self.HasEnemyReplacement())
                     {
                         return existingAudioClips;
                     }
-                    return ((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement).AudioClips;
+                    return self.GetEnemyReplacement().AudioClips;
                 });
                 continue;
             }
@@ -215,14 +291,15 @@ static class EntityReplacementRegistrationPatch
 
     private static void ReplaceEnemyEntity(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
-        orig(self);
         if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
         {
+            orig(self);
             return;
         }
 
         if (self.HasEnemyReplacement())
         {
+            orig(self);
             return;
         }
 
@@ -231,11 +308,12 @@ static class EntityReplacementRegistrationPatch
         int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
+            orig(self);
             return;
         }
 
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
-        
+
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
@@ -245,8 +323,9 @@ static class EntityReplacementRegistrationPatch
 
             if (replacement.IsVanilla)
                 break;
-                    
+
             replacement.Apply(self);
         }
+        orig(self);
     }
 }

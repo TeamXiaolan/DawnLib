@@ -22,10 +22,8 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
     protected abstract void Apply(T grabbableObject);
     public override void Apply(GrabbableObject grabbableObject)
     {
-        base.Apply(grabbableObject);
-
         Apply((T)grabbableObject);
-
+        grabbableObject.SetGrabbableObjectReplacement(this);
         foreach (RendererReplacement rendererReplacement in RendererReplacements)
         {
             if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))

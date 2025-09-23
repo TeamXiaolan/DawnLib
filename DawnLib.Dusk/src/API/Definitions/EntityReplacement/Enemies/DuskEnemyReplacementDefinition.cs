@@ -56,10 +56,8 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
     protected abstract void Apply(T enemyAI);
     public override void Apply(EnemyAI enemyAI)
     {
-        base.Apply(enemyAI);
-
         Apply((T)enemyAI);
-
+        enemyAI.SetEnemyReplacement(this);
         foreach (RendererReplacement rendererReplacement in RendererReplacements)
         {
             if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))

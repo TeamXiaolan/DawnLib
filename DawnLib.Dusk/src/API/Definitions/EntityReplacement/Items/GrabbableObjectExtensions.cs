@@ -14,4 +14,9 @@ public static class GrabbableObjectExtensions
     {
         return grabbableObject.GetGrabbableObjectReplacement() != null;
     }
+
+    internal static void SetGrabbableObjectReplacement(this GrabbableObject grabbableObject, DuskItemReplacementDefinition itemReplacementDefinition)
+    {
+        ((ICurrentEntityReplacement)grabbableObject).CurrentEntityReplacement = itemReplacementDefinition;
+    }
 }

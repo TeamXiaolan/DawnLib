@@ -77,8 +77,5 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
-    public virtual void Apply(TAI ai)
-    {
-        ((ICurrentEntityReplacement)ai).CurrentEntityReplacement = this;
-    }
+    public abstract void Apply(TAI ai);
 }

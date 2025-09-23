@@ -14,4 +14,9 @@ public static class EnemyAIExtensions
     {
         return enemyAI.GetEnemyReplacement() != null;
     }
+
+    internal static void SetEnemyReplacement(this EnemyAI enemyAI, DuskEnemyReplacementDefinition enemyReplacementDefinition)
+    {
+        ((ICurrentEntityReplacement)enemyAI).CurrentEntityReplacement = enemyReplacementDefinition;
+    }
 }
