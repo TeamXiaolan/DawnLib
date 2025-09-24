@@ -1,4 +1,9 @@
-# v0.2.1
+# v0.2.2
+
+- Fixed some issues with the Entity Replacements bricking the game, again bwaa.
+- Butler bees should now be accessible in the enemy registry.
+
+## v0.2.1
 
 - Fixed some issues with the Entity Replacements bricking the game, yw.
 
