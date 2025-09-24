@@ -239,6 +239,13 @@ static class EntityReplacementRegistrationPatch
 
     private static void OnNestSpawnAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<EnemyAINestSpawnObject> orig, EnemyAINestSpawnObject self)
     {
+        if (!self.enemyType.HasDawnInfo())
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to replace enemy nest for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
+            orig(self);
+            return;
+        }
+        
         if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             orig(self);
@@ -294,6 +301,13 @@ static class EntityReplacementRegistrationPatch
 
     private static void ReplaceEnemyEntity(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
+        if (!self.enemyType.HasDawnInfo())
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
+            orig(self);
+            return;
+        }
+        
         if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             orig(self);
