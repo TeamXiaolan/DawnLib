@@ -368,6 +368,13 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }
+
+        // quick fix to get butler bees
+        EnemyType butlerBees = LethalContent.Enemies[EnemyKeys.Butler].EnemyType.enemyPrefab.GetComponent<ButlerEnemyAI>().butlerBeesEnemyType;
+        DawnEnemyInfo butlerBeesInfo = new DawnEnemyInfo(EnemyKeys.ButlerBees, [DawnLibTags.IsExternal], butlerBees, null, null, null, null, null, null);
+        butlerBees.SetDawnInfo(butlerBeesInfo);
+        LethalContent.Enemies.Register(butlerBeesInfo);
+        
         LethalContent.Enemies.Freeze();
     }
 
