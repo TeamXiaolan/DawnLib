@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
+using MonoMod.RuntimeDetour;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn;
 
 static class EnemyRegistrationHandler
 {
+    private static List<EnemyType> _networkPrefabEnemyTypes = new();
     internal static void Init()
     {
         LethalContent.Enemies.AddAutoTaggers(
@@ -22,6 +25,22 @@ static class EnemyRegistrationHandler
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
         On.Terminal.Awake += AddBestiaryNodes;
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.GameNetworkManager.Start += CollectAllEnemyTypes;
+        }
+    }
+
+    private static void CollectAllEnemyTypes(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
+    {
+        orig(self);
+        foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+        {
+            if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI) || enemyAI.enemyType == null)
+                continue;
+
+            _networkPrefabEnemyTypes.Add(enemyAI.enemyType);
+        }
     }
 
     private static void AddBestiaryNodes(On.Terminal.orig_Awake orig, Terminal self)
@@ -256,103 +275,95 @@ static class EnemyRegistrationHandler
         }
 
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
+
+        foreach (EnemyType? enemyType in _networkPrefabEnemyTypes)
+        {
+            if (enemyType == null || enemyType.enemyPrefab == null)
+                continue;
+
+            if (enemyType.HasDawnInfo())
+                continue;
+
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
+            NamespacedKey<DawnEnemyInfo>? key = EnemyKeys.GetByReflection(name);
+            if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetEnemyTypeFromLethalLib(enemyType, out string lethalLibModName))
+            {
+                key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+            }
+            else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedEnemyTypeModName(enemyType, out string lethalLevelLoaderModName))
+            {
+                key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLevelLoaderModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+            }
+            else if (key == null)
+            {
+                key = NamespacedKey<DawnEnemyInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+            }
+
+            if (LethalContent.Enemies.ContainsKey(key))
+            {
+                DawnPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                enemyType.SetDawnInfo(LethalContent.Enemies[key]);
+                continue;
+            }
+
+            if (!enemyType.enemyPrefab)
+            {
+                DawnPlugin.Logger.LogWarning($"{enemyType.enemyName} ({enemyType.name}) didn't have a spawn prefab?");
+                continue;
+            }
+
+            DawnEnemyLocationInfo? insideInfo = null;
+            DawnEnemyLocationInfo? outsideInfo = null;
+            DawnEnemyLocationInfo? daytimeInfo = null;
+
+            if (enemyInsideWeightBuilder.ContainsKey(enemyType))
+            {
+                insideInfo = new DawnEnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
+            }
+
+            if (enemyOutsideWeightBuilder.ContainsKey(enemyType))
+            {
+                outsideInfo = new DawnEnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
+            }
+
+            if (enemyDaytimeWeightBuilder.ContainsKey(enemyType))
+            {
+                daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
+            }
+
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            CollectLLLTags(enemyType, tags);
+
+            TerminalNode? bestiaryNode = null;
+            TerminalKeyword? nameKeyword = null;
+
+            ScanNodeProperties scanNodeProperties = enemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
+            if (scanNodeProperties != null)
+            {
+                int creatureScanID = scanNodeProperties.creatureScanID;
+                foreach (CompatibleNoun compatibleNoun in infoKeyword.compatibleNouns)
+                {
+                    if (compatibleNoun.result.creatureFileID != creatureScanID)
+                        continue;
+
+                    bestiaryNode = compatibleNoun.result;
+                    nameKeyword = compatibleNoun.noun;
+                }
+            }
+
+            DawnEnemyInfo enemyInfo = new(
+                key, tags, enemyType,
+                outsideInfo, insideInfo, daytimeInfo,
+                bestiaryNode, nameKeyword,
+                null
+            );
+            enemyType.SetDawnInfo(enemyInfo);
+            LethalContent.Enemies.Register(enemyInfo);
+        }
+
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
-            List<SpawnableEnemyWithRarity> levelEnemies =
-            [
-                .. level.Enemies,
-                .. level.OutsideEnemies,
-                .. level.DaytimeEnemies,
-            ];
-
-            foreach (SpawnableEnemyWithRarity enemyWithRarity in levelEnemies)
-            {
-                EnemyType? enemyType = enemyWithRarity.enemyType;
-                if (enemyType == null || enemyType.enemyPrefab == null)
-                    continue;
-
-                if (enemyType.HasDawnInfo())
-                    continue;
-
-                string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
-                NamespacedKey<DawnEnemyInfo>? key = EnemyKeys.GetByReflection(name);
-                if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetEnemyTypeFromLethalLib(enemyType, out string lethalLibModName))
-                {
-                    key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
-                }
-                else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedEnemyTypeModName(enemyType, out string lethalLevelLoaderModName))
-                {
-                    key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLevelLoaderModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
-                }
-                else if (key == null)
-                {
-                    key = NamespacedKey<DawnEnemyInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
-                }
-
-                if (LethalContent.Enemies.ContainsKey(key))
-                {
-                    DawnPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                    enemyType.SetDawnInfo(LethalContent.Enemies[key]);
-                    continue;
-                }
-
-                if (!enemyType.enemyPrefab)
-                {
-                    DawnPlugin.Logger.LogWarning($"{enemyType.enemyName} ({enemyType.name}) didn't have a spawn prefab?");
-                    continue;
-                }
-
-                DawnEnemyLocationInfo? insideInfo = null;
-                DawnEnemyLocationInfo? outsideInfo = null;
-                DawnEnemyLocationInfo? daytimeInfo = null;
-
-                if (enemyInsideWeightBuilder.ContainsKey(enemyType))
-                {
-                    insideInfo = new DawnEnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
-                }
-
-                if (enemyOutsideWeightBuilder.ContainsKey(enemyType))
-                {
-                    outsideInfo = new DawnEnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
-                }
-
-                if (enemyDaytimeWeightBuilder.ContainsKey(enemyType))
-                {
-                    daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
-                }
-
-                HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-                CollectLLLTags(enemyType, tags);
-
-                TerminalNode? bestiaryNode = null;
-                TerminalKeyword? nameKeyword = null;
-
-                ScanNodeProperties scanNodeProperties = enemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
-                if (scanNodeProperties != null)
-                {
-                    int creatureScanID = scanNodeProperties.creatureScanID;
-                    foreach (CompatibleNoun compatibleNoun in infoKeyword.compatibleNouns)
-                    {
-                        if (compatibleNoun.result.creatureFileID != creatureScanID)
-                            continue;
-
-                        bestiaryNode = compatibleNoun.result;
-                        nameKeyword = compatibleNoun.noun;
-                    }
-                }
-
-                DawnEnemyInfo enemyInfo = new(
-                    key, tags,
-                    enemyType,
-                    outsideInfo, insideInfo, daytimeInfo,
-                    bestiaryNode, nameKeyword,
-                    null
-                );
-                enemyType.SetDawnInfo(enemyInfo);
-                LethalContent.Enemies.Register(enemyInfo);
-            }
-
             foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
                 if (enemyInfo.HasTag(DawnLibTags.IsExternal))
@@ -368,12 +379,6 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }
-
-        // quick fix to get butler bees
-        EnemyType butlerBees = LethalContent.Enemies[EnemyKeys.Butler].EnemyType.enemyPrefab.GetComponent<ButlerEnemyAI>().butlerBeesEnemyType;
-        DawnEnemyInfo butlerBeesInfo = new DawnEnemyInfo(EnemyKeys.ButlerBees, [DawnLibTags.IsExternal], butlerBees, null, null, null, null, null, null);
-        butlerBees.SetDawnInfo(butlerBeesInfo);
-        LethalContent.Enemies.Register(butlerBeesInfo);
         
         LethalContent.Enemies.Freeze();
     }

@@ -49,7 +49,7 @@ public class ConfigManager(ConfigFile file)
     public static Dictionary<string, string> ParseLevelNameWithCurves(string configMoonRarity)
     {
         Dictionary<string, string> spawnRateByMoonName = new();
-        foreach (string entry in configMoonRarity.Split('|').Select(s => s.Trim()))
+        foreach (string entry in configMoonRarity.Split('|', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()))
         {
             string[] entryParts = entry.Split('-').Select(s => s.Trim()).ToArray();
 

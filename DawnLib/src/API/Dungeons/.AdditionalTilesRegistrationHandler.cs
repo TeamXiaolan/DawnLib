@@ -78,8 +78,14 @@ static class AdditionalTilesRegistrationHandler
                 key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
             }
 
-            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            if (LethalContent.Dungeons.ContainsKey(key))
+            {
+                Debuggers.Dungeons?.Log($"LethalContent.Dungeons already contains {key}");
+                dungeonFlow.SetDawnInfo(LethalContent.Dungeons[key]);
+                continue;
+            }
 
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(dungeonFlow, tags);
             DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
             dungeonFlow.SetDawnInfo(dungeonInfo);
@@ -116,6 +122,7 @@ static class AdditionalTilesRegistrationHandler
                 if (LethalContent.Archetypes.ContainsKey(archetypeKey))
                 {
                     Debuggers.Dungeons?.Log($"LethalContent.Archetypes already contains {archetypeKey}");
+                    dungeonArchetype.SetDawnInfo(LethalContent.Archetypes[archetypeKey]);
                     continue;
                 }
 
@@ -143,9 +150,11 @@ static class AdditionalTilesRegistrationHandler
                     {
                         tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
                     }
+
                     if (LethalContent.TileSets.ContainsKey(tileSetKey))
                     {
                         Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
+                        tileSet.SetDawnInfo(LethalContent.TileSets[tileSetKey]);
                         continue;
                     }
                     DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, [DawnLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet), null);
