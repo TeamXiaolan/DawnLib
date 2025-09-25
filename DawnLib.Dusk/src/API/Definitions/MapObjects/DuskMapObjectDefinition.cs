@@ -49,6 +49,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 
     public override void Register(DuskMod mod)
     {
+        base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMapObjectConfig(section);
 

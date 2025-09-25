@@ -50,6 +50,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
 
     public override void Register(DuskMod mod)
     {
+        base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateEnemyConfig(section);
 

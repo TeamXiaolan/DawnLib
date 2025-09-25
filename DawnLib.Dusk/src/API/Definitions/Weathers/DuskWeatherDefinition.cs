@@ -38,6 +38,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
 
     public override void Register(DuskMod mod)
     {
+        base.Register(mod);
         GameObject? effectObject = null;
         if (TemporaryEffectObject != null)
         {

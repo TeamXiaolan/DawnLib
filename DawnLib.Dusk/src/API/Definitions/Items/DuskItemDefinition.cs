@@ -61,6 +61,7 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
     public override void Register(DuskMod mod)
     {
+        base.Register(mod);
         BoundedRange itemWorth = new(Item.minValue * 0.4f, Item.maxValue * 0.4f);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateItemConfig(section);

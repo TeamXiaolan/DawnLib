@@ -38,6 +38,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
 
     public override void Register(DuskMod mod)
     {
+        base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateUnlockableConfig(section);
 
