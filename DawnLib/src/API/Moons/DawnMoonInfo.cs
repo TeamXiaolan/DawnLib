@@ -60,10 +60,8 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 
     public void RouteTo()
     {
-        Terminal terminal = TerminalRefs.Instance;
         int index = Array.IndexOf(StartOfRound.Instance.levels, Level);
-
-        StartOfRound.Instance.ChangeLevelServerRpc(index, terminal.groupCredits);
+        StartOfRound.Instance.ChangeLevelServerRpc(index, TerminalRefs.Instance.groupCredits);
     }
 
     private static string StripSpecialCharacters(string input)

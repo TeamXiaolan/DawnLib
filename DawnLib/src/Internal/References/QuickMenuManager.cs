@@ -1,31 +1,30 @@
-using System;
 using UnityEngine.SceneManagement;
 
 namespace Dawn.Internal;
 
-internal static class ItemDropshipRefs
+static class QuickMenuManagerRefs
 {
-    static ItemDropshipRefs()
+    static QuickMenuManagerRefs()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (loadSceneMode == LoadSceneMode.Additive)
+        if (scene.name == "SampleSceneRelay")
         {
             _ = Instance;
         }
     }
 
-    private static ItemDropship _instance;
-    public static ItemDropship Instance
+    private static QuickMenuManager _instance;
+    public static QuickMenuManager Instance
     {
         get
         {
             if (_instance == null)
             {
-                _instance = UnityEngine.Object.FindFirstObjectByType<ItemDropship>();
+                _instance = UnityEngine.Object.FindFirstObjectByType<QuickMenuManager>();
             }
             return _instance;
         }

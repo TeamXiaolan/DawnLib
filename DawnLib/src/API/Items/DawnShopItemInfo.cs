@@ -23,7 +23,6 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
     public void AddToDropship(bool ignoreMax = false, int count = 1)
     {
         Terminal terminal = TerminalRefs.Instance;
-
         for (int i = 0; i < count; i++)
         {
             if (!ignoreMax && terminal.orderedItemsFromTerminal.Count > 12)
@@ -37,7 +36,6 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
 
     public int GetSalePercentage()
     {
-        Terminal terminal = TerminalRefs.Instance;
-        return terminal.itemSalesPercentages[RequestNode.buyItemIndex];
+        return TerminalRefs.Instance.itemSalesPercentages[RequestNode.buyItemIndex];
     }
 }

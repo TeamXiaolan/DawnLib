@@ -29,6 +29,12 @@ static class EnemyRegistrationHandler
         {
             On.GameNetworkManager.Start += CollectAllEnemyTypes;
         }
+        LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
+    }
+
+    private static void RedoEnemiesDebugMenu()
+    {
+        QuickMenuManagerRefs.Instance.Debug_SetEnemyDropdownOptions();
     }
 
     private static void CollectAllEnemyTypes(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
@@ -37,6 +38,12 @@ static class ItemRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.Terminal.Awake += RegisterShopItemsToTerminal;
         LethalContent.Moons.OnFreeze += FreezeItemContent;
+        LethalContent.Items.OnFreeze += RedoItemsDebugMenu;
+    }
+
+    private static void RedoItemsDebugMenu()
+    {
+        QuickMenuManagerRefs.Instance.Debug_SetAllItemsDropdownOptions();
     }
 
     internal static void UpdateAllShopItemPrices()
@@ -269,7 +276,6 @@ static class ItemRegistrationHandler
 
     private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
-        Terminal terminal = TerminalRefs.Instance;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
         TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
@@ -280,7 +286,6 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
-        StartOfRound startOfRound = StartOfRoundRefs.Instance;
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
@@ -343,7 +348,7 @@ static class ItemRegistrationHandler
                 noun = buyItemKeyword,
                 result = shopInfo.InfoNode
             });
-            startOfRound.allItemsList.itemsList.Add(itemInfo.Item);
+            StartOfRoundRefs.Instance.allItemsList.itemsList.Add(itemInfo.Item);
         }
 
         self.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
