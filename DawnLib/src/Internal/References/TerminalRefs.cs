@@ -1,23 +1,9 @@
 using System.Linq;
-using UnityEngine.SceneManagement;
 
 namespace Dawn.Internal;
 
 internal static class TerminalRefs
 {
-    static TerminalRefs()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private static void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
-    {
-        if (scene.name == "SampleSceneRelay")
-        {
-            _ = Instance;
-        }
-    }
-
     private static Terminal _instance;
     public static Terminal Instance
     {

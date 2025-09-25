@@ -1,23 +1,7 @@
-using System;
-using UnityEngine.SceneManagement;
-
 namespace Dawn.Internal;
 
 internal static class ItemDropshipRefs
 {
-    static ItemDropshipRefs()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private static void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
-    {
-        if (loadSceneMode == LoadSceneMode.Additive)
-        {
-            _ = Instance;
-        }
-    }
-
     private static ItemDropship _instance;
     public static ItemDropship Instance
     {

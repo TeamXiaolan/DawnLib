@@ -28,6 +28,7 @@ static class MoonRegistrationHandler
         if (LethalContent.Moons.IsFrozen)
             return;
 
+        Terminal terminal = TerminalRefs.Instance;
         TerminalKeyword routeKeyword = TerminalRefs.RouteKeyword;
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {

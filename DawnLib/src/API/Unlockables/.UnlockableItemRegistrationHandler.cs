@@ -101,6 +101,7 @@ static class UnlockableRegistrationHandler
         }
         Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
+        Terminal terminal = TerminalRefs.Instance;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
 

@@ -108,6 +108,7 @@ static class VehicleRegistrationPatch
 
     private static void RegisterVehicles(On.Terminal.orig_Awake orig, Terminal self)
     {
+        Terminal terminal = TerminalRefs.Instance;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
         TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
