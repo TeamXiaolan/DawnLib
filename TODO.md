@@ -2,7 +2,8 @@
 
 ## Xu
 
-- Dead body additions
+- Dead body additions.
+- Fix items in debug mode not showing up.
 
 less important:
 
