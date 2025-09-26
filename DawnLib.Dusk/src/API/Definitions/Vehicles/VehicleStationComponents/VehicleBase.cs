@@ -28,6 +28,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     NamespacedKey IVehicle.VehicleKey => VehicleKey;
 
+    protected bool InDropShipAnimation { get; private set; } = false;
     public int RealLength { get; private set; } = 4;
     public Collider[] VehicleColliders { get; private set; }
 
@@ -69,6 +70,8 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
                 }
             }
         }
+
+        InDropShipAnimation = !StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle;
     }
 
     public virtual void Update()
@@ -88,9 +91,10 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     public virtual void FixedUpdate()
     {
-        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
+        if (InDropShipAnimation)
         {
             this.transform.position = ItemDropshipRefs.Instance.deliverVehiclePoint.position;
+            InDropShipAnimation = !StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle;
         }
     }
 
