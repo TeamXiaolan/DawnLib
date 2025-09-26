@@ -53,7 +53,7 @@ static class UnlockableRegistrationHandler
     {
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
         {
-            if (info.HasTag(DawnLibTags.IsExternal))
+            if (info.HasTag(DawnLibTags.IsExternal) && !info.HasTag(DawnLibTags.LunarConfig))
                 continue;
 
             UpdateUnlockablePrices(info);

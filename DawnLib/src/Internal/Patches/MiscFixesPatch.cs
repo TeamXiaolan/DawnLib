@@ -39,9 +39,6 @@ static class MiscFixesPatch
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
-            if (itemInfo.HasTag(DawnLibTags.IsExternal)) // Get rid of this if i wanna include the fix into
-                continue;
-
             foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes.ToArray())
             {
                 foreach (ItemGroup vanillaItemGroup in vanillaItemGroups)

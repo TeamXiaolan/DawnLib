@@ -51,7 +51,7 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
+            if (shopInfo == null || (itemInfo.HasTag(DawnLibTags.IsExternal) && !itemInfo.HasTag(DawnLibTags.LunarConfig)))
                 continue;
 
             UpdateShopItemPrices(shopInfo);
@@ -86,11 +86,21 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
+            if (scrapInfo == null || (itemInfo.HasTag(DawnLibTags.IsExternal) && !itemInfo.HasTag(DawnLibTags.LunarConfig)))
                 continue;
 
             Debuggers.Items?.Log($"Updating {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
-            level.spawnableScrap.Where(x => x.spawnableItem == itemInfo.Item).First().rarity = scrapInfo.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+            SpawnableItemWithRarity? spawnableItemWithRarity = level.spawnableScrap.FirstOrDefault(x => x.spawnableItem == itemInfo.Item);
+            if (spawnableItemWithRarity == null)
+            {
+                spawnableItemWithRarity = new()
+                {
+                    spawnableItem = itemInfo.Item,
+                    rarity = 0
+                };
+                level.spawnableScrap.Add(spawnableItemWithRarity);
+            }
+            spawnableItemWithRarity.rarity = scrapInfo.Weights.GetFor(level.GetDawnInfo()) ?? 0;
         }
     }
 
@@ -253,12 +263,25 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
+            if (scrapInfo == null || (itemInfo.HasTag(DawnLibTags.IsExternal) && !itemInfo.HasTag(DawnLibTags.LunarConfig)))
                 continue;
 
             foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
             {
                 SelectableLevel level = moonInfo.Level;
+                bool alreadyExists = false;
+                foreach (SpawnableItemWithRarity newSpawnableItemWithRarity in level.spawnableScrap)
+                {
+                    if (newSpawnableItemWithRarity.spawnableItem == itemInfo.Item)
+                    {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+
+                if (alreadyExists)
+                    continue;
+
                 SpawnableItemWithRarity spawnDef = new()
                 {
                     spawnableItem = itemInfo.Item,
@@ -270,7 +293,10 @@ static class ItemRegistrationHandler
             if (itemInfo.ShopInfo != null)
                 continue;
 
-            StartOfRound.Instance.allItemsList.itemsList.Add(itemInfo.Item);
+            if (!StartOfRound.Instance.allItemsList.itemsList.Contains(itemInfo.Item))
+            {
+                StartOfRound.Instance.allItemsList.itemsList.Add(itemInfo.Item);
+            }
         }
     }
 

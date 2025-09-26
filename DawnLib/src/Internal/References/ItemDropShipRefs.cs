@@ -1,6 +1,6 @@
 namespace Dawn.Internal;
 
-internal static class ItemDropshipRefs
+public static class ItemDropshipRefs
 {
     private static ItemDropship _instance;
     public static ItemDropship Instance

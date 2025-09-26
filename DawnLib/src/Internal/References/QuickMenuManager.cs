@@ -1,6 +1,6 @@
 namespace Dawn.Internal;
 
-static class QuickMenuManagerRefs
+public static class QuickMenuManagerRefs
 {
     private static QuickMenuManager _instance;
     public static QuickMenuManager Instance

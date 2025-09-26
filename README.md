@@ -16,10 +16,10 @@ This is because of the way DawnLib supports dynamically updating weights and the
 ## DawnLib (All C#)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.1.0" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.2.3" />
 
 <!-- Optional Source Generation, mostly for when using the DuskMod API -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.1.0" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.2.3" />
 ```
 
 DawnLib is a hands-off way to register your content. The code to switch from LethalLib to DawnLib is very similar and will require minimal refactoring.
@@ -89,11 +89,11 @@ Note: If you are going to make a large edit (calling `.Set`, `.GetOrSet`, etc mu
 ## DuskMod (C# & Editor)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.1.0" />
-<PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.1.0" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.2.3" />
+<PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.2.3" />
 
 <!-- Optional Source Generation -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.1.0" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.2.3" />
 ```
 
 The DuskMod API is more opinionated, but automatically handles:
@@ -110,6 +110,7 @@ It also supports:
 - Achievements
 - Weathers (through `WeatherRegistry`)
 - Vehicles (highly experimental)
+- Enemy/Item Model Replacement
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord for help.
 

@@ -1,6 +1,6 @@
 namespace Dawn.Internal;
 
-internal static class TimeOfDayRefs
+public static class TimeOfDayRefs
 {
     private static TimeOfDay _instance;
     public static TimeOfDay Instance

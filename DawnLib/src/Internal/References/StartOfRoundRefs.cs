@@ -1,6 +1,6 @@
 namespace Dawn.Internal;
 
-static class StartOfRoundRefs
+public static class StartOfRoundRefs
 {
     private static StartOfRound _instance;
     public static StartOfRound Instance

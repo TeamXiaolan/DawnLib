@@ -272,11 +272,29 @@ static class MapObjectRegistrationHandler
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             DawnInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
-            if (insideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
+            if (insideInfo == null || (mapObjectInfo.HasTag(DawnLibTags.IsExternal) && !mapObjectInfo.HasTag(DawnLibTags.LunarConfig)))
                 continue;
 
             Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
-            level.spawnableMapObjects.Where(mapObject => mapObjectInfo.MapObject == mapObject.prefabToSpawn).First().numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo());
+            SpawnableMapObject? spawnableMapObject = level.spawnableMapObjects.FirstOrDefault(mapObject => mapObject.prefabToSpawn == mapObjectInfo.MapObject);
+            if (spawnableMapObject == null)
+            {
+                spawnableMapObject = new()
+                {
+                    prefabToSpawn = mapObjectInfo.MapObject,
+                    spawnFacingAwayFromWall = insideInfo.SpawnFacingAwayFromWall,
+                    spawnFacingWall = insideInfo.SpawnFacingWall,
+                    spawnWithBackFlushAgainstWall = insideInfo.SpawnWithBackFlushAgainstWall,
+                    spawnWithBackToWall = insideInfo.SpawnWithBackToWall,
+                    requireDistanceBetweenSpawns = insideInfo.RequireDistanceBetweenSpawns,
+                    disallowSpawningNearEntrances = insideInfo.DisallowSpawningNearEntrances,
+                    numberToSpawn = AnimationCurve.Constant(0, 1, 0)
+                };
+                List<SpawnableMapObject> newSpawnableMapObjects = level.spawnableMapObjects.ToList();
+                newSpawnableMapObjects.Add(spawnableMapObject);
+                level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
+            }
+            spawnableMapObject.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo());
         }
     }
 
@@ -287,7 +305,20 @@ static class MapObjectRegistrationHandler
             List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
             foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
             {
-                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
+                if (mapObjectInfo.InsideInfo == null || (mapObjectInfo.HasTag(DawnLibTags.IsExternal) && !mapObjectInfo.HasTag(DawnLibTags.LunarConfig)))
+                    continue;
+
+                bool alreadyExists = false;
+                foreach (SpawnableMapObject newSpawnableMapObject in newSpawnableMapObjects)
+                {
+                    if (newSpawnableMapObject.prefabToSpawn == mapObjectInfo.MapObject)
+                    {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+
+                if (alreadyExists)
                     continue;
 
                 SpawnableMapObject spawnableMapObject = new()

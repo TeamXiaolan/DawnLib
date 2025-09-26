@@ -131,7 +131,7 @@ static class EnemyRegistrationHandler
         }
 
         DawnEnemyInfo enemyInfo = self.enemyType.GetDawnInfo();
-        if (enemyInfo.HasTag(DawnLibTags.IsExternal) || StarlancerAIFixCompat.Enabled)
+        if ((enemyInfo.HasTag(DawnLibTags.IsExternal) && !enemyInfo.HasTag(DawnLibTags.LunarConfig)) || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
             return;
@@ -208,23 +208,53 @@ static class EnemyRegistrationHandler
 
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(DawnLibTags.IsExternal))
+            if (enemyInfo.HasTag(DawnLibTags.IsExternal) && !enemyInfo.HasTag(DawnLibTags.LunarConfig))
                 continue;
 
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
             if (enemyInfo.Outside != null)
             {
-                level.OutsideEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Outside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.OutsideEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+                if (spawnableEnemyWithRarity == null)
+                {
+                    spawnableEnemyWithRarity = new()
+                    {
+                        enemyType = enemyInfo.EnemyType,
+                        rarity = 0
+                    };
+                    level.OutsideEnemies.Add(spawnableEnemyWithRarity);
+                }
+                spawnableEnemyWithRarity.rarity = enemyInfo.Outside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
             }
 
             if (enemyInfo.Inside != null)
             {
-                level.Enemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Inside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.Enemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+                if (spawnableEnemyWithRarity == null)
+                {
+                    spawnableEnemyWithRarity = new()
+                    {
+                        enemyType = enemyInfo.EnemyType,
+                        rarity = 0
+                    };
+                    level.Enemies.Add(spawnableEnemyWithRarity);
+                }
+                spawnableEnemyWithRarity.rarity = enemyInfo.Inside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
             }
 
             if (enemyInfo.Daytime != null)
             {
-                level.DaytimeEnemies.Where(x => x.enemyType == enemyInfo.EnemyType).First().rarity = enemyInfo.Daytime.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.DaytimeEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+                if (spawnableEnemyWithRarity == null)
+                {
+                    spawnableEnemyWithRarity = new()
+                    {
+                        enemyType = enemyInfo.EnemyType,
+                        rarity = 0
+                    };
+                    level.DaytimeEnemies.Add(spawnableEnemyWithRarity);
+                }
+                spawnableEnemyWithRarity.rarity = enemyInfo.Daytime.Weights.GetFor(level.GetDawnInfo()) ?? 0;
             }
         }
     }
@@ -372,7 +402,7 @@ static class EnemyRegistrationHandler
             SelectableLevel level = moonInfo.Level;
             foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
-                if (enemyInfo.HasTag(DawnLibTags.IsExternal))
+                if (enemyInfo.HasTag(DawnLibTags.IsExternal) && !enemyInfo.HasTag(DawnLibTags.LunarConfig))
                     continue;
 
                 if (enemyInfo.Outside != null)
@@ -399,6 +429,14 @@ static class EnemyRegistrationHandler
 
     private static void TryAddToEnemyList(DawnEnemyInfo enemyInfo, List<SpawnableEnemyWithRarity> list)
     {
+        foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in list)
+        {
+            if (spawnableEnemyWithRarity.enemyType == enemyInfo.EnemyType)
+            {
+                return;
+            }
+        }
+
         SpawnableEnemyWithRarity spawnDef = new()
         {
             enemyType = enemyInfo.EnemyType,

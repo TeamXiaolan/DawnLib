@@ -6,6 +6,7 @@
 
 less important:
 
+- Add acceptable value ranges on the editor configs.
 - Add a special finished border for each achievement mod.
 - Add a normal border for each achievement mod.
 
