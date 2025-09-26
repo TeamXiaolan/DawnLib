@@ -4,6 +4,7 @@
 - Exposed some normal game refs
 - Updated readme a bit.
 - Added LunarConfig tag to DawnLib incase Crafty wants to add that tag to everything and then change the DawnInfo so it makes things easier to edit.
+- Added `InDropShipAnimation` to VehicleAPI for vehicle currently in drop ship animation.
 
 ## v0.2.2
 
