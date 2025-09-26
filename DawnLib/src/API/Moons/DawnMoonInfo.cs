@@ -58,6 +58,8 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
         return newName;
     }
 
+    public string GetNumberlessPlanetName() => StripSpecialCharacters(Level.PlanetName);
+
     public void RouteTo()
     {
         int index = Array.IndexOf(StartOfRound.Instance.levels, Level);

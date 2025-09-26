@@ -14,6 +14,7 @@ less important:
 
 less important:
 
+- Config grabbing in AssetBundleLoader should be more optimised.
 - Suits UI stuff for fitting em in.
 - check over all visibility (public, internal, private)
 - config stuff (NamespacedKey TOMLConverter, pretty print generics, look at patching to allow lists?)
