@@ -26,4 +26,5 @@ public class BoundedRange
 
     public bool IsInRange(float value) => value > Min && value <= Max;
     public float GetAverage() => (Min + Max) / 2f;
+    public float GetRandomInRange(System.Random random) => random.NextFloat(Min, Max);
 }
