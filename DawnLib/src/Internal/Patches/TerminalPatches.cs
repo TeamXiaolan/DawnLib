@@ -212,19 +212,6 @@ static class TerminalPatches
             purchase = info;
         }
 
-        if (node.buyVehicleIndex != -1)
-        {
-            Debuggers.Patching?.Log($"buyVehicleIndex = {node.buyVehicleIndex}");
-            BuyableVehicle buyingVehicle = self.buyableVehicles[node.buyVehicleIndex];
-            if (!buyingVehicle.HasDawnInfo())
-            {
-                orig(self, node);
-                return;
-            }
-            DawnVehicleInfo info = buyingVehicle.GetDawnInfo();
-            purchase = info;
-        }
-
         // preform predicate
         if (purchase != null)
         {

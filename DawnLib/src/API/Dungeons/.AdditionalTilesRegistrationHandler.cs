@@ -12,6 +12,12 @@ static class AdditionalTilesRegistrationHandler
     {
         On.StartOfRound.Awake += CollectVanillaDungeons;
         On.RoundManager.Start += CollectModdedDungeons;
+        On.DunGen.RuntimeDungeon.Start += (orig, self) =>
+        {
+            self.GenerateOnStart = false;
+            orig(self);
+        };
+
         On.DunGen.RuntimeDungeon.Generate += (orig, self) =>
         {
             TryInjectTileSets(self.Generator.DungeonFlow);

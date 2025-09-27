@@ -14,10 +14,57 @@ static class VehicleRegistrationPatch
 {
     internal static void Init()
     {
+        On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         On.Terminal.LoadNewNodeIfAffordable += UpdatePrices;
         On.ItemDropship.DeliverVehicleOnServer += GetLastDuskVehicleDelivered;
         IL.ItemDropship.DeliverVehicleOnServer += DeliverDuskVehicleOnServer;
         On.Terminal.Awake += RegisterVehicles;
+    }
+
+    private static void HandlePredicate(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)
+    {
+        ITerminalPurchase? purchase = null;
+        if (node.buyVehicleIndex != -1)
+        {
+            Debuggers.Patching?.Log($"buyVehicleIndex = {node.buyVehicleIndex}");
+            BuyableVehicle buyingVehicle = self.buyableVehicles[node.buyVehicleIndex];
+            if (!buyingVehicle.TryGetDuskDefinition(out DuskVehicleDefinition? duskVehicleDefinition))
+            {
+                orig(self, node);
+                return;
+            }
+            DawnVehicleInfo info = duskVehicleDefinition.DawnVehicleInfo;
+            purchase = info;
+        }
+
+        // preform predicate
+        if (purchase != null)
+        {
+            Debuggers.Patching?.Log($"has predicate");
+
+            TerminalPurchaseResult result = purchase.PurchasePredicate.CanPurchase();
+            if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+            {
+                Debuggers.Patching?.Log($"predicate fail");
+
+                orig(self, failedResult.ReasonNode);
+                return;
+            }
+
+            if (result is TerminalPurchaseResult.HiddenPurchaseResult)
+            {
+                Debuggers.Patching?.Log($"predicate hidden");
+
+                self.LoadNewNode(new TerminalNodeBuilder("hidden purchase")
+                    .SetDisplayText("You're not supposed to be here") // TODO
+                    .Build()
+                );
+
+                return; // skip orig
+            }
+        }
+
+        orig(self, node);
     }
 
     private static void UpdatePrices(On.Terminal.orig_LoadNewNodeIfAffordable orig, Terminal self, TerminalNode node)

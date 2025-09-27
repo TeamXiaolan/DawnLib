@@ -27,23 +27,45 @@ static class EnemyRegistrationHandler
         On.Terminal.Awake += AddBestiaryNodes;
         using (new DetourContext(priority: int.MaxValue))
         {
-            On.GameNetworkManager.Start += CollectAllEnemyTypes;
+            // On.GameNetworkManager.Start += CollectAllEnemyTypes;
+            On.StartOfRound.Start += CollectAllEnemyTypes;
         }
         LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
     }
+
+    /*private static void CollectAllEnemyTypes(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
+    {
+        orig(self);
+        CollectEnemyTypes();
+    }*/
 
     private static void RedoEnemiesDebugMenu()
     {
         QuickMenuManagerRefs.Instance.Debug_SetEnemyDropdownOptions();
     }
 
-    private static void CollectAllEnemyTypes(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
+    private static void CollectAllEnemyTypes(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         orig(self);
+        CollectEnemyTypes();
+    }
+
+    private static void CollectEnemyTypes()
+    {
         foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
         {
-            if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI) || enemyAI.enemyType == null)
+            if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI))
                 continue;
+
+            if (enemyAI.enemyType == null)
+            {
+                continue;
+            }
+
+            if (_networkPrefabEnemyTypes.Contains(enemyAI.enemyType))
+            {
+                continue;
+            }
 
             _networkPrefabEnemyTypes.Add(enemyAI.enemyType);
         }
