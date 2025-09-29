@@ -34,21 +34,8 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     public virtual void Awake()
     {
-        if (RopeAttachmentEndPoints.Length > 4)
-        {
-            RopeAttachmentEndPoints = RopeAttachmentEndPoints.Take(4).ToArray();
-        }
-        else if (RopeAttachmentEndPoints.Length < 4)
-        {
-            RealLength = RopeAttachmentEndPoints.Length;
-            for (int i = RopeAttachmentEndPoints.Length; i < 4; i++)
-            {
-                RopeAttachmentEndPoints[i] = new GameObject($"RopeAttachmentPoint{i + 1}").transform;
-                RopeAttachmentEndPoints[i].SetParent(this.transform, false);
-                RopeAttachmentEndPoints[i].position = this.transform.position;
-            }
-        }
-
+        _ = TerminalRefs.Instance;
+        InDropShipAnimation = !StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle;
         VehicleColliders = GetComponentsInChildren<Collider>();
         int vehicleLayer = LayerMask.NameToLayer("Vehicle");
         foreach (VehicleBase vehicleBase in FindObjectsOfType<VehicleBase>())
@@ -66,12 +53,25 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
                     if (collider2.isTrigger || collider2.gameObject.layer != vehicleLayer)
                         continue;
 
-                    Physics.IgnoreCollision(collider1, collider2);
+                    Physics.IgnoreCollision(collider1, collider2, false);
                 }
             }
         }
 
-        InDropShipAnimation = !StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle;
+        if (RopeAttachmentEndPoints.Length > 4)
+        {
+            RopeAttachmentEndPoints = RopeAttachmentEndPoints.Take(4).ToArray();
+        }
+        else if (RopeAttachmentEndPoints.Length < 4)
+        {
+            RealLength = RopeAttachmentEndPoints.Length;
+            for (int i = RopeAttachmentEndPoints.Length; i < 4; i++)
+            {
+                RopeAttachmentEndPoints[i] = new GameObject($"RopeAttachmentPoint{i + 1}").transform;
+                RopeAttachmentEndPoints[i].SetParent(this.transform, false);
+                RopeAttachmentEndPoints[i].position = this.transform.position;
+            }
+        }
     }
 
     public virtual void Update()
@@ -80,7 +80,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     public virtual void LateUpdate()
     {
-        if (!StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle)
+        if (InDropShipAnimation)
         {
             for (int i = RealLength; i < 4; i++)
             {

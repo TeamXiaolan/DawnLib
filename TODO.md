@@ -3,6 +3,8 @@
 ## Xu
 
 - Dead body additions.
+- Handling vehicle spawning when already bought on loading a lobby.
+- Handling vehicle no station equaling magnet station.
 
 less important:
 
