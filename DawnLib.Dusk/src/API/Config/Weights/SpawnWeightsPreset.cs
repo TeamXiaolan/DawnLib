@@ -18,9 +18,9 @@ public class SpawnWeightsPreset : IWeighted
         MoonSpawnWeightsTransformer = new MoonWeightTransformer(moonConfig);
         InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
         WeatherSpawnWeightsTransformer = new WeatherWeightTransformer(weatherConfig);
-        // `MoonName1:+10,MoonName2:-20,MoonName3:*1.5`
-        // `InteriorName1:-10,InteriorName2:+10,InteriorName3:+300`
-        // `WeatherName1:10,WeatherName2:*2.0,WeatherName3:*1.5`
+        // `Namespace:MoonName1=+10,Namespace:MoonName2=-20,Namespace:MoonName3=*1.5`
+        // `Namespace:InteriorName1=-10,Namespace:InteriorName2=+10,Namespace:InteriorName3=+300`
+        // `Namespace:WeatherName1=10,Namespace:WeatherName2=*2.0,Namespace:WeatherName3=*1.5`
     }
 
     public int GetWeight()

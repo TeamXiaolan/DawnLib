@@ -1,4 +1,10 @@
-# v0.2.5
+# v0.2.6
+
+- Added more config error checking to the Definitions as this mod uses a different format compared to other mods.
+- Added the tag `custom` to the mod as `lethal_company:custom` or just `custom` should work.
+- Entity, Enemy and Item content definitions have defaults weights of 0 on every vanilla moon, multipliers of 1 on every vanilla weather and default weight of 0 on every vanilla interior.
+
+## v0.2.5
 
 - Edited Editor.dll to be depending on the latest DawnLib version.
 - Fixed spawn weight issues with items, enemies and entity replacements where the config gets replaced with an empty config.

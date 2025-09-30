@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Dawn;
 using Dawn.Internal;
@@ -31,22 +30,38 @@ public class InteriorWeightTransformer : WeightTransformer
 
     public override void FromConfigString(string config)
     {
-        if (string.IsNullOrEmpty(config))
-            return;
-
         MatchingInteriorsWithWeightAndOperationDict.Clear();
-        IEnumerable<string> configEntries = config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        List<string> configEntries = new();
+        foreach (string entry in config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            configEntries.Add(entry.Trim().Replace(" ", "_"));
+        }
         List<string[]> interiorWithWeightEntries = configEntries.Select(kvp => kvp.Split('=', StringSplitOptions.RemoveEmptyEntries)).ToList();
+        if (interiorWithWeightEntries.Count == 0)
+        {
+            DuskPlugin.Logger.LogWarning($"Invalid interior weight config: {config}");
+            DuskPlugin.Logger.LogWarning($"Expected Format: <Namespace>:<Key>=<Operation><Value> | i.e. magic_wesleysmod:museuminteriorflow=+20");
+            return;
+        }
+
         foreach (string[] interiorWithWeightEntry in interiorWithWeightEntries)
         {
             if (interiorWithWeightEntry.Length != 2)
+            {
+                DuskPlugin.Logger.LogWarning($"Invalid interior weight entry: {string.Join(",", interiorWithWeightEntry)} from config: {config}");
+                DuskPlugin.Logger.LogWarning($"Expected Format: <Namespace>:<Key>=<Operation><Value> | i.e. magic_wesleysmod:museuminteriorflow=+20");
                 continue;
+            }
 
             NamespacedKey interiorNamespacedKey = NamespacedKey.ForceParse(interiorWithWeightEntry[0].Trim());
 
             string weightFactor = interiorWithWeightEntry[1].Trim();
             if (string.IsNullOrEmpty(weightFactor))
-                continue;
+            {
+                DuskPlugin.Logger.LogWarning($"Invalid moon weight entry: {string.Join(",", interiorWithWeightEntry)} from config: {config}");
+                DuskPlugin.Logger.LogWarning($"Entry did not have a provided weight factor, defaulting to 0.");
+                weightFactor = "+0";
+            }
 
             MatchingInteriorsWithWeightAndOperationDict.Add(interiorNamespacedKey, weightFactor);
         }

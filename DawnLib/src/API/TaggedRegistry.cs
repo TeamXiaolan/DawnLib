@@ -6,7 +6,7 @@ public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
 {
     public event Action AfterTagging = delegate { };
 
-    private List<IAutoTagger<T>> _autoTaggers = [new VanillaAutoTagger<T>()];
+    private List<IAutoTagger<T>> _autoTaggers = [new VanillaAutoTagger<T>(), new CustomAutoTagger<T>()];
     public void AddAutoTaggers(params IAutoTagger<T>[] taggers)
     {
         foreach (IAutoTagger<T> tagger in taggers)

@@ -30,22 +30,38 @@ public class WeatherWeightTransformer : WeightTransformer
 
     public override void FromConfigString(string config)
     {
-        if (string.IsNullOrEmpty(config))
-            return;
-
         MatchingWeathersWithWeightAndOperationDict.Clear();
-        IEnumerable<string> configEntries = config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        List<string> configEntries = new();
+        foreach (string entry in config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            configEntries.Add(entry.Trim().Replace(" ", "_"));
+        }
         List<string[]> weatherWithWeightEntries = configEntries.Select(kvp => kvp.Split('=', StringSplitOptions.RemoveEmptyEntries)).ToList();
+        if (weatherWithWeightEntries.Count == 0)
+        {
+            DuskPlugin.Logger.LogWarning($"Invalid weather weight config: {config}");
+            DuskPlugin.Logger.LogWarning($"Expected Format: <Namespace>:<Key>=<Operation><Value> | i.e. weather_registry:snowfall=+20");
+            return;
+        }
+
         foreach (string[] weatherWithWeightEntry in weatherWithWeightEntries)
         {
             if (weatherWithWeightEntry.Length != 2)
+            {
+                DuskPlugin.Logger.LogWarning($"Invalid weather weight entry: {string.Join(",", weatherWithWeightEntry)} from config: {config}");
+                DuskPlugin.Logger.LogWarning($"Expected Format: <Namespace>:<Key>=<Operation><Value> | i.e. weather_registry:snowfall=+20");
                 continue;
+            }
 
             NamespacedKey weatherNamespacedKey = NamespacedKey.ForceParse(weatherWithWeightEntry[0].Trim());
 
             string weightFactor = weatherWithWeightEntry[1].Trim();
             if (string.IsNullOrEmpty(weightFactor))
-                continue;
+            {
+                DuskPlugin.Logger.LogWarning($"Invalid weather weight entry: {string.Join(",", weatherWithWeightEntry)} from config: {config}");
+                DuskPlugin.Logger.LogWarning($"Entry did not have a provided weight factor, defaulting to 0.");
+                weightFactor = "+0";
+            }
 
             MatchingWeathersWithWeightAndOperationDict.Add(weatherNamespacedKey, weightFactor);
         }

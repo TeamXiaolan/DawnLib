@@ -33,13 +33,13 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     public TerminalKeyword? TerminalKeyword { get; private set; }
 
     [field: Space(10)]
-    [field: Header("Configs | Spawn Weights")]
+    [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
     [field: SerializeField]
-    public string MoonSpawnWeights { get; private set; }
+    public string MoonSpawnWeights { get; private set; } = "Vanilla=+0, Custom=+0, Valley=+0, Canyon=+0, Tundra=+0, Marsh=+0, Military=+0, Rocky=+0,Amythest=+0, Experimentation=+0, Assurance=+0, Vow=+0, Offense=+0, March=+0, Adamance=+0, Rend=+0, Dine=+0, Titan=+0, Artifice=+0, Embrion=+0";
     [field: SerializeField]
-    public string InteriorSpawnWeights { get; private set; }
+    public string InteriorSpawnWeights { get; private set; } = "Facility=+0, Mansion=+0, Mineshaft=+0";
     [field: SerializeField]
-    public string WeatherSpawnWeights { get; private set; }
+    public string WeatherSpawnWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; }
 
