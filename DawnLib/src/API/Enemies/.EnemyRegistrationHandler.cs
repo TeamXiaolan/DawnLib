@@ -225,7 +225,7 @@ static class EnemyRegistrationHandler
 
     internal static void UpdateEnemyWeightsOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.Enemies.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && WeatherRegistryCompat.IsWeatherManagerReady()))
+        if (!LethalContent.Enemies.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
@@ -261,7 +261,8 @@ static class EnemyRegistrationHandler
                     };
                     level.Enemies.Add(spawnableEnemyWithRarity);
                 }
-                spawnableEnemyWithRarity.rarity = enemyInfo.Inside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+                int rarity = enemyInfo.Inside.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+                spawnableEnemyWithRarity.rarity = rarity;
             }
 
             if (enemyInfo.Daytime != null)

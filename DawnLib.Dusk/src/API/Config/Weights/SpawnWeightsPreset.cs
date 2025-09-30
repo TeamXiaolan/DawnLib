@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 using Dusk.Weights.Transformers;
-using UnityEngine;
 
 namespace Dusk.Weights;
 public class SpawnWeightsPreset : IWeighted
@@ -26,12 +26,13 @@ public class SpawnWeightsPreset : IWeighted
     public int GetWeight()
     {
         float weight = 0;
-        SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == "+" || x.GetOperation() == "-").ToList();
-        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers)
+        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == "+" || x.GetOperation() == "-").ToList())
         {
+            Debuggers.Weights?.Log($"Old Weight: {weight}");
             weight = weightTransformer.GetNewWeight(weight);
+            Debuggers.Weights?.Log($"New Weight: {weight}");
         }
 
-        return Mathf.FloorToInt(weight);
+        return (int)weight;
     }
 }

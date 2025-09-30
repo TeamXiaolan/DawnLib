@@ -105,6 +105,6 @@ public class InteriorWeightTransformer : WeightTransformer
         DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
         if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
 
-        return Operation(operationWithWeight[..1]);
+        return Operation(operationWithWeight[0..1]);
     }
 }

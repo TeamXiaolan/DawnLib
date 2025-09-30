@@ -119,6 +119,6 @@ public class WeatherWeightTransformer : WeightTransformer
 
         if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out string operationWithWeight)) return string.Empty;
 
-        return Operation(operationWithWeight[..1]);
+        return Operation(operationWithWeight[0..1]);
     }
 }

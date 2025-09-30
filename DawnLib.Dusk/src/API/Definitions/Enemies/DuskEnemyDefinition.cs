@@ -85,10 +85,14 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             }
 
             if (TerminalKeyword != null)
+            {
                 builder.OverrideNameKeyword(TerminalKeyword);
+            }
 
             if (TerminalNode != null)
+            {
                 builder.SetBestiaryNode(TerminalNode);
+            }
 
             ApplyTagsTo(builder);
         });

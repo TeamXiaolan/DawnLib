@@ -63,6 +63,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
 
         WeatherEffect weatherEffect = new()
         {
+            name = WeatherName,
             effectObject = effectObject,
             effectPermanentObject = effectPermanentObject,
         };
@@ -72,7 +73,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
         newImprovedWeatherEffect.EffectObject?.SetActive(false);
         newImprovedWeatherEffect.WorldObject?.SetActive(false);
 
-        WeatherRegistry.Weather weather = new($"{WeatherName}", newImprovedWeatherEffect)
+        WeatherRegistry.Weather weather = new(WeatherName, newImprovedWeatherEffect)
         {
             Color = TerminalColour,
             Config = new WeatherRegistry.Modules.RegistryWeatherConfig

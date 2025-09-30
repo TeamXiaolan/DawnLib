@@ -15,14 +15,22 @@ public abstract class WeightTransformer
 
     public float DoOperation(float currentValue, string previousValueWithOperation)
     {
-        Debuggers.Weights?.Log($"Operation: {previousValueWithOperation}");
-        string operation = previousValueWithOperation[..1];
+        Debuggers.Weights?.Log($"OperationWithValue: {previousValueWithOperation}");
+        string operation = previousValueWithOperation[0..1];
+        Debuggers.Weights?.Log($"Operation: {operation}");
         if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out float previousValue))
         {
             previousValue = float.Parse(previousValueWithOperation);
             return currentValue + previousValue;
         }
-        else if (operation == "+")
+
+        if (!float.TryParse(previousValueWithOperation[1..], NumberStyles.Float, CultureInfo.InvariantCulture, out previousValue))
+        {
+            DuskPlugin.Logger.LogWarning($"Invalid operation: {previousValueWithOperation} with WeightTransformer {this}.");
+            return currentValue;
+        }
+
+        if (operation == "+")
         {
             return currentValue + previousValue;
         }

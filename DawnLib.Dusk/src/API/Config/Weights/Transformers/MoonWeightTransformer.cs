@@ -104,6 +104,6 @@ public class MoonWeightTransformer : WeightTransformer
         DawnMoonInfo moonInfo = RoundManager.Instance.currentLevel.GetDawnInfo();
         if (!MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
 
-        return Operation(operationWithWeight[..1]);
+        return Operation(operationWithWeight[0..1]);
     }
 }
