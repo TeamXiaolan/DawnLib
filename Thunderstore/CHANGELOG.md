@@ -1,4 +1,9 @@
-# v0.2.4
+# v0.2.5
+
+- Edited Editor.dll to be depending on the latest DawnLib version.
+- Fixed spawn weight issues with items, enemies and entity replacements where the config gets replaced with an empty config.
+
+## v0.2.4
 
 - Fixed an issue relating to buying custom vehicles.
 - Fixed some issues with some moons not setting up their dungeon generator correctly.

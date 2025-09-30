@@ -135,9 +135,9 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
         return new ItemConfig
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", SpawnWeights.MoonSpawnWeightsTransformer.ToConfigString()) : null,
-            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", SpawnWeights.InteriorSpawnWeightsTransformer.ToConfigString()) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", SpawnWeights.WeatherSpawnWeightsTransformer.ToConfigString()) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeights) : null,
+            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeights) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeights) : null,
 
             DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
             DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
