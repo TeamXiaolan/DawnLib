@@ -8,7 +8,7 @@ static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
-        On.Terminal.Start += RegisterShipUnlockables;
+        On.StartOfRound.LoadUnlockables += RegisterShipUnlockables;
         On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
     }
 
@@ -74,7 +74,7 @@ static class UnlockableRegistrationHandler
         }
     }
 
-    private static void RegisterShipUnlockables(On.Terminal.orig_Start orig, Terminal self)
+    private static void RegisterShipUnlockables(On.StartOfRound.orig_LoadUnlockables orig, StartOfRound self)
     {
         if (LethalContent.Unlockables.IsFrozen)
         {
@@ -107,7 +107,7 @@ static class UnlockableRegistrationHandler
 
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
-        List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
+        List<TerminalKeyword> newTerminalKeywords = terminal.terminalNodes.allKeywords.ToList();
         foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
             if (unlockableInfo.HasTag(DawnLibTags.IsExternal))
@@ -160,7 +160,7 @@ static class UnlockableRegistrationHandler
 
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray();
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
-        self.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
+        terminal.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
 
         foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
         {

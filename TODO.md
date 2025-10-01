@@ -2,6 +2,8 @@
 
 ## Xu
 
+- Particle Systems with entity replacements in SO somehow?? please help bongo.
+- Animation replacements but like with an override controller but like somehow keep animation events?
 - Dead body additions.
 - Handling vehicle spawning when already bought on loading a lobby.
 - Handling vehicle no station equaling magnet station.

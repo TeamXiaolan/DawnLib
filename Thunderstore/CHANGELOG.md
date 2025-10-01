@@ -1,4 +1,8 @@
-# v0.2.8
+# v0.2.9
+
+- Fixed issues with ship upgrades and decors not respawning or not working with furniturelock mod.
+
+## v0.2.8
 
 - Fixed more achievement issues for when they're disabled.
 
