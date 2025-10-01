@@ -1,4 +1,8 @@
-# v0.2.6
+# v0.2.7
+
+- Fixed an issue with multiple mods adding achievements
+
+## v0.2.6
 
 - Added more config error checking to the Definitions as this mod uses a different format compared to other mods.
 - Added the tag `custom` to the mod as `lethal_company:custom` or just `custom` should work.

@@ -46,6 +46,8 @@ public class AchievementModUIElement : MonoBehaviour
         }
 
         List<DuskAchievementDefinition> sortedAchievements = DuskModContent.Achievements.Values
+            .Where(a => a.Mod == mod)
+            .ToList()
             .OrderByDescending(a => a.AchievementName)
             .ToList();
 
@@ -69,14 +71,14 @@ public class AchievementModUIElement : MonoBehaviour
     public void OnButtonClick()
     {
         // loop through all moduielements and disable all of em
-        foreach (var modUIElement in AchievementUICanvas.Instance!._modUIElements)
+        foreach (AchievementModUIElement modUIElement in AchievementUICanvas.Instance!._modUIElements)
         {
             if (modUIElement == this)
                 continue;
 
-            foreach (var achievement in modUIElement.achievementsContainerList)
+            foreach (AchievementUIElement achievement in modUIElement.achievementsContainerList)
             {
-                achievement.gameObject.SetActive(!achievement.gameObject.activeSelf);
+                achievement.gameObject.SetActive(false);
             }
         }
 
