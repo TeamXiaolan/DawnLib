@@ -1,4 +1,8 @@
-# v0.2.7
+# v0.2.8
+
+- Fixed more achievement issues for when they're disabled.
+
+## v0.2.7
 
 - Fixed an issue with multiple mods adding achievements
 
