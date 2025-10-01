@@ -13,7 +13,10 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryCompleteAchievement()
     {
-        if (DuskModContent.Achievements.TryTriggerAchievement(_reference.Resolve().TypedKey))
+        if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
+            return;
+
+        if (DuskModContent.Achievements.TryTriggerAchievement(achievementDefinition.TypedKey))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -21,7 +24,10 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryIncrementAchievement(float amountToIncrement)
     {
-        if (DuskModContent.Achievements.TryIncrementAchievement(_reference.Resolve().TypedKey, amountToIncrement))
+        if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
+            return;
+
+        if (DuskModContent.Achievements.TryIncrementAchievement(achievementDefinition.TypedKey, amountToIncrement))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -29,7 +35,10 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryDiscoverMoreProgressAchievement(string uniqueStringID)
     {
-        if (DuskModContent.Achievements.TryDiscoverMoreProgressAchievement(_reference.Resolve().TypedKey, uniqueStringID))
+        if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
+            return;
+
+        if (DuskModContent.Achievements.TryDiscoverMoreProgressAchievement(achievementDefinition.TypedKey, uniqueStringID))
         {
             _onAchievementCompleted.Invoke();
         }
@@ -37,6 +46,9 @@ public class AchievementTriggers : MonoBehaviour
 
     public void ResetAllAchievementProgress()
     {
+        if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
+            return;
 
+        achievementDefinition.ResetProgress();
     }
 }

@@ -37,7 +37,7 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
 
             foreach (DuskAchievementReference achievementReference in ChildrenAchievementReferences)
             {
-                if (achievementReference.Resolve().AchievementName == achievement.AchievementName)
+                if (achievementReference.TryResolve(out DuskAchievementDefinition achievementDefinition) && achievementDefinition.AchievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
@@ -60,7 +60,7 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
 
             foreach (var achievementReference in ChildrenAchievementReferences)
             {
-                if (achievementReference.Resolve().AchievementName == achievement.AchievementName)
+                if (achievementReference.TryResolve(out DuskAchievementDefinition achievementDefinition) && achievementDefinition.AchievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
