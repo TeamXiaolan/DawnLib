@@ -1,4 +1,3 @@
-using System.Linq;
 using Dawn;
 using Dawn.Utils;
 using GameNetcodeStuff;
@@ -14,6 +13,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
     private InteractTrigger _interactTrigger = null!;
 
     [SerializeField]
+    [Tooltip("the word ProgressiveName is replaced with the Progressive's name that was just unlocked.")]
     private HUDDisplayTip _displayTip;
 
     private void Start()
@@ -40,19 +40,28 @@ public class UnlockProgressiveObject : NetworkBehaviour
         if (player.currentlyHeldObjectServer is UnlockableUpgradeScrap unlockableUpgradeScrap)
         {
             DawnUnlockableItemInfo definition = unlockableUpgradeScrap.UnlockableReference.Resolve();
-            if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
+            if (player.currentlyHeldObjectServer.IsOwner)
+            {
+                player.DespawnHeldObject();
+            }
 
             if (definition.PurchasePredicate is not ProgressivePredicate progressive)
             {
                 DawnPlugin.Logger.LogError($"{definition.UnlockableItem.unlockableName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
                 return;
             }
+
+            _displayTip.Header.Replace("ProgressiveName", definition.UnlockableItem.unlockableName);
+            _displayTip.Body.Replace("ProgressiveName", definition.UnlockableItem.unlockableName);
             progressive.Unlock(_displayTip);
         }
         else if (player.currentlyHeldObjectServer is ItemUpgradeScrap itemUpgradeScrap)
         {
             DawnItemInfo definition = itemUpgradeScrap.ItemReference.Resolve();
-            if (player.currentlyHeldObjectServer.IsOwner) player.DespawnHeldObject();
+            if (player.currentlyHeldObjectServer.IsOwner)
+            {
+                player.DespawnHeldObject();
+            }
 
             if (definition.ShopInfo == null)
             {
@@ -65,6 +74,9 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 DawnPlugin.Logger.LogError($"{definition.Item.itemName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
                 return;
             }
+
+            _displayTip.Header.Replace("ProgressiveName", definition.Item.itemName);
+            _displayTip.Body.Replace("ProgressiveName", definition.Item.itemName);
             progressive.Unlock(_displayTip);
         }
         else

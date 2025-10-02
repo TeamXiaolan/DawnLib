@@ -122,6 +122,17 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
+        foreach (DuskItemReplacementDefinition replacement in replacements.ToArray())
+        {
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                replacements.Remove(replacement);
+            }
+        }
+
         if (self.HasGrabbableObjectReplacement())
         {
             orig(self);
@@ -172,7 +183,7 @@ static class EntityReplacementRegistrationPatch
     }
 
     // note!!! this transpiler should only be used on enemy AIs!
-    private static readonly Dictionary<string, Func<AudioClip, EnemyAI, AudioClip>> clipReplacerFunctions = new()
+    private static readonly Dictionary<string, Func<AudioClip, EnemyAI, AudioClip?>> clipReplacerFunctions = new()
     {
         { nameof(EnemyType.hitBodySFX), GenerateAudioClipReplacer(it => it.HitBodySFX) },
         { nameof(EnemyType.hitEnemyVoiceSFX), GenerateAudioClipReplacer(it => it.HitEnemyVoiceSFX) },
@@ -221,7 +232,7 @@ static class EntityReplacementRegistrationPatch
         }
     }
 
-    static Func<AudioClip, EnemyAI, AudioClip> GenerateAudioClipReplacer(Func<DuskEnemyReplacementDefinition, AudioClip> generator)
+    static Func<AudioClip?, EnemyAI, AudioClip?> GenerateAudioClipReplacer(Func<DuskEnemyReplacementDefinition, AudioClip?> generator)
     {
         return (existing, self) =>
         {
@@ -229,7 +240,7 @@ static class EntityReplacementRegistrationPatch
             if (replacement.CurrentEntityReplacement == null) 
                 return existing;
             
-            AudioClip replacedClip = generator((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement);
+            AudioClip? replacedClip = generator((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement);
             if (!replacedClip)
                 return existing;
 
@@ -250,6 +261,17 @@ static class EntityReplacementRegistrationPatch
         {
             orig(self);
             return;
+        }
+
+        foreach (DuskEnemyReplacementDefinition replacement in replacements.ToArray())
+        {
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                replacements.Remove(replacement);
+            }
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();

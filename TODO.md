@@ -3,7 +3,6 @@
 ## Xu
 
 - DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool.
-- Datefilter thing with entity replacements so skins can have weights based on certain dates or times of the day?? (dates would be most useful)
 - Particle Systems with entity replacements in SO somehow?? please help bongo.
 - Animation replacements but like with an override controller but like somehow keep animation events?
 - Dead body additions.

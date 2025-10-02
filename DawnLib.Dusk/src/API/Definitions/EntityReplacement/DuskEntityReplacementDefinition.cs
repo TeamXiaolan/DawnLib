@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Dawn;
-using Dawn.Preloader.Interfaces;
 using Dusk.Weights;
 using UnityEngine;
 
@@ -15,10 +14,14 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public NamespacedKey EntityToReplaceKey { get; private set; }
 
     [field: SerializeField]
+    public DatePredicate? DatePredicate { get; private set; }
+
+    [field: Header("Replacements")]
+    [field: SerializeField]
     public List<RendererReplacement> RendererReplacements { get; private set; } = new();
 
     [field: SerializeField]
-    public List<GameObjectWithPath> GameObjectAddons { get; private set; } = new(); // TODO if the gameobject has a networkobject, i need to do the finnicky network object parenting stuff? or just disable auto object parent sync
+    public List<GameObjectWithPath> GameObjectAddons { get; private set; } = new();
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
@@ -40,6 +43,10 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; }
 
+    [field: Header("Configs | Misc")]
+    [field: SerializeField]
+    public bool GenerateDisableUnlockConfig { get; private set; }
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
     public EntityReplacementConfig Config { get; private set; }
@@ -56,12 +63,16 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateEntityReplacementConfig(section);
 
-        SpawnWeightsPreset preset = new();
-        preset.SetupSpawnWeightsPreset(MoonSpawnWeights, InteriorSpawnWeights, WeatherSpawnWeights);
+        SpawnWeights.SetupSpawnWeightsPreset(MoonSpawnWeights, InteriorSpawnWeights, WeatherSpawnWeights);
         Weights = new WeightTableBuilder<DawnMoonInfo>()
-            .SetGlobalWeight(preset)
+            .SetGlobalWeight(SpawnWeights)
             .Build();
 
+        bool disableDateCheck = Config.DisableDateCheck?.Value ?? false;
+        if (DatePredicate && !disableDateCheck)
+        {
+            DatePredicate.Register(Key);
+        }
         DuskModContent.EntityReplacements.Register(this);
     }
 
@@ -72,6 +83,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeights) : null,
             InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeights) : null,
             WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeights) : null,
+
+            DisableDateCheck = section.Bind($"{EntityNameReference} | Disable Date Check", $"Whether {EntityNameReference} should have it's date check disabled.", false),
         };
     }
 

@@ -1,5 +1,6 @@
 using System;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace Dawn.Utils;
 [Serializable]
@@ -11,8 +12,10 @@ public class HUDDisplayTip(string header, string body, HUDDisplayTip.AlertType t
         Warning,
     }
 
+    [SerializeField]
     private AlertType _alertType = type;
 
+    [SerializeField]
     private string _header = header, _body = body;
 
     public string Header => _header;

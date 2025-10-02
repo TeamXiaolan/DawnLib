@@ -1,4 +1,9 @@
-# v0.2.10
+# v0.2.11
+
+- Added a date filter predicate to the entity replacement definitions.
+- Serialized some fields from UnlockProgressiveObject that should've been serialized.
+
+## v0.2.10
 
 - Changed some bestiary node behaviour to do with enemies.
 - Fixed issues with Ship Upgrades and Decors not being assigned the correct ID's.

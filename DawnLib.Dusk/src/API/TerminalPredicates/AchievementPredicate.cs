@@ -23,6 +23,7 @@ public class AchievementPredicate : DuskTerminalPredicate
         // i dont think anything is needed here.
         // i would've liked to get the definition from the reference here, but this could be loaded before the achievement
     }
+
     public override TerminalPurchaseResult CanPurchase()
     {
         if (!_achievement.TryResolve(out DuskAchievementDefinition definition))
