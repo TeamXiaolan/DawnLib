@@ -8,7 +8,7 @@ static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
-        On.StartOfRound.LoadUnlockables += RegisterShipUnlockables;
+        On.StartOfRound.Start += RegisterShipUnlockables;
         On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
     }
 
@@ -74,7 +74,7 @@ static class UnlockableRegistrationHandler
         }
     }
 
-    private static void RegisterShipUnlockables(On.StartOfRound.orig_LoadUnlockables orig, StartOfRound self)
+    private static void RegisterShipUnlockables(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
         if (LethalContent.Unlockables.IsFrozen)
         {

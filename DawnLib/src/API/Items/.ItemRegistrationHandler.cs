@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
@@ -52,7 +51,7 @@ static class ItemRegistrationHandler
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
-            if (itemInfo.ScrapInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal) || self.allItemsList.itemsList.Contains(itemInfo.Item))
+            if (itemInfo.HasTag(DawnLibTags.IsExternal) || self.allItemsList.itemsList.Contains(itemInfo.Item))
                 continue;
 
             self.allItemsList.itemsList.Add(itemInfo.Item);
@@ -386,7 +385,6 @@ static class ItemRegistrationHandler
                 noun = buyItemKeyword,
                 result = shopInfo.InfoNode
             });
-            StartOfRoundRefs.Instance.allItemsList.itemsList.Add(itemInfo.Item);
         }
 
         self.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
