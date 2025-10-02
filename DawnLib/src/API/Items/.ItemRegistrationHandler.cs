@@ -37,8 +37,27 @@ static class ItemRegistrationHandler
         On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.Terminal.Awake += RegisterShopItemsToTerminal;
+        On.StartOfRound.Start += RegisterScrapItems;
         LethalContent.Moons.OnFreeze += FreezeItemContent;
         LethalContent.Items.OnFreeze += RedoItemsDebugMenu;
+    }
+
+    private static void RegisterScrapItems(On.StartOfRound.orig_Start orig, StartOfRound self)
+    {
+        if (LethalContent.Items.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            if (itemInfo.ScrapInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal) || self.allItemsList.itemsList.Contains(itemInfo.Item))
+                continue;
+
+            self.allItemsList.itemsList.Add(itemInfo.Item);
+        }
+        orig(self);
     }
 
     private static void RedoItemsDebugMenu()
@@ -288,14 +307,6 @@ static class ItemRegistrationHandler
                     rarity = 0
                 };
                 level.spawnableScrap.Add(spawnDef);
-            }
-
-            if (itemInfo.ShopInfo != null)
-                continue;
-
-            if (!StartOfRound.Instance.allItemsList.itemsList.Contains(itemInfo.Item))
-            {
-                StartOfRound.Instance.allItemsList.itemsList.Add(itemInfo.Item);
             }
         }
     }

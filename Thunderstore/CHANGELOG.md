@@ -3,6 +3,7 @@
 - Changed some bestiary node behaviour to do with enemies.
 - Fixed issues with Ship Upgrades and Decors not being assigned the correct ID's.
 - Edited the spacing in the ContentDefinitions for enemies items and entity replacements to give the user more space to write configs.
+- Fixed DawnLib Scrap not saving after a game restart.
 
 ## v0.2.9
 
