@@ -85,7 +85,12 @@ static class TerminalPatches
                 return true;
             }
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[unlockableNode.shipUnlockableID];
-            DawnUnlockableItemInfo info = unlockableItem.GetDawnInfo();
+            DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
+            if (info == null)
+            {
+                DawnPlugin.Logger.LogWarning($"{unlockableNode.creatureName} ({unlockableNode.name}) of {unlockableItem.unlockableName} has no dawn info.");
+                return true;
+            }
             TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {

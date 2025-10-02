@@ -1,4 +1,8 @@
-# v0.2.12
+# v0.2.13
+
+- Added more debugging for ship unlockables not being registered properly via other mods.
+
+## v0.2.12
 
 - Fixed weathers being unregistered on lobby reload.
 
