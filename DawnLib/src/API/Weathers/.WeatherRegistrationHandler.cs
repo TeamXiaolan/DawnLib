@@ -13,7 +13,7 @@ static class WeatherRegistrationHandler
 
     private static void RegisterWeathers(On.Terminal.orig_Awake orig, Terminal self)
     {
-        foreach (WeatherEffect weatherEffect in TimeOfDayRefs.effects)
+        foreach (WeatherEffect weatherEffect in TimeOfDayRefs.Instance.effects)
         {
             if (weatherEffect.HasDawnInfo())
                 continue;
