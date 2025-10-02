@@ -2,12 +2,12 @@
 
 ## Xu
 
-- DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool. 
+- DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool.
 - Datefilter thing with entity replacements so skins can have weights based on certain dates or times of the day?? (dates would be most useful)
 - Particle Systems with entity replacements in SO somehow?? please help bongo.
 - Animation replacements but like with an override controller but like somehow keep animation events?
 - Dead body additions.
-- Handling vehicle spawning when already bought on loading a lobby.
+- Handling vehicle spawning when already bought on loading a lobby, also always have the station spawn at the start of the lobby.
 - Handling vehicle no station equaling magnet station.
 
 less important:
@@ -33,4 +33,4 @@ less important:
 
 ## Needs to be done eventually
 
-- Interiors, Moons
+- Interiors, Moons.

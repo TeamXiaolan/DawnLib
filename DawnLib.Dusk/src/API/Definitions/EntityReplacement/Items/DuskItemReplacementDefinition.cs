@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -49,9 +50,18 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
             GameObject? gameObject = grabbableObject.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
             if (gameObject != null)
             {
+                if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
+                    continue;
+
                 GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-                addOn.transform.position = gameObject.transform.position;
-                addOn.transform.rotation = gameObjectAddon.Rotation * addOn.transform.rotation;
+                addOn.transform.position = gameObjectAddon.PositionOffset + gameObject.transform.position;
+                addOn.transform.rotation = gameObjectAddon.RotationOffset * addOn.transform.rotation;
+
+                if (networkObject == null)
+                    continue;
+
+                networkObject.AutoObjectParentSync = false;
+                networkObject.Spawn();
             }
         }
     }
