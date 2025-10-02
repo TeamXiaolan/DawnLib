@@ -1,4 +1,10 @@
-# v0.2.9
+# v0.2.10
+
+- Changed some bestiary node behaviour to do with enemies.
+- Fixed issues with Ship Upgrades and Decors not being assigned the correct ID's.
+- Edited the spacing in the ContentDefinitions for enemies items and entity replacements to give the user more space to write configs.
+
+## v0.2.9
 
 - Fixed issues with ship upgrades and decors not respawning or not working with furniturelock mod.
 

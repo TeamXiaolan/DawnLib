@@ -123,7 +123,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
             CompatibleNoun cancelDenyCompatibleNoun = new();
 
             value.shopSelectionNode = new TerminalNodeBuilder($"{value.unlockableName}ShopSelectionNode")
-                .SetDisplayText($"You have requested to order {value.unlockableName.ToLowerInvariant()}.\nTotal cost of item: [totalCost].\n\nPlease CONFIRM or DENY.\n")
+                .SetDisplayText($"You have requested to order {value.unlockableName}.\nTotal cost of item: [totalCost].\n\nPlease CONFIRM or DENY.\n")
                 .SetMaxCharactersToType(15)
                 .SetShipUnlockableIndex(-1)
                 .SetCreatureName(value.unlockableName)

@@ -65,44 +65,34 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
         return this;
     }
 
-    public EnemyInfoBuilder SetBestiaryNode(TerminalNode node)
+    public EnemyInfoBuilder CreateBestiaryNode(string bestiaryNodeText)
     {
-        _bestiaryNode = node;
+        _bestiaryNode = new TerminalNodeBuilder($"{value.enemyName}BestiaryNode")
+            .SetDisplayText(bestiaryNodeText)
+            .SetCreatureName(value.enemyName)
+            .SetClearPreviousText(true)
+            .SetMaxCharactersToType(35)
+            .Build();
+
         return this;
     }
 
-    public EnemyInfoBuilder OverrideNameKeyword(string word)
+    public EnemyInfoBuilder CreateNameKeyword(string wordOverride)
     {
-        _nameKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-        _nameKeyword.name = word;
-        _nameKeyword.word = word;
-        return this;
-    }
+        if (string.IsNullOrEmpty(wordOverride))
+        {
+            wordOverride = value.enemyName.ToLowerInvariant().Replace(' ', '-');
+        }
 
-    public EnemyInfoBuilder OverrideNameKeyword(TerminalKeyword keyword)
-    {
-        _nameKeyword = keyword;
+        _nameKeyword = new TerminalKeywordBuilder($"{value.enemyName}NameKeyword")
+            .SetWord(wordOverride)
+            .Build();
+
         return this;
     }
 
     override internal DawnEnemyInfo Build()
     {
-        if (_bestiaryNode == null)
-        {
-            _bestiaryNode = new TerminalNodeBuilder($"{value.enemyName}BestiaryNode")
-                .SetDisplayText($"{value.enemyName}\n\nDanger level: Unknown\n\n[No information about this creature was found.]\n\n")
-                .SetClearPreviousText(true)
-                .SetMaxCharactersToType(35)
-                .Build();
-        }
-
-        if (_nameKeyword == null)
-        {
-            string word = value.enemyName.ToLowerInvariant().Replace(' ', '-');
-            OverrideNameKeyword(word);
-        }
-
-        _bestiaryNode.creatureName = value.enemyName;
-        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword!, customData);
+        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword, customData);
     }
 }

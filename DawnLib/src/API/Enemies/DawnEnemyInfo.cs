@@ -7,12 +7,25 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
     internal DawnEnemyInfo(NamespacedKey<DawnEnemyInfo> key, HashSet<NamespacedKey> tags, EnemyType enemyType, DawnEnemyLocationInfo? outside, DawnEnemyLocationInfo? inside, DawnEnemyLocationInfo? daytime, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
     {
         EnemyType = enemyType;
+
         Outside = outside;
-        if (Outside != null) Outside.ParentInfo = this;
+        if (Outside != null)
+        {
+            Outside.ParentInfo = this;
+        }
+
         Inside = inside;
-        if (Inside != null) Inside.ParentInfo = this;
+        if (Inside != null)
+        {
+            Inside.ParentInfo = this;
+        }
+
         Daytime = daytime;
-        if (Daytime != null) Daytime.ParentInfo = this;
+        if (Daytime != null)
+        {
+            Daytime.ParentInfo = this;
+        }
+
         BestiaryNode = bestiaryNode;
         NameKeyword = nameKeyword;
     }
@@ -31,7 +44,9 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
         foreach (EnemyAI enemy in RoundManager.Instance.SpawnedEnemies)
         {
             if (enemy.enemyType == EnemyType)
+            {
                 yield return (T)enemy;
+            }
         }
     }
 }

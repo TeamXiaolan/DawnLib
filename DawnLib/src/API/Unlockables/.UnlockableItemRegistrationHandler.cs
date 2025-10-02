@@ -93,12 +93,8 @@ static class UnlockableRegistrationHandler
             {
                 Debuggers.Unlockables?.Log($"unlockableItem = {unlockableItem.unlockableName} has ID {unlockableItem.shopSelectionNode.shipUnlockableID}");
             }
-
-            if (unlockableItem.shopSelectionNode != null && unlockableItem.shopSelectionNode.shipUnlockableID > latestUnlockableID)
-            {
-                latestUnlockableID = unlockableItem.shopSelectionNode.shipUnlockableID;
-            }
         }
+        latestUnlockableID = StartOfRound.Instance.unlockablesList.unlockables.Count;
         Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
         Terminal terminal = TerminalRefs.Instance;
@@ -123,7 +119,7 @@ static class UnlockableRegistrationHandler
             UpdateUnlockablePrices(unlockableInfo);
 
             unlockableInfo.RequestNode.terminalOptions[0].noun = confirmPurchaseKeyword;
-            unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, latestUnlockableID);
+            unlockableInfo.RequestNode.terminalOptions[0].result = CreateUnlockableConfirmNode(unlockableInfo.UnlockableItem, unlockableInfo.RequestNode.shipUnlockableID);
 
             unlockableInfo.ConfirmNode = unlockableInfo.RequestNode.terminalOptions[0].result;
 
@@ -154,7 +150,7 @@ static class UnlockableRegistrationHandler
 
             if (unlockableInfo.UnlockableItem.prefabObject.TryGetComponent(out AutoParentToShip autoParentToShip))
             {
-                autoParentToShip.unlockableID = latestUnlockableID;
+                autoParentToShip.unlockableID = unlockableInfo.RequestNode.shipUnlockableID;
             }
         }
 
@@ -229,13 +225,13 @@ static class UnlockableRegistrationHandler
         orig(self);
     }
 
-    private static TerminalNode CreateUnlockableConfirmNode(UnlockableItem unlockableItem, int latestUnlockableID)
+    private static TerminalNode CreateUnlockableConfirmNode(UnlockableItem unlockableItem, int shipUnlockableID)
     {
         TerminalNode terminalNode = new TerminalNodeBuilder($"{unlockableItem.unlockableName}ConfirmNode")
-            .SetDisplayText($"Ordered the {unlockableItem.unlockableName.ToLowerInvariant()}! Your new balance is [playerCredits].\nPress [B] to rearrange objects in your ship and [V] to confirm.")
+            .SetDisplayText($"Ordered the {unlockableItem.unlockableName}! Your new balance is [playerCredits].\nPress [B] to rearrange objects in your ship and [V] to confirm.")
             .SetClearPreviousText(true)
             .SetMaxCharactersToType(35)
-            .SetShipUnlockableIndex(latestUnlockableID)
+            .SetShipUnlockableIndex(shipUnlockableID)
             .SetBuyUnlockable(true)
             .SetPlaySyncedClip(0)
             .Build();
