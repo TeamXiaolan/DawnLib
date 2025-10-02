@@ -76,7 +76,12 @@ public class WeatherWeightTransformer : WeightTransformer
         IEnumerable<NamespacedKey> allTags = [];
         if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None)
         {
-            DawnWeatherEffectInfo weatherInfo = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].GetDawnInfo();
+            DawnWeatherEffectInfo? weatherInfo = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].GetDawnInfo();
+            if (weatherInfo == null)
+            {
+                DawnPlugin.Logger.LogError($"Could not find weather info for {TimeOfDay.Instance.currentLevel.currentWeather},");
+                return currentWeight;
+            }
             currentWeatherNamespacedKey = weatherInfo.TypedKey;
             allTags = weatherInfo.AllTags();
         }

@@ -1,4 +1,8 @@
-# v0.2.11
+# v0.2.12
+
+- Fixed weathers being unregistered on lobby reload.
+
+## v0.2.11
 
 - Added a date filter predicate to the entity replacement definitions.
 - Serialized some fields from UnlockProgressiveObject that should've been serialized.
