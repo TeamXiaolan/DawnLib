@@ -10,7 +10,7 @@ public class TransferRenderer : MonoBehaviour
     {
         if (RendererReplacement == null)
         {
-            DuskPlugin.Logger.LogError("TransferMR: RendererReplacement is null.");
+            DuskPlugin.Logger.LogError("TransferRenderer: RendererReplacement is null.");
             return;
         }
 
@@ -23,7 +23,7 @@ public class TransferRenderer : MonoBehaviour
             }
             else
             {
-                DuskPlugin.Logger.LogError("TransferMR: Target has no SkinnedMeshRenderer but replacement is SkinnedMeshRenderer.");
+                DuskPlugin.Logger.LogError("TransferRenderer: Target has no SkinnedMeshRenderer but replacement is SkinnedMeshRenderer.");
                 return;
             }
         }
@@ -37,12 +37,12 @@ public class TransferRenderer : MonoBehaviour
             }
             else
             {
-                DuskPlugin.Logger.LogError("TransferMR: Target needs MeshRenderer + MeshFilter to replace from MeshRenderer.");
+                DuskPlugin.Logger.LogError("TransferRenderer: Target needs MeshRenderer + MeshFilter to replace from MeshRenderer.");
                 return;
             }
         }
 
-        DuskPlugin.Logger.LogError($"TransferMR: Unsupported RendererReplacement type: {RendererReplacement.GetType().Name}");
+        DuskPlugin.Logger.LogError($"TransferRenderer: Unsupported RendererReplacement type: {RendererReplacement.GetType().Name}");
     }
 
     private void ReplaceSkinnedMeshRenderer(SkinnedMeshReplacement skinnedMeshReplacement, SkinnedMeshRenderer targetSkinned)
@@ -153,7 +153,7 @@ public class TransferRenderer : MonoBehaviour
         target.sharedMaterials = resized;
 
         int got = sourceMaterials?.Length ?? 0;
-        DuskPlugin.Logger.LogWarning($"TransferMR: Material count mismatch (got {got}, need {requiredCount}). Resized with fallback materials.");
+        DuskPlugin.Logger.LogWarning($"TransferRenderer: Material count mismatch (got {got}, need {requiredCount}). Resized with fallback materials.");
     }
 
     private static Dictionary<string, Transform> BuildBoneLookup(Transform root)

@@ -64,5 +64,20 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
                 networkObject.Spawn();
             }
         }
+
+        foreach (ComponentReplacement<Component> componentReplacement in ExtraReplacements)
+        {
+            if (string.IsNullOrEmpty(componentReplacement.PathToComponent))
+            {
+                continue;
+            }
+
+            GameObject? gameObject = grabbableObject.transform.Find(componentReplacement.PathToComponent)?.gameObject;
+            if (gameObject != null)
+            {
+                TransferComponent transferComponent = gameObject.AddComponent<TransferComponent>();
+                transferComponent.ComponentReplacement = componentReplacement.Component;
+            }
+        }
     }
 }

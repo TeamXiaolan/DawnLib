@@ -73,39 +73,43 @@ static class EnemyRegistrationHandler
 
     private static void AddBestiaryNodes(On.Terminal.orig_Awake orig, Terminal self)
     {
-        TerminalKeyword infoKeyword = self.terminalNodes.allKeywords.First(it => it.word == "info");
-        List<TerminalKeyword> allKeywords = self.terminalNodes.allKeywords.ToList();
-        List<CompatibleNoun> itemInfoNouns = infoKeyword.compatibleNouns.ToList();
-
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (enemyInfo.HasTag(DawnLibTags.IsExternal) || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
                 continue;
 
-            enemyInfo.BestiaryNode.creatureFileID = self.enemyFiles.Count;
-            self.enemyFiles.Add(enemyInfo.BestiaryNode);
+            AddScanNodeToBestiaryEvent(enemyInfo.EnemyType.enemyPrefab, enemyInfo.BestiaryNode!, enemyInfo.NameKeyword!);
+        }
+        orig(self);
+    }
 
-            ScanNodeProperties[] scanNodes = enemyInfo.EnemyType.enemyPrefab.GetComponentsInChildren<ScanNodeProperties>();
-            foreach (ScanNodeProperties scanNode in scanNodes)
-            {
-                scanNode.creatureScanID = enemyInfo.BestiaryNode.creatureFileID;
-            }
+    private static void AddScanNodeToBestiaryEvent(GameObject gameObjectWithScanNodes, TerminalNode bestiaryNode, TerminalKeyword nameKeyword)
+    {
+        List<TerminalKeyword> allKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
+        List<CompatibleNoun> itemInfoNouns = TerminalRefs.InfoKeyword.compatibleNouns.ToList();
 
-            if (allKeywords.Contains(enemyInfo.NameKeyword))
-                continue;
+        bestiaryNode.creatureFileID = TerminalRefs.Instance.enemyFiles.Count;
+        TerminalRefs.Instance.enemyFiles.Add(bestiaryNode);
 
-            enemyInfo.NameKeyword.defaultVerb = infoKeyword;
-            allKeywords.Add(enemyInfo.NameKeyword);
-            itemInfoNouns.Add(new CompatibleNoun()
-            {
-                noun = enemyInfo.NameKeyword,
-                result = enemyInfo.BestiaryNode
-            });
+        ScanNodeProperties[] scanNodes = gameObjectWithScanNodes.GetComponentsInChildren<ScanNodeProperties>();
+        foreach (ScanNodeProperties scanNode in scanNodes)
+        {
+            scanNode.creatureScanID = bestiaryNode.creatureFileID;
         }
 
-        infoKeyword.compatibleNouns = itemInfoNouns.ToArray();
-        self.terminalNodes.allKeywords = allKeywords.ToArray();
-        orig(self);
+        if (allKeywords.Contains(nameKeyword))
+            return;
+
+        nameKeyword.defaultVerb = TerminalRefs.InfoKeyword;
+        allKeywords.Add(nameKeyword);
+        itemInfoNouns.Add(new CompatibleNoun()
+        {
+            noun = nameKeyword,
+            result = bestiaryNode
+        });
+
+        TerminalRefs.InfoKeyword.compatibleNouns = itemInfoNouns.ToArray();
+        TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
     }
 
     private static void AddEnemiesToDebugList(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)

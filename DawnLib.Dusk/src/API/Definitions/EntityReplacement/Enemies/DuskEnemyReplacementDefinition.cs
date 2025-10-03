@@ -98,5 +98,20 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
                 networkObject.Spawn();
             }
         }
+
+        foreach (ComponentReplacement<Component> componentReplacement in ExtraReplacements)
+        {
+            if (string.IsNullOrEmpty(componentReplacement.PathToComponent))
+            {
+                continue;
+            }
+
+            GameObject? gameObject = enemyAI.transform.Find(componentReplacement.PathToComponent)?.gameObject;
+            if (gameObject != null)
+            {
+                TransferComponent transferComponent = gameObject.AddComponent<TransferComponent>();
+                transferComponent.ComponentReplacement = componentReplacement.Component;
+            }
+        }
     }
 }

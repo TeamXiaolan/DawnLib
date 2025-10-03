@@ -23,6 +23,9 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     [field: SerializeField]
     public List<GameObjectWithPath> GameObjectAddons { get; private set; } = new();
 
+    [field: SerializeField]
+    public List<ComponentReplacement<Component>> ExtraReplacements { get; private set; } = new();
+
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
 
