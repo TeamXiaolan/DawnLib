@@ -1,4 +1,10 @@
-# v0.2.13
+# v0.2.15
+
+- Fixed issues with some specific scrap mods that caused a lot of scraps and other parts of the mod to break.
+- Added some more error safety with using incorrect config formats.
+- Made some weather fields internal rather than public.
+
+## v0.2.13
 
 - Added more debugging for ship unlockables not being registered properly via other mods.
 

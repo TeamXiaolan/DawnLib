@@ -20,8 +20,15 @@ public abstract class WeightTransformer
         Debuggers.Weights?.Log($"Operation: {operation}");
         if (float.TryParse(operation, NumberStyles.Float, CultureInfo.InvariantCulture, out float previousValue))
         {
-            previousValue = float.Parse(previousValueWithOperation);
-            return currentValue + previousValue;
+            if (float.TryParse(previousValueWithOperation, NumberStyles.Float, CultureInfo.InvariantCulture, out float fullPreviousValue))
+            {
+                return currentValue + fullPreviousValue;
+            }
+            else
+            {
+                DuskPlugin.Logger.LogWarning($"Invalid operation: {previousValueWithOperation} with WeightTransformer {this}, the operation needs to be BEFORE the value.");
+                return currentValue + previousValue;
+            }
         }
 
         if (!float.TryParse(previousValueWithOperation[1..], NumberStyles.Float, CultureInfo.InvariantCulture, out previousValue))

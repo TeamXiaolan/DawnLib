@@ -9,5 +9,5 @@ public class DawnWeatherEffectInfo : DawnBaseInfo<DawnWeatherEffectInfo>
         WeatherEffect = weatherEffect;
     }
 
-    public WeatherEffect WeatherEffect { get; set; }
+    public WeatherEffect WeatherEffect { get; internal set; }
 }

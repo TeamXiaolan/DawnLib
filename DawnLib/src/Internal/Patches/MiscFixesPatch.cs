@@ -30,7 +30,7 @@ static class MiscFixesPatch
 
             foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes)
             {
-                if (vanillaItemGroups.Contains(itemGroup))
+                if (itemGroup == null || vanillaItemGroups.Contains(itemGroup))
                     continue;
 
                 vanillaItemGroups.Add(itemGroup);
@@ -41,8 +41,14 @@ static class MiscFixesPatch
         {
             foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes.ToArray())
             {
+                if (itemGroup == null)
+                    continue;
+
                 foreach (ItemGroup vanillaItemGroup in vanillaItemGroups)
                 {
+                    if (vanillaItemGroup == null)
+                        continue;
+
                     if (itemGroup.name == vanillaItemGroup.name)
                     {
                         Debuggers.Items?.Log($"Replacing non-vanilla spawn type {itemGroup.name} with original.");
