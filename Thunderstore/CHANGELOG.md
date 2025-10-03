@@ -1,4 +1,9 @@
-# v0.2.15
+# v0.3.0
+
+- Fixed issue with being unable to move furniture properly with furniture lock mod.
+- Fixed issue where SID started including items that they shouldn't because those items had 0 weights on the moon.
+
+## v0.2.15
 
 - Fixed issues with some specific scrap mods that caused a lot of scraps and other parts of the mod to break.
 - Added some more error safety with using incorrect config formats.

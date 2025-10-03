@@ -148,9 +148,12 @@ static class UnlockableRegistrationHandler
                 result = unlockableInfo.RequestNode
             });
 
-            if (unlockableInfo.UnlockableItem.prefabObject.TryGetComponent(out AutoParentToShip autoParentToShip))
+
+            PlaceableShipObject placeableShipObject = unlockableInfo.UnlockableItem.prefabObject.GetComponentInChildren<PlaceableShipObject>();
+            if (placeableShipObject != null)
             {
-                autoParentToShip.unlockableID = unlockableInfo.RequestNode.shipUnlockableID;
+                placeableShipObject.parentObject.unlockableID = unlockableInfo.RequestNode.shipUnlockableID;
+                placeableShipObject.unlockableID = unlockableInfo.RequestNode.shipUnlockableID;
             }
         }
 
