@@ -32,7 +32,6 @@ public class DawnPlugin : BaseUnityPlugin
             TagExporter.Init();
         }
 
-        NetcodePatcher();
         if (LethalConfigCompat.Enabled)
         {
             LethalConfigCompat.Init();
@@ -94,30 +93,6 @@ public class DawnPlugin : BaseUnityPlugin
     internal static string RelativePath(params string[] folders)
     {
         return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(folders));
-    }
-
-    private void NetcodePatcher()
-    {
-        var types = new Type[] { typeof(SmartAgentNavigator), typeof(DawnNetworker), typeof(ClientNetworkTransform), typeof(OwnerNetworkAnimator), typeof(ChanceScript), typeof(ApplyRendererVariants), typeof(NetworkAudioSource) };
-        foreach (var type in types)
-        {
-            try
-            {
-                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                foreach (var method in methods)
-                {
-                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                    if (attributes.Length > 0)
-                    {
-                        method.Invoke(null, null);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.LogWarning($"supressed an error from netcode patcher, probably fine but should still log that something happened: {e}.");
-            }
-        }
     }
 
     static void DebugPrintRegistryResult<T>(string name, Registry<T> registry, Func<T, string> nameGetter) where T : INamespaced<T>

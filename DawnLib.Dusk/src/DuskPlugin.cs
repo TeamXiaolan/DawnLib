@@ -31,36 +31,10 @@ public class DuskPlugin : BaseUnityPlugin
 
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
-
-        NetcodePatcher();
-
+        
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
-    }
-
-    private void NetcodePatcher()
-    {
-        var types = new Type[] { typeof(UnlockProgressiveObject), typeof(ItemUpgradeScrap), typeof(UnlockableUpgradeScrap), typeof(StationBase), typeof(VehicleBase) };
-        foreach (var type in types)
-        {
-            try
-            {
-                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
-                foreach (var method in methods)
-                {
-                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
-                    if (attributes.Length > 0)
-                    {
-                        method.Invoke(null, null);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.LogWarning($"supressed an error from netcode patcher, probably fine but should still log that something happened: {e}.");
-            }
-        }
     }
 
     internal class MainAssets(AssetBundle bundle) : AssetBundleLoader<MainAssets>(bundle)
