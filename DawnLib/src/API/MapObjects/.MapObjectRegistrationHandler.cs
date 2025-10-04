@@ -179,6 +179,17 @@ static class MapObjectRegistrationHandler
 
     private static void UpdateMapObjectSpawnWeights(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
     {
+        RandomMapObject[] randomMapObjectSpawns = UnityEngine.Object.FindObjectsOfType<RandomMapObject>();
+        foreach (RandomMapObject randomMapObject in randomMapObjectSpawns)
+        {
+            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+            {
+                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
+                    continue;
+
+                randomMapObject.spawnablePrefabs.Add(mapObjectInfo.MapObject);
+            }
+        }
         UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
         orig(self);
     }

@@ -1,5 +1,6 @@
 # v0.3.0
 
+- Fixed issue where inside hazards would not spawn.
 - Fixed issue with being unable to move furniture properly with furniture lock mod.
 - Fixed issue where SID started including items that they shouldn't because those items had 0 weights on the moon.
 
