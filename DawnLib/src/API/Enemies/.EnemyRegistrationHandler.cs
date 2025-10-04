@@ -307,6 +307,7 @@ static class EnemyRegistrationHandler
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     enemyInsideWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
                 }
+                Debuggers.Enemies?.Log($"Adding inside weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
             }
 
@@ -320,6 +321,7 @@ static class EnemyRegistrationHandler
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     enemyOutsideWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
                 }
+                Debuggers.Enemies?.Log($"Adding outside weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
             }
 
@@ -333,6 +335,7 @@ static class EnemyRegistrationHandler
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     enemyDaytimeWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
                 }
+                Debuggers.Enemies?.Log($"Adding daytime weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
             }
         }

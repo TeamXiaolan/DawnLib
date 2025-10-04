@@ -2,6 +2,7 @@
 using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn;
@@ -33,7 +34,10 @@ static class ItemRegistrationHandler
             new AutoWeightTagger(Tags.HeavyWeight, new BoundedRange(1.4f, int.MaxValue))
         );
 
-        On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
+        using (new DetourContext(priority: int.MinValue))
+        {
+            On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
+        }
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.Terminal.Awake += RegisterShopItemsToTerminal;
         On.StartOfRound.Start += RegisterScrapItems;
@@ -87,7 +91,20 @@ static class ItemRegistrationHandler
     private static void UpdateItemWeights(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
     {
         UpdateItemWeightsOnLevel(self.currentLevel);
+        List<SpawnableItemWithRarity> zeroWeightItems = new();
+        foreach (SpawnableItemWithRarity spawnableItemWithRarity in self.currentLevel.spawnableScrap.ToArray())
+        {
+            if (spawnableItemWithRarity.rarity <= 0)
+            {
+                zeroWeightItems.Add(spawnableItemWithRarity);
+                self.currentLevel.spawnableScrap.Remove(spawnableItemWithRarity);
+            }
+        }
         orig(self);
+        foreach (SpawnableItemWithRarity spawnableItemWithRarity in zeroWeightItems)
+        {
+            self.currentLevel.spawnableScrap.Add(spawnableItemWithRarity);
+        }
     }
 
     private static void UpdateItemWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
@@ -140,6 +157,7 @@ static class ItemRegistrationHandler
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
                     itemWeightBuilder[itemWithRarity.spawnableItem] = weightTableBuilder;
                 }
+                Debuggers.Items?.Log($"Adding weight {itemWithRarity.rarity} to {itemWithRarity.spawnableItem.itemName} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonInfo.TypedKey, itemWithRarity.rarity);
             }
         }
@@ -265,6 +283,7 @@ static class ItemRegistrationHandler
                 continue;
             }
 
+            Debuggers.Items?.Log($"Registering {item.itemName} ({item.name}) with range of values: {item.minValue*0.4} and {item.maxValue*0.4}");
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(item, tags);
             DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo, null);

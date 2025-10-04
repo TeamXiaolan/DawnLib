@@ -32,7 +32,7 @@ static class MoonRegistrationHandler
         TerminalKeyword routeKeyword = TerminalRefs.RouteKeyword;
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
-            Debuggers.Moons?.Log($"Registering level: {level.PlanetName}");
+            Debuggers.Moons?.Log($"Registering level: {level.PlanetName} with scrap spawn range of: {level.minScrap} and {level.maxScrap}");
             NamespacedKey<DawnMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
             if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedLevelModName(level, out string moonModName))
             {
