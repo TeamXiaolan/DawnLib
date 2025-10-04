@@ -50,21 +50,11 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
     public override bool IsActive()
     {
         int counter = 0;
-        foreach (var achievement in DuskModContent.Achievements.Values)
+        foreach (DuskAchievementReference achievementReference in ChildrenAchievementReferences)
         {
-            if (achievement == this)
-                continue;
-
-            if (!achievement.IsActive())
-                continue;
-
-            foreach (var achievementReference in ChildrenAchievementReferences)
+            if (achievementReference.TryResolve(out DuskAchievementDefinition achievementDefinition) && achievementDefinition.IsActive())
             {
-                if (achievementReference.TryResolve(out DuskAchievementDefinition achievementDefinition) && achievementDefinition.AchievementName == achievement.AchievementName)
-                {
-                    counter += 1;
-                    break;
-                }
+                counter += 1;
             }
         }
         return counter == ChildrenAchievementReferences.Count;
