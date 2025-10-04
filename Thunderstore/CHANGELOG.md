@@ -1,4 +1,4 @@
-# v0.3.0
+# v0.2.16
 
 - Fixed issue with parent achievements not disappearing if they aren't possible.
 - Fixed issue where inside hazards would not spawn.
