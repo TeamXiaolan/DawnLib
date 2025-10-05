@@ -116,6 +116,6 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 ### Credits
 
-- Bongo Loaforc (Code)
+- Bongo Xiaolan (Code)
 - XuXiaolan (Code)
 - Slayer (Achievement UI)
