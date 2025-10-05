@@ -1,17 +1,25 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
+using MonoMod.RuntimeDetour;
 
 namespace Dawn;
 
-static class AdditionalTilesRegistrationHandler
+static class DungeonRegistrationHandler
 {
     internal static void Init()
     {
-        On.StartOfRound.Awake += CollectVanillaDungeons;
-        On.RoundManager.Start += CollectModdedDungeons;
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.StartOfRound.Awake += RegisterDawnDungeons;
+        }
+
+        LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
+        LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
+        On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
             self.GenerateOnStart = false;
@@ -25,76 +33,126 @@ static class AdditionalTilesRegistrationHandler
         };
     }
 
-    private static void CollectVanillaDungeons(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    private static void UpdateAllDungeonWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
     {
-        if (LethalContent.Dungeons.IsFrozen)
-        {
-            orig(self);
+        orig(self, connectedPlayersOnServer);
+        UpdateDungeonWeightOnLevel(self.currentLevel);
+    }
+
+    internal static void UpdateDungeonWeightOnLevel(SelectableLevel level)
+    {
+        if (!LethalContent.Dungeons.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
-        }
 
-        foreach (DungeonFlow dungeonFlow in self.transform.parent.GetComponentInChildren<RoundManager>().dungeonFlowTypes.Select(it => it.dungeonFlow))
+        foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
         {
-            if (dungeonFlow == null)
+            DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
+            if (dungeonInfo.HasTag(DawnLibTags.IsExternal) && dungeonInfo.HasTag(DawnLibTags.LunarConfig))
                 continue;
 
-            string name = FormatFlowName(dungeonFlow);
-            NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
-            if (key == null)
-            {
-                DawnPlugin.Logger.LogWarning($"{dungeonFlow.name} is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
-                continue;
-            }
-
-            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-
-            CollectLLLTags(dungeonFlow, tags);
-            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
-            dungeonFlow.SetDawnInfo(dungeonInfo);
-            LethalContent.Dungeons.Register(dungeonInfo);
+            intWithRarity.rarity = dungeonInfo.Weights?.GetFor(level.GetDawnInfo()) ?? 0;
         }
+    }
+
+    private static void AddDawnDungeonsToMoons()
+    {
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.HasTag(DawnLibTags.IsExternal))
+                continue;
+
+            List<IntWithRarity> intsWithRarity = moonInfo.Level.dungeonFlowTypes.ToList();
+            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            {
+                if (dungeonInfo.HasTag(DawnLibTags.IsExternal))
+                    continue;
+
+                int id = Array.IndexOf(RoundManagerRefs.Instance.dungeonFlowTypes.Select(t => t.dungeonFlow).ToArray(), dungeonInfo.DungeonFlow);
+                IntWithRarity intWithRarity = new()
+                {
+                    id = id,
+                    rarity = 0
+                };
+                intsWithRarity.Add(intWithRarity);
+            }
+            moonInfo.Level.dungeonFlowTypes = intsWithRarity.ToArray();
+        }
+    }
+
+    private static void RegisterDawnDungeons(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        List<IndoorMapType> newIndoorMapTypes = RoundManagerRefs.Instance.dungeonFlowTypes.ToList();
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            IndoorMapType indoorMapType = new()
+            {
+                dungeonFlow = dungeonInfo.DungeonFlow,
+                MapTileSize = dungeonInfo.MapTileSize,
+                firstTimeAudio = dungeonInfo.FirstTimeAudio,
+            };
+            newIndoorMapTypes.Add(indoorMapType);
+        }
+        RoundManagerRefs.Instance.dungeonFlowTypes = newIndoorMapTypes.ToArray();
         orig(self);
     }
 
-    private static void CollectModdedDungeons(On.RoundManager.orig_Start orig, RoundManager self)
+    private static void CollectNonDawnDungeons()
     {
-        if (LethalContent.Dungeons.IsFrozen)
+        Dictionary<DungeonFlow, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            orig(self);
-            return;
+            SelectableLevel level = moonInfo.Level;
+
+            foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
+            {
+                DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
+                if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                {
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                    dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
+                }
+                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
+                weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
+            }
         }
 
-        orig(self);
-        foreach (DungeonFlow dungeonFlow in self.dungeonFlowTypes.Select(it => it.dungeonFlow))
+        foreach (IndoorMapType indoorMapType in RoundManagerRefs.Instance.dungeonFlowTypes)
         {
-            if (dungeonFlow == null)
+            if (indoorMapType == null)
                 continue;
 
-            if (dungeonFlow.HasDawnInfo())
+            if (indoorMapType.dungeonFlow == null)
                 continue;
 
-            Debuggers.Dungeons?.Log($"Registering potentially modded dungeon: {dungeonFlow.name}");
-            NamespacedKey<DawnDungeonInfo> key;
-            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedDungeonModName(dungeonFlow, out string dungeonModName))
+            if (indoorMapType.dungeonFlow.HasDawnInfo())
+                continue;
+
+            string name = FormatFlowName(indoorMapType.dungeonFlow);
+            NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
+            if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedDungeonModName(indoorMapType.dungeonFlow, out string dungeonModName))
             {
-                key = NamespacedKey<DawnDungeonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(dungeonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(dungeonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(indoorMapType.dungeonFlow.name, false));
             }
-            else
+            else if (key == null)
             {
-                key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(indoorMapType.dungeonFlow.name, false));
             }
 
             if (LethalContent.Dungeons.ContainsKey(key))
             {
                 Debuggers.Dungeons?.Log($"LethalContent.Dungeons already contains {key}");
-                dungeonFlow.SetDawnInfo(LethalContent.Dungeons[key]);
+                indoorMapType.dungeonFlow.SetDawnInfo(LethalContent.Dungeons[key]);
                 continue;
             }
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-            CollectLLLTags(dungeonFlow, tags);
-            DawnDungeonInfo dungeonInfo = new(key, tags, dungeonFlow, null);
-            dungeonFlow.SetDawnInfo(dungeonInfo);
+            CollectLLLTags(indoorMapType.dungeonFlow, tags);
+
+            dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
+            weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo>();
+
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, null);
+            indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
 

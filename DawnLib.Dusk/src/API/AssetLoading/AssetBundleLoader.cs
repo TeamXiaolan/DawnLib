@@ -77,6 +77,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
         // Sort content
         List<Type> definitionOrder = [
+            typeof(DuskDungeonDefinition),
             typeof(DuskWeatherDefinition),
             typeof(DuskMapObjectDefinition),
             typeof(DuskEnemyDefinition),

@@ -41,7 +41,7 @@ public class AssetBundleData
     [Obsolete]
     [SerializeField]
     [HideInInspector]
-    private List<DungeonData> dungeons;
+    private List<AdditionalTilesData> dungeons;
     [Obsolete]
     [SerializeField]
     [HideInInspector]

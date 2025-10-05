@@ -19,6 +19,7 @@ static class WeatherRegistryCompat
         EnemyRegistrationHandler.UpdateEnemyWeightsOnLevel(args.selectableLevel);
         ItemRegistrationHandler.UpdateItemWeightsOnLevel(args.selectableLevel);
         MapObjectRegistrationHandler.UpdateInsideMapObjectSpawnWeightsOnLevel(args.selectableLevel);
+        DungeonRegistrationHandler.UpdateDungeonWeightOnLevel(args.selectableLevel);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]

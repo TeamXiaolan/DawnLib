@@ -2,6 +2,7 @@
 using System.IO;
 using Dawn.Internal;
 using DunGen;
+using DunGen.Graph;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -68,6 +69,16 @@ public static class DawnLib
             throw new ArgumentNullException(nameof(prefab));
 
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
+    }
+
+    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, DungeonFlow dungeonFlow, Action<DungeonFlowInfoBuilder> callback)
+    {
+        DungeonFlowInfoBuilder builder = new(key, dungeonFlow);
+        callback(builder);
+        DawnDungeonInfo dungeonFlowInfo = builder.Build();
+        dungeonFlow.SetDawnInfo(dungeonFlowInfo);
+        LethalContent.Dungeons.Register(dungeonFlowInfo);
+        return dungeonFlowInfo;
     }
 
     public static DawnTileSetInfo DefineTileSet(NamespacedKey<DawnTileSetInfo> key, TileSet tileSet, Action<TilesetInfoBuilder> callback)

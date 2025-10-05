@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DunGen;
 using DunGen.Graph;
+using UnityEngine;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
@@ -11,9 +12,12 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
     private List<DoorwaySocket> _sockets;
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo>? weights, float mapTileSize, AudioClip? firstTimeAudio, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
+        Weights = weights;
+        MapTileSize = mapTileSize;
+        firstTimeAudio = FirstTimeAudio;
         _sockets = new();
         foreach (GameObjectChance chance in DungeonFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it))
         {
@@ -30,5 +34,8 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     }
 
     public DungeonFlow DungeonFlow { get; }
+    public ProviderTable<int?, DawnMoonInfo>? Weights { get; }
+    public float MapTileSize { get; }
+    public AudioClip? FirstTimeAudio { get; }
     public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
 }
