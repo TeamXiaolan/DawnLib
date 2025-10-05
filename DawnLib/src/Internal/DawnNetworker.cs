@@ -57,14 +57,8 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void BroadcastDisplayTipServerRPC(HUDDisplayTip displayTip)
-    {
-        BroadcastDisplayTipClientRPC(displayTip);
-    }
-
-    [ClientRpc]
-    private void BroadcastDisplayTipClientRPC(HUDDisplayTip displayTip)
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void BroadcastDisplayTipRPC(HUDDisplayTip displayTip)
     {
         HUDManager.Instance.DisplayTip(displayTip);
     }
