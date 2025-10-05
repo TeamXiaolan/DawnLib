@@ -89,6 +89,9 @@
         <Reference Include="MMHOOK_TerminalFormatter">
             <HintPath>deps\MMHOOK_TerminalFormatter.dll</HintPath>
         </Reference>
+        <Reference Include="MMHOOK_Unity.Netcode.Runtime">
+            <HintPath>deps\MMHOOK_Unity.Netcode.Runtime.dll</HintPath>
+        </Reference>
       <Reference Include="PathfindingLib">
         <HintPath>deps\PathfindingLib.dll</HintPath>
       </Reference>

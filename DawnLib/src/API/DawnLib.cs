@@ -49,6 +49,11 @@ public static class DawnLib
         MiscFixesPatch.networkPrefabsToAdd.Add(prefab);
     }
 
+    public static void RegisterNetworkScene(string scenePath)
+    {
+        DawnNetworkSceneManager.AddScenePath(scenePath);
+    }
+    
     public static void FixMixerGroups(GameObject prefab)
     {
         if (!prefab)
