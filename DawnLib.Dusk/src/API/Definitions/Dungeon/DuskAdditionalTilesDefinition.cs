@@ -26,6 +26,9 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     [field: SerializeField]
     public BranchCapSetting BranchCap { get; private set; }
 
+    [field: SerializeField]
+    public DuskPredicate Predicate { get; private set; }
+    
     public ItemConfig Config { get; private set; }
 
     public override void Register(DuskMod mod)
@@ -41,6 +44,10 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
             ApplyTagsTo(builder);
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
+            if (Predicate)
+            {
+                builder.SetInjectionPredicate(Predicate);
+            }
         });
 
         LethalContent.Archetypes.BeforeFreeze += () =>
