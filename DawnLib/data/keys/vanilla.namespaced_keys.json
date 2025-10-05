@@ -154,7 +154,15 @@
     "Whoopiecushion": "lethal_company:whoopie_cushion",
     "Yieldsign": "lethal_company:yield_sign",
     "Zapgun": "lethal_company:zap_gun",
-    "ZedDog": "lethal_company:zed_dog"
+    "ZedDog": "lethal_company:zed_dog",
+    "Hand": "lethal_company:hand",
+    "Bone": "lethal_company:bone",
+    "Ribcage": "lethal_company:ribcage",
+    "Ear": "lethal_company:ear",
+    "Knee": "lethal_company:knee",
+    "Heart": "lethal_company:heart",
+    "Tongue": "lethal_company:tongue",
+    "Foot": "lethal_company:foot"
   },
   "MoonKeys": {
     "__type": "DawnMoonInfo",
