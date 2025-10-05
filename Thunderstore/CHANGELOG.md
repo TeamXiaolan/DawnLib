@@ -1,4 +1,11 @@
-# v0.2.16
+# v0.2.17
+- **Update to v73. This version and versions after are not compatible with v72 or lower! (revert to v0.2.16 for v72)**
+- Added ItemKeys for the new scrap introduced in v73.
+- New `#lethal_company:body_parts` tag.
+- New `TerminalPredicateCollection` and `PredicateCollection` to allow using multiple predicates on shop items.
+- `DuskAdditionalTilesDefinition` can now use a `DuskPredicate` to determine when the tiles should be injected
+
+## v0.2.16
 
 - Fixed issue with parent achievements not disappearing if they aren't possible.
 - Fixed issue where inside hazards would not spawn.
