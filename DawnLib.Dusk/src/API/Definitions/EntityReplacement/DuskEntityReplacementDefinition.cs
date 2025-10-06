@@ -45,7 +45,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public bool GenerateDisableUnlockConfig { get; private set; }
+    public bool GenerateDisableDateConfig { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
@@ -84,7 +84,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeights) : null,
             WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeights) : null,
 
-            DisableDateCheck = section.Bind($"{EntityNameReference} | Disable Date Check", $"Whether {EntityNameReference} should have it's date check disabled.", false),
+            DisableDateCheck = GenerateDisableDateConfig && DatePredicate ? section.Bind($"{EntityNameReference} | Disable Date Check", $"Whether {EntityNameReference} should have it's date check disabled.", false) : null,
         };
     }
 
