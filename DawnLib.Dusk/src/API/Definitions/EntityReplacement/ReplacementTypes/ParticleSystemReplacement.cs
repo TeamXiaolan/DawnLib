@@ -1,8 +1,13 @@
+using System;
 using UnityEngine;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New ParticleSystem Replacement", menuName = $"Entity Replacements/Component Replacements/ParticleSystem Replacement")]
-public class ParticleSystemReplacement : ComponentReplacement<ParticleSystem>
+[Serializable]
+public class ParticleSystemReplacement
 {
+    [field: SerializeField]
+    public string PathToParticleSystem { get; private set; }
+    [field: SerializeField]
+    public ParticleSystem NewParticleSystem { get; private set; }
 }

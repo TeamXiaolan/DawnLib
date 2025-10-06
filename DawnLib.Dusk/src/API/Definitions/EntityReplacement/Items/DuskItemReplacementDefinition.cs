@@ -65,18 +65,48 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
             }
         }
 
-        foreach (ComponentReplacement<Component> componentReplacement in ExtraReplacements)
+        if (AnimationClipReplacements.Count > 0)
         {
-            if (string.IsNullOrEmpty(componentReplacement.PathToComponent))
+            Animator? grabbableAnimator = grabbableObject.GetComponentInChildren<Animator>();
+            if (grabbableAnimator != null)
+            {
+                AnimatorOverrideController animatorOverrideController = new(grabbableAnimator.runtimeAnimatorController);
+                foreach (AnimationClipReplacement animationClipReplacement in AnimationClipReplacements)
+                {
+                    foreach (AnimationEventAddition animationEventAddition in animationClipReplacement.PotentialAnimationEvents)
+                    {
+                        AnimationEvent animationEvent = new()
+                        {
+                            functionName = animationEventAddition.AnimationEventName,
+                            time = animationEventAddition.Time,
+
+                            stringParameter = animationEventAddition.StringParameter,
+                            intParameter = animationEventAddition.IntParameter,
+                            floatParameter = animationEventAddition.FloatParameter,
+                            objectReferenceParameter = animationEventAddition.ObjectParameter
+                        };
+
+                        animationClipReplacement.NewAnimationClip.AddEvent(animationEvent);
+                    }
+                    animatorOverrideController[animationClipReplacement.OriginalClipName] = animationClipReplacement.NewAnimationClip;
+                }
+                grabbableAnimator.runtimeAnimatorController = animatorOverrideController;
+            }
+        }
+
+        foreach (ParticleSystemReplacement particleSystemReplacement in ExtraParticleSystemReplacements)
+        {
+            if (string.IsNullOrEmpty(particleSystemReplacement.PathToParticleSystem))
             {
                 continue;
             }
 
-            GameObject? gameObject = grabbableObject.transform.Find(componentReplacement.PathToComponent)?.gameObject;
-            if (gameObject != null)
+            GameObject? oldGameObject = grabbableObject.transform.Find(particleSystemReplacement.PathToParticleSystem)?.gameObject;
+            if (oldGameObject != null)
             {
-                TransferComponent transferComponent = gameObject.AddComponent<TransferComponent>();
-                transferComponent.ComponentReplacement = componentReplacement.Component;
+                GameObject newGameObject = GameObject.Instantiate(particleSystemReplacement.NewParticleSystem.gameObject, oldGameObject.transform);
+                newGameObject.name = oldGameObject.name;
+                Destroy(oldGameObject);
             }
         }
     }

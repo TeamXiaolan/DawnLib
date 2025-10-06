@@ -8,6 +8,8 @@ namespace Dusk;
 public class AnimationClipReplacement
 {
     [field: SerializeField]
+    public string OriginalClipName { get; private set; }
+    [field: SerializeField]
     public AnimationClip NewAnimationClip { get; private set; }
     [field: SerializeField]
     public List<AnimationEventAddition> PotentialAnimationEvents { get; private set; } = new();

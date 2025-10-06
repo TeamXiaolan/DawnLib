@@ -13,5 +13,13 @@ public class AnimationEventAddition
 
     [field: Header("Optional | Parameters")]
     [field: SerializeField]
-    public AnimationEvent AnimationEventParameters { get; private set; }
+    public string StringParameter { get; private set; } = string.Empty;
+    [field: SerializeField]
+    public int IntParameter { get; private set; } = 0;
+    [field: SerializeField]
+    public float FloatParameter { get; private set; } = 0f;
+    [field: SerializeField]
+    public bool BoolParameter { get; private set; } = false;
+    [field: SerializeField]
+    public UnityEngine.Object? ObjectParameter { get; private set; } = null;
 }

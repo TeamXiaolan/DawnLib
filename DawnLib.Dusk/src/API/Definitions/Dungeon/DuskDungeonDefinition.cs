@@ -36,10 +36,10 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         spawnWeightsPreset.SetupSpawnWeightsPreset(MoonSpawnWeights, string.Empty, string.Empty);
         DawnLib.DefineDungeon(TypedKey, DungeonFlow, builder =>
         {
-            ApplyTagsTo(builder);
             builder.SetMapTileSize(MapTileSize);
             builder.SetFirstTimeAudio(StingerAudio);
             builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(spawnWeightsPreset));
+            ApplyTagsTo(builder);
         });
     }
 

@@ -24,15 +24,17 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public List<GameObjectWithPath> GameObjectAddons { get; private set; } = new();
 
     [field: SerializeField]
-    public List<ComponentReplacement<Component>> ExtraReplacements { get; private set; } = new();
+    public List<AnimationClipReplacement> AnimationClipReplacements { get; private set; } = new();
+
+    [field: SerializeField]
+    public List<ParticleSystemReplacement> ExtraParticleSystemReplacements { get; private set; } = new();
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
 
     // bongo todo: this is awful, and when migrating this stuff to be dawn info, this should probably be an interface or something
     internal bool IsVanilla;
-    
-    [field: Space(10)]
+
     [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
     [field: TextArea(1, 10)]
     [field: SerializeField]
