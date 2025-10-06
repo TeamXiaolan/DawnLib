@@ -101,21 +101,28 @@ static class DungeonRegistrationHandler
         Dictionary<DungeonFlow, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            if (!moonInfo.ShouldSkipIgnoreOverride())
-                continue;
-
-            SelectableLevel level = moonInfo.Level;
-
-            foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
+            try
             {
-                DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
-                if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!moonInfo.ShouldSkipIgnoreOverride())
+                    continue;
+
+                SelectableLevel level = moonInfo.Level;
+
+                foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
+                    DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
+                    if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                    {
+                        weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                        dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
+                    }
+                    Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
+                    weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
                 }
-                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
-                weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
+            }
+            catch (Exception exception)
+            {
+                DawnPlugin.Logger.LogError(exception);
             }
         }
 

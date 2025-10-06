@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using Dawn;
 using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 using HarmonyLib;
-using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
