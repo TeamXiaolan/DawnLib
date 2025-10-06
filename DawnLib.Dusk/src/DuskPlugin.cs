@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Dawn;
+using Dawn.Internal;
 using Dawn.Utils;
 using Dusk.Internal;
 using Dusk.Utils;
@@ -31,6 +32,7 @@ public class DuskPlugin : BaseUnityPlugin
 
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
+        Main.NetworkerPrefab.AddComponent<DawnMoonNetworker>(); // todo: remove
         
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();

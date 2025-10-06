@@ -54,4 +54,14 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
             _customData = FrozenEmptyDataContainer.Instance;
         }
     }
+
+    internal bool ShouldSkipIgnoreOverride()
+    {
+        return Key.IsVanilla() || HasTag(DawnLibTags.IsExternal);
+    }
+
+    internal bool ShouldSkipRespectOverride()
+    {
+        return ShouldSkipIgnoreOverride() && !HasTag(DawnLibTags.LunarConfig);
+    }
 }

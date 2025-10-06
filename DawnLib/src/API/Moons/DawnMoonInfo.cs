@@ -7,12 +7,16 @@ namespace Dawn;
 
 public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, IProvider<int> cost, ITerminalPurchasePredicate predicate, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
         RouteNode = routeNode;
+        ReceiptNode = receiptNode;
         NameKeyword = nameKeyword;
 
+        Cost = cost;
+        PurchasePredicate = predicate;
+        
         if (routeNode == null)
         {
             Cost = new SimpleProvider<int>(-1);
@@ -27,8 +31,11 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 
     public SelectableLevel Level { get; }
     public TerminalNode? RouteNode { get; }
+    public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
-
+    
+    public List<MoonSceneInfo> Scenes { get; } = [];
+    
     public DawnWeatherEffectInfo? GetCurrentWeather()
     {
         LevelWeatherType type = Level.currentWeather;

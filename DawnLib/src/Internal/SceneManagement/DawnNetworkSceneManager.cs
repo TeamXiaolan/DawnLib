@@ -21,7 +21,7 @@ static class DawnNetworkSceneManager
     }
     
     // this is taken from NetworkSceneManager. i have no idea why it isn't static by default
-    static string GetSceneNameFromPath(string scenePath)
+    internal static string GetSceneNameFromPath(string scenePath)
     {
         int num = scenePath.LastIndexOf("/", StringComparison.Ordinal) + 1;
         int num2 = scenePath.LastIndexOf(".", StringComparison.Ordinal);

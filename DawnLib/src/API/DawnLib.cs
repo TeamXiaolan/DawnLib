@@ -4,6 +4,7 @@ using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
 using Newtonsoft.Json;
+using TMPro;
 using UnityEngine;
 
 namespace Dawn;
@@ -131,6 +132,16 @@ public static class DawnLib
         enemy.SetDawnInfo(enemyInfo);
         LethalContent.Enemies.Register(enemyInfo);
         return enemyInfo;
+    }
+
+    public static DawnMoonInfo DefineMoon(NamespacedKey<DawnMoonInfo> key, SelectableLevel level, Action<MoonInfoBuilder> callback)
+    {
+        MoonInfoBuilder builder = new(key, level);
+        callback(builder);
+        DawnMoonInfo info = builder.Build();
+        level.SetDawnInfo(info);
+        LethalContent.Moons.Register(info);
+        return info;
     }
 
     public static void ApplyTag(JSONTagDefinition definition)
