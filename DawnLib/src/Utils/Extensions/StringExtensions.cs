@@ -21,4 +21,20 @@ public static class StringExtensions
 
         return input;
     }
+
+    public static string StripSpecialCharacters(this string input)
+    {
+        string returnString = string.Empty;
+        foreach (char charmander in input)
+        {
+            if (!char.IsLetter(charmander))
+            {
+                continue;
+            }
+
+            returnString += charmander;
+        }
+
+        return returnString;
+    }
 }

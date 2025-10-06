@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Dawn.Internal;
 using Dawn.Utils;
 using MonoMod.RuntimeDetour;
@@ -12,6 +13,8 @@ namespace Dawn;
 
 static class MoonRegistrationHandler
 {
+    private static IMoonGroupAlgorithm _groupAlgorithm = new RankGroupAlgorithm();
+    
     internal static void Init()
     {
         LethalContent.Moons.AddAutoTaggers(
@@ -31,7 +34,81 @@ static class MoonRegistrationHandler
         On.StartOfRound.OnClientDisconnect += StartOfRoundOnOnClientDisconnect;
 
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
+        
+        On.Terminal.TextPostProcess += DynamicMoonCatalogue;
     }
+    
+    // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well! 
+    private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
+    {
+        if (node != TerminalRefs.MoonCatalogueNode) 
+            return orig(self, modifieddisplaytext, node);
+        
+        StringBuilder builder = new StringBuilder("\n\nWelcome to the exomoons catalogue.\nTo route the autopilot to a moon, use the word ROUTE.\nTo learn about any moon, use INFO.\n____________________________\n");
+        IEnumerable<DawnMoonInfo> validMoons = LethalContent.Moons.Values
+            .Where(it => !it.HasTag(Tags.Unimplemented))
+            .OrderByDescending(it => it.HasTag(Tags.Vanilla));
+        List<MoonGroup> groups = _groupAlgorithm.Group(validMoons);
+
+        foreach (MoonGroup group in groups)
+        {
+            builder.AppendLine("");
+
+            if (!string.IsNullOrEmpty(group.GroupName))
+            {
+                builder.AppendLine(group.GroupName);
+            }
+            
+            foreach (DawnMoonInfo moonInfo in group.Moons)
+            {
+                TerminalPurchaseResult result = moonInfo.PurchasePredicate.CanPurchase();
+
+                if (result is TerminalPurchaseResult.HiddenPurchaseResult)
+                {
+                    continue;
+                }
+
+                builder.AppendLine(FormatMoonEntry(moonInfo, result));
+            }
+        }
+        
+        return orig(self, builder.ToString(), node);
+    }
+
+    static string FormatMoonEntry(DawnMoonInfo moonInfo, TerminalPurchaseResult result)
+    {
+        StringBuilder builder = new StringBuilder();
+        string name = moonInfo.GetNumberlessPlanetName();
+        if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+        {
+            name = failedResult.OverrideName ?? name;
+        }
+
+        if (name == "Gordion")
+        {
+            name = "The Company building";
+        }
+                    
+        builder.Append($"* {name} ");
+
+        if (moonInfo.HasTag(Tags.Company))
+        {
+            builder.Append("//  Buying at [companyBuyingPercent].");
+        }
+        else
+        {
+            DawnWeatherEffectInfo? currentWeather = moonInfo.GetCurrentWeather();
+
+            if (currentWeather != null)
+            {
+                // todo: this likely breaks with Weather Registry?
+                builder.Append($"({moonInfo.Level.currentWeather.ToString()})");
+            }
+        }
+
+        return builder.ToString();
+    }
+    
     private static IEnumerator DelayTravelEffects(On.StartOfRound.orig_TravelToLevelEffects orig, StartOfRound self)
     {
         // why
@@ -173,6 +250,8 @@ static class MoonRegistrationHandler
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
+
+        TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
         
         LethalContent.Moons.Freeze();
     }

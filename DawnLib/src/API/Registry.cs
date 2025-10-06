@@ -48,7 +48,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
         remove => DawnPlugin.Logger.LogError("Registry.OnFreeze -= is not supported.");
     }
 
-    public event Action _onFreeze, _beforeFreeze = delegate { };
+    public event Action _onFreeze = delegate { }, _beforeFreeze = delegate { };
 
     virtual internal void Freeze()
     {
