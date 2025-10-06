@@ -148,6 +148,15 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        
+        // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
+        if(_currentBundle != null)
+            _currentBundle.UnloadAsync(true);
+    }
+
     IEnumerator UnloadExisting()
     {
         if(_currentBundle == null)
