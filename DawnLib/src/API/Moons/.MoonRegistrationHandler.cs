@@ -29,17 +29,20 @@ static class MoonRegistrationHandler
         On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
         On.StartOfRound.OnClientConnect += StartOfRoundOnOnClientConnect;
         On.StartOfRound.OnClientDisconnect += StartOfRoundOnOnClientDisconnect;
-        On.StartOfRound.ChangePlanet += StartOfRoundOnChangePlanet;
+
+        On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
     }
-    private static void StartOfRoundOnChangePlanet(On.StartOfRound.orig_ChangePlanet orig, StartOfRound self)
+    private static IEnumerator DelayTravelEffects(On.StartOfRound.orig_TravelToLevelEffects orig, StartOfRound self)
     {
-        try
+        // why
+        IEnumerator enumerator = orig(self);
+        while (enumerator.MoveNext())
         {
-            orig(self);
-        }
-        catch (Exception e)
-        {
-            DawnPlugin.Logger.LogError(e);
+            yield return enumerator.Current;
+            if (enumerator.Current is WaitForSeconds wfs && Mathf.Approximately(wfs.m_Seconds, self.currentLevel.timeToArrive))
+            {
+                yield return new WaitUntil(() => DawnMoonNetworker.Instance.allPlayersDone);
+            }
         }
     }
     private static void StartOfRoundOnOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
@@ -158,6 +161,7 @@ static class MoonRegistrationHandler
             
             // todo: handle passing correct predicate for embrion etc.
             DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), ITerminalPurchasePredicate.AlwaysSuccess(),null);
+            moonInfo.Scenes.Add(new VanillaMoonSceneInfo(key.AsTyped<MoonSceneInfo>(), level.sceneName));
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }

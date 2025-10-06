@@ -27,6 +27,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private NamespacedKey<DawnMoonInfo> _currentMoonKey;
     private NamespacedKey<MoonSceneInfo> _currentSceneKey;
     
+    internal bool allPlayersDone { get; private set; }
+    
     public enum BundleState
     {
         Queued,
@@ -132,6 +134,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 if (!request.isDone || request.assetBundle == null)
                 {
                     PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
+                    yield break;
                 }
                 else
                 {
@@ -154,7 +157,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         
         // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
         if(_currentBundle != null)
-            _currentBundle.UnloadAsync(true);
+            _currentBundle.Unload(true);
     }
 
     IEnumerator UnloadExisting()
@@ -173,16 +176,19 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     void CheckReadyAndUpdateUI()
     {
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
-        int remainingPlayers = StartOfRound.Instance.connectedPlayersAmount - _playerStates.Count(it => it.Value == BundleState.Done);
+        int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
         
+        Debuggers.Moons?.Log($"{nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
+        Debuggers.Moons?.Log($"connected players amount: {_playerStates.Count}. done players = {_playerStates.Count(it => it.Value == BundleState.Done)}");
+
         if (remainingPlayers <= 0)
         {
             // ready!
-            _lever.triggerScript.interactable = true;
+            UnlockLever();
         }
         else
         {
-            _lever.triggerScript.interactable = false;
+            LockLever();
 
             if (anyFailedPlayers)
             {
@@ -193,5 +199,19 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 _lever.triggerScript.disabledHoverTip = $" [ {remainingPlayers} player(s) still need to load ] ";
             }
         }
+    }
+
+    void LockLever()
+    {
+        _lever.triggerScript.interactable = false;
+        allPlayersDone = false;
+        StartOfRound.Instance.travellingToNewLevel = true;
+    }
+
+    void UnlockLever()
+    {
+        allPlayersDone = true;
+        _lever.triggerScript.interactable = true;
+        StartOfRound.Instance.travellingToNewLevel = false;
     }
 }
