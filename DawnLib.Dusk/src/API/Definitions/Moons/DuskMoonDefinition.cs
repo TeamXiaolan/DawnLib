@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dawn;
+using Dusk.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Dusk;
 
@@ -31,7 +33,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
                 builder.AddScene(
                     sceneData.Key,
                     mod.GetRelativePath("Assets", sceneData.BundleName),
-                    sceneData.ScenePath
+                    sceneData.Scene.ScenePath
                 );
             }
 
@@ -58,5 +60,5 @@ public class DuskMoonSceneData
     [AssetBundleReference]
     public string BundleName;
 
-    public string ScenePath;
+    public SceneReference Scene;
 }

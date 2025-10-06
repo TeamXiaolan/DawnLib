@@ -36,9 +36,9 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         return this;
     }
 
-    public MoonInfoBuilder AddScene(NamespacedKey<MoonSceneInfo> sceneKey, string assetBundlePath, string sceneName)
+    public MoonInfoBuilder AddScene(NamespacedKey<MoonSceneInfo> sceneKey, string assetBundlePath, string scenePath)
     {
-        _scenes.Add(new CustomMoonSceneInfo(sceneKey, assetBundlePath, sceneName));
+        _scenes.Add(new CustomMoonSceneInfo(sceneKey, assetBundlePath, scenePath));
         return this;
     }
     
