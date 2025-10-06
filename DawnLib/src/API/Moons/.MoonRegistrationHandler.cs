@@ -161,8 +161,14 @@ static class MoonRegistrationHandler
                 }
             }
             
-            // todo: handle passing correct predicate for embrion etc.
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), ITerminalPurchasePredicate.AlwaysSuccess(),null);
+            ITerminalPurchasePredicate predicate = ITerminalPurchasePredicate.AlwaysSuccess();
+
+            if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
+            {
+                predicate = ITerminalPurchasePredicate.AlwaysHide();
+            }
+            
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate,null);
             moonInfo.Scenes.Add(new VanillaMoonSceneInfo(key.AsTyped<MoonSceneInfo>(), level.sceneName));
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
