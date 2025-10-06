@@ -106,6 +106,7 @@ static class TerminalPatches
     private static string UpdateItemPrices(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
         ItemRegistrationHandler.UpdateAllShopItemPrices();
+        MoonRegistrationHandler.UpdateAllPrices();
         return orig(self, modifieddisplaytext, node);
     }
 
@@ -215,6 +216,12 @@ static class TerminalPatches
             }
             DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
             purchase = info;
+        }
+
+        if (node.buyRerouteToMoon >= 0)
+        {
+            Debuggers.Patching?.Log($"buyRerouteToMoon = {node.buyRerouteToMoon}");
+            purchase = StartOfRound.Instance.levels[node.buyRerouteToMoon].GetDawnInfo();
         }
 
         // preform predicate

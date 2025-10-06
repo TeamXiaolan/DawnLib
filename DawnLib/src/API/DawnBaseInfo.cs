@@ -57,7 +57,7 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
 
     internal bool ShouldSkipIgnoreOverride()
     {
-        return Key.IsVanilla() || HasTag(DawnLibTags.IsExternal);
+        return Key.IsVanilla() || HasTag(DawnLibTags.IsExternal) || HasTag(Tags.Unimplemented);
     }
 
     internal bool ShouldSkipRespectOverride()

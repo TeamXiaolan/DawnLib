@@ -80,7 +80,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         if (_routeNode == null)
         {
             _routeNode = new TerminalNodeBuilder($"{value.PlanetName}RouteNode")
-                .SetDisplayText($"The cost to route to {value.PlanetName} is [totalCost]. It is \ncurrently [currentPlanetTime] on this moon.\n\nPlease CONFIRM or DENY.")
+                .SetDisplayText($"The cost to route to {value.PlanetName} is [totalCost]. It is \ncurrently [currentPlanetTime] on this moon.\n\nPlease CONFIRM or DENY.\n\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(25)
                 .Build();

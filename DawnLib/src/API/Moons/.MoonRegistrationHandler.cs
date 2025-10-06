@@ -96,6 +96,8 @@ static class MoonRegistrationHandler
             moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
             levels.Add(moonInfo.Level);
 
+            UpdateMoonPrice(moonInfo);
+            
             if (!LethalContent.Moons.IsFrozen)
             {
                 routeNouns.Add(new CompatibleNoun()
@@ -189,5 +191,25 @@ static class MoonRegistrationHandler
         {
             tags.AddToList(tagsWithModNames, Debuggers.Moons, moon.name);
         }
+    }
+    
+    internal static void UpdateAllPrices()
+    {
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.ShouldSkipRespectOverride())
+                continue;
+
+            UpdateMoonPrice(moonInfo);
+        }
+    }
+
+    static void UpdateMoonPrice(DawnMoonInfo moonInfo)
+    {
+        int cost = moonInfo.Cost.Provide();
+        if(moonInfo.RouteNode != null) 
+            moonInfo.RouteNode.itemCost = cost;
+        if(moonInfo.ReceiptNode != null) 
+            moonInfo.ReceiptNode.itemCost = cost;
     }
 }

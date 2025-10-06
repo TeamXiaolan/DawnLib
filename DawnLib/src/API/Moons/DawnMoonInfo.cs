@@ -16,17 +16,6 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
 
         Cost = cost;
         PurchasePredicate = predicate;
-        
-        if (routeNode == null)
-        {
-            Cost = new SimpleProvider<int>(-1);
-            PurchasePredicate = ITerminalPurchasePredicate.AlwaysHide();
-        }
-        else
-        {
-            Cost = new SimpleProvider<int>(routeNode.itemCost);
-            PurchasePredicate = ITerminalPurchasePredicate.AlwaysSuccess();
-        }
     }
 
     public SelectableLevel Level { get; }
