@@ -96,7 +96,7 @@ static class EntityReplacementRegistrationPatch
                 if (!itemInfo.CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? list))
                 {
                     DuskItemReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
-                    vanilla.IsVanilla = true;
+                    vanilla.IsDefault = true;
                     vanilla.Register(null);
                     list = [vanilla];
                     itemInfo.CustomData.Set(Key, list);
@@ -162,7 +162,7 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
-            if (replacement.IsVanilla)
+            if (replacement.IsDefault)
                 break;
 
             replacement.Apply(self);
@@ -289,7 +289,7 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
-            if (replacement.IsVanilla)
+            if (replacement.IsDefault)
                 break;
 
             replacement.ApplyNest(self);
@@ -306,12 +306,13 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
             {
+                Debuggers.Enemies?.Log($"Registering replacement for {enemyReplacementDefinition.EntityToReplaceKey} with {enemyReplacementDefinition.TypedKey}");
                 if (!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? list))
                 {
-                    DuskEnemyReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
-                    vanilla.IsVanilla = true;
-                    vanilla.Register(null);
-                    list = [vanilla];
+                    DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
+                    defaultSkin.IsDefault = true;
+                    defaultSkin.Register(null);
+                    list = [defaultSkin];
                     enemyInfo.CustomData.Set(Key, list);
                 }
                 list.Add(enemyReplacementDefinition);
@@ -355,7 +356,7 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
-            if (replacement.IsVanilla)
+            if (replacement.IsDefault)
                 break;
 
             replacement.Apply(self);

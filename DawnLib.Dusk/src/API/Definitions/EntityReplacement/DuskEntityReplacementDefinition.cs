@@ -33,7 +33,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
 
     // bongo todo: this is awful, and when migrating this stuff to be dawn info, this should probably be an interface or something
-    internal bool IsVanilla;
+    internal bool IsDefault;
 
     [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
     [field: TextArea(1, 10)]
@@ -58,7 +58,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     public override void Register(DuskMod mod)
     {
-        if (IsVanilla)
+        if (IsDefault)
         {
             Weights = new WeightTableBuilder<DawnMoonInfo>().SetGlobalWeight(100).Build();
             return;
