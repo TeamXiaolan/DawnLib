@@ -25,19 +25,9 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
     {
         Apply((T)grabbableObject);
         grabbableObject.SetGrabbableObjectReplacement(this);
-        foreach (RendererReplacement rendererReplacement in RendererReplacements)
+        foreach (HierarchyReplacement hierarchyReplacement in Replacements)
         {
-            if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = grabbableObject.transform.Find(rendererReplacement.PathToRenderer)?.gameObject;
-            if (gameObject != null)
-            {
-                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = rendererReplacement;
-            }
+            hierarchyReplacement.Apply(grabbableObject.transform);
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
@@ -62,51 +52,6 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
 
                 networkObject.AutoObjectParentSync = false;
                 networkObject.Spawn();
-            }
-        }
-
-        if (AnimationClipReplacements.Count > 0)
-        {
-            Animator? grabbableAnimator = grabbableObject.GetComponentInChildren<Animator>();
-            if (grabbableAnimator != null)
-            {
-                AnimatorOverrideController animatorOverrideController = new(grabbableAnimator.runtimeAnimatorController);
-                foreach (AnimationClipReplacement animationClipReplacement in AnimationClipReplacements)
-                {
-                    foreach (AnimationEventAddition animationEventAddition in animationClipReplacement.PotentialAnimationEvents)
-                    {
-                        AnimationEvent animationEvent = new()
-                        {
-                            functionName = animationEventAddition.AnimationEventName,
-                            time = animationEventAddition.Time,
-
-                            stringParameter = animationEventAddition.StringParameter,
-                            intParameter = animationEventAddition.IntParameter,
-                            floatParameter = animationEventAddition.FloatParameter,
-                            objectReferenceParameter = animationEventAddition.ObjectParameter
-                        };
-
-                        animationClipReplacement.NewAnimationClip.AddEvent(animationEvent);
-                    }
-                    animatorOverrideController[animationClipReplacement.OriginalClipName] = animationClipReplacement.NewAnimationClip;
-                }
-                grabbableAnimator.runtimeAnimatorController = animatorOverrideController;
-            }
-        }
-
-        foreach (ParticleSystemReplacement particleSystemReplacement in ExtraParticleSystemReplacements)
-        {
-            if (string.IsNullOrEmpty(particleSystemReplacement.PathToParticleSystem))
-            {
-                continue;
-            }
-
-            GameObject? oldGameObject = grabbableObject.transform.Find(particleSystemReplacement.PathToParticleSystem)?.gameObject;
-            if (oldGameObject != null)
-            {
-                GameObject newGameObject = GameObject.Instantiate(particleSystemReplacement.NewParticleSystem.gameObject, oldGameObject.transform);
-                newGameObject.name = oldGameObject.name;
-                Destroy(oldGameObject);
             }
         }
     }

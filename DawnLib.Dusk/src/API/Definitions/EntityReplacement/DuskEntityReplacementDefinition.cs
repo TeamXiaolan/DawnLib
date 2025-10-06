@@ -18,16 +18,11 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     [field: Header("Replacements")]
     [field: SerializeField]
-    public List<RendererReplacement> RendererReplacements { get; private set; } = new();
+    public List<HierarchyReplacement> Replacements { get; private set; } = new();
 
+    [field: Tooltip("This is where you'd add gameobjects, main use case is adding meshes or cosmetics to entities.")]
     [field: SerializeField]
     public List<GameObjectWithPath> GameObjectAddons { get; private set; } = new();
-
-    [field: SerializeField]
-    public List<AnimationClipReplacement> AnimationClipReplacements { get; private set; } = new();
-
-    [field: SerializeField]
-    public List<ParticleSystemReplacement> ExtraParticleSystemReplacements { get; private set; } = new();
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }

@@ -3,11 +3,17 @@ using UnityEngine;
 
 namespace Dusk;
 
-[Serializable]
-public class ParticleSystemReplacement
+[CreateAssetMenu(fileName = "New ParticleSystem Replacement", menuName = $"Entity Replacements/Replacements/ParticleSystem Replacement")]
+public class ParticleSystemReplacement : HierarchyReplacement
 {
     [field: SerializeField]
-    public string PathToParticleSystem { get; private set; }
-    [field: SerializeField]
     public ParticleSystem NewParticleSystem { get; private set; }
+
+    public override void Apply(Transform rootTransform)
+    {
+        GameObject oldGameObject = rootTransform.Find(HierarchyPath).gameObject;
+        GameObject newGameObject = GameObject.Instantiate(NewParticleSystem.gameObject, oldGameObject.transform.parent);
+        newGameObject.name = oldGameObject.name;
+        Destroy(oldGameObject);
+    }
 }

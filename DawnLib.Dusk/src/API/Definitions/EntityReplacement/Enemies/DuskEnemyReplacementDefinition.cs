@@ -9,7 +9,7 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
 
     [field: Header("Nest")]
     [field: SerializeField]
-    public List<RendererReplacement> NestRendererReplacements { get; private set; }
+    public List<HierarchyReplacement> NestRendererReplacements { get; private set; }
 
     [field: Header("EnemyType Audio")]
     [field: SerializeField]
@@ -32,19 +32,9 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
             return;
         }
 
-        foreach (RendererReplacement rendererReplacement in NestRendererReplacements)
+        foreach (HierarchyReplacement hierarchyReplacement in NestRendererReplacements)
         {
-            if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = nest.transform.Find(rendererReplacement.PathToRenderer)?.gameObject;
-            if (gameObject != null)
-            {
-                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = rendererReplacement;
-            }
+            hierarchyReplacement.Apply(nest.transform);
         }
 
         nest.SetNestReplacement(this);
@@ -58,19 +48,9 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
     {
         Apply((T)enemyAI);
         enemyAI.SetEnemyReplacement(this);
-        foreach (RendererReplacement rendererReplacement in RendererReplacements)
+        foreach (HierarchyReplacement hierarchyReplacement in Replacements)
         {
-            if (string.IsNullOrEmpty(rendererReplacement.PathToRenderer))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = enemyAI.transform.Find(rendererReplacement.PathToRenderer)?.gameObject;
-            if (gameObject != null)
-            {
-                TransferRenderer transferRenderer = gameObject.AddComponent<TransferRenderer>();
-                transferRenderer.RendererReplacement = rendererReplacement;
-            }
+            hierarchyReplacement.Apply(enemyAI.transform);
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
@@ -95,47 +75,6 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
 
                 networkObject.AutoObjectParentSync = false;
                 networkObject.Spawn();
-            }
-        }
-
-        if (AnimationClipReplacements.Count > 0 && enemyAI.creatureAnimator != null)
-        {
-            AnimatorOverrideController animatorOverrideController = new(enemyAI.creatureAnimator.runtimeAnimatorController);
-            foreach (AnimationClipReplacement animationClipReplacement in AnimationClipReplacements)
-            {
-                foreach (AnimationEventAddition animationEventAddition in animationClipReplacement.PotentialAnimationEvents)
-                {
-                    AnimationEvent animationEvent = new()
-                    {
-                        functionName = animationEventAddition.AnimationEventName,
-                        time = animationEventAddition.Time,
-
-                        stringParameter = animationEventAddition.StringParameter,
-                        intParameter = animationEventAddition.IntParameter,
-                        floatParameter = animationEventAddition.FloatParameter,
-                        objectReferenceParameter = animationEventAddition.ObjectParameter
-                    };
-
-                    animationClipReplacement.NewAnimationClip.AddEvent(animationEvent);
-                }
-                animatorOverrideController[animationClipReplacement.OriginalClipName] = animationClipReplacement.NewAnimationClip;
-            }
-            enemyAI.creatureAnimator.runtimeAnimatorController = animatorOverrideController;
-        }
-
-        foreach (ParticleSystemReplacement particleSystemReplacement in ExtraParticleSystemReplacements)
-        {
-            if (string.IsNullOrEmpty(particleSystemReplacement.PathToParticleSystem))
-            {
-                continue;
-            }
-
-            GameObject? oldGameObject = enemyAI.transform.Find(particleSystemReplacement.PathToParticleSystem)?.gameObject;
-            if (oldGameObject != null)
-            {
-                GameObject newGameObject = GameObject.Instantiate(particleSystemReplacement.NewParticleSystem.gameObject, oldGameObject.transform);
-                newGameObject.name = oldGameObject.name;
-                Destroy(oldGameObject);
             }
         }
     }
