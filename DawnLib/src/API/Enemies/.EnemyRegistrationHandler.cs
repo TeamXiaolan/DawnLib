@@ -75,7 +75,7 @@ static class EnemyRegistrationHandler
     {
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(DawnLibTags.IsExternal) || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
+            if (enemyInfo.ShouldSkipIgnoreOverride() || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
                 continue;
 
             AddScanNodeToBestiaryEvent(enemyInfo.EnemyType.enemyPrefab, enemyInfo.BestiaryNode!, enemyInfo.NameKeyword!);
@@ -117,7 +117,7 @@ static class EnemyRegistrationHandler
         SelectableLevel testLevel = LethalContent.Moons[MoonKeys.Test].Level;
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(DawnLibTags.IsExternal))
+            if (enemyInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             SpawnableEnemyWithRarity spawnDef = new()
@@ -157,7 +157,7 @@ static class EnemyRegistrationHandler
         }
 
         DawnEnemyInfo enemyInfo = self.enemyType.GetDawnInfo();
-        if ((enemyInfo.HasTag(DawnLibTags.IsExternal) && !enemyInfo.HasTag(DawnLibTags.LunarConfig)) || StarlancerAIFixCompat.Enabled)
+        if ((enemyInfo.ShouldSkipRespectOverride()) || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
             return;
@@ -234,7 +234,7 @@ static class EnemyRegistrationHandler
 
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.HasTag(DawnLibTags.IsExternal) && !enemyInfo.HasTag(DawnLibTags.LunarConfig))
+            if (enemyInfo.ShouldSkipRespectOverride())
                 continue;
 
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
@@ -432,7 +432,7 @@ static class EnemyRegistrationHandler
             SelectableLevel level = moonInfo.Level;
             foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
-                if (enemyInfo.HasTag(DawnLibTags.IsExternal) && !enemyInfo.HasTag(DawnLibTags.LunarConfig))
+                if (enemyInfo.ShouldSkipRespectOverride())
                     continue;
 
                 if (enemyInfo.Outside != null)

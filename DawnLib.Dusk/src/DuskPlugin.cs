@@ -32,7 +32,6 @@ public class DuskPlugin : BaseUnityPlugin
 
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
-        Main.NetworkerPrefab.AddComponent<DawnMoonNetworker>(); // todo: remove
         
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();

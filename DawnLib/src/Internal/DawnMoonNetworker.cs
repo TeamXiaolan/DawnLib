@@ -18,14 +18,13 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     // 5. wait
     // 6. once all are loaded, unlock start match lever
 
-    private StartMatchLever _lever;
-    private Dictionary<PlayerControllerB, BundleState> _playerStates;
+    private Dictionary<PlayerControllerB, BundleState> _playerStates = new();
 
     private string? _currentBundlePath = null;
-    private AssetBundle? _currentBundle;
+    private AssetBundle? _currentBundle = null;
 
     private NamespacedKey<DawnMoonInfo> _currentMoonKey;
-    private NamespacedKey<MoonSceneInfo> _currentSceneKey;
+    private NamespacedKey<IMoonSceneInfo> _currentSceneKey;
     
     internal bool allPlayersDone { get; private set; }
     
@@ -37,25 +36,23 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         Error,
         Done
     }
-    
-    private void Start()
-    {
-        _lever = FindFirstObjectByType<StartMatchLever>();
-    }
 
     internal void HostDecide(DawnMoonInfo moonInfo)
     {
         int totalWeight = moonInfo.Scenes.Sum(it => it.Weight.Provide());
+
+        System.Random sceneRandom = new(StartOfRoundRefs.Instance.randomMapSeed + 502 + 0);
+        int chosenWeight = sceneRandom.Next(0, totalWeight);
         
-        // this should probably be changed to a system random? and should be selected probably similar to how weather gets selected where its still determinstic.
-        int chosenWeight = UnityEngine.Random.Range(0, totalWeight);
-        
-        MoonSceneInfo sceneInfo = moonInfo.Scenes[0];
-        for(int i = 0; i < moonInfo.Scenes.Count; i++)
+        IMoonSceneInfo sceneInfo = moonInfo.Scenes[0];
+        for (int i = 0; i < moonInfo.Scenes.Count; i++)
         {
             sceneInfo = moonInfo.Scenes[i];
             chosenWeight -= sceneInfo.Weight.Provide();
-            if(chosenWeight <= 0) break;
+            if (chosenWeight <= 0)
+            {
+                break;
+            }
         }
 
         moonInfo.Level.sceneName = sceneInfo.SceneName;
@@ -68,16 +65,17 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     }
     
     [Rpc(SendTo.Everyone)]
-    void QueueMoonSceneLoadingRPC(NamespacedKey moonKey, NamespacedKey sceneKey)
+    private void QueueMoonSceneLoadingRPC(NamespacedKey moonKey, NamespacedKey sceneKey)
     {
         
         DawnMoonInfo moonInfo = LethalContent.Moons[moonKey.AsTyped<DawnMoonInfo>()];
-        MoonSceneInfo sceneInfo = moonInfo.Scenes.First(it => Equals(it.Key, sceneKey));
+        IMoonSceneInfo sceneInfo = moonInfo.Scenes.First(it => Equals(it.Key, sceneKey));
 
         _playerStates = [];
         foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
         {
-            if(!player.isPlayerControlled) continue;
+            if (!player.isPlayerControlled)
+                continue;
 
             _playerStates[player] = BundleState.Queued;
         }
@@ -88,7 +86,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     // todo: this is technically insecure. i dont care
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    void PlayerSetBundleStateRPC(PlayerControllerReference reference, BundleState state)
+    private void PlayerSetBundleStateRPC(PlayerControllerReference reference, BundleState state)
     {
         PlayerControllerB player = reference;
         
@@ -102,11 +100,10 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         Debuggers.Moons?.Log($"Player '{player.playerUsername}' updated their bundle loading state to: {state}.");
     }
 
-    IEnumerator DoMoonSceneLoading(DawnMoonInfo moonInfo, MoonSceneInfo sceneInfo)
+    private IEnumerator DoMoonSceneLoading(DawnMoonInfo moonInfo, IMoonSceneInfo sceneInfo)
     {
-        yield return new WaitForSeconds(.05f); // here to avoid a race condition, i think a client coudl recieve PlayerReadyToRoute before QueueMoonScene and fuck shit up
-        
-        
+        yield return new WaitForSeconds(0.05f); // here to avoid a race condition, i think a client coudl recieve PlayerReadyToRoute before QueueMoonScene and fuck shit up
+
         if (Equals(moonInfo.TypedKey, _currentMoonKey) && Equals(sceneInfo.TypedKey, _currentSceneKey))
         {
             PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
@@ -154,26 +151,25 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        
+
         // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
-        if(_currentBundle != null)
-            _currentBundle.Unload(true);
+        _currentBundle?.Unload(true);
     }
 
-    IEnumerator UnloadExisting()
+    private IEnumerator UnloadExisting()
     {
-        if(_currentBundle == null)
+        if (_currentBundle == null)
             yield break;
         
         PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
         yield return _currentBundle.UnloadAsync(true);
-                    
+
         _currentBundle = null;
         _currentBundlePath = null;
     }
 
-    void CheckReadyAndUpdateUI()
+    private void CheckReadyAndUpdateUI()
     {
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
@@ -192,26 +188,27 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
             if (anyFailedPlayers)
             {
-                _lever.triggerScript.disabledHoverTip = " [ Someone failed to pre-load the moon, report this! ] ";
+                StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = " [ Someone failed to pre-load the moon, report this! ] ";
             }
             else
             {
-                _lever.triggerScript.disabledHoverTip = $" [ {remainingPlayers} player(s) still need to load ] ";
+                // todo: add a call out for players with bad connection that they're taking their sweet time.
+                StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = $" [ {remainingPlayers} player(s) still need to load ] ";
             }
         }
     }
 
-    void LockLever()
+    private void LockLever()
     {
-        _lever.triggerScript.interactable = false;
+        StartMatchLeverRefs.Instance.triggerScript.interactable = false;
         allPlayersDone = false;
         StartOfRound.Instance.travellingToNewLevel = true;
     }
 
-    void UnlockLever()
+    private void UnlockLever()
     {
         allPlayersDone = true;
-        _lever.triggerScript.interactable = true;
+        StartMatchLeverRefs.Instance.triggerScript.interactable = true;
         StartOfRound.Instance.travellingToNewLevel = false;
     }
 }

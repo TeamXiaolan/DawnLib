@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using Dawn.Internal;
 using Dawn.Utils;
@@ -30,24 +28,27 @@ static class MoonRegistrationHandler
         }
         
         On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
-        On.StartOfRound.OnClientConnect += StartOfRoundOnOnClientConnect;
-        On.StartOfRound.OnClientDisconnect += StartOfRoundOnOnClientDisconnect;
+        On.StartOfRound.OnClientConnect += StartOfRoundOnClientConnect;
+        On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
 
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
         
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
     }
     
-    // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well! 
+    // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
-        if (node != TerminalRefs.MoonCatalogueNode) 
+        if (node != TerminalRefs.MoonCatalogueNode)
+        {
             return orig(self, modifieddisplaytext, node);
+        }
         
         StringBuilder builder = new StringBuilder("\n\nWelcome to the exomoons catalogue.\nTo route the autopilot to a moon, use the word ROUTE.\nTo learn about any moon, use INFO.\n____________________________\n");
         IEnumerable<DawnMoonInfo> validMoons = LethalContent.Moons.Values
             .Where(it => !it.HasTag(Tags.Unimplemented))
             .OrderByDescending(it => it.HasTag(Tags.Vanilla));
+
         List<MoonGroup> groups = _groupAlgorithm.Group(validMoons);
 
         foreach (MoonGroup group in groups)
@@ -101,7 +102,6 @@ static class MoonRegistrationHandler
 
             if (currentWeather != null)
             {
-                // todo: this likely breaks with Weather Registry?
                 builder.Append($"({moonInfo.Level.currentWeather.ToString()})");
             }
         }
@@ -122,36 +122,40 @@ static class MoonRegistrationHandler
             }
         }
     }
-    private static void StartOfRoundOnOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
-    {
-        orig(self, clientid);
-        
-        if (self.IsServer && self.inShipPhase)
-        {
-            DawnMoonNetworker.Instance.HostRebroadcastQueue();
-        }
-    }
-    private static void StartOfRoundOnOnClientConnect(On.StartOfRound.orig_OnClientConnect orig, StartOfRound self, ulong clientid)
+
+    private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
     {
         orig(self, clientid);
 
         if (self.IsServer && self.inShipPhase)
         {
-            DawnMoonNetworker.Instance.HostRebroadcastQueue();
+            DawnMoonNetworker.Instance?.HostRebroadcastQueue();
         }
     }
+
+    private static void StartOfRoundOnClientConnect(On.StartOfRound.orig_OnClientConnect orig, StartOfRound self, ulong clientid)
+    {
+        orig(self, clientid);
+
+        if (self.IsServer && self.inShipPhase)
+        {
+            DawnMoonNetworker.Instance?.HostRebroadcastQueue();
+        }
+    }
+
     private static void StartOfRoundOnChangeLevel(On.StartOfRound.orig_ChangeLevel orig, StartOfRound self, int levelid)
     {
         orig(self, levelid);
-        
-        if(self.IsServer)
+
+        if (self.IsServer)
+        {
             self.StartCoroutine(DoHotloadSceneStuff(self.currentLevel));
+        }
     }
 
     static IEnumerator DoHotloadSceneStuff(SelectableLevel level)
     {
         yield return new WaitUntil(() => DawnMoonNetworker.Instance != null);
-        
         DawnMoonNetworker.Instance!.HostDecide(level.GetDawnInfo());
     }
 
@@ -166,7 +170,7 @@ static class MoonRegistrationHandler
         List<SelectableLevel> levels = StartOfRound.Instance.levels.ToList();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            if(moonInfo.ShouldSkipIgnoreOverride())
+            if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             moonInfo.Level.levelID = levels.Count;
@@ -245,14 +249,12 @@ static class MoonRegistrationHandler
                 predicate = ITerminalPurchasePredicate.AlwaysHide();
             }
             
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate,null);
-            moonInfo.Scenes.Add(new VanillaMoonSceneInfo(key.AsTyped<MoonSceneInfo>(), level.sceneName));
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate,null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
 
         TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
-        
         LethalContent.Moons.Freeze();
     }
 
@@ -264,7 +266,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, null, null, null,  new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide(), null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, new(), null, null, null,  new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide(), null);
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
@@ -289,12 +291,17 @@ static class MoonRegistrationHandler
         }
     }
 
-    static void UpdateMoonPrice(DawnMoonInfo moonInfo)
+    private static void UpdateMoonPrice(DawnMoonInfo moonInfo)
     {
         int cost = moonInfo.Cost.Provide();
-        if(moonInfo.RouteNode != null) 
+        if (moonInfo.RouteNode != null)
+        {
             moonInfo.RouteNode.itemCost = cost;
-        if(moonInfo.ReceiptNode != null) 
+        }
+
+        if (moonInfo.ReceiptNode != null)
+        {
             moonInfo.ReceiptNode.itemCost = cost;
+        }
     }
 }

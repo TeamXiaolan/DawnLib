@@ -55,7 +55,7 @@ static class ItemRegistrationHandler
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
-            if (itemInfo.HasTag(DawnLibTags.IsExternal) || self.allItemsList.itemsList.Contains(itemInfo.Item))
+            if (itemInfo.ShouldSkipIgnoreOverride() || self.allItemsList.itemsList.Contains(itemInfo.Item))
                 continue;
 
             self.allItemsList.itemsList.Add(itemInfo.Item);
@@ -73,7 +73,7 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || (itemInfo.HasTag(DawnLibTags.IsExternal) && !itemInfo.HasTag(DawnLibTags.LunarConfig)))
+            if (shopInfo == null || (itemInfo.ShouldSkipRespectOverride()))
                 continue;
 
             UpdateShopItemPrices(shopInfo);
@@ -121,7 +121,7 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || (itemInfo.HasTag(DawnLibTags.IsExternal) && !itemInfo.HasTag(DawnLibTags.LunarConfig)))
+            if (scrapInfo == null || (itemInfo.ShouldSkipRespectOverride()))
                 continue;
 
             Debuggers.Items?.Log($"Updating {itemInfo.Item.itemName}'s weights on level {level.PlanetName}.");
@@ -300,7 +300,7 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
-            if (scrapInfo == null || (itemInfo.HasTag(DawnLibTags.IsExternal) && !itemInfo.HasTag(DawnLibTags.LunarConfig)))
+            if (scrapInfo == null || (itemInfo.ShouldSkipRespectOverride()))
                 continue;
 
             foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
@@ -346,7 +346,7 @@ static class ItemRegistrationHandler
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || itemInfo.HasTag(DawnLibTags.IsExternal))
+            if (shopInfo == null || itemInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();

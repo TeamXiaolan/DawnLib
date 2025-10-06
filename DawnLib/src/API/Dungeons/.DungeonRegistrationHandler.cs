@@ -47,7 +47,7 @@ static class DungeonRegistrationHandler
         foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
         {
             DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
-            if (dungeonInfo.HasTag(DawnLibTags.IsExternal) && dungeonInfo.HasTag(DawnLibTags.LunarConfig))
+            if (dungeonInfo.ShouldSkipRespectOverride())
                 continue;
 
             intWithRarity.rarity = dungeonInfo.Weights?.GetFor(level.GetDawnInfo()) ?? 0;
@@ -58,13 +58,13 @@ static class DungeonRegistrationHandler
     {
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            if (moonInfo.HasTag(DawnLibTags.IsExternal))
+            if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             List<IntWithRarity> intsWithRarity = moonInfo.Level.dungeonFlowTypes.ToList();
             foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
             {
-                if (dungeonInfo.HasTag(DawnLibTags.IsExternal))
+                if (dungeonInfo.ShouldSkipIgnoreOverride())
                     continue;
 
                 int id = Array.IndexOf(RoundManagerRefs.Instance.dungeonFlowTypes.Select(t => t.dungeonFlow).ToArray(), dungeonInfo.DungeonFlow);
@@ -101,28 +101,21 @@ static class DungeonRegistrationHandler
         Dictionary<DungeonFlow, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            try
+            if (!moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            SelectableLevel level = moonInfo.Level;
+
+            foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
             {
-                if (!moonInfo.ShouldSkipIgnoreOverride())
-                    continue;
-
-                SelectableLevel level = moonInfo.Level;
-
-                foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
+                DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
+                if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
-                    DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
-                    if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
-                    {
-                        weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                        dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
-                    }
-                    Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
-                    weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                    dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
                 }
-            }
-            catch (Exception exception)
-            {
-                DawnPlugin.Logger.LogError(exception);
+                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
+                weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
             }
         }
 
@@ -294,7 +287,7 @@ static class DungeonRegistrationHandler
         {
             foreach (DawnTileSetInfo tileSet in archetype.GetDawnInfo().TileSets)
             {
-                if (tileSet.HasTag(DawnLibTags.IsExternal))
+                if (tileSet.ShouldSkipIgnoreOverride())
                     continue;
 
                 // remove unconditionally.

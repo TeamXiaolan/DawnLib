@@ -76,7 +76,7 @@ static class VehicleRegistrationPatch
     {
         foreach (DawnVehicleInfo info in DuskModContent.Vehicles.Values.Select(x => x.DawnVehicleInfo))
         {
-            if (info.HasTag(DawnLibTags.IsExternal) && !info.HasTag(DawnLibTags.LunarConfig))
+            if (info.ShouldSkipRespectOverride())
                 continue;
 
             UpdateVehiclePrices(info);

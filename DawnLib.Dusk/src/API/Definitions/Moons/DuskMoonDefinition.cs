@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Dawn;
 using Dusk.Utils;
+using Dusk.Weights;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Dusk;
 
@@ -32,6 +32,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             {
                 builder.AddScene(
                     sceneData.Key,
+                    sceneData.Weight(),
                     mod.GetRelativePath("Assets", sceneData.BundleName),
                     sceneData.Scene.ScenePath
                 );
@@ -55,10 +56,22 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 [Serializable]
 public class DuskMoonSceneData
 {
-    public NamespacedKey<MoonSceneInfo> Key;
-    
+    public NamespacedKey<IMoonSceneInfo> Key;
+
     [AssetBundleReference]
     public string BundleName;
 
+    [field: SerializeField]
+    public int BaseWeight { get; private set; } = 100;
+    [field: SerializeField]
+    public string WeatherWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
+
     public SceneReference Scene;
+
+    public int Weight() // todo: this shouldn't return an int but an IProviderTable<int>??
+    {
+        SpawnWeightsPreset newSpawnWeightsPreset = new();
+        newSpawnWeightsPreset.SetupSpawnWeightsPreset(string.Empty, string.Empty, WeatherWeights);
+        return BaseWeight + newSpawnWeightsPreset.GetWeight();
+    }
 }

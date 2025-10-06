@@ -184,7 +184,7 @@ static class MapObjectRegistrationHandler
         {
             foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
             {
-                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
+                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
                     continue;
 
                 randomMapObject.spawnablePrefabs.Add(mapObjectInfo.MapObject);
@@ -201,7 +201,7 @@ static class MapObjectRegistrationHandler
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             var outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.HasTag(DawnLibTags.IsExternal))
+            if (outsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
@@ -283,7 +283,7 @@ static class MapObjectRegistrationHandler
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             DawnInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
-            if (insideInfo == null || (mapObjectInfo.HasTag(DawnLibTags.IsExternal) && !mapObjectInfo.HasTag(DawnLibTags.LunarConfig)))
+            if (insideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                 continue;
 
             Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
@@ -316,7 +316,7 @@ static class MapObjectRegistrationHandler
             List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
             foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
             {
-                if (mapObjectInfo.InsideInfo == null || (mapObjectInfo.HasTag(DawnLibTags.IsExternal) && !mapObjectInfo.HasTag(DawnLibTags.LunarConfig)))
+                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                     continue;
 
                 bool alreadyExists = false;

@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 namespace Dawn;
 public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, MoonInfoBuilder>
 {
     private TerminalNode? _routeNode, _receiptNode;
     private TerminalKeyword? _nameKeyword;
-    private List<MoonSceneInfo> _scenes = [];
+    private List<IMoonSceneInfo> _scenes = [];
     
     private IProvider<int>? _costOverride;
     private ITerminalPurchasePredicate? _purchasePredicate;
     
-    public MoonInfoBuilder(NamespacedKey<DawnMoonInfo> key, SelectableLevel value) : base(key, value) {
+    public MoonInfoBuilder(NamespacedKey<DawnMoonInfo> key, SelectableLevel value) : base(key, value)
+    {
     }
 
     public MoonInfoBuilder OverrideRouteNode(TerminalNode node)
@@ -36,9 +36,9 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         return this;
     }
 
-    public MoonInfoBuilder AddScene(NamespacedKey<MoonSceneInfo> sceneKey, string assetBundlePath, string scenePath)
+    public MoonInfoBuilder AddScene(NamespacedKey<IMoonSceneInfo> sceneKey, int weight, string assetBundlePath, string scenePath)
     {
-        _scenes.Add(new CustomMoonSceneInfo(sceneKey, assetBundlePath, scenePath));
+        _scenes.Add(new CustomMoonSceneInfo(sceneKey, new SimpleProvider<int>(weight), assetBundlePath, scenePath));
         return this;
     }
     
@@ -108,8 +108,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
         
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _routeNode,  _receiptNode, _nameKeyword, _costOverride, _purchasePredicate, customData);
-        info.Scenes.AddRange(_scenes); // icky
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _scenes, _routeNode,  _receiptNode, _nameKeyword, _costOverride, _purchasePredicate, customData);
         return info;
     }
 }

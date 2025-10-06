@@ -21,7 +21,7 @@ static class UnlockableRegistrationHandler
             // example: "* Loud horn    //    Price: $150"
             foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
             {
-                if (unlockableItemInfo.HasTag(DawnLibTags.IsExternal))
+                if (unlockableItemInfo.ShouldSkipIgnoreOverride())
                     continue;
 
                 if (!unlockableItemInfo.UnlockableItem.alwaysInStock)
@@ -53,7 +53,7 @@ static class UnlockableRegistrationHandler
     {
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
         {
-            if (info.HasTag(DawnLibTags.IsExternal) && !info.HasTag(DawnLibTags.LunarConfig))
+            if (info.ShouldSkipRespectOverride())
                 continue;
 
             UpdateUnlockablePrices(info);
@@ -106,7 +106,7 @@ static class UnlockableRegistrationHandler
         List<TerminalKeyword> newTerminalKeywords = terminal.terminalNodes.allKeywords.ToList();
         foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
-            if (unlockableInfo.HasTag(DawnLibTags.IsExternal))
+            if (unlockableInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
