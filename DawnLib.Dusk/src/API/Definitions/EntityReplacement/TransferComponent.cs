@@ -20,6 +20,7 @@ public class TransferComponent : MonoBehaviour
             if (TryGetComponent(out ParticleSystem targetParticleSystem))
             {
                 ReplaceParticleSystem(particleSystem, targetParticleSystem);
+                Destroy(this);
                 return;
             }
             else
@@ -34,6 +35,7 @@ public class TransferComponent : MonoBehaviour
             if (TryGetComponent(out VisualEffect targetVisualEffect))
             {
                 ReplaceVisualEffect(visualEffect, targetVisualEffect);
+                Destroy(this);
                 return;
             }
             else
@@ -48,11 +50,12 @@ public class TransferComponent : MonoBehaviour
 
     private static void ReplaceParticleSystem(ParticleSystem particleSystem, ParticleSystem targetParticleSystem)
     {
-
+        // todo
     }
 
     private static void ReplaceVisualEffect(VisualEffect visualEffect, VisualEffect targetVisualEffect)
     {
-
+        targetVisualEffect.visualEffectAsset = visualEffect.visualEffectAsset;
+        // todo
     }
 }

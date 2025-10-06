@@ -19,6 +19,7 @@ public class TransferRenderer : MonoBehaviour
             if (TryGetComponent(out SkinnedMeshRenderer targetSkinned))
             {
                 ReplaceSkinnedMeshRenderer(skinnedMeshRenderer, targetSkinned);
+                Destroy(this);
                 return;
             }
             else
@@ -33,6 +34,7 @@ public class TransferRenderer : MonoBehaviour
             if (TryGetComponent(out MeshRenderer targetMeshRenderer) && TryGetComponent(out MeshFilter targetMeshFilter))
             {
                 ReplaceMeshRenderer(meshReplacement, targetMeshRenderer, targetMeshFilter);
+                Destroy(this);
                 return;
             }
             else
