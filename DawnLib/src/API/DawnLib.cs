@@ -55,7 +55,7 @@ public static class DawnLib
     {
         DawnNetworkSceneManager.AddScenePath(scenePath);
     }
-    
+
     public static void FixMixerGroups(GameObject prefab)
     {
         if (!prefab)

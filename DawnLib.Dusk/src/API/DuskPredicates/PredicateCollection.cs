@@ -9,7 +9,7 @@ public class PredicateCollection : DuskPredicate
 {
     [SerializeField] private List<DuskPredicate> _predicates;
     [SerializeField] private LogicOperation _operation = LogicOperation.And;
-    
+
     public override void Register(NamespacedKey namespacedKey)
     {
         foreach (DuskPredicate predicate in _predicates)

@@ -67,13 +67,13 @@ public class DawnPlugin : BaseUnityPlugin
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
         HandleCorruptedDataPatch.Init();
-        
+
         EnemyDataPatch.Init();
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
         SaveDataPatch.Init();
         TerminalPatches.Init();
-        
+
         DawnNetworkSceneManager.Init();
 
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
@@ -88,7 +88,7 @@ public class DawnPlugin : BaseUnityPlugin
 
         PersistentData = this.GetPersistentDataContainer();
         PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);
-        
+
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
     }
 

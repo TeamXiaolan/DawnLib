@@ -6,7 +6,7 @@ namespace Dusk;
 
 public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
 {
-    
+
     [field: Header("Nest")]
     [field: SerializeField]
     public List<RendererReplacement> NestRendererReplacements { get; private set; }

@@ -21,7 +21,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 
     [field: SerializeField]
     public DuskPricingStrategy PricingStrategy { get; private set; }
-    
+
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
@@ -49,7 +49,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             }
         });
     }
-    
+
     protected override string EntityNameReference => Level?.PlanetName ?? string.Empty;
 }
 

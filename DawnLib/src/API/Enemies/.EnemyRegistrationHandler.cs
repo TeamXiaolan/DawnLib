@@ -445,7 +445,7 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
             }
         }
-        
+
         LethalContent.Enemies.Freeze();
     }
 

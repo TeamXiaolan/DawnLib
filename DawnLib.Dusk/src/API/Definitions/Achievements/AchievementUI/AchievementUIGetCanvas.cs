@@ -42,7 +42,7 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
         {
             DuskAchievementDefinition achievementDefinition = achievementQueue.Dequeue();
             GameObject achievementElement = Instantiate(_achievementGetUIElementPrefab, achievementContent.transform);
-            AchievementUIElement uiElement = achievementElement.GetComponent<AchievementUIElement>(); 
+            AchievementUIElement uiElement = achievementElement.GetComponent<AchievementUIElement>();
             uiElement.SetupAchievementUI(achievementDefinition);
             if (achievementDefinition.FinishAchievementAudioClip != null)
             {

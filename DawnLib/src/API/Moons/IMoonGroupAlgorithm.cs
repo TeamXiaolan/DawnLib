@@ -26,7 +26,7 @@ public class FixedGroupSizeAlgorithm(int groupSize = 3) : IMoonGroupAlgorithm
         List<MoonGroup> groups = [currentGroup];
 
         int currentInGroup = 0;
-        
+
         foreach (DawnMoonInfo moonInfo in input)
         {
             if (moonInfo.HasTag(Tags.Company))
@@ -34,14 +34,14 @@ public class FixedGroupSizeAlgorithm(int groupSize = 3) : IMoonGroupAlgorithm
                 companyMoons.Moons.Add(moonInfo);
                 continue;
             }
-            
+
             currentGroup.Moons.Add(moonInfo);
 
             if (moonInfo.PurchasePredicate.CanPurchase() is not TerminalPurchaseResult.HiddenPurchaseResult)
             {
                 currentInGroup++;
             }
-            
+
             // at 3 moons, start a new group and begin again
             if (currentInGroup == groupSize)
             {
@@ -50,8 +50,8 @@ public class FixedGroupSizeAlgorithm(int groupSize = 3) : IMoonGroupAlgorithm
                 groups.Add(currentGroup);
             }
         }
-        
-        return [companyMoons, ..groups];
+
+        return [companyMoons, .. groups];
     }
 }
 
@@ -59,7 +59,7 @@ public class RankGroupAlgorithm : IMoonGroupAlgorithm
 {
     private static readonly string[] _riskIndexes = ["F", "E", "D", "C", "B", "A", "S", "UNKNOWN"];
     private IMoonGroupAlgorithm _subAlgorithm = new FixedGroupSizeAlgorithm();
-    
+
     public List<MoonGroup> Group(IEnumerable<DawnMoonInfo> input)
     {
         List<MoonGroup> groups = _subAlgorithm.Group(input.OrderBy(RiskLevelComparer));
@@ -76,7 +76,7 @@ public class RankGroupAlgorithm : IMoonGroupAlgorithm
     {
         string riskLevel = moonInfo.Level.riskLevel ?? "UNKNOWN";
         riskLevel = riskLevel.StripSpecialCharacters();
-        
+
         return Array.IndexOf(_riskIndexes, riskLevel);
     }
 }

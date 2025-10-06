@@ -193,7 +193,7 @@ static class TerminalPatches
                 orig(self, node);
                 return;
             }
-            
+
             DawnItemInfo info = buyingItem.GetDawnInfo();
             DawnShopItemInfo? shopItemInfo = info.ShopInfo;
 

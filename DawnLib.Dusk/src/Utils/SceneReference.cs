@@ -9,7 +9,7 @@ public class SceneReference
 {
     [SerializeField]
     private string _assetGUID;
-    
+
     [field: SerializeField]
     public string ScenePath { get; private set; }
 

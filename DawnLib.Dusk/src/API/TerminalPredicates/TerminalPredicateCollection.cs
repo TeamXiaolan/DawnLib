@@ -9,7 +9,7 @@ public class TerminalPredicateCollection : DuskTerminalPredicate
 {
     [SerializeField] private List<DuskTerminalPredicate> _predicates;
     [SerializeField] private LogicOperation _operation = LogicOperation.And;
-    
+
     public override void Register(NamespacedKey namespacedKey)
     {
         foreach (DuskTerminalPredicate predicate in _predicates)

@@ -283,7 +283,7 @@ static class ItemRegistrationHandler
                 continue;
             }
 
-            Debuggers.Items?.Log($"Registering {item.itemName} ({item.name}) with range of values: {item.minValue*0.4} and {item.maxValue*0.4}");
+            Debuggers.Items?.Log($"Registering {item.itemName} ({item.name}) with range of values: {item.minValue * 0.4} and {item.maxValue * 0.4}");
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(item, tags);
             DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo, null);

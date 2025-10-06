@@ -32,7 +32,7 @@ public class DuskPlugin : BaseUnityPlugin
 
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
-        
+
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");

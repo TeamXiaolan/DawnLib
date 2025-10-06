@@ -31,7 +31,7 @@ public class TaggedRegistry<T> : Registry<T> where T : DawnBaseInfo<T>
                 {
                     if (!tagger.ShouldApply(value))
                         continue;
-                    
+
                     value.Internal_AddTag(tagger.Tag);
                 }
                 catch (Exception exception)

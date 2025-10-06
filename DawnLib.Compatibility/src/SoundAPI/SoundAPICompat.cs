@@ -15,7 +15,7 @@ static class SoundAPICompat
             if (!StartOfRound.Instance) return null;
             return StartOfRound.Instance.currentLevel.GetDawnInfo();
         }));
-        
+
         SoundAPI.RegisterCondition("DawnLib:dungeon:has_tag", () => new DawnTaggableCondition(() =>
         {
             if (!RoundManager.Instance) return null;

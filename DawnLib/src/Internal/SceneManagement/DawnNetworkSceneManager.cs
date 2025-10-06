@@ -19,7 +19,7 @@ static class DawnNetworkSceneManager
         _nameToPath[name] = scenePath;
         Debuggers.SceneManager?.Log($"Added new network scene: '{name}' (hash: {hash})");
     }
-    
+
     // this is taken from NetworkSceneManager. i have no idea why it isn't static by default
     internal static string GetSceneNameFromPath(string scenePath)
     {
@@ -27,13 +27,13 @@ static class DawnNetworkSceneManager
         int num2 = scenePath.LastIndexOf(".", StringComparison.Ordinal);
         return scenePath.Substring(num, num2 - num);
     }
-    
+
     internal static void Init()
     {
         On.Unity.Netcode.NetworkSceneManager.GenerateScenesInBuild += LogExtraDebugInformation;
         On.Unity.Netcode.NetworkSceneManager.SceneHashFromNameOrPath += HashFromScene;
         On.Unity.Netcode.NetworkSceneManager.ScenePathFromHash += SceneFromHash;
-        
+
         On.Unity.Netcode.NetworkSceneManager.ValidateSceneEvent += ValidateSceneEvent;
     }
     private static void LogExtraDebugInformation(On.Unity.Netcode.NetworkSceneManager.orig_GenerateScenesInBuild orig, NetworkSceneManager self)

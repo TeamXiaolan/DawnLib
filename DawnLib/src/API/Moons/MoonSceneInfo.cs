@@ -32,7 +32,7 @@ public class CustomMoonSceneInfo : IMoonSceneInfo
     public IProvider<int> Weight { get; private set; }
 
     internal string AssetBundlePath;
-    
+
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<IMoonSceneInfo> TypedKey { get; }
 

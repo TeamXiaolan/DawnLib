@@ -24,9 +24,9 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
     public TerminalNode? RouteNode { get; }
     public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
-    
+
     public List<IMoonSceneInfo> Scenes { get; } = [];
-    
+
     public DawnWeatherEffectInfo? GetCurrentWeather()
     {
         LevelWeatherType type = Level.currentWeather;

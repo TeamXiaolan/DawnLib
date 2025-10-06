@@ -17,7 +17,7 @@ public class PersistentDataContainer : DataContainer
     private readonly SemaphoreSlim _saveLock = new(1, 1);
 
     internal static List<PersistentDataContainer> HasCorruptedData { get; private set; } = [];
-    
+
     public class EditContext : IDisposable
     {
         private PersistentDataContainer _container;
@@ -111,6 +111,6 @@ public class PersistentDataContainer : DataContainer
     {
         File.Delete(_filePath);
     }
-    
+
     public string FileName => Path.GetFileName(_filePath);
 }

@@ -7,7 +7,7 @@ namespace Dawn.Utils;
 public class ExtraScanEvents : MonoBehaviour
 {
     private readonly static NamespacedKey _dataKey = NamespacedKey.From("dawn_lib", "already_scanned");
-    
+
     [SerializeField]
     private UnityEvent _onScan;
 
@@ -16,13 +16,13 @@ public class ExtraScanEvents : MonoBehaviour
 
     [SerializeField]
     private UnityEvent _onFirstScan;
-    
+
     internal void OnScan()
     {
         _onScan.Invoke();
         if (string.IsNullOrEmpty(_saveId.Namespace) || string.IsNullOrEmpty(_saveId.Key))
             return;
-        
+
         HashSet<NamespacedKey> alreadyScanned = DawnLib.GetCurrentSave()!.GetOrCreateDefault<HashSet<NamespacedKey>>(_dataKey);
         if (!alreadyScanned.Contains(_saveId))
         {

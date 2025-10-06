@@ -237,9 +237,9 @@ static class EntityReplacementRegistrationPatch
         return (existing, self) =>
         {
             ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
-            if (replacement.CurrentEntityReplacement == null) 
+            if (replacement.CurrentEntityReplacement == null)
                 return existing;
-            
+
             AudioClip? replacedClip = generator((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement);
             if (!replacedClip)
                 return existing;
@@ -256,7 +256,7 @@ static class EntityReplacementRegistrationPatch
             orig(self);
             return;
         }
-        
+
         if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             orig(self);
@@ -283,7 +283,7 @@ static class EntityReplacementRegistrationPatch
         }
 
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
-        
+
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
@@ -293,12 +293,12 @@ static class EntityReplacementRegistrationPatch
 
             if (replacement.IsVanilla)
                 break;
-            
+
             replacement.ApplyNest(self);
         }
         orig(self);
     }
-    
+
     private static void RegisterEnemyReplacements()
     {
         foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
@@ -329,7 +329,7 @@ static class EntityReplacementRegistrationPatch
             DuskPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
             return;
         }
-        
+
         if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             return;

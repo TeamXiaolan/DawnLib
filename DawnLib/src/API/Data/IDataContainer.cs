@@ -10,7 +10,7 @@ public interface IDataContainer
     void Set<T>(NamespacedKey key, T value);
     void Remove(NamespacedKey key);
     void Clear();
-    
+
     IEnumerable<NamespacedKey> Keys { get; }
     int Count { get; }
 }

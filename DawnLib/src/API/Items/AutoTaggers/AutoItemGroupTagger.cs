@@ -23,7 +23,7 @@ public class AutoItemGroupTagger(NamespacedKey tag, string itemGroupName) : IAut
                 return true;
             }
         }
-        
+
         return false;
     }
 }

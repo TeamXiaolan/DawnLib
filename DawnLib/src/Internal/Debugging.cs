@@ -28,7 +28,7 @@ internal static class Debuggers
     internal static DebugLogSource? Patching;
     internal static DebugLogSource? PersistentDataContainer;
     internal static DebugLogSource? SceneManager;
-    
+
     internal static void Bind(ConfigFile file)
     {
         foreach (FieldInfo fieldInfo in typeof(Debuggers).GetFields(BindingFlags.Static | BindingFlags.NonPublic))

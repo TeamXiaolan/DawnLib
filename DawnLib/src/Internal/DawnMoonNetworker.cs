@@ -25,9 +25,9 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     private NamespacedKey<DawnMoonInfo> _currentMoonKey;
     private NamespacedKey<IMoonSceneInfo> _currentSceneKey;
-    
+
     internal bool allPlayersDone { get; private set; }
-    
+
     public enum BundleState
     {
         Queued,
@@ -43,7 +43,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
         System.Random sceneRandom = new(StartOfRoundRefs.Instance.randomMapSeed + 502 + 0);
         int chosenWeight = sceneRandom.Next(0, totalWeight);
-        
+
         IMoonSceneInfo sceneInfo = moonInfo.Scenes[0];
         for (int i = 0; i < moonInfo.Scenes.Count; i++)
         {
@@ -63,11 +63,11 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     {
         QueueMoonSceneLoadingRPC(_currentMoonKey, _currentSceneKey);
     }
-    
+
     [Rpc(SendTo.Everyone)]
     private void QueueMoonSceneLoadingRPC(NamespacedKey moonKey, NamespacedKey sceneKey)
     {
-        
+
         DawnMoonInfo moonInfo = LethalContent.Moons[moonKey.AsTyped<DawnMoonInfo>()];
         IMoonSceneInfo sceneInfo = moonInfo.Scenes.First(it => Equals(it.Key, sceneKey));
 
@@ -79,7 +79,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
             _playerStates[player] = BundleState.Queued;
         }
-        
+
         CheckReadyAndUpdateUI();
         StartCoroutine(DoMoonSceneLoading(moonInfo, sceneInfo));
     }
@@ -89,7 +89,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private void PlayerSetBundleStateRPC(PlayerControllerReference reference, BundleState state)
     {
         PlayerControllerB player = reference;
-        
+
         _playerStates[reference] = state;
         CheckReadyAndUpdateUI();
 
@@ -111,7 +111,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         }
         _currentMoonKey = moonInfo.TypedKey;
         _currentSceneKey = sceneInfo.TypedKey;
-        
+
         if (sceneInfo is CustomMoonSceneInfo customMoon)
         {
             if (_currentBundlePath != customMoon.AssetBundlePath)
@@ -120,13 +120,13 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 {
                     yield return StartCoroutine(UnloadExisting());
                 }
-                
+
                 PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
                 yield return null;
-                
+
                 AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(customMoon.AssetBundlePath);
                 yield return request;
-                
+
                 // todo: more graceful error handling?
                 if (!request.isDone || request.assetBundle == null)
                 {
@@ -139,12 +139,12 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                     _currentBundle = request.assetBundle;
                 }
             }
-        } 
+        }
         else if (_currentBundle != null)
         {
             yield return StartCoroutine(UnloadExisting());
         }
-        
+
         PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
@@ -160,7 +160,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     {
         if (_currentBundle == null)
             yield break;
-        
+
         PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
         yield return _currentBundle.UnloadAsync(true);
@@ -173,7 +173,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     {
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
-        
+
         Debuggers.Moons?.Log($"{nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
         Debuggers.Moons?.Log($"connected players amount: {_playerStates.Count}. done players = {_playerStates.Count(it => it.Value == BundleState.Done)}");
 

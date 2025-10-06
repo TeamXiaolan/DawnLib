@@ -6,10 +6,10 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     private TerminalNode? _routeNode, _receiptNode;
     private TerminalKeyword? _nameKeyword;
     private List<IMoonSceneInfo> _scenes = [];
-    
+
     private IProvider<int>? _costOverride;
     private ITerminalPurchasePredicate? _purchasePredicate;
-    
+
     public MoonInfoBuilder(NamespacedKey<DawnMoonInfo> key, SelectableLevel value) : base(key, value)
     {
     }
@@ -19,7 +19,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _routeNode = node;
         return this;
     }
-    
+
     public MoonInfoBuilder CreateNameKeyword(string wordOverride)
     {
         if (string.IsNullOrEmpty(wordOverride))
@@ -41,7 +41,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _scenes.Add(new CustomMoonSceneInfo(sceneKey, new SimpleProvider<int>(weight), assetBundlePath, scenePath));
         return this;
     }
-    
+
     private static string StripSpecialCharacters(string input)
     {
         string returnString = string.Empty;
@@ -57,7 +57,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
 
         return returnString;
     }
-    
+
     public MoonInfoBuilder OverrideCost(int cost)
     {
         return OverrideCost(new SimpleProvider<int>(cost));
@@ -74,7 +74,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate = predicate;
         return this;
     }
-    
+
     override internal DawnMoonInfo Build()
     {
         if (_routeNode == null)
@@ -99,16 +99,16 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         {
             CreateNameKeyword(StripSpecialCharacters(value.PlanetName).ToLowerInvariant());
         }
-        
+
         if (_scenes.Count == 0)
         {
             DawnPlugin.Logger.LogError($"Moon: '{key}' has 0 scenes.");
         }
-        
+
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
-        
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _scenes, _routeNode,  _receiptNode, _nameKeyword, _costOverride, _purchasePredicate, customData);
+
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _scenes, _routeNode, _receiptNode, _nameKeyword, _costOverride, _purchasePredicate, customData);
         return info;
     }
 }

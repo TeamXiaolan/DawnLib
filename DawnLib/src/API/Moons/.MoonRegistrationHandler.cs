@@ -12,7 +12,7 @@ namespace Dawn;
 static class MoonRegistrationHandler
 {
     private static IMoonGroupAlgorithm _groupAlgorithm = new RankGroupAlgorithm();
-    
+
     internal static void Init()
     {
         LethalContent.Moons.AddAutoTaggers(
@@ -26,16 +26,16 @@ static class MoonRegistrationHandler
             On.StartOfRound.Awake += CollectLevels;
             On.QuickMenuManager.Start += CollectLevels;
         }
-        
+
         On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
         On.StartOfRound.OnClientConnect += StartOfRoundOnClientConnect;
         On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
 
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
-        
+
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
     }
-    
+
     // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
@@ -43,7 +43,7 @@ static class MoonRegistrationHandler
         {
             return orig(self, modifieddisplaytext, node);
         }
-        
+
         StringBuilder builder = new StringBuilder("\n\nWelcome to the exomoons catalogue.\nTo route the autopilot to a moon, use the word ROUTE.\nTo learn about any moon, use INFO.\n____________________________\n");
         IEnumerable<DawnMoonInfo> validMoons = LethalContent.Moons.Values
             .Where(it => !it.HasTag(Tags.Unimplemented))
@@ -59,7 +59,7 @@ static class MoonRegistrationHandler
             {
                 builder.AppendLine(group.GroupName);
             }
-            
+
             foreach (DawnMoonInfo moonInfo in group.Moons)
             {
                 TerminalPurchaseResult result = moonInfo.PurchasePredicate.CanPurchase();
@@ -72,7 +72,7 @@ static class MoonRegistrationHandler
                 builder.AppendLine(FormatMoonEntry(moonInfo, result));
             }
         }
-        
+
         return orig(self, builder.ToString(), node);
     }
 
@@ -89,7 +89,7 @@ static class MoonRegistrationHandler
         {
             name = "The Company building";
         }
-                    
+
         builder.Append($"* {name} ");
 
         if (moonInfo.HasTag(Tags.Company))
@@ -108,7 +108,7 @@ static class MoonRegistrationHandler
 
         return builder.ToString();
     }
-    
+
     private static IEnumerator DelayTravelEffects(On.StartOfRound.orig_TravelToLevelEffects orig, StartOfRound self)
     {
         // why
@@ -166,7 +166,7 @@ static class MoonRegistrationHandler
         TerminalKeyword routeKeyword = TerminalRefs.RouteKeyword;
         List<CompatibleNoun> routeNouns = routeKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> allKeywords = terminal.terminalNodes.allKeywords.ToList();
-        
+
         List<SelectableLevel> levels = StartOfRound.Instance.levels.ToList();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -178,7 +178,7 @@ static class MoonRegistrationHandler
             levels.Add(moonInfo.Level);
 
             UpdateMoonPrice(moonInfo);
-            
+
             if (!LethalContent.Moons.IsFrozen)
             {
                 routeNouns.Add(new CompatibleNoun()
@@ -207,15 +207,15 @@ static class MoonRegistrationHandler
         StartOfRound.Instance.levels = levels.ToArray();
         routeKeyword.compatibleNouns = routeNouns.ToArray();
         terminal.terminalNodes.allKeywords = allKeywords.ToArray();
-        
+
         if (LethalContent.Moons.IsFrozen)
             return;
 
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
-            if(level.HasDawnInfo())
+            if (level.HasDawnInfo())
                 continue;
-            
+
             Debuggers.Moons?.Log($"Registering level: {level.PlanetName} with scrap spawn range of: {level.minScrap} and {level.maxScrap}");
             NamespacedKey<DawnMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
             if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedLevelModName(level, out string moonModName))
@@ -241,15 +241,15 @@ static class MoonRegistrationHandler
                     break;
                 }
             }
-            
+
             ITerminalPurchasePredicate predicate = ITerminalPurchasePredicate.AlwaysSuccess();
 
             if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
             {
                 predicate = ITerminalPurchasePredicate.AlwaysHide();
             }
-            
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate,null);
+
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate, null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -266,7 +266,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, new(), null, null, null,  new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide(), null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, new(), null, null, null, new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide(), null);
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
@@ -279,7 +279,7 @@ static class MoonRegistrationHandler
             tags.AddToList(tagsWithModNames, Debuggers.Moons, moon.name);
         }
     }
-    
+
     internal static void UpdateAllPrices()
     {
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)

@@ -12,7 +12,8 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
     private readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
 
     public bool IsFrozen { get; private set; }
-    public event Action BeforeFreeze {
+    public event Action BeforeFreeze
+    {
         add
         {
             _beforeFreeze += () =>
@@ -65,7 +66,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
                 events.OnFrozen();
             }
         }
-        
+
         _onFreeze();
     }
 
