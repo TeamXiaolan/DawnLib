@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Dawn.Internal;
 using Dawn.Utils;
 using MonoMod.RuntimeDetour;
+using UnityEngine;
 
 namespace Dawn;
 
@@ -25,12 +27,52 @@ static class MoonRegistrationHandler
         }
         
         On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
+        On.StartOfRound.OnClientConnect += StartOfRoundOnOnClientConnect;
+        On.StartOfRound.OnClientDisconnect += StartOfRoundOnOnClientDisconnect;
+        On.StartOfRound.ChangePlanet += StartOfRoundOnChangePlanet;
+    }
+    private static void StartOfRoundOnChangePlanet(On.StartOfRound.orig_ChangePlanet orig, StartOfRound self)
+    {
+        try
+        {
+            orig(self);
+        }
+        catch (Exception e)
+        {
+            DawnPlugin.Logger.LogError(e);
+        }
+    }
+    private static void StartOfRoundOnOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
+    {
+        orig(self, clientid);
+        
+        if (self.IsServer && self.inShipPhase)
+        {
+            DawnMoonNetworker.Instance.HostRebroadcastQueue();
+        }
+    }
+    private static void StartOfRoundOnOnClientConnect(On.StartOfRound.orig_OnClientConnect orig, StartOfRound self, ulong clientid)
+    {
+        orig(self, clientid);
+
+        if (self.IsServer && self.inShipPhase)
+        {
+            DawnMoonNetworker.Instance.HostRebroadcastQueue();
+        }
     }
     private static void StartOfRoundOnChangeLevel(On.StartOfRound.orig_ChangeLevel orig, StartOfRound self, int levelid)
     {
         orig(self, levelid);
         
-        DawnMoonNetworker.Instance?.HostDecide(self.currentLevel.GetDawnInfo());
+        if(self.IsServer)
+            self.StartCoroutine(DoHotloadSceneStuff(self.currentLevel));
+    }
+
+    static IEnumerator DoHotloadSceneStuff(SelectableLevel level)
+    {
+        yield return new WaitUntil(() => DawnMoonNetworker.Instance != null);
+        
+        DawnMoonNetworker.Instance!.HostDecide(level.GetDawnInfo());
     }
 
     private static void CollectLevels(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)

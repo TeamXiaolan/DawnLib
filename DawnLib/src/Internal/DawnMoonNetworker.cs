@@ -24,6 +24,9 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private string? _currentBundlePath = null;
     private AssetBundle? _currentBundle;
 
+    private NamespacedKey<DawnMoonInfo> _currentMoonKey;
+    private NamespacedKey<MoonSceneInfo> _currentSceneKey;
+    
     public enum BundleState
     {
         Queued,
@@ -56,10 +59,16 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         moonInfo.Level.sceneName = sceneInfo.SceneName;
         QueueMoonSceneLoadingRPC(moonInfo.Key, sceneInfo.Key);
     }
+
+    internal void HostRebroadcastQueue()
+    {
+        QueueMoonSceneLoadingRPC(_currentMoonKey, _currentSceneKey);
+    }
     
     [Rpc(SendTo.Everyone)]
     void QueueMoonSceneLoadingRPC(NamespacedKey moonKey, NamespacedKey sceneKey)
     {
+        
         DawnMoonInfo moonInfo = LethalContent.Moons[moonKey.AsTyped<DawnMoonInfo>()];
         MoonSceneInfo sceneInfo = moonInfo.Scenes.First(it => Equals(it.Key, sceneKey));
 
@@ -72,7 +81,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         }
         
         CheckReadyAndUpdateUI();
-        StartCoroutine(DoMoonSceneLoading(sceneInfo));
+        StartCoroutine(DoMoonSceneLoading(moonInfo, sceneInfo));
     }
 
     // todo: this is technically insecure. i dont care
@@ -88,12 +97,21 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         {
             DawnPlugin.Logger.LogError($"player: {player.playerUsername} failed to load asset bundle!");
         }
-        Debuggers.Moons?.Log($"Player '{player.playerUsername}' updated their status to: {state}.");
+        Debuggers.Moons?.Log($"Player '{player.playerUsername}' updated their bundle loading state to: {state}.");
     }
 
-    IEnumerator DoMoonSceneLoading(MoonSceneInfo sceneInfo)
+    IEnumerator DoMoonSceneLoading(DawnMoonInfo moonInfo, MoonSceneInfo sceneInfo)
     {
         yield return new WaitForSeconds(.05f); // here to avoid a race condition, i think a client coudl recieve PlayerReadyToRoute before QueueMoonScene and fuck shit up
+        
+        
+        if (Equals(moonInfo.TypedKey, _currentMoonKey) && Equals(sceneInfo.TypedKey, _currentSceneKey))
+        {
+            PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+            yield break;
+        }
+        _currentMoonKey = moonInfo.TypedKey;
+        _currentSceneKey = sceneInfo.TypedKey;
         
         if (sceneInfo is CustomMoonSceneInfo customMoon)
         {
