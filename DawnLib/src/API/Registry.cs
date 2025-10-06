@@ -12,15 +12,50 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
     private readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
 
     public bool IsFrozen { get; private set; }
-    public event Action BeforeFreeze = delegate { };
-    public event Action OnFreeze = delegate { };
+    public event Action BeforeFreeze {
+        add
+        {
+            _beforeFreeze += () =>
+            {
+                try
+                {
+                    value();
+                }
+                catch (Exception exception)
+                {
+                    DawnPlugin.Logger.LogError($"(BeforeFreeze) An exception occured in firing an event for a registry:\n{exception}");
+                }
+            };
+        }
+        remove => DawnPlugin.Logger.LogError("Registry.BeforeFreeze -= is not supported.");
+    }
+    public event Action OnFreeze
+    {
+        add
+        {
+            _onFreeze += () =>
+            {
+                try
+                {
+                    value();
+                }
+                catch (Exception exception)
+                {
+                    DawnPlugin.Logger.LogError($"(OnFreeze) An exception occured in firing an event for a registry:\n{exception}");
+                }
+            };
+        }
+        remove => DawnPlugin.Logger.LogError("Registry.OnFreeze -= is not supported.");
+    }
+
+    public event Action _onFreeze, _beforeFreeze = delegate { };
 
     virtual internal void Freeze()
     {
         if (IsFrozen)
             return;
 
-        BeforeFreeze();
+        _beforeFreeze();
         IsFrozen = true;
 
         foreach (T value in Values)
@@ -31,7 +66,7 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
             }
         }
         
-        OnFreeze();
+        _onFreeze();
     }
 
     virtual internal void Register(T value)
