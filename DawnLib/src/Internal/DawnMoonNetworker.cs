@@ -56,18 +56,23 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         }
 
         moonInfo.Level.sceneName = sceneInfo.SceneName;
-        QueueMoonSceneLoadingRPC(moonInfo.Key, sceneInfo.Key);
+        QueueMoonSceneLoadingServerRpc(moonInfo.Key, sceneInfo.Key);
     }
 
     internal void HostRebroadcastQueue()
     {
-        QueueMoonSceneLoadingRPC(_currentMoonKey, _currentSceneKey);
+        QueueMoonSceneLoadingServerRpc(_currentMoonKey, _currentSceneKey);
     }
 
-    [Rpc(SendTo.Everyone)]
-    private void QueueMoonSceneLoadingRPC(NamespacedKey moonKey, NamespacedKey sceneKey)
+    [ServerRpc()]
+    private void QueueMoonSceneLoadingServerRpc(NamespacedKey moonKey, NamespacedKey sceneKey)
     {
+        QueueMoonSceneLoadingClientRpc(moonKey, sceneKey);
+    }
 
+    [ClientRpc]
+    private void QueueMoonSceneLoadingClientRpc(NamespacedKey moonKey, NamespacedKey sceneKey)
+    {
         DawnMoonInfo moonInfo = LethalContent.Moons[moonKey.AsTyped<DawnMoonInfo>()];
         IMoonSceneInfo sceneInfo = moonInfo.Scenes.First(it => Equals(it.Key, sceneKey));
 
@@ -85,8 +90,14 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     }
 
     // todo: this is technically insecure. i dont care
-    [Rpc(SendTo.Everyone, RequireOwnership = false)]
-    private void PlayerSetBundleStateRPC(PlayerControllerReference reference, BundleState state)
+    [ServerRpc(RequireOwnership = false)]
+    private void PlayerSetBundleStateServerRpc(PlayerControllerReference reference, BundleState state)
+    {
+        PlayerSetBundleStateClientRpc(reference, state);
+    }
+
+    [ClientRpc]
+    public void PlayerSetBundleStateClientRpc(PlayerControllerReference reference, BundleState state)
     {
         PlayerControllerB player = reference;
 
@@ -106,7 +117,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
         if (Equals(moonInfo.TypedKey, _currentMoonKey) && Equals(sceneInfo.TypedKey, _currentSceneKey))
         {
-            PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+            PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
             yield break;
         }
         _currentMoonKey = moonInfo.TypedKey;
@@ -121,7 +132,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                     yield return StartCoroutine(UnloadExisting());
                 }
 
-                PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
+                PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
                 yield return null;
 
                 AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(customMoon.AssetBundlePath);
@@ -130,7 +141,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 // todo: more graceful error handling?
                 if (!request.isDone || request.assetBundle == null)
                 {
-                    PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
+                    PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
                     yield break;
                 }
                 else
@@ -145,7 +156,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
             yield return StartCoroutine(UnloadExisting());
         }
 
-        PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+        PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
     public override void OnNetworkDespawn()
@@ -161,7 +172,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         if (_currentBundle == null)
             yield break;
 
-        PlayerSetBundleStateRPC(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
+        PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
         yield return _currentBundle.UnloadAsync(true);
 

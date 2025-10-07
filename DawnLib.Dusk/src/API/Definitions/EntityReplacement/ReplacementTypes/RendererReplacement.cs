@@ -87,7 +87,7 @@ public class MeshReplacement : HierarchyReplacement
     }
 }
 
-[CreateAssetMenu(fileName = "New Skinned Mesh Replacement", menuName = $"Entity Replacements/Replacements/Material Replacement")]
+[CreateAssetMenu(fileName = "New Materials Replacement", menuName = $"Entity Replacements/Replacements/Material Replacement")]
 public class MaterialsReplacement : HierarchyReplacement
 {
     [field: SerializeField]
