@@ -301,12 +301,13 @@ static class EntityReplacementRegistrationPatch
     {
         foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
         {
+            Debuggers.ReplaceThis?.Log($"1. Registering replacement for {entityReplacementDefinition.EntityToReplaceKey} with {entityReplacementDefinition.TypedKey}");
             if (entityReplacementDefinition is not DuskEnemyReplacementDefinition enemyReplacementDefinition)
                 continue;
 
             if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
             {
-                Debuggers.Enemies?.Log($"Registering replacement for {enemyReplacementDefinition.EntityToReplaceKey} with {enemyReplacementDefinition.TypedKey}");
+                Debuggers.Enemies?.Log($"2. Registering replacement success");
                 if (!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? list))
                 {
                     DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
@@ -316,7 +317,9 @@ static class EntityReplacementRegistrationPatch
                     enemyInfo.CustomData.Set(Key, list);
                 }
                 list.Add(enemyReplacementDefinition);
+                continue;
             }
+            Debuggers.Enemies?.Log($"3. Registering replacement failure");
         }
     }
 

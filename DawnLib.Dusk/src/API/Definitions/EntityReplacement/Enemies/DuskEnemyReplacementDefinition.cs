@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Dusk;
 
-public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
+public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<EnemyAI>
 {
 
     [field: Header("Nest")]
     [field: SerializeField]
-    public List<HierarchyReplacement> NestRendererReplacements { get; private set; }
+    public List<HierarchyReplacement> NestRendererReplacements { get; private set; } = new();
 
     [field: Header("EnemyType Audio")]
     [field: SerializeField]
@@ -23,6 +23,8 @@ public abstract class DuskEnemyReplacementDefinition : DuskEntityReplacementDefi
 
     [field: SerializeField]
     public AudioClip[] AudioClips { get; private set; } = [];
+
+    public override void Apply(EnemyAI ai) { }
 
     public virtual void ApplyNest(EnemyAINestSpawnObject nest)
     {

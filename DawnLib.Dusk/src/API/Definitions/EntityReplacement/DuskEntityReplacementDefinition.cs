@@ -16,7 +16,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     [field: SerializeField]
     public DatePredicate? DatePredicate { get; private set; }
 
-    [field: Header("Replacements")]
+    [field: Space(10)]
     [field: SerializeField]
     public List<HierarchyReplacement> Replacements { get; private set; } = new();
 
@@ -28,7 +28,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
 
     // bongo todo: this is awful, and when migrating this stuff to be dawn info, this should probably be an interface or something
-    internal bool IsDefault;
+    internal bool IsDefault = false;
 
     [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
     [field: TextArea(1, 10)]
