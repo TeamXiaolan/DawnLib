@@ -15,7 +15,6 @@ public class SceneReference
     private string _bundleName;
 
     public string ScenePath => _scenePath;
-    public string AssetGUID => _assetGUID;
     public string BundleName => _bundleName;
     public string SceneName => DawnNetworkSceneManager.GetSceneNameFromPath(ScenePath);
 
