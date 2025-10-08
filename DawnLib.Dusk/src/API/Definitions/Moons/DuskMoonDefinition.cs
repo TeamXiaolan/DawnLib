@@ -56,17 +56,16 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 [Serializable]
 public class DuskMoonSceneData
 {
-    public NamespacedKey<IMoonSceneInfo> Key;
+    public SceneReference Scene;
+    public string BundleName => Scene.BundleName;
 
-    [AssetBundleReference]
-    public string BundleName;
+    [InspectorName("Namespace")]
+    public NamespacedKey<IMoonSceneInfo> Key;
 
     [field: SerializeField]
     public int BaseWeight { get; private set; } = 100;
     [field: SerializeField]
     public string WeatherWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
-
-    public SceneReference Scene;
 
     public int Weight() // todo: this shouldn't return an int but an IProviderTable<int>??
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using XXHash = Unity.Netcode.XXHash;
 
 namespace Dawn.Internal;
 static class DawnNetworkSceneManager
@@ -36,11 +35,13 @@ static class DawnNetworkSceneManager
 
         On.Unity.Netcode.NetworkSceneManager.ValidateSceneEvent += ValidateSceneEvent;
     }
+
     private static void LogExtraDebugInformation(On.Unity.Netcode.NetworkSceneManager.orig_GenerateScenesInBuild orig, NetworkSceneManager self)
     {
         orig(self);
         Debuggers.SceneManager?.Log($"DawnLibSceneManager has {_nameToPath.Count} scenes.");
     }
+
     private static string SceneFromHash(On.Unity.Netcode.NetworkSceneManager.orig_ScenePathFromHash orig, NetworkSceneManager self, uint sceneHash)
     {
         if (_hashToPath.TryGetValue(sceneHash, out string scenePath))
@@ -49,6 +50,7 @@ static class DawnNetworkSceneManager
         }
         return orig(self, sceneHash);
     }
+
     private static uint HashFromScene(On.Unity.Netcode.NetworkSceneManager.orig_SceneHashFromNameOrPath orig, NetworkSceneManager self, string sceneNameOrPath)
     {
         if (_nameToPath.TryGetValue(sceneNameOrPath, out string scenePath))
@@ -61,6 +63,7 @@ static class DawnNetworkSceneManager
         }
         return orig(self, sceneNameOrPath);
     }
+
     private static object ValidateSceneEvent(On.Unity.Netcode.NetworkSceneManager.orig_ValidateSceneEvent orig, NetworkSceneManager self, string sceneName, bool isUnloading)
     {
         Debuggers.SceneManager?.Log($"On.ValidateSceneEvent: {sceneName}, {isUnloading}");

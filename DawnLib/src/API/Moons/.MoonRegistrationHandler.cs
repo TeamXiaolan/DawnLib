@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,9 +24,12 @@ static class MoonRegistrationHandler
 
         using (new DetourContext(priority: int.MaxValue))
         {
-            On.StartOfRound.Awake += CollectLevels;
+            On.StartOfRound.Awake += CollectTestLevel;
             On.QuickMenuManager.Start += CollectLevels;
         }
+
+        LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
+        LethalContent.Items.OnFreeze += FixDawnMoonItems;
 
         On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
         On.StartOfRound.OnClientConnect += StartOfRoundOnClientConnect;
@@ -34,6 +38,146 @@ static class MoonRegistrationHandler
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+    }
+
+    private static void FixDawnMoonItems()
+    {
+        List<Item> itemsToDestroy = new();
+
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.HasTag(DawnLibTags.IsExternal))
+                continue;
+
+            foreach (SpawnableItemWithRarity spawnableItemWithRarity in moonInfo.Level.spawnableScrap.ToArray())
+            {
+                if (spawnableItemWithRarity.spawnableItem == null)
+                {
+                    moonInfo.Level.spawnableScrap.Remove(spawnableItemWithRarity);
+                    continue;
+                }
+
+                bool containedInItemRegistry = false;
+                foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+                {
+                    if (itemInfo.Item == spawnableItemWithRarity.spawnableItem)
+                    {
+                        containedInItemRegistry = true;
+                        itemsToDestroy.Add(spawnableItemWithRarity.spawnableItem);
+                        spawnableItemWithRarity.spawnableItem = itemInfo.Item;
+                        break;
+                    }
+                }
+
+                if (!containedInItemRegistry)
+                {
+                    itemsToDestroy.Add(spawnableItemWithRarity.spawnableItem);
+                    moonInfo.Level.spawnableScrap.Remove(spawnableItemWithRarity);
+                }
+            }
+        }
+
+        foreach (Item item in itemsToDestroy.ToArray())
+        {
+            ScriptableObject.Destroy(item);
+        }
+    }
+
+    private static void FixDawnMoonEnemies()
+    {
+        List<EnemyType> enemiesToDestroy = new();
+
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.HasTag(DawnLibTags.IsExternal))
+                continue;
+
+            foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.Enemies.ToArray())
+            {
+                if (spawnableEnemyWithRarity.enemyType == null)
+                {
+                    moonInfo.Level.Enemies.Remove(spawnableEnemyWithRarity);
+                    continue;
+                }
+
+                bool containedInEnemyRegistry = false;
+                foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+                {
+                    if (enemyInfo.EnemyType == spawnableEnemyWithRarity.enemyType)
+                    {
+                        containedInEnemyRegistry = true;
+                        enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                        spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
+                        break;
+                    }
+                }
+
+                if (!containedInEnemyRegistry)
+                {
+                    enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                    moonInfo.Level.Enemies.Remove(spawnableEnemyWithRarity);
+                }
+            }
+
+            foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.OutsideEnemies.ToArray())
+            {
+                if (spawnableEnemyWithRarity.enemyType == null)
+                {
+                    moonInfo.Level.OutsideEnemies.Remove(spawnableEnemyWithRarity);
+                    continue;
+                }
+
+                bool containedInEnemyRegistry = false;
+                foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+                {
+                    if (enemyInfo.EnemyType == spawnableEnemyWithRarity.enemyType)
+                    {
+                        containedInEnemyRegistry = true;
+                        enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                        spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
+                        break;
+                    }
+                }
+
+                if (!containedInEnemyRegistry)
+                {
+                    enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                    moonInfo.Level.OutsideEnemies.Remove(spawnableEnemyWithRarity);
+                }
+            }
+
+            foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.DaytimeEnemies.ToArray())
+            {
+                if (spawnableEnemyWithRarity.enemyType == null)
+                {
+                    moonInfo.Level.DaytimeEnemies.Remove(spawnableEnemyWithRarity);
+                    continue;
+                }
+
+                bool containedInEnemyRegistry = false;
+                foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+                {
+                    if (enemyInfo.EnemyType == spawnableEnemyWithRarity.enemyType)
+                    {
+                        containedInEnemyRegistry = true;
+                        enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                        spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
+                        break;
+                    }
+                }
+
+                if (!containedInEnemyRegistry)
+                {
+                    enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                    moonInfo.Level.DaytimeEnemies.Remove(spawnableEnemyWithRarity);
+                }
+            }
+        }
+
+        foreach (EnemyType enemyTypeToDestroy in enemiesToDestroy.ToArray())
+        {
+            ScriptableObject.Destroy(enemyTypeToDestroy);
+        }
     }
 
     // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
@@ -258,7 +402,7 @@ static class MoonRegistrationHandler
         LethalContent.Moons.Freeze();
     }
 
-    private static void CollectLevels(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    private static void CollectTestLevel(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         if (LethalContent.Moons.IsFrozen)
         {
