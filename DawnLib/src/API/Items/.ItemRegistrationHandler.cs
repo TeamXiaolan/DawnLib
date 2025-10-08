@@ -58,6 +58,7 @@ static class ItemRegistrationHandler
             if (itemInfo.ShouldSkipIgnoreOverride() || self.allItemsList.itemsList.Contains(itemInfo.Item))
                 continue;
 
+            Debuggers.Items?.Log($"Adding {itemInfo.Item.itemName} into allItemsList.");
             self.allItemsList.itemsList.Add(itemInfo.Item);
         }
         orig(self);
@@ -172,7 +173,6 @@ static class ItemRegistrationHandler
 
         foreach (var terminalKeyword in terminalKeywords)
         {
-            Debuggers.Items?.Log($"TerminalKeyword.word for {terminalKeyword.name}: {terminalKeyword.word}");
             terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
         }
 
@@ -183,7 +183,6 @@ static class ItemRegistrationHandler
             TerminalNode? requestNode = null;
             TerminalNode receiptNode = null!;
 
-            Debuggers.Items?.Log($"Processing {buyableItem.itemName}");
             string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
 
             requestNode = TerminalRefs.BuyKeyword.compatibleNouns.Where(noun => noun.result.buyItemIndex == i).Select(noun => noun.result).FirstOrDefault();
@@ -207,7 +206,6 @@ static class ItemRegistrationHandler
                     infoNode = compatibleNouns.result;
                     break;
                 }
-                Debuggers.Items?.Log($"Checking compatible nouns for info node: {compatibleNouns.noun.word}");
             }
 
             if (infoNode == null)
@@ -235,7 +233,6 @@ static class ItemRegistrationHandler
                     requestNode = compatibleNouns.result;
                     break;
                 }
-                Debuggers.Items?.Log($"Checking compatible nouns for request node: {compatibleNouns.noun.word}");
             }
 
             DawnShopItemInfo shopInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));

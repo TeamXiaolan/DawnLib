@@ -42,7 +42,7 @@ static class MoonRegistrationHandler
 
     private static void FixDawnMoonItems()
     {
-        List<Item> itemsToDestroy = new();
+        /*List<Item> itemsToDestroy = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -80,12 +80,12 @@ static class MoonRegistrationHandler
         foreach (Item item in itemsToDestroy.ToArray())
         {
             ScriptableObject.Destroy(item);
-        }
+        }*/
     }
 
     private static void FixDawnMoonEnemies()
     {
-        List<EnemyType> enemiesToDestroy = new();
+        /*List<EnemyType> enemiesToDestroy = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -177,7 +177,8 @@ static class MoonRegistrationHandler
         foreach (EnemyType enemyTypeToDestroy in enemiesToDestroy.ToArray())
         {
             ScriptableObject.Destroy(enemyTypeToDestroy);
-        }
+        }*/
+        // todo fix the validitiy stuffs
     }
 
     // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
