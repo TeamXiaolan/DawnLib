@@ -84,6 +84,9 @@ static class DungeonRegistrationHandler
         List<IndoorMapType> newIndoorMapTypes = RoundManagerRefs.Instance.dungeonFlowTypes.ToList();
         foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
+            if (dungeonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
             IndoorMapType indoorMapType = new()
             {
                 dungeonFlow = dungeonInfo.DungeonFlow,
