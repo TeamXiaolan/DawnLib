@@ -81,7 +81,7 @@ static class MoonRegistrationHandler
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            if (moonInfo.HasTag(DawnLibTags.IsExternal))
+            if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.Enemies.ToArray())
