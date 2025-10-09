@@ -1,6 +1,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using LethalLevelLoader;
 using loaforcsSoundAPI;
 
 namespace Dawn.Compatibility;
@@ -19,7 +20,7 @@ public class DawnCompatibilityPlugin : BaseUnityPlugin
         {
             SoundAPICompat.Init();
         }
-
+            
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
 }

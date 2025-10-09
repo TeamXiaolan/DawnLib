@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Dawn.Internal;
 using Dawn.Utils;
+using LethalLevelLoader;
 using PathfindingLib;
 using UnityEngine;
 
@@ -26,7 +28,9 @@ public class DawnPlugin : BaseUnityPlugin
         Logger = base.Logger;
         Debuggers.Bind(Config);
         DawnConfig.Bind(Config);
-
+        
+        Logger.LogDebug(string.Join(", ", typeof(AssetBundleLoader).GetMembers().Select(it => it.Name)));
+        
         if (DawnConfig.CreateTagExport)
         {
             TagExporter.Init();
