@@ -16,5 +16,5 @@ public class GameObjectWithPath
     public Vector3 PositionOffset { get; private set; } = Vector3.zero;
 
     [field: SerializeField]
-    public Quaternion RotationOffset { get; private set; } = Quaternion.identity;
+    public Vector3 RotationOffset { get; private set; } = Vector3.zero;
 }
