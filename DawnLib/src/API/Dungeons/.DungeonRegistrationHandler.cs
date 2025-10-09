@@ -111,13 +111,13 @@ static class DungeonRegistrationHandler
 
             foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
             {
-                DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
-                if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                DungeonFlow dungeonFlow = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow;
+                if (!dungeonWeightBuilder.TryGetValue(dungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
+                    dungeonWeightBuilder[dungeonFlow] = weightTableBuilder;
                 }
-                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
+                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonFlow.name} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
             }
         }
