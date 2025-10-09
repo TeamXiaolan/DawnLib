@@ -51,8 +51,8 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 return;
             }
 
-            _displayTip.Header.Replace("ProgressiveName", definition.UnlockableItem.unlockableName);
-            _displayTip.Body.Replace("ProgressiveName", definition.UnlockableItem.unlockableName);
+            _displayTip.Header.Replace("ProgressiveName", definition.UnlockableItem.unlockableName, true, System.Globalization.CultureInfo.InvariantCulture);
+            _displayTip.Body.Replace("ProgressiveName", definition.UnlockableItem.unlockableName, true, System.Globalization.CultureInfo.InvariantCulture);
             progressive.Unlock(_displayTip);
         }
         else if (player.currentlyHeldObjectServer is ItemUpgradeScrap itemUpgradeScrap)
@@ -75,8 +75,8 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 return;
             }
 
-            _displayTip.Header.Replace("ProgressiveName", definition.Item.itemName);
-            _displayTip.Body.Replace("ProgressiveName", definition.Item.itemName);
+            _displayTip.Header.Replace("ProgressiveName", definition.Item.itemName, true, System.Globalization.CultureInfo.InvariantCulture);
+            _displayTip.Body.Replace("ProgressiveName", definition.Item.itemName, true, System.Globalization.CultureInfo.InvariantCulture);
             progressive.Unlock(_displayTip);
         }
         else

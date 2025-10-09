@@ -37,6 +37,29 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         Done
     }
 
+    private AnimatorOverrideController _animatorOverrideController;
+    private RuntimeAnimatorController _originalAnimatorController;
+    private AnimationClip _originalShipLandClip, _originalShipLeaveClip;
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        _originalAnimatorController = StartOfRoundRefs.Instance.shipAnimator.runtimeAnimatorController;
+        foreach (AnimationClip animationClip in StartOfRoundRefs.Instance.shipAnimator.runtimeAnimatorController.animationClips)
+        {
+            if (animationClip.name == "HangarShipLandB")
+            {
+                _originalShipLandClip = animationClip;
+                continue;
+            }
+
+            if (animationClip.name == "ShipLeave")
+            {
+                _originalShipLeaveClip = animationClip;
+                continue;
+            }
+        }
+    }
+
     internal void HostDecide(DawnMoonInfo moonInfo)
     {
         int totalWeight = moonInfo.Scenes.Sum(it => it.Weight.Provide());
@@ -123,8 +146,14 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         _currentMoonKey = moonInfo.TypedKey;
         _currentSceneKey = sceneInfo.TypedKey;
 
+        StartOfRound.Instance.shipAnimator.runtimeAnimatorController = _originalAnimatorController;
+        _animatorOverrideController = new AnimatorOverrideController(StartOfRound.Instance.shipAnimator.runtimeAnimatorController);
+        StartOfRound.Instance.shipAnimator.runtimeAnimatorController = _animatorOverrideController;
+
         if (sceneInfo is CustomMoonSceneInfo customMoon)
         {
+            ReplaceShipAnimations(_originalShipLeaveClip, customMoon.ShipLandingOverrideAnimation);
+            ReplaceShipAnimations(_originalShipLandClip, customMoon.ShipLandingOverrideAnimation);
             if (_currentBundlePath != customMoon.AssetBundlePath)
             {
                 if (_currentBundle != null)
@@ -157,6 +186,11 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         }
 
         PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+    }
+
+    public void ReplaceShipAnimations(AnimationClip originalClip, AnimationClip? newClip)
+    {
+        _animatorOverrideController[originalClip] = newClip;
     }
 
     public override void OnNetworkDespawn()

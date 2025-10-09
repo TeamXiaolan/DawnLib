@@ -17,8 +17,8 @@ static class DungeonRegistrationHandler
             On.StartOfRound.Awake += RegisterDawnDungeons;
         }
 
-        LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
+        LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
@@ -104,28 +104,21 @@ static class DungeonRegistrationHandler
         Dictionary<DungeonFlow, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            try
+            if (!moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            SelectableLevel level = moonInfo.Level;
+
+            foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
             {
-                if (!moonInfo.ShouldSkipIgnoreOverride())
-                    continue;
-
-                SelectableLevel level = moonInfo.Level;
-
-                foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
+                DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
+                if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
-                    DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
-                    if (!dungeonWeightBuilder.TryGetValue(dungeonInfo.DungeonFlow, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
-                    {
-                        weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                        dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
-                    }
-                    Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
-                    weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                    dungeonWeightBuilder[dungeonInfo.DungeonFlow] = weightTableBuilder;
                 }
-            }
-            catch (Exception exception)
-            {
-                DawnPlugin.Logger.LogError(exception);
+                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonInfo.DungeonFlow.name} on level {level.PlanetName}");
+                weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
             }
         }
 

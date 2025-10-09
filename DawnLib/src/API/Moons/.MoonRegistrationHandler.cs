@@ -42,11 +42,11 @@ static class MoonRegistrationHandler
 
     private static void FixDawnMoonItems()
     {
-        /*List<Item> itemsToDestroy = new();
+        List<Item> itemsToDestroy = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            if (moonInfo.HasTag(DawnLibTags.IsExternal))
+            if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             foreach (SpawnableItemWithRarity spawnableItemWithRarity in moonInfo.Level.spawnableScrap.ToArray())
@@ -57,22 +57,14 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
-                bool containedInItemRegistry = false;
                 foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
                 {
-                    if (itemInfo.Item == spawnableItemWithRarity.spawnableItem)
+                    if (itemInfo.Item != spawnableItemWithRarity.spawnableItem && (itemInfo.Item.itemName == spawnableItemWithRarity.spawnableItem.itemName || itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name))
                     {
-                        containedInItemRegistry = true;
                         itemsToDestroy.Add(spawnableItemWithRarity.spawnableItem);
                         spawnableItemWithRarity.spawnableItem = itemInfo.Item;
                         break;
                     }
-                }
-
-                if (!containedInItemRegistry)
-                {
-                    itemsToDestroy.Add(spawnableItemWithRarity.spawnableItem);
-                    moonInfo.Level.spawnableScrap.Remove(spawnableItemWithRarity);
                 }
             }
         }
@@ -80,12 +72,12 @@ static class MoonRegistrationHandler
         foreach (Item item in itemsToDestroy.ToArray())
         {
             ScriptableObject.Destroy(item);
-        }*/
+        }
     }
 
     private static void FixDawnMoonEnemies()
     {
-        /*List<EnemyType> enemiesToDestroy = new();
+        List<EnemyType> enemiesToDestroy = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -100,22 +92,14 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
-                bool containedInEnemyRegistry = false;
                 foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
                 {
-                    if (enemyInfo.EnemyType == spawnableEnemyWithRarity.enemyType)
+                    if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
                     {
-                        containedInEnemyRegistry = true;
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
                         spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
                         break;
                     }
-                }
-
-                if (!containedInEnemyRegistry)
-                {
-                    enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
-                    moonInfo.Level.Enemies.Remove(spawnableEnemyWithRarity);
                 }
             }
 
@@ -127,22 +111,14 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
-                bool containedInEnemyRegistry = false;
                 foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
                 {
-                    if (enemyInfo.EnemyType == spawnableEnemyWithRarity.enemyType)
+                    if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
                     {
-                        containedInEnemyRegistry = true;
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
                         spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
                         break;
                     }
-                }
-
-                if (!containedInEnemyRegistry)
-                {
-                    enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
-                    moonInfo.Level.OutsideEnemies.Remove(spawnableEnemyWithRarity);
                 }
             }
 
@@ -154,22 +130,14 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
-                bool containedInEnemyRegistry = false;
                 foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
                 {
-                    if (enemyInfo.EnemyType == spawnableEnemyWithRarity.enemyType)
+                    if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
                     {
-                        containedInEnemyRegistry = true;
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
                         spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
                         break;
                     }
-                }
-
-                if (!containedInEnemyRegistry)
-                {
-                    enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
-                    moonInfo.Level.DaytimeEnemies.Remove(spawnableEnemyWithRarity);
                 }
             }
         }
@@ -177,8 +145,7 @@ static class MoonRegistrationHandler
         foreach (EnemyType enemyTypeToDestroy in enemiesToDestroy.ToArray())
         {
             ScriptableObject.Destroy(enemyTypeToDestroy);
-        }*/
-        // todo fix the validitiy stuffs
+        }
     }
 
     // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
@@ -398,7 +365,6 @@ static class MoonRegistrationHandler
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
-
         TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
         LethalContent.Moons.Freeze();
     }

@@ -1,4 +1,5 @@
 ﻿using Dawn.Internal;
+using UnityEngine;
 
 namespace Dawn;
 public interface IMoonSceneInfo : INamespaced<IMoonSceneInfo>
@@ -30,17 +31,21 @@ public class CustomMoonSceneInfo : IMoonSceneInfo
     public string SceneName { get; }
     public string ScenePath { get; }
     public IProvider<int> Weight { get; private set; }
+    public AnimationClip? ShipLandingOverrideAnimation { get; private set; }
+    public AnimationClip? ShipTakeoffOverrideAnimation { get; private set; }
 
     internal string AssetBundlePath;
 
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<IMoonSceneInfo> TypedKey { get; }
 
-    internal CustomMoonSceneInfo(NamespacedKey<IMoonSceneInfo> key, IProvider<int> weight, string assetBundlePath, string scenePath)
+    internal CustomMoonSceneInfo(NamespacedKey<IMoonSceneInfo> key, AnimationClip? shipLandingOverrideAnimation, AnimationClip? shipTakeoffOverrideAnimation, IProvider<int> weight, string assetBundlePath, string scenePath)
     {
         AssetBundlePath = assetBundlePath;
         Weight = weight;
         TypedKey = key;
+        ShipLandingOverrideAnimation = shipLandingOverrideAnimation;
+        ShipTakeoffOverrideAnimation = shipTakeoffOverrideAnimation;
         ScenePath = scenePath;
         SceneName = DawnNetworkSceneManager.GetSceneNameFromPath(scenePath);
         DawnLib.RegisterNetworkScene(scenePath);

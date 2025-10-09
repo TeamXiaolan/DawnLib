@@ -32,6 +32,8 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             {
                 builder.AddScene(
                     sceneData.Key,
+                    sceneData.ShipLandingOverrideAnimation,
+                    sceneData.ShipTakeoffOverrideAnimation,
                     sceneData.Weight(),
                     mod.GetRelativePath("Assets", sceneData.BundleName),
                     sceneData.Scene.ScenePath
@@ -61,6 +63,11 @@ public class DuskMoonSceneData
 
     [InspectorName("Namespace")]
     public NamespacedKey<IMoonSceneInfo> Key;
+
+    [field: SerializeField]
+    public AnimationClip ShipLandingOverrideAnimation { get; private set; }
+    [field: SerializeField]
+    public AnimationClip ShipTakeoffOverrideAnimation { get; private set; }
 
     [field: SerializeField]
     public int BaseWeight { get; private set; } = 100;

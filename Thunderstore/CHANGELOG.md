@@ -1,6 +1,10 @@
 # v0.3.0
+
 - **Update to v73. This version and versions after are not compatible with v72 or lower! (revert to v0.2.16 for v72)**
 - Added support for `Moons` and `Dungeons`. Please note that this is very experimental at the moment (compatibility for LLL is also unknown)
+  - Moons have multi-scene support.
+  - Moons also have custom landing animation support.
+
 - Changes to entity replacement, idk what.
 - Added date for a `DuskPredicate`
 - Added ItemKeys for the new scrap introduced in v73.
