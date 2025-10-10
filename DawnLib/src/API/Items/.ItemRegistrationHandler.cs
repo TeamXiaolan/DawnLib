@@ -9,6 +9,8 @@ namespace Dawn;
 
 static class ItemRegistrationHandler
 {
+    private static List<Item> _networkPrefabItem = new();
+
     internal static void Init()
     {
         LethalContent.Items.AddAutoTaggers(
@@ -38,6 +40,7 @@ static class ItemRegistrationHandler
         {
             On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         }
+
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
         On.Terminal.Awake += RegisterShopItemsToTerminal;
         On.StartOfRound.Start += RegisterScrapItems;
@@ -142,23 +145,20 @@ static class ItemRegistrationHandler
 
     private static void FreezeItemContent()
     {
-        if (LethalContent.Items.IsFrozen)
-            return;
-
-        Dictionary<Item, WeightTableBuilder<DawnMoonInfo>> itemWeightBuilder = new();
-        Dictionary<Item, DawnShopItemInfo> itemsWithShopInfo = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> itemWeightBuilder = new();
+        Dictionary<string, DawnShopItemInfo> itemsWithShopInfo = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
 
-            foreach (var itemWithRarity in level.spawnableScrap)
+            foreach (SpawnableItemWithRarity itemWithRarity in level.spawnableScrap)
             {
-                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    itemWeightBuilder[itemWithRarity.spawnableItem] = weightTableBuilder;
+                    itemWeightBuilder[itemWithRarity.spawnableItem.name] = weightTableBuilder;
                 }
-                Debuggers.Items?.Log($"Adding weight {itemWithRarity.rarity} to {itemWithRarity.spawnableItem.itemName} on level {level.PlanetName}");
+                Debuggers.Items?.Log($"Adding weight {itemWithRarity.rarity} to {itemWithRarity.spawnableItem.name} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonInfo.TypedKey, itemWithRarity.rarity);
             }
         }
@@ -171,7 +171,7 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
 
-        foreach (var terminalKeyword in terminalKeywords)
+        foreach (TerminalKeyword terminalKeyword in terminalKeywords)
         {
             terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
         }
@@ -236,7 +236,7 @@ static class ItemRegistrationHandler
             }
 
             DawnShopItemInfo shopInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
-            itemsWithShopInfo[buyableItem] = shopInfo;
+            itemsWithShopInfo[buyableItem.itemName] = shopInfo;
         }
 
         foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
@@ -265,9 +265,9 @@ static class ItemRegistrationHandler
                 item.SetDawnInfo(LethalContent.Items[key]);
                 continue;
             }
-            itemWeightBuilder.TryGetValue(item, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
+            itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
             DawnScrapItemInfo? scrapInfo = null;
-            itemsWithShopInfo.TryGetValue(item, out DawnShopItemInfo? shopInfo);
+            itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);
 
             if (weightTableBuilder != null)
             {

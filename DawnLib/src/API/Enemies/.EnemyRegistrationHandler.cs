@@ -288,52 +288,52 @@ static class EnemyRegistrationHandler
 
     private static void RegisterEnemies()
     {
-        Dictionary<EnemyType, WeightTableBuilder<DawnMoonInfo>> enemyInsideWeightBuilder = new();
-        Dictionary<EnemyType, WeightTableBuilder<DawnMoonInfo>> enemyOutsideWeightBuilder = new();
-        Dictionary<EnemyType, WeightTableBuilder<DawnMoonInfo>> enemyDaytimeWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> enemyInsideWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> enemyOutsideWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> enemyDaytimeWeightBuilder = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
             NamespacedKey<DawnMoonInfo> moonKey = moonInfo.TypedKey;
 
-            foreach (var enemyWithRarity in level.Enemies)
+            foreach (SpawnableEnemyWithRarity enemyWithRarity in level.Enemies)
             {
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (!enemyInsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!enemyInsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    enemyInsideWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
+                    enemyInsideWeightBuilder[enemyWithRarity.enemyType.name] = weightTableBuilder;
                 }
                 Debuggers.Enemies?.Log($"Adding inside weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
             }
 
-            foreach (var enemyWithRarity in level.OutsideEnemies)
+            foreach (SpawnableEnemyWithRarity enemyWithRarity in level.OutsideEnemies)
             {
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (!enemyOutsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!enemyOutsideWeightBuilder.TryGetValue(enemyWithRarity.enemyType.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    enemyOutsideWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
+                    enemyOutsideWeightBuilder[enemyWithRarity.enemyType.name] = weightTableBuilder;
                 }
                 Debuggers.Enemies?.Log($"Adding outside weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
             }
 
-            foreach (var enemyWithRarity in level.DaytimeEnemies)
+            foreach (SpawnableEnemyWithRarity enemyWithRarity in level.DaytimeEnemies)
             {
                 if (enemyWithRarity.enemyType == null)
                     continue;
 
-                if (!enemyDaytimeWeightBuilder.TryGetValue(enemyWithRarity.enemyType, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!enemyDaytimeWeightBuilder.TryGetValue(enemyWithRarity.enemyType.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    enemyDaytimeWeightBuilder[enemyWithRarity.enemyType] = weightTableBuilder;
+                    enemyDaytimeWeightBuilder[enemyWithRarity.enemyType.name] = weightTableBuilder;
                 }
                 Debuggers.Enemies?.Log($"Adding daytime weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
                 weightTableBuilder.AddWeight(moonKey, enemyWithRarity.rarity);
@@ -382,19 +382,19 @@ static class EnemyRegistrationHandler
             DawnEnemyLocationInfo? outsideInfo = null;
             DawnEnemyLocationInfo? daytimeInfo = null;
 
-            if (enemyInsideWeightBuilder.ContainsKey(enemyType))
+            if (enemyInsideWeightBuilder.ContainsKey(enemyType.name))
             {
-                insideInfo = new DawnEnemyLocationInfo(enemyInsideWeightBuilder[enemyType].Build());
+                insideInfo = new DawnEnemyLocationInfo(enemyInsideWeightBuilder[enemyType.name].Build());
             }
 
-            if (enemyOutsideWeightBuilder.ContainsKey(enemyType))
+            if (enemyOutsideWeightBuilder.ContainsKey(enemyType.name))
             {
-                outsideInfo = new DawnEnemyLocationInfo(enemyOutsideWeightBuilder[enemyType].Build());
+                outsideInfo = new DawnEnemyLocationInfo(enemyOutsideWeightBuilder[enemyType.name].Build());
             }
 
-            if (enemyDaytimeWeightBuilder.ContainsKey(enemyType))
+            if (enemyDaytimeWeightBuilder.ContainsKey(enemyType.name))
             {
-                daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType].Build());
+                daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType.name].Build());
             }
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];

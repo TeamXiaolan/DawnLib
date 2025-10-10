@@ -25,6 +25,7 @@ static class MoonRegistrationHandler
 
         using (new DetourContext(priority: int.MaxValue))
         {
+            On.Terminal.Awake += RegisterDawnLevels;
             On.StartOfRound.Awake += CollectTestLevel;
             On.QuickMenuManager.Start += CollectLevels;
         }
@@ -39,6 +40,56 @@ static class MoonRegistrationHandler
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+    }
+
+    private static void RegisterDawnLevels(On.Terminal.orig_Awake orig, Terminal self)
+    {
+        _ = TerminalRefs.Instance;
+        List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
+        List<TerminalKeyword> allKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
+
+        List<SelectableLevel> levels = StartOfRoundRefs.Instance.levels.ToList();
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            moonInfo.Level.levelID = levels.Count;
+            moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
+            moonInfo.RouteNode.displayPlanetInfo = levels.Count;
+            levels.Add(moonInfo.Level);
+
+            UpdateMoonPrice(moonInfo);
+
+            if (!LethalContent.Moons.IsFrozen)
+            {
+                routeNouns.Add(new CompatibleNoun()
+                {
+                    noun = moonInfo.NameKeyword,
+                    result = moonInfo.RouteNode
+                });
+                allKeywords.Add(moonInfo.NameKeyword);
+                moonInfo.NameKeyword.defaultVerb = TerminalRefs.RouteKeyword;
+
+                moonInfo.RouteNode.overrideOptions = true;
+                moonInfo.RouteNode.terminalOptions = [
+                    new CompatibleNoun()
+                    {
+                        noun = TerminalRefs.DenyKeyword,
+                        result = TerminalRefs.CancelRouteNode
+                    },
+                    new CompatibleNoun()
+                    {
+                        noun = TerminalRefs.ConfirmPurchaseKeyword,
+                        result = moonInfo.ReceiptNode
+                    }
+                ];
+            }
+        }
+        StartOfRoundRefs.Instance.levels = levels.ToArray();
+        TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
+        TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
+        orig(self);
     }
 
     private static void FixDawnMoonItems()
@@ -58,9 +109,10 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
+                bool enemyIsValid = spawnableItemWithRarity.spawnableItem.HasDawnInfo();
                 foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
                 {
-                    if (itemInfo.Item != spawnableItemWithRarity.spawnableItem && (itemInfo.Item.itemName == spawnableItemWithRarity.spawnableItem.itemName || itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name))
+                    if (!enemyIsValid && itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name)
                     {
                         itemsToDestroy.Add(spawnableItemWithRarity.spawnableItem);
                         spawnableItemWithRarity.spawnableItem = itemInfo.Item;
@@ -93,9 +145,10 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
+                bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
                 foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
                 {
-                    if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
+                    if (!enemyIsValid && enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name)
                     {
                         Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
@@ -113,9 +166,10 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
+                bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
                 foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
                 {
-                    if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
+                    if (!enemyIsValid && enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name)
                     {
                         Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
@@ -133,9 +187,10 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
+                bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
                 foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
                 {
-                    if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
+                    if (!enemyIsValid && enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name)
                     {
                         Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
@@ -279,53 +334,6 @@ static class MoonRegistrationHandler
     private static void CollectLevels(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
     {
         orig(self);
-        Terminal terminal = TerminalRefs.Instance;
-        TerminalKeyword routeKeyword = TerminalRefs.RouteKeyword;
-        List<CompatibleNoun> routeNouns = routeKeyword.compatibleNouns.ToList();
-        List<TerminalKeyword> allKeywords = terminal.terminalNodes.allKeywords.ToList();
-
-        List<SelectableLevel> levels = StartOfRound.Instance.levels.ToList();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-        {
-            if (moonInfo.ShouldSkipIgnoreOverride())
-                continue;
-
-            moonInfo.Level.levelID = levels.Count;
-            moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
-            moonInfo.RouteNode.displayPlanetInfo = levels.Count;
-            levels.Add(moonInfo.Level);
-
-            UpdateMoonPrice(moonInfo);
-
-            if (!LethalContent.Moons.IsFrozen)
-            {
-                routeNouns.Add(new CompatibleNoun()
-                {
-                    noun = moonInfo.NameKeyword,
-                    result = moonInfo.RouteNode
-                });
-                allKeywords.Add(moonInfo.NameKeyword);
-                moonInfo.NameKeyword.defaultVerb = routeKeyword;
-
-                moonInfo.RouteNode.overrideOptions = true;
-                moonInfo.RouteNode.terminalOptions = [
-                    new CompatibleNoun()
-                    {
-                        noun = TerminalRefs.DenyKeyword,
-                        result = TerminalRefs.CancelRouteNode
-                    },
-                    new CompatibleNoun()
-                    {
-                        noun = TerminalRefs.ConfirmPurchaseKeyword,
-                        result = moonInfo.ReceiptNode
-                    }
-                ];
-            }
-        }
-        StartOfRound.Instance.levels = levels.ToArray();
-        routeKeyword.compatibleNouns = routeNouns.ToArray();
-        terminal.terminalNodes.allKeywords = allKeywords.ToArray();
-
         if (LethalContent.Moons.IsFrozen)
             return;
 
@@ -350,7 +358,7 @@ static class MoonRegistrationHandler
 
             TerminalNode? routeNode = null;
             TerminalKeyword? nameKeyword = null;
-            foreach (CompatibleNoun compatibleNoun in routeKeyword.compatibleNouns)
+            foreach (CompatibleNoun compatibleNoun in TerminalRefs.RouteKeyword.compatibleNouns)
             {
                 if (compatibleNoun.result.displayPlanetInfo == level.levelID)
                 {
