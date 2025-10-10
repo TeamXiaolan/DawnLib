@@ -87,7 +87,7 @@ public class MeshReplacement : HierarchyReplacement
     }
 }
 
-[CreateAssetMenu(fileName = "New Materials Replacement", menuName = $"Entity Replacements/Replacements/Material Replacement")]
+[CreateAssetMenu(fileName = "New Material Replacement", menuName = $"Entity Replacements/Replacements/Material Replacement")]
 public class MaterialsReplacement : HierarchyReplacement
 {
     [field: SerializeField]
@@ -146,5 +146,31 @@ public class MaterialsReplacement : HierarchyReplacement
 
         int got = sourceMaterials?.Length ?? 0;
         DuskPlugin.Logger.LogWarning($"TransferRenderer: Material count mismatch (got {got}, need {requiredCount}). Resized with fallback materials.");
+    }
+}
+
+[CreateAssetMenu(fileName = "New MaterialProperties Replacement", menuName = $"Entity Replacements/Replacements/MaterialProperties Replacement")]
+public class TextureReplacement : HierarchyReplacement
+{
+    [field: SerializeField]
+    public List<MaterialPropertiesWithIndex> ReplacementMaterialProperties { get; private set; } = new();
+
+    public override void Apply(Transform rootTransform)
+    {
+        ReplaceMaterials(rootTransform.Find(HierarchyPath).GetComponent<Renderer>());
+    }
+
+    private void ReplaceMaterials(Renderer targetRenderer)
+    {
+        Material[] existingMaterials = targetRenderer.materials;
+        foreach (MaterialPropertiesWithIndex materialPropertyWithIndex in ReplacementMaterialProperties)
+        {
+            if (materialPropertyWithIndex != null && materialPropertyWithIndex.Index >= 0 && materialPropertyWithIndex.Index < existingMaterials.Length)
+            {
+                existingMaterials[materialPropertyWithIndex.Index].mainTexture = materialPropertyWithIndex.BaseMap;
+                // todo the rest
+            }
+        }
+        targetRenderer.materials = existingMaterials;
     }
 }
