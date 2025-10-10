@@ -1,4 +1,12 @@
-# v0.3.1
+# v0.3.2
+
+- Added ScanNodeReplacement to EntityReplacements.
+- Gave devs support to NetworkVariable<bool> and NetworkVariable<float>.
+- Added tag: `#dawn_lib:has_buying_percent` to make your man have the buying percentage similar to company.
+- Fixed some lag issues in the Editor.dll.
+- Fixed replacing blank SO's.
+
+## v0.3.1
 
 - Switched from using quaternion on entity replacements, I realised that if even I don't get how they work, I can't expect anyone else to also understand that.
 

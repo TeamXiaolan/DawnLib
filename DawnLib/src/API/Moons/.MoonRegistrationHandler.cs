@@ -19,7 +19,8 @@ static class MoonRegistrationHandler
         LethalContent.Moons.AddAutoTaggers(
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost == 0),
-            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost > 0)
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost > 0),
+            new SimpleAutoTagger<DawnMoonInfo>(DawnLibTags.HasBuyingPercent, moonInfo => moonInfo.GetNumberlessPlanetName() == "Gordion")
         );
 
         using (new DetourContext(priority: int.MaxValue))
@@ -96,6 +97,7 @@ static class MoonRegistrationHandler
                 {
                     if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
                     {
+                        Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
                         spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
                         break;
@@ -115,6 +117,7 @@ static class MoonRegistrationHandler
                 {
                     if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
                     {
+                        Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
                         spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
                         break;
@@ -134,6 +137,7 @@ static class MoonRegistrationHandler
                 {
                     if (enemyInfo.EnemyType != spawnableEnemyWithRarity.enemyType && (enemyInfo.EnemyType.enemyName == spawnableEnemyWithRarity.enemyType.enemyName || enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name))
                     {
+                        Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
                         enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
                         spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
                         break;
@@ -144,6 +148,7 @@ static class MoonRegistrationHandler
 
         foreach (EnemyType enemyTypeToDestroy in enemiesToDestroy.ToArray())
         {
+            Debuggers.Moons?.Log($"destroying fake SO {enemyTypeToDestroy.name}");
             ScriptableObject.Destroy(enemyTypeToDestroy);
         }
     }
@@ -204,7 +209,7 @@ static class MoonRegistrationHandler
 
         builder.Append($"* {name} ");
 
-        if (moonInfo.HasTag(Tags.Company))
+        if (moonInfo.HasTag(DawnLibTags.HasBuyingPercent))
         {
             builder.Append("//  Buying at [companyBuyingPercent].");
         }
@@ -287,6 +292,7 @@ static class MoonRegistrationHandler
 
             moonInfo.Level.levelID = levels.Count;
             moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
+            moonInfo.RouteNode.displayPlanetInfo = levels.Count;
             levels.Add(moonInfo.Level);
 
             UpdateMoonPrice(moonInfo);

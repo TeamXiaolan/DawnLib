@@ -6,7 +6,7 @@ using BepInEx.Logging;
 using Dawn.Internal;
 using Dawn.Utils;
 using PathfindingLib;
-using UnityEngine;
+using Unity.Netcode;
 
 namespace Dawn;
 
@@ -23,6 +23,12 @@ public class DawnPlugin : BaseUnityPlugin
 
     private void Awake()
     {
+        NetworkVariableSerializationTypes.InitializeSerializer_UnmanagedByMemcpy<bool>();
+        NetworkVariableSerializationTypes.InitializeEqualityChecker_UnmanagedIEquatable<bool>();
+
+        NetworkVariableSerializationTypes.InitializeSerializer_UnmanagedByMemcpy<float>();
+        NetworkVariableSerializationTypes.InitializeEqualityChecker_UnmanagedIEquatable<float>();
+
         Logger = base.Logger;
         Debuggers.Bind(Config);
         DawnConfig.Bind(Config);

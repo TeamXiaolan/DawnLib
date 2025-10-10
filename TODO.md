@@ -30,4 +30,5 @@ less important:
 
 ## Needs to be done eventually
 
-- Interiors, Moons.
+- Make a lot of the dusk stuff add-able via code.
+- Add savefile saving via namespaces and itemnames so even with removing a mod or adding one, the save file doesnt break or items get replaced by other ones.
