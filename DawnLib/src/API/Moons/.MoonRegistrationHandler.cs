@@ -30,6 +30,8 @@ static class MoonRegistrationHandler
             On.QuickMenuManager.Start += CollectLevels;
         }
 
+        LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
+
         LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
         LethalContent.Items.OnFreeze += FixDawnMoonItems;
 
@@ -40,6 +42,54 @@ static class MoonRegistrationHandler
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+    }
+
+    private static void FixAmbienceLibraries()
+    {
+        List<LevelAmbienceLibrary> vanillaLevelAmbienceLibraries = new();
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (!moonInfo.TypedKey.IsVanilla())
+                continue;
+
+            if (moonInfo.Level.levelAmbienceClips != null) vanillaLevelAmbienceLibraries.Add(moonInfo.Level.levelAmbienceClips);
+            vanillaLevelAmbienceLibraries.AddRange(moonInfo.Level.dungeonFlowTypes.Select(dungeonFlowType => dungeonFlowType.overrideLevelAmbience).Where(x => x != null));
+        }
+        vanillaLevelAmbienceLibraries = vanillaLevelAmbienceLibraries.Distinct().ToList();
+
+        List<LevelAmbienceLibrary> ambiencesToDestroy = new();
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            foreach (LevelAmbienceLibrary levelAmbienceLibrary in vanillaLevelAmbienceLibraries)
+            {
+                if (moonInfo.Level.levelAmbienceClips != null && moonInfo.Level.levelAmbienceClips.name == levelAmbienceLibrary.name)
+                {
+                    ambiencesToDestroy.Add(moonInfo.Level.levelAmbienceClips);
+                    moonInfo.Level.levelAmbienceClips = levelAmbienceLibrary;
+                }
+
+                for (int i = 0; i < moonInfo.Level.dungeonFlowTypes.Length; i++)
+                {
+                    LevelAmbienceLibrary? overrideLevelAmbienceLibrary = moonInfo.Level.dungeonFlowTypes[i].overrideLevelAmbience;
+                    if (overrideLevelAmbienceLibrary == null)
+                        continue;
+
+                    if (overrideLevelAmbienceLibrary.name != levelAmbienceLibrary.name)
+                        continue;
+
+                    ambiencesToDestroy.Add(overrideLevelAmbienceLibrary);
+                    moonInfo.Level.dungeonFlowTypes[i].overrideLevelAmbience = levelAmbienceLibrary;
+                }
+            }
+        }
+
+        for (int i = ambiencesToDestroy.Count - 1; i >= 0; i--)
+        {
+            ScriptableObject.Destroy(ambiencesToDestroy[i]);
+        }
     }
 
     private static void RegisterDawnLevels(On.Terminal.orig_Awake orig, Terminal self)
@@ -122,9 +172,9 @@ static class MoonRegistrationHandler
             }
         }
 
-        foreach (Item item in itemsToDestroy.ToArray())
+        for (int i = itemsToDestroy.Count - 1; i >= 0; i--)
         {
-            ScriptableObject.Destroy(item);
+            ScriptableObject.Destroy(itemsToDestroy[i]);
         }
     }
 
@@ -201,10 +251,10 @@ static class MoonRegistrationHandler
             }
         }
 
-        foreach (EnemyType enemyTypeToDestroy in enemiesToDestroy.ToArray())
+
+        for (int i = enemiesToDestroy.Count - 1; i >= 0; i--)
         {
-            Debuggers.Moons?.Log($"destroying fake SO {enemyTypeToDestroy.name}");
-            ScriptableObject.Destroy(enemyTypeToDestroy);
+            ScriptableObject.Destroy(enemiesToDestroy[i]);
         }
     }
 
