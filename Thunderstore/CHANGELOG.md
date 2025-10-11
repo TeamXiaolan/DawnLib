@@ -8,6 +8,7 @@
 - Fixed replacing blank SO's of all the ones that LLL replaced (and more) in DawnLib content.
 - Changed MapObjects to use NamespacedKeys.
 - Inside MapObjects spawn more performantly now too.
+- Fixed a small issue wit hotloading where loading too early into a moon unlocks the lever too early.
 
 ## v0.3.1
 

@@ -343,6 +343,7 @@ static class MoonRegistrationHandler
                 yield return new WaitUntil(() => DawnMoonNetworker.Instance.allPlayersDone);
             }
         }
+        self.shipTravelCoroutine = null;
     }
 
     private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)

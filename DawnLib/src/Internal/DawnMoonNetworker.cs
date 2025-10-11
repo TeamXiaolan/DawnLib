@@ -225,7 +225,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         if (remainingPlayers <= 0)
         {
             // ready!
-            UnlockLever();
+            StartCoroutine(UnlockLever());
         }
         else
         {
@@ -250,9 +250,10 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         StartOfRound.Instance.travellingToNewLevel = true;
     }
 
-    private void UnlockLever()
+    private IEnumerator UnlockLever()
     {
         allPlayersDone = true;
+        yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null);
         StartMatchLeverRefs.Instance.triggerScript.interactable = true;
         StartOfRound.Instance.travellingToNewLevel = false;
     }
