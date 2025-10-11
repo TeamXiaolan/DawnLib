@@ -6,8 +6,7 @@
 - Dead body additions.
 - Handling vehicle spawning when already bought on loading a lobby, also always have the station spawn at the start of the lobby.
 - Handling vehicle no station equaling magnet station.
-- Do replacing of SpawnableMapObject's, SpawnableOutsideObject's and LevelAmbienceLibrary's in moons for their fake SO's.
-- Added a texture replacement to hierarchy replacement.
+- Do replacing of LevelAmbienceLibrary's in moons for their fake SO's.
 
 less important:
 
