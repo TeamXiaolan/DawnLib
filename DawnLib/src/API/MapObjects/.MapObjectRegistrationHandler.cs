@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
+using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using Unity.Netcode;
@@ -21,12 +22,26 @@ static class MapObjectRegistrationHandler
             On.StartOfRound.Awake += CollectVanillaMapObjects;
         }
 
+        _ = new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), OnRandomMapObjectSpawnAwake);
+
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
         IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
         LethalContent.Moons.OnFreeze += RegisterMapObjects;
         LethalContent.MapObjects.OnFreeze += FixMapObjectBlanks;
+    }
+
+    private static void OnRandomMapObjectSpawnAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
+    {
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        {
+            if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            self.spawnablePrefabs.Add(mapObjectInfo.MapObject);
+        }
+        orig(self);
     }
 
     private static void CollectVanillaMapObjects(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -285,17 +300,6 @@ static class MapObjectRegistrationHandler
 
     private static void UpdateMapObjectSpawnWeights(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
     {
-        RandomMapObject[] randomMapObjectSpawns = UnityEngine.Object.FindObjectsOfType<RandomMapObject>();
-        foreach (RandomMapObject randomMapObject in randomMapObjectSpawns)
-        {
-            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
-            {
-                if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
-                    continue;
-
-                randomMapObject.spawnablePrefabs.Add(mapObjectInfo.MapObject);
-            }
-        }
         UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
         orig(self);
     }
