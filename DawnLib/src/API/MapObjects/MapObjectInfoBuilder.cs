@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dawn;
@@ -108,7 +107,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
                 _weights = ProviderTable<AnimationCurve?, DawnMoonInfo>.Empty();
             }
-            return new DawnOutsideMapObjectInfo(_weights, _alignWithTerrain);
+            return new DawnOutsideMapObjectInfo(_weights, false, 0, [], Vector3.zero, AnimationCurve.Constant(0, 1, 0), _alignWithTerrain);
         }
     }
 

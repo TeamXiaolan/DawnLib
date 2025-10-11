@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -167,10 +168,42 @@ public class TextureReplacement : HierarchyReplacement
         {
             if (materialPropertyWithIndex != null && materialPropertyWithIndex.Index >= 0 && materialPropertyWithIndex.Index < existingMaterials.Length)
             {
-                existingMaterials[materialPropertyWithIndex.Index].mainTexture = materialPropertyWithIndex.BaseMap;
-                // todo the rest
+                if (materialPropertyWithIndex.BaseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_MainTex"))
+                {
+                    existingMaterials[materialPropertyWithIndex.Index].mainTexture = materialPropertyWithIndex.BaseMap;
+                }
+                if (materialPropertyWithIndex.MaskMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_MaskMap"))
+                {
+                    existingMaterials[materialPropertyWithIndex.Index].SetTexture("_MaskMap", materialPropertyWithIndex.MaskMap);
+                }
+                if (materialPropertyWithIndex.NormalMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_NormalMap"))
+                {
+                    existingMaterials[materialPropertyWithIndex.Index].SetTexture("_NormalMap", materialPropertyWithIndex.NormalMap);
+                }
+                if (materialPropertyWithIndex.GradientColor != Color.black && existingMaterials[materialPropertyWithIndex.Index].HasColor("_Gradient_Color"))
+                {
+                    existingMaterials[materialPropertyWithIndex.Index].SetColor("_Gradient_Color", materialPropertyWithIndex.GradientColor);
+                }
             }
         }
         targetRenderer.materials = existingMaterials;
     }
+}
+
+[Serializable]
+public class MaterialPropertiesWithIndex
+{
+    [field: SerializeField]
+    public Texture2D? BaseMap { get; private set; }
+    [field: SerializeField]
+    public Texture2D? MaskMap { get; private set; }
+    [field: SerializeField]
+    public Texture2D? NormalMap { get; private set; }
+
+    [field: Tooltip("I think only hydrogere would make use of this?")]
+    [field: SerializeField]
+    public Color GradientColor { get; private set; } = Color.black;
+
+    [field: SerializeField]
+    public int Index { get; private set; }
 }

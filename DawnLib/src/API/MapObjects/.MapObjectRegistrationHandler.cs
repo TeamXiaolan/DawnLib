@@ -3,6 +3,7 @@ using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,15 +12,97 @@ namespace Dawn;
 static class MapObjectRegistrationHandler
 {
     private static int _spawnedObjects;
+    private static List<GameObject> _vanillaMapObjects = new();
 
     internal static void Init()
     {
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.StartOfRound.Awake += CollectVanillaMapObjects;
+        }
+
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
         IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
         LethalContent.Moons.OnFreeze += RegisterMapObjects;
+        LethalContent.MapObjects.OnFreeze += FixMapObjectBlanks;
     }
+
+    private static void CollectVanillaMapObjects(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        if (LethalContent.MapObjects.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
+        foreach (SelectableLevel selectableLevel in self.levels)
+        {
+            Debuggers.MapObjects?.Log($"Collecting vanilla map objects from supposedly vanilla level {selectableLevel.name}");
+            _vanillaMapObjects.AddRange(selectableLevel.spawnableMapObjects.Select(x => x.prefabToSpawn));
+            _vanillaMapObjects.AddRange(selectableLevel.spawnableOutsideObjects.Select(x => x.spawnableObject.prefabToSpawn));
+        }
+        _vanillaMapObjects = _vanillaMapObjects.Distinct().ToList();
+        orig(self);
+    }
+
+    private static void FixMapObjectBlanks()
+    {
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            foreach (SpawnableMapObject spawnableMapObject in moonInfo.Level.spawnableMapObjects)
+            {
+                if (spawnableMapObject.prefabToSpawn == null)
+                    continue;
+
+                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+                {
+                    if (mapObjectInfo.InsideInfo == null)
+                        continue;
+
+                    if (mapObjectInfo.MapObject.name != spawnableMapObject.prefabToSpawn.name)
+                        continue;
+
+                    spawnableMapObject.prefabToSpawn = mapObjectInfo.MapObject;
+                    spawnableMapObject.spawnFacingAwayFromWall = mapObjectInfo.InsideInfo.SpawnFacingAwayFromWall;
+                    spawnableMapObject.spawnFacingWall = mapObjectInfo.InsideInfo.SpawnFacingWall;
+                    spawnableMapObject.spawnWithBackToWall = mapObjectInfo.InsideInfo.SpawnWithBackToWall;
+                    spawnableMapObject.spawnWithBackFlushAgainstWall = mapObjectInfo.InsideInfo.SpawnWithBackFlushAgainstWall;
+                    spawnableMapObject.requireDistanceBetweenSpawns = mapObjectInfo.InsideInfo.RequireDistanceBetweenSpawns;
+                    spawnableMapObject.disallowSpawningNearEntrances = mapObjectInfo.InsideInfo.DisallowSpawningNearEntrances;
+                    break;
+                }
+            }
+
+            foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObjectWithRarity in moonInfo.Level.spawnableOutsideObjects)
+            {
+                if (spawnableOutsideObjectWithRarity.spawnableObject?.prefabToSpawn == null)
+                    continue;
+
+                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+                {
+                    if (mapObjectInfo.OutsideInfo == null)
+                        continue;
+
+                    if (mapObjectInfo.MapObject.name != spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn.name)
+                        continue;
+
+                    spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn = mapObjectInfo.MapObject;
+                    spawnableOutsideObjectWithRarity.spawnableObject.spawnFacingAwayFromWall = mapObjectInfo.OutsideInfo.SpawnFacingAwayFromWall;
+                    spawnableOutsideObjectWithRarity.spawnableObject.objectWidth = mapObjectInfo.OutsideInfo.ObjectWidth;
+                    spawnableOutsideObjectWithRarity.spawnableObject.spawnableFloorTags = mapObjectInfo.OutsideInfo.SpawnableFloorTags;
+                    spawnableOutsideObjectWithRarity.spawnableObject.rotationOffset = mapObjectInfo.OutsideInfo.RotationOffset;
+                    spawnableOutsideObjectWithRarity.randomAmount = mapObjectInfo.OutsideInfo.VanillaAnimationCurve;
+                    break;
+                }
+            }
+        }
+    }
+
     private static void RegenerateNavMeshTranspiler(ILContext il)
     {
         ILCursor c = new ILCursor(il);
@@ -42,8 +125,8 @@ static class MapObjectRegistrationHandler
         Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo>> insideWeightsByPrefab = new();
         Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo>> outsideWeightsByPrefab = new();
 
-        Dictionary<GameObject, InsideMapObjectSettings> insidePlacementByPrefab = new();
-        Dictionary<GameObject, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
+        Dictionary<string, InsideMapObjectSettings> insidePlacementByPrefab = new();
+        Dictionary<string, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -54,14 +137,23 @@ static class MapObjectRegistrationHandler
                 if (prefab == null)
                     continue;
 
+                foreach (GameObject gameObject in _vanillaMapObjects)
+                {
+                    if (gameObject.name == prefab.name)
+                    {
+                        prefab = gameObject;
+                        break;
+                    }
+                }
+
                 if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo> builder))
                 {
                     builder = new CurveTableBuilder<DawnMoonInfo>();
                     insideWeightsByPrefab[prefab] = builder;
 
-                    if (!insidePlacementByPrefab.ContainsKey(prefab))
+                    if (!insidePlacementByPrefab.ContainsKey(prefab.name))
                     {
-                        insidePlacementByPrefab[prefab] = new InsideMapObjectSettings()
+                        insidePlacementByPrefab[prefab.name] = new InsideMapObjectSettings()
                         {
                             spawnFacingAwayFromWall = mapObject.spawnFacingAwayFromWall,
                             spawnFacingWall = mapObject.spawnFacingWall,
@@ -83,14 +175,23 @@ static class MapObjectRegistrationHandler
                     continue;
 
                 GameObject prefab = spawnable.prefabToSpawn;
+                foreach (GameObject gameObject in _vanillaMapObjects)
+                {
+                    if (gameObject.name == prefab.name)
+                    {
+                        prefab = gameObject;
+                        break;
+                    }
+                }
+
                 if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo> builder))
                 {
                     builder = new CurveTableBuilder<DawnMoonInfo>();
                     outsideWeightsByPrefab[prefab] = builder;
 
-                    if (!outsidePlacementByPrefab.ContainsKey(prefab))
+                    if (!outsidePlacementByPrefab.ContainsKey(prefab.name))
                     {
-                        outsidePlacementByPrefab[prefab] = new OutsideMapObjectSettings()
+                        outsidePlacementByPrefab[prefab.name] = new OutsideMapObjectSettings()
                         {
                             AlignWithTerrain = false,
                         };
@@ -101,13 +202,13 @@ static class MapObjectRegistrationHandler
             }
         }
 
-        Dictionary<GameObject, DawnInsideMapObjectInfo> vanillaInsideMapObjectsDict = new();
+        Dictionary<GameObject, DawnInsideMapObjectInfo> realInsideMapObjectsDict = new();
         foreach (var kvp in insideWeightsByPrefab)
         {
             GameObject prefab = kvp.Key;
             ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
 
-            insidePlacementByPrefab.TryGetValue(prefab, out InsideMapObjectSettings mapObjectSettings);
+            insidePlacementByPrefab.TryGetValue(prefab.name, out InsideMapObjectSettings mapObjectSettings);
             DawnInsideMapObjectInfo insideInfo = new(
                 table,
                 mapObjectSettings.spawnFacingAwayFromWall,
@@ -118,30 +219,35 @@ static class MapObjectRegistrationHandler
                 mapObjectSettings.disallowSpawningNearEntrances
             );
 
-            vanillaInsideMapObjectsDict[prefab] = insideInfo;
+            realInsideMapObjectsDict[prefab] = insideInfo;
         }
 
-        Dictionary<GameObject, DawnOutsideMapObjectInfo> vanillaOutsideMapObjectsDict = new();
+        Dictionary<GameObject, DawnOutsideMapObjectInfo> realOutsideMapObjectsDict = new();
         foreach (var kvp in outsideWeightsByPrefab)
         {
             GameObject prefab = kvp.Key;
             ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
-            outsidePlacementByPrefab.TryGetValue(prefab, out OutsideMapObjectSettings mapObjectSettings);
+            outsidePlacementByPrefab.TryGetValue(prefab.name, out OutsideMapObjectSettings mapObjectSettings);
             DawnOutsideMapObjectInfo outsideInfo = new(
                 table,
+                mapObjectSettings.SpawnFacingAwayFromWall,
+                mapObjectSettings.ObjectWidth,
+                mapObjectSettings.SpawnableFloorTags,
+                mapObjectSettings.RotationOffset,
+                mapObjectSettings.VanillaAnimationCurve,
                 mapObjectSettings.AlignWithTerrain
             );
-            vanillaOutsideMapObjectsDict[prefab] = outsideInfo;
+            realOutsideMapObjectsDict[prefab] = outsideInfo;
         }
 
-        List<GameObject> vanillaMapObjects = insideWeightsByPrefab.Keys
+        List<GameObject> realMapObjects = insideWeightsByPrefab.Keys
             .Concat(outsideWeightsByPrefab.Keys)
             .Distinct()
             .ToList();
 
-        foreach (GameObject mapObject in vanillaMapObjects)
+        foreach (GameObject mapObject in realMapObjects)
         {
-            if (mapObject.TryGetComponent(out DawnMapObjectInfoContainer _))
+            if (mapObject.GetComponent<DawnMapObjectInfoContainer>())
             {
                 Debuggers.MapObjects?.Log($"Already registered {mapObject}");
                 continue;
@@ -166,8 +272,8 @@ static class MapObjectRegistrationHandler
                 continue;
             }
 
-            vanillaInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
-            vanillaOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
+            realInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
+            realOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo, null);
             DawnMapObjectInfoContainer container = mapObject.AddComponent<DawnMapObjectInfoContainer>();
@@ -317,19 +423,6 @@ static class MapObjectRegistrationHandler
             foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
             {
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
-                    continue;
-
-                bool alreadyExists = false;
-                foreach (SpawnableMapObject newSpawnableMapObject in newSpawnableMapObjects)
-                {
-                    if (newSpawnableMapObject.prefabToSpawn == mapObjectInfo.MapObject)
-                    {
-                        alreadyExists = true;
-                        break;
-                    }
-                }
-
-                if (alreadyExists)
                     continue;
 
                 SpawnableMapObject spawnableMapObject = new()
