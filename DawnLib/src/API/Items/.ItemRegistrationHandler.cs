@@ -9,8 +9,6 @@ namespace Dawn;
 
 static class ItemRegistrationHandler
 {
-    private static List<Item> _networkPrefabItem = new();
-
     internal static void Init()
     {
         LethalContent.Items.AddAutoTaggers(
@@ -236,7 +234,7 @@ static class ItemRegistrationHandler
             }
 
             DawnShopItemInfo shopInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
-            itemsWithShopInfo[buyableItem.itemName] = shopInfo;
+            itemsWithShopInfo[buyableItem.name] = shopInfo;
         }
 
         foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
