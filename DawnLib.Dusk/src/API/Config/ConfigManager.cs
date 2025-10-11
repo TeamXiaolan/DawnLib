@@ -57,14 +57,7 @@ public class ConfigManager(ConfigFile file)
                 continue;
 
             string name = entryParts[0].ToLowerInvariant();
-
-            if (name == "custom")
-            {
-                name = "modded";
-            }
-
             spawnRateByMoonName[name] = entryParts[1];
-            spawnRateByMoonName[name + "level"] = entryParts[1];
         }
         return spawnRateByMoonName;
     }
