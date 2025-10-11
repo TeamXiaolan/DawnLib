@@ -65,6 +65,9 @@
         <NetcodePatch Include="$(TargetPath)" />
     </ItemGroup>
     <ItemGroup>
+      <Reference Include="MMHOOK_Unity.TextMeshPro.dll" Publicize="true">
+        <HintPath>deps\MMHOOK_Unity.TextMeshPro.dll</HintPath>
+      </Reference>
       <Reference Include="LethalConfig" Publicize="true">
         <HintPath>deps\LethalConfig.dll</HintPath>
       </Reference>

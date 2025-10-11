@@ -79,6 +79,7 @@ public class DawnPlugin : BaseUnityPlugin
         MiscFixesPatch.Init();
         SaveDataPatch.Init();
         TerminalPatches.Init();
+        DebugPatches.Init();
 
         DawnNetworkSceneManager.Init();
 
