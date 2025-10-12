@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Dusk;
 
-public abstract class HierarchyReplacement : ScriptableObject
+public abstract class Hierarchy : ScriptableObject
 {
     [field: SerializeField]
     public string HierarchyPath { get; private set; }

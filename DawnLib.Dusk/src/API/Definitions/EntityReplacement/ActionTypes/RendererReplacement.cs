@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New Skinned Mesh Replacement", menuName = $"Entity Replacements/Replacements/SkinnedMesh Replacement")]
-public class SkinnedMeshReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New Skinned Mesh Replacement", menuName = $"Entity Replacements/Actions/SkinnedMesh Replacement")]
+public class SkinnedMeshReplacement : Hierarchy
 {
     [field: SerializeField]
     public SkinnedMeshRenderer ReplacementRenderer { get; private set; }
@@ -69,8 +69,8 @@ public class SkinnedMeshReplacement : HierarchyReplacement
     }
 }
 
-[CreateAssetMenu(fileName = "New Mesh Replacement", menuName = $"Entity Replacements/Replacements/Mesh Replacement")]
-public class MeshReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New Mesh Replacement", menuName = $"Entity Replacements/Actions/Mesh Replacement")]
+public class MeshReplacement : Hierarchy
 {
     [field: SerializeField]
     public Mesh ReplacementMesh { get; private set; }
@@ -87,8 +87,8 @@ public class MeshReplacement : HierarchyReplacement
     }
 }
 
-[CreateAssetMenu(fileName = "New Material Replacement", menuName = $"Entity Replacements/Replacements/Material Replacement")]
-public class MaterialsReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New Material Replacement", menuName = $"Entity Replacements/Actions/Material Replacement")]
+public class MaterialsReplacement : Hierarchy
 {
     [field: SerializeField]
     public List<MaterialWithIndex> ReplacementMaterials { get; private set; } = new();
@@ -149,8 +149,8 @@ public class MaterialsReplacement : HierarchyReplacement
     }
 }
 
-[CreateAssetMenu(fileName = "New MaterialProperties Replacement", menuName = $"Entity Replacements/Replacements/MaterialProperties Replacement")]
-public class TextureReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New MaterialProperties Replacement", menuName = $"Entity Replacements/Actions/MaterialProperties Replacement")]
+public class TextureReplacement : Hierarchy
 {
     [field: SerializeField]
     public List<MaterialPropertiesWithIndex> ReplacementMaterialProperties { get; private set; } = new();

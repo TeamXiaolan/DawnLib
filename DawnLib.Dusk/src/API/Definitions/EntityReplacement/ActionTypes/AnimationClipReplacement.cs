@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New AnimationClip Replacement", menuName = $"Entity Replacements/Replacements/AnimationClip Replacement")]
-public class AnimationClipReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New AnimationClip Replacement", menuName = $"Entity Replacements/Actions/AnimationClip Replacement")]
+public class AnimationClipReplacement : Hierarchy
 {
     [field: SerializeField]
     public string OriginalClipName { get; private set; }

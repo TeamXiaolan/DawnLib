@@ -9,7 +9,7 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
 
     [field: Header("Nest")]
     [field: SerializeField]
-    public List<HierarchyReplacement> NestRendererReplacements { get; private set; } = new();
+    public List<Hierarchy> NestRendererReplacements { get; private set; } = new();
 
     [field: Header("EnemyType Audio")]
     [field: SerializeField]
@@ -34,7 +34,7 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
             return;
         }
 
-        foreach (HierarchyReplacement hierarchyReplacement in NestRendererReplacements)
+        foreach (Hierarchy hierarchyReplacement in NestRendererReplacements)
         {
             hierarchyReplacement.Apply(nest.transform);
         }
@@ -50,7 +50,7 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
     {
         Apply((T)enemyAI);
         enemyAI.SetEnemyReplacement(this);
-        foreach (HierarchyReplacement hierarchyReplacement in Replacements)
+        foreach (Hierarchy hierarchyReplacement in Replacements)
         {
             hierarchyReplacement.Apply(enemyAI.transform);
         }

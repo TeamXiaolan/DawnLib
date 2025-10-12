@@ -2,7 +2,9 @@
 
 - Fixed SkinnedMeshReplacement removing all base materials.
 - Allowed materials to be replaced with null to hide.
-- Added `DisableGameObjectReplacement` for doing stuff like disabling unwanted renderers.
+- Added `DisableGameObject` for doing stuff like disabling unwanted renderers.
+- Edited 1 character in the SmartAgentNavigator class that should fix a lot of pathing issues, this was so stupid.
+- Added `GameObjectEditor` for doing stuff like moving and rotating gameobjects.
 
 ## v0.3.2
 

@@ -1,10 +1,9 @@
-using System;
 using UnityEngine;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New ParticleSystem Replacement", menuName = $"Entity Replacements/Replacements/ParticleSystem Replacement")]
-public class ParticleSystemReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New ParticleSystem Replacement", menuName = $"Entity Replacements/Actions/ParticleSystem Replacement")]
+public class ParticleSystemReplacement : Hierarchy
 {
     [field: SerializeField]
     public ParticleSystem NewParticleSystem { get; private set; }

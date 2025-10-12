@@ -25,7 +25,7 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
     {
         Apply((T)grabbableObject);
         grabbableObject.SetGrabbableObjectReplacement(this);
-        foreach (HierarchyReplacement hierarchyReplacement in Replacements)
+        foreach (Hierarchy hierarchyReplacement in Replacements)
         {
             hierarchyReplacement.Apply(grabbableObject.transform);
         }

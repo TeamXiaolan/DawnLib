@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New ScanNodeProperties Replacement", menuName = $"Entity Replacements/Replacements/ScanNodeProperties Replacement")]
-public class ScanNodePropertiesReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New ScanNodeProperties Replacement", menuName = $"Entity Replacements/Actions/ScanNodeProperties Replacement")]
+public class ScanNodePropertiesReplacement : Hierarchy
 {
     [field: Tooltip("Leave empty if not replacing")]
     [field: SerializeField]

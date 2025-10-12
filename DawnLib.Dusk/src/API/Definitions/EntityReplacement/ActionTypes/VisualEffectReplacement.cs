@@ -3,8 +3,8 @@ using UnityEngine.VFX;
 
 namespace Dusk;
 
-[CreateAssetMenu(fileName = "New VisualEffectAsset Replacement", menuName = $"Entity Replacements/Replacements/VisualEffectAsset Replacement")]
-public class VisualEffectReplacement : HierarchyReplacement
+[CreateAssetMenu(fileName = "New VisualEffectAsset Replacement", menuName = $"Entity Replacements/Actions/VisualEffectAsset Replacement")]
+public class VisualEffectReplacement : Hierarchy
 {
     [field: SerializeField]
     public VisualEffectAsset VisualEffectAssetReplacement { get; private set; }

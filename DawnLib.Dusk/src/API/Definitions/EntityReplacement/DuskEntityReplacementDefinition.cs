@@ -18,7 +18,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     [field: Space(10)]
     [field: SerializeField]
-    public List<HierarchyReplacement> Replacements { get; private set; } = new();
+    public List<Hierarchy> Replacements { get; private set; } = new();
 
     [field: Tooltip("This is where you'd add gameobjects, main use case is adding meshes or cosmetics to entities.")]
     [field: SerializeField]
