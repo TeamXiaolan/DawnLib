@@ -2,6 +2,7 @@
 
 - Fixed SkinnedMeshReplacement removing all base materials.
 - Allowed materials to be replaced with null to hide.
+- Added `DisableGameObjectReplacement` for doing stuff like disabling unwanted renderers.
 
 ## v0.3.2
 

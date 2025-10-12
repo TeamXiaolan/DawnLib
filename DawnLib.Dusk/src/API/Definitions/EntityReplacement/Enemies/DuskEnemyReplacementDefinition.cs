@@ -57,27 +57,19 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            if (string.IsNullOrEmpty(gameObjectAddon.PathToGameObject))
-            {
+            GameObject gameObject = !string.IsNullOrEmpty(gameObjectAddon.PathToGameObject) ? enemyAI.transform.Find(gameObjectAddon.PathToGameObject).gameObject : enemyAI.gameObject;
+            if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
                 continue;
-            }
 
-            GameObject? gameObject = enemyAI.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
-            if (gameObject != null)
-            {
-                if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
-                    continue;
+            GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
+            addOn.transform.localPosition = gameObjectAddon.PositionOffset;
+            addOn.transform.rotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
 
-                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-                addOn.transform.localPosition = gameObjectAddon.PositionOffset;
-                addOn.transform.rotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
+            if (networkObject == null)
+                continue;
 
-                if (networkObject == null)
-                    continue;
-
-                networkObject.AutoObjectParentSync = false;
-                networkObject.Spawn();
-            }
+            networkObject.AutoObjectParentSync = false;
+            networkObject.Spawn();
         }
     }
 }
