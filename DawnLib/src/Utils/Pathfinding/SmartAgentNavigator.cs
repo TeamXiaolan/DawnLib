@@ -27,7 +27,6 @@ public class SmartAgentNavigator : NetworkBehaviour
     public EntranceTeleport? lastUsedEntranceTeleport = null;
 
     private Vector3 pointToGo = Vector3.zero;
-    private Coroutine? searchRoutine = null;
 
     private bool cantMove = false;
     private SmartPathTask? pathingTask = null;
@@ -102,7 +101,7 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     public bool DoPathingToDestination(Vector3 destination)
     {
-        if (searchRoutine != null)
+        if (_searchRoutine != null)
         {
             StopSearchRoutine();
         }
@@ -128,7 +127,7 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     private GoToDestinationResult GoToDestination(Vector3 targetPosition)
     {
-        var result = GoToDestinationResult.InProgress;
+        GoToDestinationResult result = GoToDestinationResult.InProgress;
 
         if (pathingTask == null)
         {
@@ -397,7 +396,6 @@ public class SmartAgentNavigator : NetworkBehaviour
         if (!agent.enabled)
             return;
 
-        _searchRadius = radius;
         StopSearchRoutine();
         _searchRoutine = StartCoroutine(SearchAlgorithm(radius));
     }
@@ -413,7 +411,6 @@ public class SmartAgentNavigator : NetworkBehaviour
     }
 
     private Coroutine? _searchRoutine;
-    private float _searchRadius = 50f;
     private readonly List<Vector3> _positionsToSearch = new();
     private readonly List<Vector3> _roamingPointsVectorList = new();
 
@@ -438,7 +435,7 @@ public class SmartAgentNavigator : NetworkBehaviour
             {
                 Debuggers.Pathfinding?.Log($"{this.gameObject.name} Search: {positionToTravel}");
                 GoToDestination(positionToTravel);
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(1f);
 
                 if (!agent.enabled || Vector3.Distance(this.transform.position, positionToTravel) <= 3 + agent.stoppingDistance)
                 {
