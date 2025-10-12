@@ -1,6 +1,7 @@
 # v0.3.3
 
 - Fixed SkinnedMeshReplacement removing all base materials.
+- Allowed materials to be replaced with null to hide.
 
 ## v0.3.2
 

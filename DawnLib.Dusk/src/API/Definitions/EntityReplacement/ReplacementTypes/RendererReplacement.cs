@@ -12,7 +12,7 @@ public class SkinnedMeshReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        ReplaceSkinnedMeshRenderer(rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>());
+        ReplaceSkinnedMeshRenderer(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>() : rootTransform.GetComponent<SkinnedMeshRenderer>());
     }
 
     private void ReplaceSkinnedMeshRenderer(SkinnedMeshRenderer targetSkinned)
@@ -77,7 +77,7 @@ public class MeshReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        ReplaceMeshRenderer(rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>(), rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>());
+        ReplaceMeshRenderer(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>() : rootTransform.GetComponent<MeshRenderer>(), !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>() : rootTransform.GetComponent<MeshFilter>());
     }
 
     private void ReplaceMeshRenderer(MeshRenderer targetMeshRenderer, MeshFilter targetMeshFilter)
@@ -95,7 +95,7 @@ public class MaterialsReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        ReplaceMaterials(rootTransform.Find(HierarchyPath).GetComponent<Renderer>());
+        ReplaceMaterials(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
     private void ReplaceMaterials(Renderer targetRenderer)
@@ -103,7 +103,7 @@ public class MaterialsReplacement : HierarchyReplacement
         Material[] existingMaterials = targetRenderer.sharedMaterials;
         foreach (MaterialWithIndex materialWithIndex in ReplacementMaterials)
         {
-            if (materialWithIndex != null && materialWithIndex.Index >= 0 && materialWithIndex.Index < existingMaterials.Length && materialWithIndex.Material != null)
+            if (materialWithIndex != null && materialWithIndex.Index >= 0 && materialWithIndex.Index < existingMaterials.Length)
             {
                 existingMaterials[materialWithIndex.Index] = materialWithIndex.Material;
             }
@@ -157,7 +157,7 @@ public class TextureReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        ReplaceMaterials(rootTransform.Find(HierarchyPath).GetComponent<Renderer>());
+        ReplaceMaterials(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
     private void ReplaceMaterials(Renderer targetRenderer)

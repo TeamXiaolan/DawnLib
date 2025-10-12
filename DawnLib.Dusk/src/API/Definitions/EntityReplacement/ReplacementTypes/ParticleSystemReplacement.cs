@@ -11,7 +11,7 @@ public class ParticleSystemReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        GameObject oldGameObject = rootTransform.Find(HierarchyPath).gameObject;
+        GameObject oldGameObject = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
         GameObject newGameObject = GameObject.Instantiate(NewParticleSystem.gameObject, oldGameObject.transform.parent);
         newGameObject.name = oldGameObject.name;
         Destroy(oldGameObject);

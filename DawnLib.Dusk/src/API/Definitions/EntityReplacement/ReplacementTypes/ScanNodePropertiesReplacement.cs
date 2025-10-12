@@ -28,7 +28,7 @@ public class ScanNodePropertiesReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        ScanNodeProperties scanNodeProperties = rootTransform.Find(HierarchyPath).GetComponent<ScanNodeProperties>();
+        ScanNodeProperties scanNodeProperties = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<ScanNodeProperties>() : rootTransform.GetComponent<ScanNodeProperties>();
         if (MaxRange > -1) scanNodeProperties.maxRange = MaxRange;
         if (MinRange > -1) scanNodeProperties.minRange = MinRange;
         scanNodeProperties.nodeType = NodeType;

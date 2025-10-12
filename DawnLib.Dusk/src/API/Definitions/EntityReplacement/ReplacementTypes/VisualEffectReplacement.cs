@@ -11,7 +11,7 @@ public class VisualEffectReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        VisualEffect visualEffect = rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>();
+        VisualEffect visualEffect = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
         visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
     }
 }

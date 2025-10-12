@@ -16,7 +16,7 @@ public class AnimationClipReplacement : HierarchyReplacement
 
     public override void Apply(Transform rootTransform)
     {
-        Animator animator = rootTransform.Find(HierarchyPath).GetComponent<Animator>();
+        Animator animator = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
         AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
         foreach (AnimationEventAddition animationEventAddition in PotentialAnimationEvents)
         {
