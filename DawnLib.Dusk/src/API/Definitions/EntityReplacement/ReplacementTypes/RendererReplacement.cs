@@ -17,37 +17,36 @@ public class SkinnedMeshReplacement : HierarchyReplacement
 
     private void ReplaceSkinnedMeshRenderer(SkinnedMeshRenderer targetSkinned)
     {
-        if (ReplacementRenderer.sharedMesh)
+        Material[] originalMaterials = targetSkinned.sharedMaterials;
+
+        Transform targetRoot = targetSkinned.rootBone;
+        Dictionary<string, Transform> targetLookup = BuildBoneLookup(targetRoot);
+
+        Transform[] srcBones = ReplacementRenderer.bones;
+        Transform[] mappedBones = new Transform[srcBones.Length];
+        for (int i = 0; i < srcBones.Length; i++)
         {
-            Transform targetRoot = targetSkinned.rootBone;
-            Dictionary<string, Transform> targetLookup = BuildBoneLookup(targetRoot);
-
-            Transform[] srcBones = ReplacementRenderer.bones;
-            Transform[] mappedBones = new Transform[srcBones.Length];
-            for (int i = 0; i < srcBones.Length; i++)
+            string? name = srcBones[i] ? srcBones[i].name : null;
+            if (string.IsNullOrEmpty(name) || !targetLookup.TryGetValue(name, out Transform transform))
             {
-                string? name = srcBones[i] ? srcBones[i].name : null;
-                if (string.IsNullOrEmpty(name) || !targetLookup.TryGetValue(name, out Transform transform))
-                {
-                    DuskPlugin.Logger.LogWarning($"TransferSMR: Could not map bone '{name}'. Using root fallback.");
-                    transform = targetRoot;
-                }
-                mappedBones[i] = transform;
+                DuskPlugin.Logger.LogWarning($"TransferSMR: Could not map bone '{name}'. Using root fallback.");
+                transform = targetRoot;
             }
-
-            Transform mappedRoot = targetSkinned.rootBone ? targetSkinned.rootBone : targetRoot;
-            if (ReplacementRenderer.rootBone)
-            {
-                targetLookup.TryGetValue(ReplacementRenderer.rootBone.name, out mappedRoot);
-            }
-
-            Mesh newMesh = ReplacementRenderer.sharedMesh;
-            targetSkinned.sharedMesh = newMesh;
-            targetSkinned.bones = mappedBones;
-            targetSkinned.rootBone = mappedRoot;
-
-            MaterialsReplacement.CopyOrResizeMaterials(targetSkinned, ReplacementRenderer.sharedMaterials, newMesh ? newMesh.subMeshCount : 1);
+            mappedBones[i] = transform;
         }
+
+        Transform mappedRoot = targetSkinned.rootBone ? targetSkinned.rootBone : targetRoot;
+        if (ReplacementRenderer.rootBone)
+        {
+            targetLookup.TryGetValue(ReplacementRenderer.rootBone.name, out mappedRoot);
+        }
+
+        Mesh newMesh = ReplacementRenderer.sharedMesh;
+        targetSkinned.sharedMesh = newMesh;
+        targetSkinned.bones = mappedBones;
+        targetSkinned.rootBone = mappedRoot;
+
+        MaterialsReplacement.CopyOrResizeMaterials(targetSkinned, originalMaterials, newMesh ? newMesh.subMeshCount : 1);
     }
 
     private static Dictionary<string, Transform> BuildBoneLookup(Transform root)

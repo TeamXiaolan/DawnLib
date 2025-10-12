@@ -16,7 +16,7 @@ public static class CompatibilityBoolExtensions
         {
             CompatibilityBool.Never => false,
             CompatibilityBool.Always => true,
-            CompatibilityBool.IfVersionMatches => Version.Parse(compatibilityVersion) == currentModVersion, // support doing like 2.*
+            CompatibilityBool.IfVersionMatches => Version.Parse(compatibilityVersion) == currentModVersion, // todo: support doing like 2.*
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
