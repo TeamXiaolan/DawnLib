@@ -99,6 +99,7 @@ static class MoonRegistrationHandler
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
+            moonInfo.Level.levelID = levels.Count;
             levels.Add(moonInfo.Level);
             UpdateMoonPrice(moonInfo);
         }
@@ -120,9 +121,8 @@ static class MoonRegistrationHandler
             if (moonInfo.ReceiptNode == null || moonInfo.RouteNode == null || moonInfo.NameKeyword == null)
                 continue;
 
-            moonInfo.Level.levelID = levels.Count;
-            moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
-            moonInfo.RouteNode.displayPlanetInfo = levels.Count;
+            moonInfo.ReceiptNode.buyRerouteToMoon = moonInfo.Level.levelID;
+            moonInfo.RouteNode.displayPlanetInfo = moonInfo.Level.levelID;
 
             routeNouns.Add(new CompatibleNoun()
             {

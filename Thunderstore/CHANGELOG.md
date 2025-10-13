@@ -1,4 +1,8 @@
-# v0.3.3
+# v0.3.4
+
+- Fixed a small issue with custom moon terminal loading.
+
+## v0.3.3
 
 - Fixed SkinnedMeshReplacement removing all base materials.
 - Allowed materials to be replaced with null to hide.
