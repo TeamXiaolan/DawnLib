@@ -4,6 +4,7 @@
 - Allowed materials to be replaced with null to hide.
 - Edited 1 character in the SmartAgentNavigator class that should fix a lot of pathing issues, this was so stupid.
 - Added `GameObjectEditor` for doing stuff like moving, rotating, deleting and/or disabling gameobjects.
+- Fixed an issue with Artifice and Embrion where because they're hidden you would get rejected from landing on them by default.
 
 ## v0.3.2
 
