@@ -1,4 +1,6 @@
-﻿namespace Dawn;
+﻿using System;
+
+namespace Dawn;
 public abstract class TerminalPurchaseResult
 {
     public static SuccessPurchaseResult Success()
@@ -8,7 +10,7 @@ public abstract class TerminalPurchaseResult
 
     public static HiddenPurchaseResult Hidden()
     {
-        return HiddenPurchaseResult.Instance;
+        return new HiddenPurchaseResult();
     }
 
     public static FailedPurchaseResult Fail(TerminalNode node)
@@ -46,7 +48,16 @@ public abstract class TerminalPurchaseResult
 
     public class HiddenPurchaseResult : TerminalPurchaseResult
     {
-        internal static HiddenPurchaseResult Instance { get; } = new HiddenPurchaseResult();
-        private HiddenPurchaseResult() { }
+        public bool IsFailure { get; private set; } = true;
+
+        internal HiddenPurchaseResult()
+        {
+        }
+
+        public HiddenPurchaseResult SetFailure(bool isFailure)
+        {
+            IsFailure = isFailure;
+            return this;
+        }
     }
 }

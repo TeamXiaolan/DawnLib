@@ -423,7 +423,7 @@ static class MoonRegistrationHandler
 
             if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
             {
-                predicate = ITerminalPurchasePredicate.AlwaysHide();
+                predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
             DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate, null);

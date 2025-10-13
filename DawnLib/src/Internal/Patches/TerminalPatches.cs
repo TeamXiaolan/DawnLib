@@ -238,7 +238,7 @@ static class TerminalPatches
                 return;
             }
 
-            if (result is TerminalPurchaseResult.HiddenPurchaseResult)
+            if (result is TerminalPurchaseResult.HiddenPurchaseResult hiddenResult && hiddenResult.IsFailure)
             {
                 Debuggers.Patching?.Log($"predicate hidden");
 
