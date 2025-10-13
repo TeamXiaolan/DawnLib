@@ -94,56 +94,55 @@ static class MoonRegistrationHandler
 
     private static void RegisterDawnLevels(On.Terminal.orig_Awake orig, Terminal self)
     {
-        _ = TerminalRefs.Instance;
-        List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
-        List<TerminalKeyword> allKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
-
         List<SelectableLevel> levels = StartOfRoundRefs.Instance.levels.ToList();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
+            levels.Add(moonInfo.Level);
+            UpdateMoonPrice(moonInfo);
+        }
+        StartOfRoundRefs.Instance.levels = levels.ToArray();
+
+        if (LethalContent.Moons.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
+        List<TerminalKeyword> allKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
+        List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
             moonInfo.Level.levelID = levels.Count;
             moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
             moonInfo.RouteNode.displayPlanetInfo = levels.Count;
-            levels.Add(moonInfo.Level);
 
-            UpdateMoonPrice(moonInfo);
-
-            if (!LethalContent.Moons.IsFrozen)
+            routeNouns.Add(new CompatibleNoun()
             {
-                routeNouns.Add(new CompatibleNoun()
-                {
-                    noun = moonInfo.NameKeyword,
-                    result = moonInfo.RouteNode
-                });
-                allKeywords.Add(moonInfo.NameKeyword);
-                moonInfo.NameKeyword.defaultVerb = TerminalRefs.RouteKeyword;
+                noun = moonInfo.NameKeyword,
+                result = moonInfo.RouteNode
+            });
+            allKeywords.Add(moonInfo.NameKeyword);
+            moonInfo.NameKeyword.defaultVerb = TerminalRefs.RouteKeyword;
 
-                moonInfo.RouteNode.overrideOptions = true;
-                moonInfo.RouteNode.terminalOptions = [
-                    new CompatibleNoun()
-                    {
-                        noun = TerminalRefs.DenyKeyword,
-                        result = TerminalRefs.CancelRouteNode
-                    },
-                    new CompatibleNoun()
-                    {
-                        noun = TerminalRefs.ConfirmPurchaseKeyword,
-                        result = moonInfo.ReceiptNode
-                    }
-                ];
-            }
+            moonInfo.RouteNode.overrideOptions = true;
+            moonInfo.RouteNode.terminalOptions = [
+                new CompatibleNoun()
+                {
+                    noun = TerminalRefs.DenyKeyword,
+                    result = TerminalRefs.CancelRouteNode
+                },
+                new CompatibleNoun()
+                {
+                    noun = TerminalRefs.ConfirmPurchaseKeyword,
+                    result = moonInfo.ReceiptNode
+                }
+            ];
         }
-        
-        if (!LethalContent.Moons.IsFrozen)
-        {
-            TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
-            TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
-        }
-        StartOfRoundRefs.Instance.levels = levels.ToArray();
-        
+        TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
+        TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
         orig(self);
     }
 
