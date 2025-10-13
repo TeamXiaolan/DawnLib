@@ -26,7 +26,7 @@ static class MoonRegistrationHandler
         {
             On.Terminal.Awake += RegisterDawnLevels;
             On.StartOfRound.Awake += CollectTestLevel;
-            On.QuickMenuManager.Start += CollectLevels;
+            On.StartOfRound.Awake += CollectLevels;
         }
 
         LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
@@ -391,12 +391,13 @@ static class MoonRegistrationHandler
         DawnMoonNetworker.Instance!.HostDecide(level.GetDawnInfo());
     }
 
-    private static void CollectLevels(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
+    private static void CollectLevels(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         orig(self);
         if (LethalContent.Moons.IsFrozen)
             return;
 
+        _ = TerminalRefs.Instance;
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
             if (level.HasDawnInfo())
