@@ -136,9 +136,14 @@ static class MoonRegistrationHandler
                 ];
             }
         }
+        
+        if (!LethalContent.Moons.IsFrozen)
+        {
+            TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
+            TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
+        }
         StartOfRoundRefs.Instance.levels = levels.ToArray();
-        TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
-        TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
+        
         orig(self);
     }
 
