@@ -115,6 +115,12 @@ static class MoonRegistrationHandler
         List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
+            if (moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            if (moonInfo.ReceiptNode == null || moonInfo.RouteNode == null || moonInfo.NameKeyword == null)
+                continue;
+
             moonInfo.Level.levelID = levels.Count;
             moonInfo.ReceiptNode.buyRerouteToMoon = levels.Count;
             moonInfo.RouteNode.displayPlanetInfo = levels.Count;
