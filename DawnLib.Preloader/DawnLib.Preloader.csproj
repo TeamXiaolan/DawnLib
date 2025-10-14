@@ -10,7 +10,7 @@
 	
     <ItemGroup>
         <PackageReference Include="BepInEx.Core" Version="5.4.21"/>
-		
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" />
     </ItemGroup>
 	
     <!-- Defining the reference files that have to be publicized. -->
