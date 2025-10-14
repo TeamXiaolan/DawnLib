@@ -1,6 +1,7 @@
 # v0.3.4
 
 - Fixed a small issue with custom moon terminal loading.
+- Added proper compat with LLL hiding and locking moons.
 
 ## v0.3.3
 

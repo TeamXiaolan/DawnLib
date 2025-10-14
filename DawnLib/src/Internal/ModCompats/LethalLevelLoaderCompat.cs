@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using DunGen.Graph;
@@ -26,6 +27,18 @@ static class LethalLevelLoaderCompat
         {
             modName = extendedLevel.ModName;
             return true;
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool ExtendedLevelIsModded(SelectableLevel level, [NotNullWhen(true)] out object? extendedLevelObject)
+    {
+        extendedLevelObject = null;
+        if (LethalLevelLoader.LevelManager.TryGetExtendedLevel(level, out ExtendedLevel extendedLevel))
+        {
+            extendedLevelObject = extendedLevel;
+            return extendedLevel.ContentType == ContentType.Custom;
         }
         return false;
     }

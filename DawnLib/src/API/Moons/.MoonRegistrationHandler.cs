@@ -432,8 +432,11 @@ static class MoonRegistrationHandler
             }
 
             ITerminalPurchasePredicate predicate = ITerminalPurchasePredicate.AlwaysSuccess();
-
-            if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
+            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.ExtendedLevelIsModded(level, out object? extendedLevel))
+            {
+                predicate = new LethalLevelLoaderTerminalPredicate(extendedLevel);
+            }
+            else if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
             {
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
