@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
+using MonoMod.RuntimeDetour;
 
 namespace Dawn;
 
@@ -8,7 +9,11 @@ static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
-        On.StartOfRound.Start += RegisterShipUnlockables;
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.Terminal.Awake += RegisterShipUnlockables;
+        }
+
         On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
     }
 
@@ -74,7 +79,7 @@ static class UnlockableRegistrationHandler
         }
     }
 
-    private static void RegisterShipUnlockables(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
     {
         if (LethalContent.Unlockables.IsFrozen)
         {
@@ -82,22 +87,13 @@ static class UnlockableRegistrationHandler
             return;
         }
 
-        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
-        TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
-        TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
-
-        int latestUnlockableID = 0;
-        foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
-        {
-            if (unlockableItem.shopSelectionNode != null)
-            {
-                Debuggers.Unlockables?.Log($"unlockableItem = {unlockableItem.unlockableName} has ID {unlockableItem.shopSelectionNode.shipUnlockableID}");
-            }
-        }
-        latestUnlockableID = StartOfRound.Instance.unlockablesList.unlockables.Count;
+        int latestUnlockableID = StartOfRoundRefs.Instance.unlockablesList.unlockables.Count;
         Debuggers.Unlockables?.Log($"latestUnlockableID = {latestUnlockableID}");
 
         Terminal terminal = TerminalRefs.Instance;
+        TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
+        TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
+        TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
 
@@ -109,7 +105,7 @@ static class UnlockableRegistrationHandler
             if (unlockableInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            StartOfRound.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
+            StartOfRoundRefs.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
             if (unlockableInfo.UnlockableItem.alreadyUnlocked || unlockableInfo.RequestNode == null)
                 continue;
 
@@ -161,7 +157,7 @@ static class UnlockableRegistrationHandler
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
         terminal.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
 
-        foreach (UnlockableItem unlockableItem in StartOfRound.Instance.unlockablesList.unlockables)
+        foreach (UnlockableItem unlockableItem in StartOfRoundRefs.Instance.unlockablesList.unlockables)
         {
             if (unlockableItem.HasDawnInfo())
                 continue;

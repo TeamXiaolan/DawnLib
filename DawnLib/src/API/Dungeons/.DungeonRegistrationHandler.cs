@@ -41,7 +41,7 @@ static class DungeonRegistrationHandler
 
     internal static void UpdateDungeonWeightOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.Dungeons.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
+        if (!LethalContent.Weathers.IsFrozen || !LethalContent.Dungeons.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)

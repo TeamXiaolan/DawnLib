@@ -22,36 +22,26 @@ static class EnemyRegistrationHandler
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
-        LethalContent.Moons.OnFreeze += RegisterEnemies;
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
-        On.Terminal.Awake += AddBestiaryNodes;
+
         using (new DetourContext(priority: int.MaxValue))
         {
-            // On.GameNetworkManager.Start += CollectAllEnemyTypes;
-            On.StartOfRound.Start += CollectAllEnemyTypes;
+            On.Terminal.Awake += AddBestiaryNodes;
+            On.GameNetworkManager.Start += CollectAllEnemyTypes;
         }
+
+        LethalContent.Moons.OnFreeze += RegisterEnemies;
         LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
     }
-
-    /*private static void CollectAllEnemyTypes(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
-    {
-        orig(self);
-        CollectEnemyTypes();
-    }*/
 
     private static void RedoEnemiesDebugMenu()
     {
         QuickMenuManagerRefs.Instance.Debug_SetEnemyDropdownOptions();
     }
 
-    private static void CollectAllEnemyTypes(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void CollectAllEnemyTypes(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
     {
         orig(self);
-        CollectEnemyTypes();
-    }
-
-    private static void CollectEnemyTypes()
-    {
         foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
         {
             if (!networkPrefab.Prefab.TryGetComponent(out EnemyAI enemyAI))
@@ -229,7 +219,7 @@ static class EnemyRegistrationHandler
 
     internal static void UpdateEnemyWeightsOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.Enemies.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
+        if (!LethalContent.Weathers.IsFrozen || !LethalContent.Enemies.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)

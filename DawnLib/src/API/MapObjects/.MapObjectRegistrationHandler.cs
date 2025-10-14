@@ -24,10 +24,12 @@ static class MapObjectRegistrationHandler
 
         _ = new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), OnRandomMapObjectSpawnAwake);
 
-        On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
         IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
+
+        On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
+
         LethalContent.Moons.OnFreeze += RegisterMapObjects;
         LethalContent.MapObjects.OnFreeze += FixMapObjectBlanks;
     }
@@ -387,7 +389,7 @@ static class MapObjectRegistrationHandler
 
     internal static void UpdateInsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
+        if (!LethalContent.Weathers.IsFrozen || !LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)

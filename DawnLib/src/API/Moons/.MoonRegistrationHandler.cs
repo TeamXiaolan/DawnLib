@@ -22,15 +22,14 @@ static class MoonRegistrationHandler
             new SimpleAutoTagger<DawnMoonInfo>(DawnLibTags.HasBuyingPercent, moonInfo => moonInfo.GetNumberlessPlanetName() == "Gordion")
         );
 
-        using (new DetourContext(priority: int.MaxValue))
+        using (new DetourContext(priority: int.MaxValue - 10))
         {
-            On.Terminal.Awake += RegisterDawnLevels;
             On.StartOfRound.Awake += CollectTestLevel;
             On.StartOfRound.Awake += CollectLevels;
+            On.Terminal.Awake += RegisterDawnLevels;
         }
 
         LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
-
         LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
         LethalContent.Items.OnFreeze += FixDawnMoonItems;
 
@@ -148,6 +147,7 @@ static class MoonRegistrationHandler
         }
         TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
+        LethalContent.Moons.Freeze();
         orig(self);
     }
 
@@ -395,7 +395,9 @@ static class MoonRegistrationHandler
     {
         orig(self);
         if (LethalContent.Moons.IsFrozen)
+        {
             return;
+        }
 
         _ = TerminalRefs.Instance;
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
@@ -441,7 +443,6 @@ static class MoonRegistrationHandler
             LethalContent.Moons.Register(moonInfo);
         }
         TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
-        LethalContent.Moons.Freeze();
     }
 
     private static void CollectTestLevel(On.StartOfRound.orig_Awake orig, StartOfRound self)

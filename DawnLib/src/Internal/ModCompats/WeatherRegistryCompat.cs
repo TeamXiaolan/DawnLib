@@ -16,6 +16,11 @@ static class WeatherRegistryCompat
 
     private static void WeatherRegistry_EventManager_WeatherChanged((SelectableLevel selectableLevel, Weather weather) args)
     {
+        if (LethalContent.Weathers.IsFrozen)
+        {
+            return;
+        }
+
         EnemyRegistrationHandler.UpdateEnemyWeightsOnLevel(args.selectableLevel);
         ItemRegistrationHandler.UpdateItemWeightsOnLevel(args.selectableLevel);
         MapObjectRegistrationHandler.UpdateInsideMapObjectSpawnWeightsOnLevel(args.selectableLevel);

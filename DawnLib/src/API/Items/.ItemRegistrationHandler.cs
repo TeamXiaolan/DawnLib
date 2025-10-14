@@ -34,19 +34,23 @@ static class ItemRegistrationHandler
             new AutoWeightTagger(Tags.HeavyWeight, new BoundedRange(1.4f, int.MaxValue))
         );
 
+        using (new DetourContext(priority: int.MaxValue - 9))
+        {
+            On.StartOfRound.Awake += RegisterScrapItems;
+            On.Terminal.Awake += RegisterShopItemsToTerminal;
+        }
+
         using (new DetourContext(priority: int.MinValue))
         {
             On.RoundManager.SpawnScrapInLevel += UpdateItemWeights;
         }
 
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
-        On.Terminal.Awake += RegisterShopItemsToTerminal;
-        On.StartOfRound.Start += RegisterScrapItems;
         LethalContent.Moons.OnFreeze += FreezeItemContent;
         LethalContent.Items.OnFreeze += RedoItemsDebugMenu;
     }
 
-    private static void RegisterScrapItems(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void RegisterScrapItems(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         if (LethalContent.Items.IsFrozen)
         {
@@ -59,7 +63,6 @@ static class ItemRegistrationHandler
             if (itemInfo.ShouldSkipIgnoreOverride() || self.allItemsList.itemsList.Contains(itemInfo.Item))
                 continue;
 
-            Debuggers.Items?.Log($"Adding {itemInfo.Item.itemName} into allItemsList.");
             self.allItemsList.itemsList.Add(itemInfo.Item);
         }
         orig(self);
@@ -117,7 +120,7 @@ static class ItemRegistrationHandler
 
     internal static void UpdateItemWeightsOnLevel(SelectableLevel level)
     {
-        if (!LethalContent.Items.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
+        if (!LethalContent.Weathers.IsFrozen || !LethalContent.Items.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
@@ -326,7 +329,7 @@ static class ItemRegistrationHandler
 
     private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
-        Terminal terminal = TerminalRefs.Instance;
+        _ = TerminalRefs.Instance;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
         TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
@@ -348,7 +351,7 @@ static class ItemRegistrationHandler
 
             newBuyableList.Add(itemInfo.Item);
 
-            foreach (var TerminalKeyword in newTerminalKeywords)
+            foreach (TerminalKeyword TerminalKeyword in newTerminalKeywords)
             {
                 if (TerminalKeyword.word == simplifiedItemName)
                 {
