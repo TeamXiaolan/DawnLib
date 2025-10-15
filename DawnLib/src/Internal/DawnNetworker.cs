@@ -43,7 +43,10 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal void SaveData()
     {
         OnSave();
-        ItemSaveDataHandler.SaveAllItems(DawnLib.GetCurrentContract()!);
+        if (!DawnConfig.DisableDawnItemSaving)
+        {
+            ItemSaveDataHandler.SaveAllItems(DawnLib.GetCurrentContract()!);
+        }
     }
 
     private void OnNewRoundStart()

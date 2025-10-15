@@ -8,6 +8,8 @@ static class DawnConfig
 
     public static bool CreateTagExport;
 
+    public static bool DisableDawnItemSaving;
+
     internal static void Bind(ConfigFile file)
     {
         LethalConfigCompatibility = file.Bind(
@@ -22,6 +24,13 @@ static class DawnConfig
             "Tag Info Export",
             false,
             "Export a markdown file listing all tags?"
+        ).Value;
+
+        DisableDawnItemSaving = file.Bind(
+            "Dawn Save System",
+            "Item Saving",
+            false,
+            "Disable the Dawn Save System for item saving"
         ).Value;
     }
 }

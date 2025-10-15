@@ -50,7 +50,7 @@ public static class ItemSaveDataHandler
         yield return null;
         yield return new WaitUntil(() => DawnNetworker.Instance != null);
         transform.rotation = Quaternion.Euler(rotation);
-        DawnNetworker.Instance.SyncItemRotationRpc(new NetworkObjectReference(transform.GetComponent<NetworkObject>()), rotation);
+        DawnNetworker.Instance!.SyncItemRotationRpc(new NetworkObjectReference(transform.GetComponent<NetworkObject>()), rotation);
     }
 
     internal static void SaveAllItems(PersistentDataContainer dataContainer)

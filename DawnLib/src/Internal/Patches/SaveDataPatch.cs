@@ -16,10 +16,13 @@ static class SaveDataPatch
 
     private static void LoadShipGrabbableItems(On.StartOfRound.orig_LoadShipGrabbableItems orig, StartOfRound self)
     {
-        // TODO this errors??
+        if (DawnConfig.DisableDawnItemSaving)
+        {
+            orig(self);
+            return;
+        }
         contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         ItemSaveDataHandler.LoadSavedItems(contractContainer);
-        // orig(self);
     }
 
     private static void SaveData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
@@ -30,7 +33,10 @@ static class SaveDataPatch
 
     private static void SaveData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
     {
-        // orig(self);
+        if (DawnConfig.DisableDawnItemSaving)
+        {
+            orig(self);
+        }
         DawnNetworker.Instance?.SaveData();
     }
 
