@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn.Internal;
@@ -26,7 +28,7 @@ public static class ItemSaveDataHandler
             {
                 spawnPosition = StartOfRoundRefs.Instance.playerSpawnPositions[1].position;
             }
-            /*GrabbableObject grabbableObject = Object.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(itemData.SavedSpawnRotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
+            GrabbableObject grabbableObject = Object.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(itemData.SavedSpawnRotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
             grabbableObject.fallTime = 0f;
             grabbableObject.scrapPersistedThroughRounds = true;
             grabbableObject.isInElevator = true;
@@ -36,8 +38,19 @@ public static class ItemSaveDataHandler
             {
                 grabbableObject.LoadSaveData(itemData.ItemSavedData);
             }
-            grabbableObject.NetworkObject.Spawn(false);*/
+            grabbableObject.NetworkObject.Spawn(false);
+            StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbableObject.transform, itemData.SavedSpawnRotation));
         }
+    }
+
+    private static IEnumerator EnsureItemRotatedCorrectly(Transform transform, Vector3 rotation)
+    {
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return new WaitUntil(() => DawnNetworker.Instance != null);
+        transform.rotation = Quaternion.Euler(rotation);
+        DawnNetworker.Instance.SyncItemRotationRpc(new NetworkObjectReference(transform.GetComponent<NetworkObject>()), rotation);
     }
 
     internal static void SaveAllItems(PersistentDataContainer dataContainer)
@@ -61,12 +74,12 @@ public static class ItemSaveDataHandler
         }
     }
 
-    public struct ItemSaveData(NamespacedKey itemNamespacedKey, Vector3 savePosition, Vector3 saveRotation, int scrapValue, JToken? itemSavedData)
+    public struct ItemSaveData(NamespacedKey itemNamespacedKey, Vector3 savePosition, Vector3 saveRotation, int scrapValue, object? itemSavedData)
     {
         public NamespacedKey ItemNamespacedKey = itemNamespacedKey;
-        public Vector3 SavedSpawnPosition = savePosition;
-        public Vector3 SavedSpawnRotation = saveRotation;
+        [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnPosition = savePosition;
+        [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnRotation = saveRotation;
         public int ScrapValue = scrapValue;
-        public JToken ItemSavedData = itemSavedData ?? 0;
+        public object ItemSavedData = itemSavedData ?? 0;
     }
 }

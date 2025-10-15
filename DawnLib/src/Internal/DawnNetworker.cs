@@ -27,7 +27,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
         string saveId = GameNetworkManager.Instance.currentSaveFileName;
         SaveContainer = CreateSaveContainer(saveId);
-        ContractContainer = CreateContractContainer(saveId);
+        ContractContainer = SaveDataPatch.contractContainer ?? CreateContractContainer(saveId);
     }
 
     internal static PersistentDataContainer CreateSaveContainer(string id)
@@ -68,5 +68,15 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     public void BroadcastDisplayTipClientRpc(HUDDisplayTip displayTip)
     {
         HUDManager.Instance.DisplayTip(displayTip);
+    }
+
+    [Rpc(SendTo.NotMe)]
+    internal void SyncItemRotationRpc(NetworkObjectReference netObjRef, Vector3 rotation)
+    {
+        if (!netObjRef.TryGet(out NetworkObject netObj))
+        {
+            return;
+        }
+        netObj.transform.rotation = Quaternion.Euler(rotation);
     }
 }

@@ -1,12 +1,10 @@
-using HarmonyLib;
-using MonoMod.Cil;
-using MonoMod.RuntimeDetour;
-using Newtonsoft.Json.Linq;
 
 namespace Dawn.Internal;
 
 static class SaveDataPatch
 {
+    internal static PersistentDataContainer? contractContainer;
+
     internal static void Init()
     {
         On.DeleteFileButton.DeleteFile += ResetSaveFile;
@@ -14,23 +12,14 @@ static class SaveDataPatch
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
         On.StartOfRound.LoadShipGrabbableItems += LoadShipGrabbableItems;
-        _ = new Hook(AccessTools.DeclaredMethod(typeof(GrabbableObject), "LoadSaveData", new[] { typeof(JToken) }), LoadModdedSaveDataForGrabbableObject);
-    }
-
-    private static void LoadModdedSaveDataForGrabbableObject(RuntimeILReferenceBag.FastDelegateInvokers.Action<GrabbableObject, JToken> orig, GrabbableObject self, JToken saveData)
-    {
-        if (saveData.Type == JTokenType.Integer)
-        {
-            self.LoadItemSaveData((int)saveData);
-        }
-        orig(self, saveData);
     }
 
     private static void LoadShipGrabbableItems(On.StartOfRound.orig_LoadShipGrabbableItems orig, StartOfRound self)
     {
         // TODO this errors??
-        ItemSaveDataHandler.LoadSavedItems(DawnNetworker.Instance?.ContractContainer ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName));
-        orig(self);
+        contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        ItemSaveDataHandler.LoadSavedItems(contractContainer);
+        // orig(self);
     }
 
     private static void SaveData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
@@ -41,7 +30,7 @@ static class SaveDataPatch
 
     private static void SaveData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
     {
-        orig(self);
+        // orig(self);
         DawnNetworker.Instance?.SaveData();
     }
 

@@ -4,7 +4,6 @@ using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
 using Newtonsoft.Json;
-using TMPro;
 using UnityEngine;
 
 namespace Dawn;
@@ -14,12 +13,15 @@ public static class DawnLib
 
     internal static readonly JsonSerializerSettings JSONSettings = new()
     {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        PreserveReferencesHandling = PreserveReferencesHandling.None,
         TypeNameHandling = TypeNameHandling.All,
         Formatting = Formatting.Indented,
         Converters =
         [
             new NamespacedKeyConverter(),
-            new NamespacedKeyDictionaryConverter()
+            new NamespacedKeyDictionaryConverter(),
+            new Vector3Converter(),
         ]
     };
 
