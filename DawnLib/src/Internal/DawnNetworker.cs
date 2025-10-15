@@ -72,14 +72,4 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     {
         HUDManager.Instance.DisplayTip(displayTip);
     }
-
-    [Rpc(SendTo.NotMe)]
-    internal void SyncItemRotationRpc(NetworkObjectReference netObjRef, Vector3 rotation)
-    {
-        if (!netObjRef.TryGet(out NetworkObject netObj))
-        {
-            return;
-        }
-        netObj.transform.rotation = Quaternion.Euler(rotation);
-    }
 }
