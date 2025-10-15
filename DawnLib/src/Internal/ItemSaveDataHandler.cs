@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using Unity.Netcode;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Dawn.Internal;
 public static class ItemSaveDataHandler
 {
-    // TODO: patch all GrabbableObject LoadSaveData instances to run the vanilla LoadItemSaveData
     internal static List<GrabbableObject> AllShipItems = new();
     private static NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
 
-    internal static void LoadSavedItems(IDataContainer dataContainer)
+    internal static void LoadSavedItems(PersistentDataContainer dataContainer)
     {
         List<ItemSaveData> itemSaveDataList = dataContainer.GetOrCreateDefault<List<ItemSaveData>>(_namespacedKey);
         foreach (ItemSaveData itemData in itemSaveDataList)
@@ -64,7 +63,7 @@ public static class ItemSaveDataHandler
                 DawnPlugin.Logger.LogError($"Item: {itemData.name} doesn't have a DawnItemInfo, this means this item cannot be committed to the savefile, contact the developer of this item to fix this ASAP!");
                 continue;
             }
-            Debuggers.Items?.Log($"Saving item: {itemData.itemProperties.GetDawnInfo().Key} into save data.");
+            Debuggers.Items?.Log($"Saving item: {itemInfo.Key} into save data.");
             allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, itemData.transform.position, itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemData.GetSaveData()));
         }
         using (dataContainer.LargeEdit())
@@ -73,12 +72,12 @@ public static class ItemSaveDataHandler
         }
     }
 
-    public struct ItemSaveData(NamespacedKey itemNamespacedKey, Vector3 savePosition, Vector3 saveRotation, int scrapValue, object? itemSavedData)
+    public struct ItemSaveData(NamespacedKey itemNamespacedKey, Vector3 savePosition, Vector3 saveRotation, int scrapValue, JToken itemSavedData)
     {
         public NamespacedKey ItemNamespacedKey = itemNamespacedKey;
         [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnPosition = savePosition;
         [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnRotation = saveRotation;
         public int ScrapValue = scrapValue;
-        public object ItemSavedData = itemSavedData ?? 0;
+        public JToken ItemSavedData = itemSavedData;
     }
 }

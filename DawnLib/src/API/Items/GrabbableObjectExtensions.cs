@@ -1,9 +1,11 @@
 
+using Newtonsoft.Json.Linq;
+
 namespace Dawn;
 
 public static class GrabbableObjectExtensions
 {
-    public static object GetSaveData(this GrabbableObject grabbableObject)
+    public static JToken GetSaveData(this GrabbableObject grabbableObject)
     {
         if (!grabbableObject.itemProperties.saveItemVariable)
             return 0;
@@ -15,16 +17,16 @@ public static class GrabbableObjectExtensions
         return grabbableObject.GetItemDataToSave();
     }
 
-    public static void LoadSaveData(this GrabbableObject grabbableObject, object @object)
+    public static void LoadSaveData(this GrabbableObject grabbableObject, JToken jToken)
     {
         if (!grabbableObject.itemProperties.saveItemVariable)
             return;
 
         if (grabbableObject is DawnGrabbableObject dawnGrabbableObject)
         {
-            dawnGrabbableObject.LoadDawnItemSaveData(@object);
+            dawnGrabbableObject.LoadDawnItemSaveData(jToken);
             return;
         }
-        grabbableObject.LoadItemSaveData((int)@object);
+        grabbableObject.LoadItemSaveData((int)jToken);
     }
 }

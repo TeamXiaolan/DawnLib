@@ -10,6 +10,8 @@ static class DawnConfig
 
     public static bool DisableDawnItemSaving;
 
+    public static bool DisableDawnUnlockableSaving;
+
     internal static void Bind(ConfigFile file)
     {
         LethalConfigCompatibility = file.Bind(
@@ -31,6 +33,13 @@ static class DawnConfig
             "Item Saving",
             false,
             "Disable the Dawn Save System for item saving"
+        ).Value;
+
+        DisableDawnUnlockableSaving = file.Bind(
+            "Dawn Save System",
+            "Unlockable Saving",
+            false,
+            "Disable the Dawn Save System for unlockable saving"
         ).Value;
     }
 }

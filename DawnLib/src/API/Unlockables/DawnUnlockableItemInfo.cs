@@ -26,6 +26,7 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
     public DawnSuitInfo? SuitInfo { get; }
     public DawnPlaceableObjectInfo? PlaceableObjectInfo { get; }
 
+    public int IndexInList { get; internal set; }
     public TerminalNode? RequestNode { get; internal set; }
     public TerminalNode? ConfirmNode { get; internal set; }
     public TerminalKeyword? BuyKeyword { get; internal set; }

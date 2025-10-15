@@ -220,6 +220,14 @@ static class UnlockableRegistrationHandler
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 
+        for (int i = 0; i < StartOfRoundRefs.Instance.unlockablesList.unlockables.Count; i++)
+        {
+            UnlockableItem unlockableItem = StartOfRoundRefs.Instance.unlockablesList.unlockables[i];
+            if (!unlockableItem.HasDawnInfo())
+                continue;
+
+            unlockableItem.GetDawnInfo().IndexInList = i;
+        }
         LethalContent.Unlockables.Freeze();
         orig(self);
     }

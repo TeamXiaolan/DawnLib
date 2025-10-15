@@ -47,6 +47,10 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         {
             ItemSaveDataHandler.SaveAllItems(DawnLib.GetCurrentContract()!);
         }
+        if (!DawnConfig.DisableDawnUnlockableSaving)
+        {
+            UnlockableSaveDataHandler.SaveAllUnlockables(DawnLib.GetCurrentContract()!);
+        }
     }
 
     private void OnNewRoundStart()

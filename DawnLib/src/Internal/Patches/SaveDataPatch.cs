@@ -1,4 +1,9 @@
 
+using System;
+using HarmonyLib;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
+
 namespace Dawn.Internal;
 
 static class SaveDataPatch
@@ -11,7 +16,35 @@ static class SaveDataPatch
         On.GameNetworkManager.SaveItemsInShip += SaveData;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
+
         On.StartOfRound.LoadShipGrabbableItems += LoadShipGrabbableItems;
+        On.StartOfRound.LoadUnlockables += LoadUnlockables;
+
+        _ = new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "Awake"), OnPlaceableShipObjectAwake);
+        _ = new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "OnDestroy"), OnPlaceableShipObjectOnDestroy);
+    }
+
+    private static void OnPlaceableShipObjectAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlaceableShipObject> orig, PlaceableShipObject self)
+    {
+        UnlockableSaveDataHandler.placeableShipObjects.Add(self);
+        orig(self);
+    }
+
+    private static void OnPlaceableShipObjectOnDestroy(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlaceableShipObject> orig, PlaceableShipObject self)
+    {
+        UnlockableSaveDataHandler.placeableShipObjects.Remove(self);
+        orig(self);
+    }
+
+    private static void LoadUnlockables(On.StartOfRound.orig_LoadUnlockables orig, StartOfRound self)
+    {
+        if (DawnConfig.DisableDawnUnlockableSaving)
+        {
+            orig(self);
+            return;
+        }
+        contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
     }
 
     private static void LoadShipGrabbableItems(On.StartOfRound.orig_LoadShipGrabbableItems orig, StartOfRound self)

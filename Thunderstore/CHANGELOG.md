@@ -1,6 +1,6 @@
 # v0.3.5
 
-- Replaced vanilla save system (atleast for items rn only) with DawnLib's own system which should be a lot more performant.
+- Replaced vanilla save system (atleast for items rn only) with DawnLib's own system.
   - Also allows for the rotations of items to be retained in comparison to vanilla resetting rotations.
   - Also allows you to get rid of and add mods that add items without your save's items getting scrambled.
   - Added config to opt out of it in case of issues or dislike I guess.

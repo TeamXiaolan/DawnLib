@@ -1,18 +1,19 @@
+using Newtonsoft.Json.Linq;
 
 namespace Dawn;
 
 public abstract class DawnGrabbableObject : GrabbableObject
 {
-    public virtual object GetDawnItemDataToSave()
+    public virtual JToken GetDawnItemDataToSave()
     {
         return GetItemDataToSave();
     }
 
-    public virtual void LoadDawnItemSaveData(object saveData)
+    public virtual void LoadDawnItemSaveData(JToken saveData)
     {
-        if (saveData is int intSaveData)
+        if (saveData.Type == JTokenType.Integer)
         {
-            LoadItemSaveData(intSaveData);
+            LoadItemSaveData((int)saveData);
         }
     }
 }
