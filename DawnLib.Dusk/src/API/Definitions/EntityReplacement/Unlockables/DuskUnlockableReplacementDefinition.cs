@@ -9,10 +9,10 @@ public abstract class DuskUnlockableReplacementDefinition : DuskEntityReplacemen
 
 public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableReplacementDefinition where T : DuskUnlockable
 {
-    protected abstract void Apply(T dawnUnlockable);
+    protected abstract void ApplyTyped(T dawnUnlockable);
     public override void Apply(DuskUnlockable dawnUnlockable)
     {
-        Apply((T)dawnUnlockable);
+        ApplyTyped((T)dawnUnlockable);
         dawnUnlockable.SetUnlockableReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {

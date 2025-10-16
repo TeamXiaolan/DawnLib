@@ -20,10 +20,10 @@ public abstract class DuskItemReplacementDefinition : DuskEntityReplacementDefin
 
 public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefinition where T : GrabbableObject
 {
-    protected abstract void Apply(T grabbableObject);
+    protected abstract void ApplyTyped(T grabbableObject);
     public override void Apply(GrabbableObject grabbableObject)
     {
-        Apply((T)grabbableObject);
+        ApplyTyped((T)grabbableObject);
         grabbableObject.SetGrabbableObjectReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {

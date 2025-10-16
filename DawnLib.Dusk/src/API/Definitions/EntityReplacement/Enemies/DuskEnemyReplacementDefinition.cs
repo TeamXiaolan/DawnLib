@@ -45,10 +45,10 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
 
 public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDefinition where T : EnemyAI
 {
-    protected abstract void Apply(T enemyAI);
+    protected abstract void ApplyTyped(T enemyAI);
     public override void Apply(EnemyAI enemyAI)
     {
-        Apply((T)enemyAI);
+        ApplyTyped((T)enemyAI);
         enemyAI.SetEnemyReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
