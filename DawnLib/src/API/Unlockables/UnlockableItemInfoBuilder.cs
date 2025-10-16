@@ -51,12 +51,14 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
         internal PlaceableObjectBuilder SetDecor()
         {
             _parentBuilder.value.alwaysInStock = false;
+            _parentBuilder.value.unlockableType = 1;
             return this;
         }
 
         internal PlaceableObjectBuilder SetShipUpgrade()
         {
             _parentBuilder.value.alwaysInStock = true;
+            _parentBuilder.value.unlockableType = 1;
             return this;
         }
 
@@ -103,6 +105,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
 
     public UnlockableInfoBuilder DefineSuit(Action<SuitBuilder> callback)
     {
+        value.unlockableType = 0;
         SuitBuilder builder = new(this);
         callback(builder);
         _suitInfo = builder.Build();

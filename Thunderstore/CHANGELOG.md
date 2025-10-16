@@ -5,6 +5,8 @@
   - Also allows you to get rid of and add mods that add items without your save's items getting scrambled.
   - Added config to opt out of it in case of issues or dislike I guess.
 - Added UnlockableReplacementDefinition for replacing the model etc of unlockables
+- Fixed an issue with Unlockables sometimes registering as suits depending on setup errors.
+
 ## v0.3.4
 
 - Fixed a small issue with custom moon terminal loading.
