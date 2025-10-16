@@ -17,11 +17,11 @@ public sealed class DawnInsideMapObjectInfo
         DisallowSpawningNearEntrances = disallowSpawningNearEntrances;
     }
 
-    public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; }
-    public bool SpawnFacingAwayFromWall { get; }
-    public bool SpawnFacingWall { get; }
-    public bool SpawnWithBackToWall { get; }
-    public bool SpawnWithBackFlushAgainstWall { get; }
-    public bool RequireDistanceBetweenSpawns { get; }
-    public bool DisallowSpawningNearEntrances { get; }
+    public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; private set; }
+    public bool SpawnFacingAwayFromWall { get; private set; }
+    public bool SpawnFacingWall { get; private set; }
+    public bool SpawnWithBackToWall { get; private set; }
+    public bool SpawnWithBackFlushAgainstWall { get; private set; }
+    public bool RequireDistanceBetweenSpawns { get; private set; }
+    public bool DisallowSpawningNearEntrances { get; private set; }
 }

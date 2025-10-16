@@ -19,12 +19,12 @@ public sealed class DawnOutsideMapObjectInfo
         VanillaAnimationCurve = vanillaAnimationCurve;
     }
 
-    public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; }
-    public bool AlignWithTerrain { get; }
+    public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; private set; }
+    public bool AlignWithTerrain { get; private set; }
 
-    public bool SpawnFacingAwayFromWall { get; }
-    public int ObjectWidth { get; }
-    public string[] SpawnableFloorTags { get; }
-    public Vector3 RotationOffset { get; }
-    public AnimationCurve VanillaAnimationCurve { get; }
+    public bool SpawnFacingAwayFromWall { get; private set; }
+    public int ObjectWidth { get; private set; }
+    public string[] SpawnableFloorTags { get; private set; }
+    public Vector3 RotationOffset { get; private set; }
+    public AnimationCurve VanillaAnimationCurve { get; private set; }
 }

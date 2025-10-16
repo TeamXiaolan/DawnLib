@@ -8,5 +8,5 @@ public sealed class DawnScrapItemInfo
         Weights = weights;
     }
 
-    public ProviderTable<int?, DawnMoonInfo> Weights { get; }
+    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
 }

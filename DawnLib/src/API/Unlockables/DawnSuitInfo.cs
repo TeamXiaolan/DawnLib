@@ -12,6 +12,6 @@ public sealed class DawnSuitInfo
         JumpAudioClip = jumpAudioClip;
     }
 
-    public Material SuitMaterial { get; }
-    public AudioClip? JumpAudioClip { get; }
+    public Material SuitMaterial { get; private set; }
+    public AudioClip? JumpAudioClip { get; private set; }
 }

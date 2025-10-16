@@ -1,5 +1,5 @@
 ﻿namespace Dawn;
-public class DawnEnemyLocationInfo
+public sealed class DawnEnemyLocationInfo
 {
     public DawnEnemyInfo ParentInfo { get; internal set; }
 
@@ -8,5 +8,5 @@ public class DawnEnemyLocationInfo
         Weights = weights;
     }
 
-    public ProviderTable<int?, DawnMoonInfo> Weights { get; }
+    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
 }

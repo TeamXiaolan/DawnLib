@@ -14,11 +14,11 @@ public sealed class DawnShopItemInfo : ITerminalPurchase
         Cost = cost;
     }
 
-    public TerminalNode? InfoNode { get; }
-    public TerminalNode RequestNode { get; }
-    public TerminalNode ReceiptNode { get; }
-    public IProvider<int> Cost { get; }
-    public ITerminalPurchasePredicate PurchasePredicate { get; }
+    public TerminalNode? InfoNode { get; private set; }
+    public TerminalNode RequestNode { get; private set; }
+    public TerminalNode ReceiptNode { get; private set; }
+    public IProvider<int> Cost { get; private set; }
+    public ITerminalPurchasePredicate PurchasePredicate { get; private set; }
 
     public void AddToDropship(bool ignoreMax = false, int count = 1)
     {
