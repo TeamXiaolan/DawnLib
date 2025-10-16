@@ -37,7 +37,7 @@ public class FixedGroupSizeAlgorithm(int groupSize = 3) : IMoonGroupAlgorithm
 
             currentGroup.Moons.Add(moonInfo);
 
-            if (moonInfo.PurchasePredicate.CanPurchase() is not TerminalPurchaseResult.HiddenPurchaseResult)
+            if (moonInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase() is not TerminalPurchaseResult.HiddenPurchaseResult)
             {
                 currentInGroup++;
             }

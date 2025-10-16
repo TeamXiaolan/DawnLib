@@ -154,6 +154,6 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
         }
 
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
-        return new DawnUnlockableItemInfo(_purchasePredicate, key, tags, value, cost, _suitInfo, _placeableObjectInfo, value.shopSelectionNode, value.shopSelectionNode?.terminalOptions?.FirstOrDefault()?.result, null, infoNode, customData);
+        return new DawnUnlockableItemInfo(key, tags, value, new DawnPurchaseInfo(cost, _purchasePredicate), _suitInfo, _placeableObjectInfo, value.shopSelectionNode, value.shopSelectionNode?.terminalOptions?.FirstOrDefault()?.result, null, infoNode, customData);
     }
 }

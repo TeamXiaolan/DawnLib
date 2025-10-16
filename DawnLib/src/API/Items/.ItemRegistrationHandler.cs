@@ -87,7 +87,7 @@ static class ItemRegistrationHandler
 
     static void UpdateShopItemPrices(DawnShopItemInfo shopInfo)
     {
-        int cost = shopInfo.Cost.Provide();
+        int cost = shopInfo.DawnPurchaseInfo.Cost.Provide();
         shopInfo.ParentInfo.Item.creditsWorth = cost;
         shopInfo.ReceiptNode.itemCost = cost;
         shopInfo.RequestNode.itemCost = cost;
@@ -236,7 +236,8 @@ static class ItemRegistrationHandler
                 }
             }
 
-            DawnShopItemInfo shopInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), infoNode, requestNode, receiptNode, new SimpleProvider<int>(buyableItem.creditsWorth));
+            DawnPurchaseInfo purchaseInfo = new(new SimpleProvider<int>(buyableItem.creditsWorth), ITerminalPurchasePredicate.AlwaysSuccess());
+            DawnShopItemInfo shopInfo = new(purchaseInfo, infoNode, requestNode, receiptNode);
             itemsWithShopInfo[buyableItem.name] = shopInfo;
         }
 

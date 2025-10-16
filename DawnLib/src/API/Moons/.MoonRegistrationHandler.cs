@@ -293,7 +293,7 @@ static class MoonRegistrationHandler
 
             foreach (DawnMoonInfo moonInfo in group.Moons)
             {
-                TerminalPurchaseResult result = moonInfo.PurchasePredicate.CanPurchase();
+                TerminalPurchaseResult result = moonInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
 
                 if (result is TerminalPurchaseResult.HiddenPurchaseResult)
                 {
@@ -441,7 +441,7 @@ static class MoonRegistrationHandler
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate, null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -456,7 +456,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, new(), null, null, null, new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide(), null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
@@ -483,7 +483,7 @@ static class MoonRegistrationHandler
 
     private static void UpdateMoonPrice(DawnMoonInfo moonInfo)
     {
-        int cost = moonInfo.Cost.Provide();
+        int cost = moonInfo.DawnPurchaseInfo.Cost.Provide();
         if (moonInfo.RouteNode != null)
         {
             moonInfo.RouteNode.itemCost = cost;

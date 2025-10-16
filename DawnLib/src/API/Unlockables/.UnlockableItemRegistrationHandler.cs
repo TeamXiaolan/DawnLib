@@ -33,7 +33,7 @@ static class UnlockableRegistrationHandler
                     continue; // skip decors
 
                 string? unlockableName = unlockableItemInfo.UnlockableItem.unlockableName;
-                TerminalPurchaseResult result = unlockableItemInfo.PurchasePredicate.CanPurchase();
+                TerminalPurchaseResult result = unlockableItemInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
                     if (!string.IsNullOrEmpty(failedResult.OverrideName))
@@ -67,7 +67,7 @@ static class UnlockableRegistrationHandler
 
     static void UpdateUnlockablePrices(DawnUnlockableItemInfo info)
     {
-        int cost = info.Cost.Provide();
+        int cost = info.DawnPurchaseInfo.Cost.Provide();
         if (info.RequestNode != null)
         {
             info.RequestNode.itemCost = cost;
@@ -215,7 +215,7 @@ static class UnlockableRegistrationHandler
                 infoNode = infoKeyword.compatibleNouns.Where(x => x.noun == unlockableBuyKeyword)?.Select(x => x.result).FirstOrDefault();
             }
 
-            DawnUnlockableItemInfo unlockableItemInfo = new(ITerminalPurchasePredicate.AlwaysSuccess(), key, [DawnLibTags.IsExternal], unlockableItem, new SimpleProvider<int>(cost), suitInfo, placeableObjectInfo, requestNode, confirmNode, unlockableBuyKeyword, infoNode, null);
+            DawnUnlockableItemInfo unlockableItemInfo = new(key, [DawnLibTags.IsExternal], unlockableItem, new DawnPurchaseInfo(new SimpleProvider<int>(cost), ITerminalPurchasePredicate.AlwaysSuccess()), suitInfo, placeableObjectInfo, requestNode, confirmNode, unlockableBuyKeyword, infoNode, null);
             unlockableItem.SetDawnInfo(unlockableItemInfo);
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }

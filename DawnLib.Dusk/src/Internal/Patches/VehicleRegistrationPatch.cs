@@ -33,7 +33,7 @@ static class VehicleRegistrationPatch
                 return;
             }
             DawnVehicleInfo info = duskVehicleDefinition.DawnVehicleInfo;
-            purchase = info;
+            purchase = info.DawnPurchaseInfo;
         }
 
         // preform predicate
@@ -85,7 +85,7 @@ static class VehicleRegistrationPatch
 
     static void UpdateVehiclePrices(DawnVehicleInfo info)
     {
-        int cost = info.Cost.Provide();
+        int cost = info.DawnPurchaseInfo.Cost.Provide();
         info.BuyNode.itemCost = cost;
         info.ConfirmPurchaseNode.itemCost = cost;
     }

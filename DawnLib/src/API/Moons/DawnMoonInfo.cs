@@ -5,9 +5,9 @@ using Dawn.Internal;
 
 namespace Dawn;
 
-public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
+public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, IProvider<int> cost, ITerminalPurchasePredicate predicate, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
         Scenes.AddRange(scenes);
@@ -16,8 +16,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
         ReceiptNode = receiptNode;
         NameKeyword = nameKeyword;
 
-        Cost = cost;
-        PurchasePredicate = predicate;
+        DawnPurchaseInfo = dawnPurchaseInfo;
     }
 
     public SelectableLevel Level { get; }
@@ -80,6 +79,5 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, ITerminalPurchase
         return returnString;
     }
 
-    public IProvider<int> Cost { get; }
-    public ITerminalPurchasePredicate PurchasePredicate { get; }
+    public DawnPurchaseInfo DawnPurchaseInfo { get; }
 }

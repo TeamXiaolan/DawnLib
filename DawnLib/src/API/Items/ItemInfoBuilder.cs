@@ -113,7 +113,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
             _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
             _costOverride ??= new SimpleProvider<int>(_parentBuilder.value.creditsWorth);
 
-            return new DawnShopItemInfo(_purchasePredicate, _infoNode, _requestNode, _receiptNode, _costOverride);
+            return new DawnShopItemInfo(new DawnPurchaseInfo(_costOverride, _purchasePredicate), _infoNode, _requestNode, _receiptNode);
         }
     }
 

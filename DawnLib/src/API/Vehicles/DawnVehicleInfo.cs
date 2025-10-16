@@ -3,19 +3,17 @@ using UnityEngine;
 
 namespace Dawn;
 
-public sealed class DawnVehicleInfo : DawnBaseInfo<DawnVehicleInfo>, ITerminalPurchase
+public sealed class DawnVehicleInfo : DawnBaseInfo<DawnVehicleInfo>
 {
-    internal DawnVehicleInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnVehicleInfo> key, HashSet<NamespacedKey> tags, GameObject vehiclePrefab, GameObject? secondaryPrefab, GameObject? stationPrefab, IProvider<int> cost, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnVehicleInfo(NamespacedKey<DawnVehicleInfo> key, HashSet<NamespacedKey> tags, GameObject vehiclePrefab, GameObject? secondaryPrefab, GameObject? stationPrefab, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {
-        PurchasePredicate = predicate;
         VehiclePrefab = vehiclePrefab;
         SecondaryPrefab = secondaryPrefab;
         StationPrefab = stationPrefab;
-        Cost = cost;
+        DawnPurchaseInfo = dawnPurchaseInfo;
     }
 
-    public IProvider<int> Cost { get; }
-    public ITerminalPurchasePredicate PurchasePredicate { get; }
+    public DawnPurchaseInfo DawnPurchaseInfo { get; }
 
     public GameObject VehiclePrefab { get; }
     public GameObject? SecondaryPrefab { get; }

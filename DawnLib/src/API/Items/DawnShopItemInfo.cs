@@ -1,24 +1,22 @@
 ﻿using Dawn.Internal;
 
 namespace Dawn;
-public sealed class DawnShopItemInfo : ITerminalPurchase
+public sealed class DawnShopItemInfo
 {
     public DawnItemInfo ParentInfo { get; internal set; }
 
-    internal DawnShopItemInfo(ITerminalPurchasePredicate predicate, TerminalNode? infoNode, TerminalNode requestNode, TerminalNode receiptNode, IProvider<int> cost)
+    internal DawnShopItemInfo(DawnPurchaseInfo dawnPurchaseInfo, TerminalNode? infoNode, TerminalNode requestNode, TerminalNode receiptNode)
     {
-        PurchasePredicate = predicate;
+        DawnPurchaseInfo = dawnPurchaseInfo;
         InfoNode = infoNode;
         RequestNode = requestNode;
         ReceiptNode = receiptNode;
-        Cost = cost;
     }
 
     public TerminalNode? InfoNode { get; private set; }
-    public TerminalNode RequestNode { get; private set; }
-    public TerminalNode ReceiptNode { get; private set; }
-    public IProvider<int> Cost { get; private set; }
-    public ITerminalPurchasePredicate PurchasePredicate { get; private set; }
+    public TerminalNode RequestNode { get; }
+    public TerminalNode ReceiptNode { get; }
+    public DawnPurchaseInfo DawnPurchaseInfo { get; }
 
     public void AddToDropship(bool ignoreMax = false, int count = 1)
     {

@@ -45,7 +45,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 player.DespawnHeldObject();
             }
 
-            if (definition.PurchasePredicate is not ProgressivePredicate progressive)
+            if (definition.DawnPurchaseInfo.PurchasePredicate is not ProgressivePredicate progressive)
             {
                 DawnPlugin.Logger.LogError($"{definition.UnlockableItem.unlockableName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
                 return;
@@ -69,7 +69,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 return;
             }
 
-            if (definition.ShopInfo.PurchasePredicate is not ProgressivePredicate progressive)
+            if (definition.ShopInfo.DawnPurchaseInfo.PurchasePredicate is not ProgressivePredicate progressive)
             {
                 DawnPlugin.Logger.LogError($"{definition.Item.itemName} does not have a Progressive Predicate, yet is trying to be unlocked like one.");
                 return;

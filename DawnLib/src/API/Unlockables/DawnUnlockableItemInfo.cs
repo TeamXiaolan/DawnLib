@@ -2,17 +2,16 @@ using System.Collections.Generic;
 
 namespace Dawn;
 
-public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo>, ITerminalPurchase
+public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo>
 {
-    internal DawnUnlockableItemInfo(ITerminalPurchasePredicate predicate, NamespacedKey<DawnUnlockableItemInfo> key, HashSet<NamespacedKey> tags, UnlockableItem unlockableItem, IProvider<int> cost, DawnSuitInfo? suitInfo, DawnPlaceableObjectInfo? placeableObjectInfo, TerminalNode? requestNode, TerminalNode? confirmNode, TerminalKeyword? buyKeyword, TerminalNode? infoNode, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnUnlockableItemInfo(NamespacedKey<DawnUnlockableItemInfo> key, HashSet<NamespacedKey> tags, UnlockableItem unlockableItem, DawnPurchaseInfo dawnPurchaseInfo, DawnSuitInfo? suitInfo, DawnPlaceableObjectInfo? placeableObjectInfo, TerminalNode? requestNode, TerminalNode? confirmNode, TerminalKeyword? buyKeyword, TerminalNode? infoNode, IDataContainer? customData) : base(key, tags, customData)
     {
-        PurchasePredicate = predicate;
         UnlockableItem = unlockableItem;
         SuitInfo = suitInfo;
         if (SuitInfo != null) SuitInfo.ParentInfo = this;
         PlaceableObjectInfo = placeableObjectInfo;
         if (PlaceableObjectInfo != null) PlaceableObjectInfo.ParentInfo = this;
-        Cost = cost;
+        DawnPurchaseInfo = dawnPurchaseInfo;
 
         RequestNode = requestNode;
         ConfirmNode = confirmNode;
@@ -21,8 +20,7 @@ public sealed class DawnUnlockableItemInfo : DawnBaseInfo<DawnUnlockableItemInfo
     }
 
     public UnlockableItem UnlockableItem { get; }
-    public IProvider<int> Cost { get; }
-    public ITerminalPurchasePredicate PurchasePredicate { get; }
+    public DawnPurchaseInfo DawnPurchaseInfo { get; }
     public DawnSuitInfo? SuitInfo { get; }
     public DawnPlaceableObjectInfo? PlaceableObjectInfo { get; }
 

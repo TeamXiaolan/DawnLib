@@ -47,7 +47,7 @@ static class TerminalPatches
             if (shopInfo == null)
                 return true;
 
-            TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
+            TerminalPurchaseResult result = shopInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
 
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {
@@ -91,7 +91,7 @@ static class TerminalPatches
                 DawnPlugin.Logger.LogWarning($"{unlockableNode.creatureName} ({unlockableNode.name}) of {unlockableItem.unlockableName} has no dawn info.");
                 return true;
             }
-            TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
+            TerminalPurchaseResult result = info.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.HiddenPurchaseResult)
             {
                 Debuggers.Unlockables?.Log($"Hiding {info.Key}");
@@ -132,7 +132,7 @@ static class TerminalPatches
                 if (shopInfo == null)
                     return item.itemName;
 
-                TerminalPurchaseResult result = shopInfo.PurchasePredicate.CanPurchase();
+                TerminalPurchaseResult result = shopInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
                     if (failedResult.OverrideName != null)
@@ -161,7 +161,7 @@ static class TerminalPatches
                     return unlockable.unlockableName;
                 }
                 DawnUnlockableItemInfo info = unlockable.GetDawnInfo();
-                TerminalPurchaseResult result = info.PurchasePredicate.CanPurchase();
+                TerminalPurchaseResult result = info.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
                     if (failedResult.OverrideName != null)
@@ -199,7 +199,7 @@ static class TerminalPatches
 
             if (shopItemInfo != null)
             {
-                purchase = shopItemInfo;
+                purchase = shopItemInfo.DawnPurchaseInfo;
             }
         }
 
@@ -215,13 +215,13 @@ static class TerminalPatches
                 return;
             }
             DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
-            purchase = info;
+            purchase = info.DawnPurchaseInfo;
         }
 
         if (node.buyRerouteToMoon >= 0)
         {
             Debuggers.Patching?.Log($"buyRerouteToMoon = {node.buyRerouteToMoon}");
-            purchase = StartOfRound.Instance.levels[node.buyRerouteToMoon].GetDawnInfo();
+            purchase = StartOfRound.Instance.levels[node.buyRerouteToMoon].GetDawnInfo().DawnPurchaseInfo;
         }
 
         // preform predicate

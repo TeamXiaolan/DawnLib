@@ -108,7 +108,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
 
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _scenes, _routeNode, _receiptNode, _nameKeyword, _costOverride, _purchasePredicate, customData);
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _scenes, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
         return info;
     }
 }
