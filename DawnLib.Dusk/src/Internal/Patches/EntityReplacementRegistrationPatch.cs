@@ -15,16 +15,18 @@ namespace Dusk.Internal;
 
 static class EntityReplacementRegistrationPatch
 {
-    private static readonly NamespacedKey Key = NamespacedKey.From("dawn_lib", "entity_replacements");
+    internal static readonly NamespacedKey Key = NamespacedKey.From("dawn_lib", "entity_replacements");
 
-    private static Random? replacementRandom = null;
+    internal static Random? replacementRandom = null;
 
     internal static void Init()
     {
         LethalContent.Enemies.BeforeFreeze += RegisterEnemyReplacements;
         LethalContent.Items.BeforeFreeze += RegisterItemReplacements;
+        LethalContent.Unlockables.BeforeFreeze += RegisterUnlockableReplacements;
         using (new DetourContext(priority: int.MaxValue))
         {
+            On.StartOfRound.Awake += RegisterScenePlacedUnlockableReplacements;
             On.EnemyAI.Start += ReplaceEnemyEntity;
             On.GrabbableObject.Start += ReplaceGrabbableObject;
             On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
@@ -82,6 +84,51 @@ static class EntityReplacementRegistrationPatch
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+
+    private static void RegisterScenePlacedUnlockableReplacements(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        AutoParentToShip[] autoParentToShips = GameObject.FindObjectsOfType<AutoParentToShip>(true);
+        foreach (AutoParentToShip autoParentToShip in autoParentToShips)
+        {
+            if (autoParentToShip.gameObject.GetComponent<DuskUnlockable>())
+            {
+                DuskPlugin.Logger.LogWarning($"{autoParentToShip.gameObject.name} already has a DuskUnlockable component somehow.");
+                continue;
+            }
+            autoParentToShip.gameObject.AddComponent<DuskUnlockable>();
+        }
+        orig(self);
+    }
+
+    private static void RegisterUnlockableReplacements()
+    {
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+        {
+            if (unlockableItemInfo.UnlockableItem.prefabObject == null)
+                continue;
+
+            unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
+        }
+
+        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+        {
+            if (entityReplacementDefinition is not DuskUnlockableReplacementDefinition unlockableReplacementDefinition)
+                continue;
+
+            if (LethalContent.Unlockables.TryGetValue(unlockableReplacementDefinition.EntityToReplaceKey, out DawnUnlockableItemInfo unlockableItemInfo))
+            {
+                if (!unlockableItemInfo.CustomData.TryGet(Key, out List<DuskUnlockableReplacementDefinition>? list))
+                {
+                    DuskUnlockableReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskUnlockableReplacementDefinition>();
+                    vanilla.IsDefault = true;
+                    vanilla.Register(null);
+                    list = [vanilla];
+                    unlockableItemInfo.CustomData.Set(Key, list);
+                }
+                list.Add(unlockableReplacementDefinition);
+            }
+        }
     }
 
     private static void RegisterItemReplacements()
