@@ -81,9 +81,9 @@ static class UnlockableRegistrationHandler
 
     private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
     {
+        orig(self);
         if (LethalContent.Unlockables.IsFrozen)
         {
-            orig(self);
             return;
         }
 
@@ -229,7 +229,6 @@ static class UnlockableRegistrationHandler
             unlockableItem.GetDawnInfo().IndexInList = i;
         }
         LethalContent.Unlockables.Freeze();
-        orig(self);
     }
 
     private static TerminalNode CreateUnlockableConfirmNode(UnlockableItem unlockableItem, int shipUnlockableID)
