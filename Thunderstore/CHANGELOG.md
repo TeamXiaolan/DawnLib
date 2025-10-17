@@ -6,6 +6,7 @@
   - Added config to opt out of it in case of issues or dislike I guess.
 - Added UnlockableReplacementDefinition for replacing the model etc of unlockables
 - Fixed an issue with Unlockables sometimes registering as suits depending on setup errors.
+- Added a loading bar that tracks each player's progress for moons with DawnLib hotloading!
 
 ## v0.3.4
 
