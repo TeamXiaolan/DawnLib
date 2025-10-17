@@ -156,8 +156,8 @@ static class MoonRegistrationHandler
         }
         TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
-        LethalContent.Moons.Freeze();
         orig(self);
+        LethalContent.Moons.Freeze();
     }
 
     private static void FixDawnMoonItems()

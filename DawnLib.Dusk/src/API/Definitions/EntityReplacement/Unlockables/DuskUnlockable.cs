@@ -4,11 +4,12 @@ using Dawn;
 using Dawn.Internal;
 using Dawn.Preloader.Interfaces;
 using Dusk.Internal;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Dusk;
 
-public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement
+public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSaveData
 {
     public object? CurrentEntityReplacement { get; set; }
 
@@ -87,4 +88,14 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement
     }
 
     public void OnDestroy() { }
+
+    public virtual JToken GetDawnItemDataToSave()
+    {
+        return 0;
+    }
+
+    public virtual void LoadDawnItemSaveData(JToken saveData)
+    {
+        
+    }
 }

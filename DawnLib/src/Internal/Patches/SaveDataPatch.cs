@@ -3,6 +3,7 @@ using System;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using Newtonsoft.Json.Linq;
 
 namespace Dawn.Internal;
 
@@ -22,6 +23,22 @@ static class SaveDataPatch
 
         _ = new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "Awake"), OnPlaceableShipObjectAwake);
         _ = new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "OnDestroy"), OnPlaceableShipObjectOnDestroy);
+
+        _ = new Hook(AccessTools.DeclaredMethod(typeof(GrabbableObject), "GetDawnDataToSave"), InjectVanillaGetSaveData);
+        _ = new Hook(AccessTools.DeclaredMethod(typeof(GrabbableObject), "LoadDawnSaveData", [typeof(JToken)]), InjectVanillaLoadSaveData);
+    }
+
+    private static void InjectVanillaLoadSaveData(RuntimeILReferenceBag.FastDelegateInvokers.Action<GrabbableObject, JToken> orig, GrabbableObject self, JToken data)
+    {
+        if (data.Type != JTokenType.Integer)
+            return;
+
+        self.LoadItemSaveData((int)data);
+    }
+
+    private static JToken InjectVanillaGetSaveData(RuntimeILReferenceBag.FastDelegateInvokers.Func<GrabbableObject, JToken> orig, GrabbableObject self)
+    {
+        return self.GetItemDataToSave();
     }
 
     private static void OnPlaceableShipObjectAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlaceableShipObject> orig, PlaceableShipObject self)

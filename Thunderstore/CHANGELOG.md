@@ -1,4 +1,9 @@
-# v0.3.5
+# v0.3.6
+
+- Got rid of DawnGrabbableObject, replaced with a preloader injected interface, DawnSaveData
+- Fixed incompat with LL items not getting registered
+
+## v0.3.5
 
 - Replaced vanilla save system (atleast for items rn only) with DawnLib's own system.
   - Also allows for the rotations of items to be retained in comparison to vanilla resetting rotations.

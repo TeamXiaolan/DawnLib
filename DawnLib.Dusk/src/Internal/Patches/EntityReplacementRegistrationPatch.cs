@@ -108,6 +108,9 @@ static class EntityReplacementRegistrationPatch
             if (unlockableItemInfo.UnlockableItem.prefabObject == null)
                 continue;
 
+            if (unlockableItemInfo.UnlockableItem.prefabObject.GetComponent<DuskUnlockable>())
+                continue;
+
             unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
         }
 

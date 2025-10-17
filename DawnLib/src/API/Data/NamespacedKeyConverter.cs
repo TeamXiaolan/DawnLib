@@ -68,7 +68,13 @@ public class NamespacedKeyDictionaryConverter : JsonConverter
         writer.WriteStartObject();
 
         var dict = (System.Collections.IDictionary)value!;
-        foreach (var keyObj in dict.Keys)
+        var keys = new List<object>();
+        foreach (var key in dict.Keys)
+        {
+            keys.Add(key);
+        }
+
+        foreach (var keyObj in keys)
         {
             var key = (NamespacedKey)keyObj;
             var val = dict[keyObj];

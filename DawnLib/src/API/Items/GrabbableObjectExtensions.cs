@@ -1,4 +1,5 @@
 
+using Dawn.Preloader.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace Dawn;
@@ -10,9 +11,9 @@ public static class GrabbableObjectExtensions
         if (!grabbableObject.itemProperties.saveItemVariable)
             return 0;
 
-        if (grabbableObject is DawnGrabbableObject dawnGrabbableObject)
+        if (grabbableObject is IDawnSaveData dawnSaveData)
         {
-            return dawnGrabbableObject.GetDawnItemDataToSave();
+            return dawnSaveData.GetDawnDataToSave();
         }
         return grabbableObject.GetItemDataToSave();
     }
@@ -22,9 +23,9 @@ public static class GrabbableObjectExtensions
         if (!grabbableObject.itemProperties.saveItemVariable)
             return;
 
-        if (grabbableObject is DawnGrabbableObject dawnGrabbableObject)
+        if (grabbableObject is IDawnSaveData dawnSaveData)
         {
-            dawnGrabbableObject.LoadDawnItemSaveData(jToken);
+            dawnSaveData.LoadDawnSaveData(jToken);
             return;
         }
         grabbableObject.LoadItemSaveData((int)jToken);
