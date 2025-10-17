@@ -108,6 +108,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
             _playerStates[player] = BundleState.Queued;
         }
 
+        RouteProgressUI.Instance.Setup(moonInfo.Level.PlanetName);
         CheckReadyAndUpdateUI();
         StartCoroutine(DoMoonSceneLoading(moonInfo, sceneInfo));
     }
@@ -216,6 +217,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     private void CheckReadyAndUpdateUI()
     {
+        RouteProgressUI.Instance.Refresh(_playerStates);
+        
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
 
@@ -245,6 +248,11 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     private void LockLever()
     {
+        // this is probably bad for performance, but who cares. not me!
+        StartOfRound.Instance.radarCanvas.transform.Find("PlanetVideoReel").gameObject.SetActive(false);
+        StartOfRound.Instance.radarCanvas.transform.Find("PlanetDescription").gameObject.SetActive(false);
+        RouteProgressUI.Instance.gameObject.SetActive(true);
+        
         StartMatchLeverRefs.Instance.triggerScript.interactable = false;
         allPlayersDone = false;
         StartOfRound.Instance.travellingToNewLevel = true;
@@ -256,5 +264,10 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null);
         StartMatchLeverRefs.Instance.triggerScript.interactable = true;
         StartOfRound.Instance.travellingToNewLevel = false;
+        
+        // this is probably bad for performance, but who cares. not me!
+        StartOfRound.Instance.radarCanvas.transform.Find("PlanetVideoReel").gameObject.SetActive(true);
+        StartOfRound.Instance.radarCanvas.transform.Find("PlanetDescription").gameObject.SetActive(true);
+        RouteProgressUI.Instance.gameObject.SetActive(false);
     }
 }

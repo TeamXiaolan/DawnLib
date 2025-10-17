@@ -30,6 +30,14 @@ public class DuskPlugin : BaseUnityPlugin
         Logger.LogInfo("Loading assets");
         Main = new MainAssets(AssetBundleUtils.LoadBundle(Assembly.GetExecutingAssembly(), "dawnlibmain"));
 
+        /*
+         * todo: awful hack.
+         * because dawn doesn't actually load any assetbundles,
+         * and dusk is currently in charge of the main bundle,
+         * we have to manually set this field in MoonRegistrationHandler as a workaround
+         */
+        MoonRegistrationHandler.RouteProgressUIPrefab = Main.RouteProgressUIPrefab;
+        
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
@@ -45,5 +53,9 @@ public class DuskPlugin : BaseUnityPlugin
 
         [LoadFromBundle("AchievementGetUICanvas.prefab")]
         public GameObject AchievementGetUICanvasPrefab { get; private set; } = null!;
+
+
+        [LoadFromBundle("DawnLibRouteProgressUI.prefab")]
+        public GameObject RouteProgressUIPrefab { get; private set; } = null!;
     }
 }

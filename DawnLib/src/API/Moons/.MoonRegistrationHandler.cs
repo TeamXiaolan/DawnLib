@@ -13,6 +13,9 @@ static class MoonRegistrationHandler
 {
     private static IMoonGroupAlgorithm _groupAlgorithm = new RankGroupAlgorithm();
 
+    // See DuskPlugin
+    internal static GameObject RouteProgressUIPrefab;
+    
     internal static void Init()
     {
         LethalContent.Moons.AddAutoTaggers(
@@ -26,6 +29,7 @@ static class MoonRegistrationHandler
         {
             On.StartOfRound.Awake += CollectTestLevel;
             On.StartOfRound.Awake += CollectLevels;
+            On.StartOfRound.Awake += SpawnRouteProgressUI;
             On.Terminal.Awake += RegisterDawnLevels;
         }
 
@@ -40,6 +44,11 @@ static class MoonRegistrationHandler
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+    }
+    private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        orig(self);
+        Object.Instantiate(RouteProgressUIPrefab, self.radarCanvas.transform).SetActive(false);
     }
 
     private static void FixAmbienceLibraries()
