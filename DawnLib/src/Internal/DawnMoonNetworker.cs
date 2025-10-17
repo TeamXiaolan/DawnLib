@@ -87,7 +87,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         QueueMoonSceneLoadingServerRpc(_currentMoonKey, _currentSceneKey);
     }
 
-    [ServerRpc()]
+    [ServerRpc]
     private void QueueMoonSceneLoadingServerRpc(NamespacedKey moonKey, NamespacedKey sceneKey)
     {
         QueueMoonSceneLoadingClientRpc(moonKey, sceneKey);
@@ -153,7 +153,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
         if (sceneInfo is CustomMoonSceneInfo customMoon)
         {
-            ReplaceShipAnimations(_originalShipLeaveClip, customMoon.ShipLandingOverrideAnimation);
+            ReplaceShipAnimations(_originalShipLeaveClip, customMoon.ShipTakeoffOverrideAnimation);
             ReplaceShipAnimations(_originalShipLandClip, customMoon.ShipLandingOverrideAnimation);
             if (_currentBundlePath != customMoon.AssetBundlePath)
             {

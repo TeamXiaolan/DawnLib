@@ -47,8 +47,8 @@ static class MoonRegistrationHandler
     }
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
+        Object.Instantiate(RouteProgressUIPrefab, self.radarCanvas.transform);
         orig(self);
-        Object.Instantiate(RouteProgressUIPrefab, self.radarCanvas.transform).SetActive(false);
     }
 
     private static void FixAmbienceLibraries()
@@ -396,7 +396,7 @@ static class MoonRegistrationHandler
 
     static IEnumerator DoHotloadSceneStuff(SelectableLevel level)
     {
-        yield return new WaitUntil(() => DawnMoonNetworker.Instance != null);
+        yield return new WaitUntil(() => DawnMoonNetworker.Instance != null && RouteProgressUI.Instance != null);
         DawnMoonNetworker.Instance!.HostDecide(level.GetDawnInfo());
     }
 
