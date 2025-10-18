@@ -1,4 +1,4 @@
-using Dawn.Preloader.Interfaces;
+using Dawn.Interfaces;
 
 namespace Dawn;
 

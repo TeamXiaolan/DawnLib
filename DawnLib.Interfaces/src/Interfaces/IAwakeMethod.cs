@@ -1,4 +1,6 @@
-﻿namespace Dawn.Preloader.Interfaces;
+﻿using Dawn.Preloader;
+
+namespace Dawn.Interfaces;
 
 [InjectInterface("EnemyAINestSpawnObject")]
 [InjectInterface("RandomMapObject")]

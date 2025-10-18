@@ -35,7 +35,7 @@ public static class ItemSaveDataHandler
             grabbableObject.SetScrapValue(itemData.ScrapValue);
             if (grabbableObject.itemProperties.saveItemVariable)
             {
-                grabbableObject.LoadSaveData(itemData.ItemSavedData);
+                grabbableObject.LoadSaveData(itemData.ItemSavedData); // TODO: Cast 
             }
             grabbableObject.NetworkObject.Spawn(false);
             StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbableObject.transform, itemData.SavedSpawnRotation));
@@ -64,7 +64,7 @@ public static class ItemSaveDataHandler
                 continue;
             }
             Debuggers.Items?.Log($"Saving item: {itemInfo.Key} into save data.");
-            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, itemData.transform.position, itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemData.GetSaveData()));
+            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemData.GetSaveData()));
         }
         using (dataContainer.LargeEdit())
         {

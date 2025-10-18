@@ -1,4 +1,4 @@
-using Dawn.Preloader.Interfaces;
+using Dawn.Interfaces;
 using DunGen.Graph;
 
 namespace Dawn;

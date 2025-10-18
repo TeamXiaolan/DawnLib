@@ -1,5 +1,5 @@
 
-using Dawn.Preloader.Interfaces;
+using Dawn.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace Dawn;

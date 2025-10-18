@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.Dusk", "DawnLib.Dus
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.Compatibility", "DawnLib.Compatibility\DawnLib.Compatibility.csproj", "{2F29EE6C-A76B-4BB9-BB2C-9E640A58181E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.Interfaces", "DawnLib.Interfaces\DawnLib.Interfaces.csproj", "{2F29EE6C-A76B-4BB9-BB2C-9E640A58181A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F29EE6C-A76B-4BB9-BB2C-9E640A58181A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

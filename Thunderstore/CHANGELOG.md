@@ -1,4 +1,9 @@
-# v0.3.6
+# v0.3.7
+
+- Fixed a compat issue with TwoRadarMap.
+- Fixed registering issues with MoreSuits.
+
+## v0.3.6
 
 - Got rid of DawnGrabbableObject, replaced with a preloader injected interface, DawnSaveData
 - Fixed incompat with LL items not getting registered

@@ -3,7 +3,8 @@
 namespace Dawn.Preloader;
 
 [AttributeUsage(AttributeTargets.Interface, AllowMultiple = true)]
-public sealed class InjectInterfaceAttribute(string fullName) : Attribute
+public sealed class InjectInterfaceAttribute(string typeName, string assemblyName = "Assembly-CSharp") : Attribute
 {
-    public string FullName => fullName;
+    public string AssemblyName => assemblyName;
+    public string TypeName => typeName;
 }

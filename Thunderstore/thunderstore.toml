@@ -20,27 +20,31 @@ outdir = "../Packages"
 
 [[build.copy]]
 source = "../DawnLib/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.dll"
-target = "BepInEx/plugins/DawnLib/"
+target = "BepInEx/plugins/"
 
 [[build.copy]]
 source = "../DawnLib.Dusk/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.dusk.dll"
-target = "BepInEx/plugins/DawnLib/"
+target = "BepInEx/plugins/"
 
 [[build.copy]]
 source = "../DawnLib.Compatibility/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.compatibility.dll"
-target = "BepInEx/plugins/DawnLib/"
+target = "BepInEx/plugins/"
 
 [[build.copy]]
 source = "../DawnLib.Preloader/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.preloader.dll"
 target = "BepInEx/patchers/"
 
 [[build.copy]]
+source = "../DawnLib.Interfaces/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.interfaces.dll"
+target = "BepInEx/plugins/"
+
+[[build.copy]]
 source = "../DawnLib/data"
-target = "BepInEx/plugins/DawnLib/data/"
+target = "BepInEx/plugins/data/"
 
 [[build.copy]]
 source = "../DawnLib/res/dawnlibmain"
-target = "BepInEx/plugins/DawnLib/Assets/"
+target = "BepInEx/plugins/Assets/"
 
 [[build.copy]]
 source = "./CHANGELOG.md"

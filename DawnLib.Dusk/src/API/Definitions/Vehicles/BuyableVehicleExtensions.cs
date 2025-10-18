@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Dawn;
 using Dawn.Internal;
-using Dawn.Preloader.Interfaces;
+using Dawn.Interfaces;
 
 namespace Dusk;
 
