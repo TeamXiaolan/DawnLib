@@ -2,7 +2,6 @@
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
-using Newtonsoft.Json.Linq;
 
 namespace Dawn.Internal;
 

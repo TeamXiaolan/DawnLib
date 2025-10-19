@@ -43,6 +43,9 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal void SaveData()
     {
         OnSave();
+        if (!NetworkManager.Singleton.IsHost)
+            return;
+
         if (!DawnConfig.DisableDawnItemSaving)
         {
             ItemSaveDataHandler.SaveAllItems(DawnLib.GetCurrentContract()!);

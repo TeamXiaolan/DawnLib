@@ -4,6 +4,7 @@
 - Fixed registering issues with MoreSuits.
 - Fixes regarding soft dependencies breaking.
 - Fixes regarding UI to achievements tab.
+- Fixed issues regarding LL shop items not being registered potentially
 
 ## v0.3.6
 

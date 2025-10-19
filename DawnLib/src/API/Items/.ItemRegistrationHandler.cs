@@ -330,6 +330,7 @@ static class ItemRegistrationHandler
 
     private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
+        orig(self);
         _ = TerminalRefs.Instance;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
@@ -409,7 +410,6 @@ static class ItemRegistrationHandler
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray(); // SO so it sticks
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray(); // SO so it sticks
         self.terminalNodes.allKeywords = newTerminalKeywords.ToArray(); // SO so it sticks
-        orig(self);
     }
 
     private static void CollectLLLTags(Item item, HashSet<NamespacedKey> tags)
