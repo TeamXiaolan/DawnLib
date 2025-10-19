@@ -53,10 +53,6 @@ public class DawnPlugin : BaseUnityPlugin
             LethalQuantitiesCompat.Init();
         }
 
-        if (LethalLevelLoaderCompat.Enabled)
-        {
-            LethalLevelLoaderCompat.Init();
-        }
         if (TerminalFormatterCompat.Enabled)
         {
             TerminalFormatterCompat.Init();
