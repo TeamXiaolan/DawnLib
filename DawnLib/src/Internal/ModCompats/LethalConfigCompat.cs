@@ -5,9 +5,11 @@ using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using Dawn.Utils;
+using HarmonyLib;
 using LethalConfig;
 using LethalConfig.ConfigItems;
-using On.LethalConfig.AutoConfig;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn.Internal;
@@ -26,10 +28,10 @@ static class LethalConfigCompat
         _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "dawnlib.dummy.youshouldneverseethis.cfg"), false);
         _dummyConfig.SaveOnConfigSet = false;
 
-        AutoConfigGenerator.GenerateConfigForEntry += ExtendGenerateConfigForEntry;
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalConfig.AutoConfig.AutoConfigGenerator), "GenerateConfigForEntry"), ExtendGenerateConfigForEntry));
     }
 
-    private static BaseConfigItem? ExtendGenerateConfigForEntry(AutoConfigGenerator.orig_GenerateConfigForEntry orig, ConfigEntryBase configEntryBase)
+    private static BaseConfigItem? ExtendGenerateConfigForEntry(RuntimeILReferenceBag.FastDelegateInvokers.Func<ConfigEntryBase, BaseConfigItem> orig, ConfigEntryBase configEntryBase)
     {
         try
         {

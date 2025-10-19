@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
 using MonoMod.RuntimeDetour;
+using UnityEngine;
 
 namespace Dawn;
 
@@ -242,6 +243,27 @@ static class UnlockableRegistrationHandler
 
             unlockableItem.GetDawnInfo().IndexInList = i;
         }
+        int roomLayer = LayerMask.NameToLayer("Room");
+        // Table
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[13].prefabObject.transform.Find("TableMesh").gameObject.layer = roomLayer;
+        // Romantic Table
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[14].prefabObject.transform.Find("RTableMesh").gameObject.layer = roomLayer;
+        // Signal Translator
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[17].prefabObject.transform.Find("Mesh").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[17].prefabObject.transform.Find("Mesh").gameObject.AddComponent<BoxCollider>().size = new Vector3(0.83f, 0.31f, 0.31f);
+        // Microwave
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[28].prefabObject.transform.Find("MicrowaveBody").gameObject.layer = roomLayer;
+        // Sofa
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (1)").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (2)").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (3)").gameObject.layer = roomLayer;
+        // Fridge
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[30].prefabObject.transform.Find("FridgeBody").gameObject.layer = roomLayer;
+        // Electric Chair
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[32].prefabObject.transform.Find("ElectricChair").gameObject.layer = roomLayer;
+        // Dog House
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[33].prefabObject.transform.Find("DoghouseMesh").gameObject.layer = roomLayer;
         LethalContent.Unlockables.Freeze();
     }
 

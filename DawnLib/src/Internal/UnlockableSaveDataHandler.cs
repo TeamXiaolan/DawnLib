@@ -78,6 +78,12 @@ public static class UnlockableSaveDataHandler
                 StartOfRoundRefs.Instance.SpawnUnlockable(i, false);
             }
         }
+
+        foreach (PlaceableShipObject placeableShipObject in placeableShipObjects)
+        {
+            placeableShipObject.parentObject.MoveToOffset();
+        }
+        Physics.SyncTransforms();
     }
 
     internal static void SaveAllUnlockables(PersistentDataContainer dataContainer)

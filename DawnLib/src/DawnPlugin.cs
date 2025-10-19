@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Dawn.Internal;
 using Dawn.Utils;
+using MonoMod.RuntimeDetour;
 using PathfindingLib;
 using Unity.Netcode;
 
@@ -20,6 +22,7 @@ public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
+    internal static readonly List<Hook> Hooks = new();
 
     private void Awake()
     {

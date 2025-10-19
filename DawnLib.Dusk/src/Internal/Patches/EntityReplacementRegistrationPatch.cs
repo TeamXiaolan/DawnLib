@@ -38,7 +38,7 @@ static class EntityReplacementRegistrationPatch
             orig(self);
         };
 
-        _ = new Hook(AccessTools.DeclaredMethod(typeof(EnemyAINestSpawnObject), "Awake"), OnNestSpawnAwake);
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(EnemyAINestSpawnObject), "Awake"), OnNestSpawnAwake));
 
         // this isn't great, but i don't know a better way to do it?
         // could maybe do some analysis on the game and then source generate this?

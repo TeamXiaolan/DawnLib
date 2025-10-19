@@ -2,8 +2,10 @@ using System;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using HarmonyLib;
 using LethalQuantities.Objects;
-using On.LethalQuantities.Patches;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 using TomlTypeConverter = On.BepInEx.Configuration.TomlTypeConverter;
 
@@ -22,7 +24,7 @@ static class LethalQuantitiesCompat
         _lqConverter = new AnimationCurveTypeConverter();
         _dawnConverter = ExtendedTOML.WrapConverter(new AnimationCurveConverter());
 
-        On.LethalQuantities.Patches.RoundManagerPatch.onStartPrefix += MarkShouldUseLQConverter;
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalQuantities.Patches.RoundManagerPatch), "onStartPrefix"), MarkShouldUseLQConverter));
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += ReplaceAnimationCurveConverter;
     }
     private static TypeConverter ReplaceAnimationCurveConverter(TomlTypeConverter.orig_GetConverter orig, Type valuetype)
@@ -42,7 +44,7 @@ static class LethalQuantitiesCompat
         }
     }
 
-    private static void MarkShouldUseLQConverter(RoundManagerPatch.orig_onStartPrefix orig, RoundManager __instance)
+    private static void MarkShouldUseLQConverter(RuntimeILReferenceBag.FastDelegateInvokers.Action<RoundManager> orig, RoundManager __instance)
     {
         _useLQConverter = true;
         orig(__instance);

@@ -1,4 +1,6 @@
 ﻿using BepInEx.Bootstrap;
+using HarmonyLib;
+using MonoMod.RuntimeDetour;
 using TerminalFormatter;
 
 namespace Dawn.Internal;
@@ -9,6 +11,6 @@ static class TerminalFormatterCompat
     internal static void Init()
     {
         // teehee maxxing :3
-        IL.TerminalFormatter.Nodes.Store.GetNodeText += TerminalPatches.UseFailedNameResults;
+        _ = new ILHook(AccessTools.DeclaredMethod(typeof(TerminalFormatter.Nodes.Store), "GetNodeText"), TerminalPatches.UseFailedNameResults);
     }
 }

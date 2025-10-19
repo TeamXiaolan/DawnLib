@@ -140,8 +140,8 @@ internal static class CecilHelpers
             properties = [];
             foreach (var property in @interface.Properties)
             {
-                if(!ImplementProperty(type, property,blacklist, out var implementation, logCallback))
-                    return false;
+                if (!ImplementProperty(type, property, blacklist, out var implementation, logCallback))
+                    continue;
 
                 properties.Add(implementation);
             }
@@ -153,8 +153,8 @@ internal static class CecilHelpers
             events = [];
             foreach (var @event in @interface.Events)
             {
-                if(!ImplementEvent(type, @event,blacklist, out var implementation, logCallback))
-                    return false;
+                if (!ImplementEvent(type, @event, blacklist, out var implementation, logCallback))
+                    continue;
 
                 events.Add(implementation);
             }
@@ -166,8 +166,8 @@ internal static class CecilHelpers
             methods = [];
             foreach (var method in @interface.Methods)
             {
-                if (!ImplementMethod(type, method,blacklist, out var implementation, logCallback))
-                    return false;
+                if (!ImplementMethod(type, method, blacklist, out var implementation, logCallback))
+                    continue;
                 
                 methods.Add(implementation);
             }
@@ -215,9 +215,10 @@ internal static class CecilHelpers
 
             if (property.SetMethod is { IsAbstract: true } && blacklist.Add(property.SetMethod))
             {
-                if (!hasImplementation)
-                    if (!Init(type, out implementation))
-                        return false;
+                if (!hasImplementation && !Init(type, out implementation))
+                {
+                    return false;
+                }
                 
                 logCallback?.Invoke(false, $"Adding setter of '{property.Name}' to {type.FullName}'");
                 
@@ -328,9 +329,10 @@ internal static class CecilHelpers
 
             if (@event.RemoveMethod is { IsAbstract: true } && blacklist.Add(@event.RemoveMethod))
             {
-                if (!hasImplementation)
-                    if (!Init(type, out implementation))
-                        return false;
+                if (!hasImplementation && !Init(type, out implementation))
+                {
+                    return false;
+                }
                 
                 logCallback?.Invoke(false, $"Adding de-registration of '{@event.Name}' to {type.FullName}'");
 
@@ -361,9 +363,10 @@ internal static class CecilHelpers
 
             if (@event.InvokeMethod is { IsAbstract: true } && blacklist.Add(@event.InvokeMethod))
             {
-                if (!hasImplementation)
-                    if (!Init(type, out implementation))
-                        return false;
+                if (!hasImplementation && !Init(type, out implementation))
+                {
+                    return false;
+                }
                 
                 logCallback?.Invoke(false, $"Adding invocation of '{@event.Name}' to {type.FullName}'");
 

@@ -1,10 +1,23 @@
-# v0.3.7
+# v0.3.8
 
 - Fixed a compat issue with TwoRadarMap.
 - Fixed registering issues with MoreSuits.
 - Fixes regarding soft dependencies breaking.
 - Fixes regarding UI to achievements tab.
 - Fixed issues regarding LL shop items not being registered potentially
+- Fixed issues regarding items not spawning on top of furniture as they should be, including fixing some vanilla furniture that would have forced items to spawn under, like the following:
+  - Table
+  - Romantic Table
+  - Signal Transmitter
+  - Sofa
+  - Microwave
+  - Fridge
+  - Electric Chair
+  - Dog House
+
+## v0.3.7
+
+- Nothing cuz i accidently pushed it.
 
 ## v0.3.6
 

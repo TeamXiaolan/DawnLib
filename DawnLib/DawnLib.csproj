@@ -71,23 +71,14 @@
       <Reference Include="LethalConfig" Publicize="true">
         <HintPath>deps\LethalConfig.dll</HintPath>
       </Reference>
-      <Reference Include="MMHOOK_ainavt.lc.lethalconfig">
-        <HintPath>deps\MMHOOK_ainavt.lc.lethalconfig.dll</HintPath>
-      </Reference>
       <Reference Include="MMHOOK_Assembly-CSharp">
         <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
-        <Reference Include="MMHOOK_LethalQuantities">
-            <HintPath>deps\MMHOOK_LethalQuantities.dll</HintPath>
-        </Reference>
         <Reference Include="MMHOOK_BepInEx">
             <HintPath>deps\MMHOOK_BepInEx.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_BepInEx.Preloader">
             <HintPath>deps\MMHOOK_BepInEx.Preloader.dll</HintPath>
-        </Reference>
-        <Reference Include="MMHOOK_TerminalFormatter">
-            <HintPath>deps\MMHOOK_TerminalFormatter.dll</HintPath>
         </Reference>
         <Reference Include="MMHOOK_Unity.Netcode.Runtime">
             <HintPath>deps\MMHOOK_Unity.Netcode.Runtime.dll</HintPath>

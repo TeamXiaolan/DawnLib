@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Dawn.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Dawn.Internal;
 public static class ItemSaveDataHandler
 {
-    internal static List<GrabbableObject> AllShipItems = new();
+    internal static GrabbableObject[] AllShipItems = [];
     private static NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
 
     internal static void LoadSavedItems(PersistentDataContainer dataContainer)
@@ -35,7 +35,7 @@ public static class ItemSaveDataHandler
             grabbableObject.SetScrapValue(itemData.ScrapValue);
             if (grabbableObject.itemProperties.saveItemVariable)
             {
-                grabbableObject.LoadSaveData(itemData.ItemSavedData); // TODO: Cast 
+                ((IDawnSaveData)grabbableObject).LoadDawnSaveData(itemData.ItemSavedData);
             }
             grabbableObject.NetworkObject.Spawn(false);
             StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbableObject.transform, itemData.SavedSpawnRotation));
@@ -47,13 +47,12 @@ public static class ItemSaveDataHandler
         yield return null;
         yield return null;
         yield return null;
-        yield return new WaitUntil(() => DawnNetworker.Instance != null);
         transform.rotation = Quaternion.Euler(rotation);
     }
 
     internal static void SaveAllItems(PersistentDataContainer dataContainer)
     {
-        AllShipItems = GameObject.FindObjectsOfType<GrabbableObject>().ToList();
+        AllShipItems = GameObject.FindObjectsOfType<GrabbableObject>();
         List<ItemSaveData> allShipItemDatas = new();
         foreach (GrabbableObject itemData in AllShipItems)
         {
@@ -64,8 +63,14 @@ public static class ItemSaveDataHandler
                 continue;
             }
             Debuggers.Items?.Log($"Saving item: {itemInfo.Key} into save data.");
-            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemData.GetSaveData()));
+            JToken itemSave = 0;
+            if (itemData.itemProperties.saveItemVariable)
+            {
+                itemSave = ((IDawnSaveData)itemData).GetDawnDataToSave();
+            }
+            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
         }
+
         using (dataContainer.LargeEdit())
         {
             dataContainer.Set(_namespacedKey, allShipItemDatas);
