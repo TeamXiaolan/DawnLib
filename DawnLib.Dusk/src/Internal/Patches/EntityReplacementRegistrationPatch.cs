@@ -103,17 +103,6 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterUnlockableReplacements()
     {
-        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
-        {
-            if (unlockableItemInfo.UnlockableItem.prefabObject == null)
-                continue;
-
-            if (unlockableItemInfo.UnlockableItem.prefabObject.GetComponent<DuskUnlockable>())
-                continue;
-
-            unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
-        }
-
         foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
         {
             if (entityReplacementDefinition is not DuskUnlockableReplacementDefinition unlockableReplacementDefinition)
@@ -129,8 +118,20 @@ static class EntityReplacementRegistrationPatch
                     list = [vanilla];
                     unlockableItemInfo.CustomData.Set(Key, list);
                 }
+                DuskPlugin.Logger.LogFatal($"Adding unlockable replacement: {unlockableReplacementDefinition.TypedKey} to {unlockableItemInfo.UnlockableItem.unlockableName}");
                 list.Add(unlockableReplacementDefinition);
             }
+        }
+
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+        {
+            if (unlockableItemInfo.UnlockableItem.prefabObject == null)
+                continue;
+
+            if (unlockableItemInfo.UnlockableItem.prefabObject.GetComponent<DuskUnlockable>())
+                continue;
+
+            unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
         }
     }
 

@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace Dusk;
 
-public abstract class DuskUnlockableReplacementDefinition : DuskEntityReplacementDefinition<DuskUnlockable>
+public class DuskUnlockableReplacementDefinition : DuskEntityReplacementDefinition<DuskUnlockable>
 {
+    public override void Apply(DuskUnlockable ai) { }
 }
 
 public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableReplacementDefinition where T : DuskUnlockable
