@@ -2,6 +2,8 @@
 
 - Fixed a compat issue with TwoRadarMap.
 - Fixed registering issues with MoreSuits.
+- Fixes regarding soft dependencies breaking.
+- Fixes regarding UI to achievements tab.
 
 ## v0.3.6
 
