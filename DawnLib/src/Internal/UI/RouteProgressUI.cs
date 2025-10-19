@@ -37,6 +37,11 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
     
     private Dictionary<PlayerControllerB, PlayerNameplateUI> _nameplates = new();
     private float _targetProgress;
+    
+    void Start() 
+    {
+        gameObject.SetActive(false);
+    }
 
     public void Refresh(Dictionary<PlayerControllerB, DawnMoonNetworker.BundleState> states)
     {

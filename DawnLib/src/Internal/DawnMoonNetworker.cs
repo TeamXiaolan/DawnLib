@@ -27,6 +27,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private NamespacedKey<IMoonSceneInfo> _currentSceneKey;
 
     internal bool allPlayersDone { get; private set; }
+    
+    private string? _previousDisabledTooltip = null;
 
     public enum BundleState
     {
@@ -248,6 +250,11 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     private void LockLever()
     {
+        if (_previousDisabledTooltip == null)
+        {
+            _previousDisabledTooltip = StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip;
+        }
+        
         // this is probably bad for performance, but who cares. not me!
         StartOfRound.Instance.radarCanvas.transform.Find("PlanetVideoReel").gameObject.SetActive(false);
         StartOfRound.Instance.radarCanvas.transform.Find("PlanetDescription").gameObject.SetActive(false);
@@ -261,6 +268,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private IEnumerator UnlockLever()
     {
         allPlayersDone = true;
+        StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = _previousDisabledTooltip;
+        _previousDisabledTooltip = null;
         yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null);
         StartMatchLeverRefs.Instance.triggerScript.interactable = true;
         StartOfRound.Instance.travellingToNewLevel = false;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
@@ -81,6 +82,19 @@ static class UnlockableRegistrationHandler
 
     private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
     {
+        if (MoreSuitsCompat.Enabled)
+        {
+            try
+            {
+                MoreSuitsCompat.ForceMoreSuitsRegistration();
+            }
+            catch (Exception exception)
+            {
+                DawnPlugin.Logger.LogWarning($"MoreSuitsCompat failed: {exception.Message} (complete exception in debug)");
+                DawnPlugin.Logger.LogDebug(exception);
+            }
+        }
+        
         orig(self);
         if (LethalContent.Unlockables.IsFrozen)
         {
