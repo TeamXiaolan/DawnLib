@@ -1,16 +1,16 @@
-﻿using Dawn.Utils;
-using GameNetcodeStuff;
+﻿using GameNetcodeStuff;
 using TMPro;
-using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dawn.Internal;
-public class PlayerNameplateUI : MonoBehaviour {
+public class PlayerNameplateUI : MonoBehaviour
+{
     [SerializeField] RawImage _image;
     [SerializeField] TMP_Text _usernameText;
 
-    public Color TextColor {
+    public Color TextColor
+    {
         get => _usernameText.color;
         set => _usernameText.color = value;
     }
