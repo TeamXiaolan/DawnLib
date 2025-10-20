@@ -11,6 +11,12 @@ namespace Dusk;
 public class ProgressivePredicate : DuskTerminalPredicate
 {
     [SerializeField]
+    bool _isHidden;
+
+    [SerializeField]
+    bool _isLocked;
+
+    [SerializeField]
     string _lockedName = "???";
 
     [SerializeField]
@@ -32,8 +38,12 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     public override TerminalPurchaseResult CanPurchase()
     {
-        if (IsUnlocked) return TerminalPurchaseResult.Success();
-        if (_failNode)
+        if (IsUnlocked)
+        {
+            return TerminalPurchaseResult.Success();
+        }
+
+        if (_isLocked && _failNode)
         {
             return TerminalPurchaseResult.Fail(_failNode)
                 .SetOverrideName(_lockedName);
