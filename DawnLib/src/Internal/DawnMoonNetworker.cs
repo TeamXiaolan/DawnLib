@@ -271,7 +271,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         allPlayersDone = true;
         StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = _previousDisabledTooltip;
         _previousDisabledTooltip = null;
-        yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null);
+        yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null || StartOfRound.Instance.screenLevelDescription.enabled);
+        StartOfRound.Instance.shipTravelCoroutine = null;
         StartMatchLeverRefs.Instance.triggerScript.interactable = true;
         if (StartOfRound.Instance.currentLevel.videoReel != null)
         {
