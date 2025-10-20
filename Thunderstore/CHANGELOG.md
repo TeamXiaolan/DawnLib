@@ -2,6 +2,8 @@
 
 - Added more logging for a specific issue that shouldn't really happen?
 - Added a `WaitAction` to replacements so you can have a wait happen inbetween actions.
+- Fixed an issue where the combination of the mods WeatherTweaks, TerminalFormatter and OpenMonitors would break the ship monitor.
+- Cleaned up the hotloading UI a bit more.
 
 ## v0.3.8
 

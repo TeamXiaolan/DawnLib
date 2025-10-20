@@ -35,9 +35,17 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
     
     private Dictionary<PlayerControllerB, PlayerNameplateUI> _nameplates = new();
     private float _targetProgress;
+    private List<Image> imagesToBeRedOrBlue = new();
     
-    void Start() 
+    void Start()
     {
+        foreach (Image image in _progressSlider.GetComponentsInChildren<Image>())
+        {
+            if (image.gameObject.name != "Fill" && image.gameObject.name != "ShipIcon")
+                continue;
+
+            imagesToBeRedOrBlue.Add(image);
+        }
         gameObject.SetActive(false);
     }
 
@@ -72,9 +80,12 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
             }
         }
 
-        if (!anyErrors)
+        if (anyErrors)
         {
-            _progressSlider.colors = new ColorBlock { normalColor = Color.red };
+            foreach (Image image in imagesToBeRedOrBlue)
+            {
+                image.color = Color.red;
+            }
         }
 
         _targetProgress = currentProgress / totalProgress;
