@@ -5,8 +5,9 @@ public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSi
 {
     public static T? Instance { get; private set; }
 
-    protected void OnDisable()
+    public override void OnNetworkDespawn()
     {
+        base.OnNetworkDespawn();
         if (Instance == (T)this) Instance = null;
     }
 
