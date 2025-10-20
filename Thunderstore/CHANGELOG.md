@@ -4,6 +4,7 @@
 - Added a `WaitAction` to replacements so you can have a wait happen inbetween actions.
 - Fixed an issue where the combination of the mods WeatherTweaks, TerminalFormatter and OpenMonitors would break the ship monitor.
 - Cleaned up the hotloading UI a bit more.
+- Created ProgressiveMoonScrap that when interacted with, unlocks a specified moon and destroys itself.
 
 ## v0.3.8
 
