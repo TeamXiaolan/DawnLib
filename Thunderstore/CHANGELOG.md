@@ -1,4 +1,9 @@
-# v0.3.8
+# v0.3.9
+
+- Added more logging for a specific issue that shouldn't really happen?
+- Added a `WaitAction` to replacements so you can have a wait happen inbetween actions.
+
+## v0.3.8
 
 - Fixed a compat issue with TwoRadarMap.
 - Fixed registering issues with MoreSuits.

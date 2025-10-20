@@ -31,7 +31,7 @@ public class SkinnedMeshReplacement : Hierarchy
             string? name = srcBones[i] ? srcBones[i].name : null;
             if (string.IsNullOrEmpty(name) || !targetLookup.TryGetValue(name, out Transform transform))
             {
-                DuskPlugin.Logger.LogWarning($"TransferSMR: Could not map bone '{name}'. Using root fallback.");
+                DuskPlugin.Logger.LogWarning($"TransferSMR: Could not map bone '{name}' with replacement: {ReplacementRenderer.name}. Using root fallback.");
                 transform = targetRoot;
             }
             mappedBones[i] = transform;

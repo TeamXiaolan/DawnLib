@@ -21,7 +21,7 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
 
     public override IEnumerator Apply(GrabbableObject ai)
     {
-        yield return null;
+        yield break;
     }
 }
 

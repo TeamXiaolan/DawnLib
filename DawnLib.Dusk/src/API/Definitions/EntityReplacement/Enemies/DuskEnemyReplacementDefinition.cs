@@ -28,7 +28,7 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
 
     public override IEnumerator Apply(EnemyAI ai)
     {
-        yield return null;
+        yield break;
     }
 
     public virtual IEnumerator ApplyNest(EnemyAINestSpawnObject nest)
