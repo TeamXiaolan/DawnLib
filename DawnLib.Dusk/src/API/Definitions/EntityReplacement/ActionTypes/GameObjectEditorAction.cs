@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,8 +18,9 @@ public class GameObjectEditorAction : Hierarchy
     [field: SerializeField]
     public Vector3 RotationOffset { get; private set; }
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         GameObject gameObject = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
         if (DeleteGameObject)
         {
@@ -31,7 +33,7 @@ public class GameObjectEditorAction : Hierarchy
             {
                 Destroy(gameObject);
             }
-            return;
+            yield break;
         }
 
         if (DisableGameObject)

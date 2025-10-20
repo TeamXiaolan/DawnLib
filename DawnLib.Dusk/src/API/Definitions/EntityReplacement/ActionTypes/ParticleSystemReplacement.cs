@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Dusk;
@@ -8,8 +9,9 @@ public class ParticleSystemReplacement : Hierarchy
     [field: SerializeField]
     public ParticleSystem NewParticleSystem { get; private set; }
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         GameObject oldGameObject = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
         GameObject newGameObject = GameObject.Instantiate(NewParticleSystem.gameObject, oldGameObject.transform.parent);
         newGameObject.name = oldGameObject.name;

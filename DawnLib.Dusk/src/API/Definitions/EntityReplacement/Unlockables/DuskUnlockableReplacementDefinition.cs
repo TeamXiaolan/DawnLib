@@ -1,3 +1,5 @@
+using System.Collections;
+using Dawn.Internal;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -5,19 +7,22 @@ namespace Dusk;
 
 public class DuskUnlockableReplacementDefinition : DuskEntityReplacementDefinition<DuskUnlockable>
 {
-    public override void Apply(DuskUnlockable ai) { }
+    public override IEnumerator Apply(DuskUnlockable ai)
+    {
+        yield break;
+    }
 }
 
 public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableReplacementDefinition where T : DuskUnlockable
 {
     protected abstract void ApplyTyped(T dawnUnlockable);
-    public override void Apply(DuskUnlockable dawnUnlockable)
+    public override IEnumerator Apply(DuskUnlockable dawnUnlockable)
     {
-        ApplyTyped((T)dawnUnlockable);
+        yield return base.Apply(dawnUnlockable);
         dawnUnlockable.SetUnlockableReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            hierarchyReplacement.Apply(dawnUnlockable.transform);
+            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnUnlockable.transform));
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
@@ -44,5 +49,6 @@ public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableRep
                 networkObject.Spawn();
             }
         }
+        ApplyTyped((T)dawnUnlockable);
     }
 }

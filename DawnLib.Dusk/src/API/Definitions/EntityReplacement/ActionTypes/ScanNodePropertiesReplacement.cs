@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 
@@ -26,8 +27,9 @@ public class ScanNodePropertiesReplacement : Hierarchy
     [field: SerializeField]
     public int NodeType { get; private set; }
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         ScanNodeProperties scanNodeProperties = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<ScanNodeProperties>() : rootTransform.GetComponent<ScanNodeProperties>();
         if (MaxRange > -1) scanNodeProperties.maxRange = MaxRange;
         if (MinRange > -1) scanNodeProperties.minRange = MinRange;

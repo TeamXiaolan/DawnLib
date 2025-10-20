@@ -216,7 +216,7 @@ static class EntityReplacementRegistrationPatch
             if (replacement.IsDefault)
                 break;
 
-            replacement.Apply(self);
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
         }
         orig(self);
     }
@@ -226,7 +226,7 @@ static class EntityReplacementRegistrationPatch
         if (nestSpawnObject.HasNestReplacement())
         {
             DuskEnemyReplacementDefinition enemyReplacementDefinition = nestSpawnObject.GetNestReplacement()!;
-            enemyReplacementDefinition.Apply(self);
+            StartOfRoundRefs.Instance.StartCoroutine(enemyReplacementDefinition.Apply(self));
         }
         orig(self, nestSpawnObject);
     }
@@ -343,7 +343,7 @@ static class EntityReplacementRegistrationPatch
             if (replacement.IsDefault)
                 break;
 
-            replacement.ApplyNest(self);
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.ApplyNest(self));
         }
         orig(self);
     }
@@ -413,7 +413,7 @@ static class EntityReplacementRegistrationPatch
             if (replacement.IsDefault)
                 break;
 
-            replacement.Apply(self);
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
         }
     }
 }

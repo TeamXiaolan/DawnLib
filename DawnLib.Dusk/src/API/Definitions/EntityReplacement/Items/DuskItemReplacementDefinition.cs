@@ -1,9 +1,11 @@
+using System.Collections;
+using Dawn.Internal;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
 
-public abstract class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
+public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
 {
     [field: SerializeField]
     public AudioClip? GrabSFX { get; private set; }
@@ -16,18 +18,23 @@ public abstract class DuskItemReplacementDefinition : DuskEntityReplacementDefin
 
     [field: SerializeField]
     public AudioClip? ThrowSFX { get; private set; }
+
+    public override IEnumerator Apply(GrabbableObject ai)
+    {
+        yield return null;
+    }
 }
 
 public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefinition where T : GrabbableObject
 {
     protected abstract void ApplyTyped(T grabbableObject);
-    public override void Apply(GrabbableObject grabbableObject)
+    public override IEnumerator Apply(GrabbableObject grabbableObject)
     {
-        ApplyTyped((T)grabbableObject);
+        yield return base.Apply(grabbableObject);
         grabbableObject.SetGrabbableObjectReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            hierarchyReplacement.Apply(grabbableObject.transform);
+            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(grabbableObject.transform));
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
@@ -54,5 +61,6 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
                 networkObject.Spawn();
             }
         }
+        ApplyTyped((T)grabbableObject);
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Dawn;
 using Dusk.Weights;
@@ -93,5 +94,5 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
-    public abstract void Apply(TAI ai);
+    public abstract IEnumerator Apply(TAI ai);
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,8 +15,9 @@ public class AnimationClipReplacement : Hierarchy
     [field: SerializeField]
     public List<AnimationEventAddition> PotentialAnimationEvents { get; private set; } = new();
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         Animator animator = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
         AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
         foreach (AnimationEventAddition animationEventAddition in PotentialAnimationEvents)

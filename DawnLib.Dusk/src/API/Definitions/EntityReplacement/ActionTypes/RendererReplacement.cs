@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,8 +11,9 @@ public class SkinnedMeshReplacement : Hierarchy
     [field: SerializeField]
     public SkinnedMeshRenderer ReplacementRenderer { get; private set; }
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         ReplaceSkinnedMeshRenderer(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>() : rootTransform.GetComponent<SkinnedMeshRenderer>());
     }
 
@@ -75,8 +77,9 @@ public class MeshReplacement : Hierarchy
     [field: SerializeField]
     public Mesh ReplacementMesh { get; private set; }
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         ReplaceMeshRenderer(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>() : rootTransform.GetComponent<MeshRenderer>(), !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>() : rootTransform.GetComponent<MeshFilter>());
     }
 
@@ -93,8 +96,9 @@ public class MaterialsReplacement : Hierarchy
     [field: SerializeField]
     public List<MaterialWithIndex> ReplacementMaterials { get; private set; } = new();
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         ReplaceMaterials(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
@@ -155,8 +159,9 @@ public class TextureReplacement : Hierarchy
     [field: SerializeField]
     public List<MaterialPropertiesWithIndex> ReplacementMaterialProperties { get; private set; } = new();
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         ReplaceMaterials(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 

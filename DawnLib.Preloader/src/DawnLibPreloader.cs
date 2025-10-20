@@ -56,11 +56,11 @@ class DawnLibPreloader
 
         if (pluginPath == null)
         {
-            Log.LogFatal("Could not find Interfaces dll!");
+            Log.LogFatal("Could not find plugins path! DawnLib not found at path: " + Paths.PluginPath);
             return;
         }
 
-        var dllPath = Path.Combine(pluginPath, "com.github.teamxiaolan.dawnlib.interfaces.dll");
+        var dllPath = Path.Combine(pluginPath, "DawnLib", "com.github.teamxiaolan.dawnlib.interfaces.dll");
 
         if (!File.Exists(dllPath))
         {

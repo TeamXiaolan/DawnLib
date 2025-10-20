@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -9,8 +10,9 @@ public class VisualEffectReplacement : Hierarchy
     [field: SerializeField]
     public VisualEffectAsset VisualEffectAssetReplacement { get; private set; }
 
-    public override void Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform)
     {
+        yield return null;
         VisualEffect visualEffect = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
         visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
     }

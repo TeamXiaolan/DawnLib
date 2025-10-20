@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using Dawn.Internal;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -24,19 +26,22 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
     [field: SerializeField]
     public AudioClip[] AudioClips { get; private set; } = [];
 
-    public override void Apply(EnemyAI ai) { }
+    public override IEnumerator Apply(EnemyAI ai)
+    {
+        yield return null;
+    }
 
-    public virtual void ApplyNest(EnemyAINestSpawnObject nest)
+    public virtual IEnumerator ApplyNest(EnemyAINestSpawnObject nest)
     {
         EnemyType type = nest.enemyType;
         if (type.useMinEnemyThresholdForNest)
         {
-            return;
+            yield break;
         }
 
         foreach (Hierarchy hierarchyReplacement in NestRendererReplacements)
         {
-            hierarchyReplacement.Apply(nest.transform);
+            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(nest.transform));
         }
 
         nest.SetNestReplacement(this);
@@ -46,13 +51,13 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
 public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDefinition where T : EnemyAI
 {
     protected abstract void ApplyTyped(T enemyAI);
-    public override void Apply(EnemyAI enemyAI)
+    public override IEnumerator Apply(EnemyAI enemyAI)
     {
-        ApplyTyped((T)enemyAI);
+        yield return base.Apply(enemyAI);
         enemyAI.SetEnemyReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            hierarchyReplacement.Apply(enemyAI.transform);
+            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(enemyAI.transform));
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
@@ -71,5 +76,6 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
             networkObject.AutoObjectParentSync = false;
             networkObject.Spawn();
         }
+        ApplyTyped((T)enemyAI);
     }
 }
