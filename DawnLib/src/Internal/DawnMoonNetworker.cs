@@ -254,15 +254,16 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         {
             _previousDisabledTooltip = StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip;
         }
-        
-        // this is probably bad for performance, but who cares. not me!
-        StartOfRound.Instance.radarCanvas.transform.Find("PlanetVideoReel").gameObject.SetActive(false);
-        StartOfRound.Instance.radarCanvas.transform.Find("PlanetDescription").gameObject.SetActive(false);
+
+        StartOfRound.Instance.screenLevelVideoReel.enabled = false;
+        StartOfRound.Instance.screenLevelVideoReel.gameObject.SetActive(false);
+        StartOfRound.Instance.screenLevelVideoReel.Stop();
+        StartOfRound.Instance.screenLevelDescription.enabled = false;
+
         RouteProgressUI.Instance.gameObject.SetActive(true);
-        
+        Debuggers.Moons?.Log($"Enabling RouteProgressUI.");
         StartMatchLeverRefs.Instance.triggerScript.interactable = false;
         allPlayersDone = false;
-        StartOfRound.Instance.travellingToNewLevel = true;
     }
 
     private IEnumerator UnlockLever()
@@ -272,11 +273,14 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         _previousDisabledTooltip = null;
         yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null);
         StartMatchLeverRefs.Instance.triggerScript.interactable = true;
-        StartOfRound.Instance.travellingToNewLevel = false;
-        
-        // this is probably bad for performance, but who cares. not me!
-        StartOfRound.Instance.radarCanvas.transform.Find("PlanetVideoReel").gameObject.SetActive(true);
-        StartOfRound.Instance.radarCanvas.transform.Find("PlanetDescription").gameObject.SetActive(true);
+        if (StartOfRound.Instance.currentLevel.videoReel != null)
+        {
+            StartOfRound.Instance.screenLevelVideoReel.enabled = true;
+            StartOfRound.Instance.screenLevelVideoReel.gameObject.SetActive(true);
+            StartOfRound.Instance.screenLevelVideoReel.Play();
+        }
+        StartOfRound.Instance.screenLevelDescription.enabled = true;
+        Debuggers.Moons?.Log($"Disabling RouteProgressUI.");
         RouteProgressUI.Instance.gameObject.SetActive(false);
     }
 }

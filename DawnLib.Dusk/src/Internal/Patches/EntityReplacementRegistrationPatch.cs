@@ -118,7 +118,6 @@ static class EntityReplacementRegistrationPatch
                     list = [vanilla];
                     unlockableItemInfo.CustomData.Set(Key, list);
                 }
-                DuskPlugin.Logger.LogFatal($"Adding unlockable replacement: {unlockableReplacementDefinition.TypedKey} to {unlockableItemInfo.UnlockableItem.unlockableName}");
                 list.Add(unlockableReplacementDefinition);
             }
         }

@@ -22,8 +22,6 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
     private TMP_Text _routingToText;
     [field: SerializeField]
     private Slider _progressSlider;
-    [field: SerializeField]
-    private float _lerpSmoothing = 14f;
 
     [field: Header("Nameplate UI")]
     [field: SerializeField]
@@ -46,8 +44,40 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
     public void Refresh(Dictionary<PlayerControllerB, DawnMoonNetworker.BundleState> states)
     {
         // first update progress bar
-        int completedPlayers = states.Count(it => it.Value == DawnMoonNetworker.BundleState.Done);
-        _targetProgress = (float)completedPlayers / states.Count;
+        float totalProgress = states.Count;
+        float currentProgress = 0;
+        bool anyErrors = false;
+        foreach (DawnMoonNetworker.BundleState state in states.Values)
+        {
+            if (state == DawnMoonNetworker.BundleState.Error)
+            {
+                anyErrors = true;
+            }
+
+            if (state == DawnMoonNetworker.BundleState.Queued)
+            {
+                currentProgress += 0.25f;
+            }
+            else if (state == DawnMoonNetworker.BundleState.Loading)
+            {
+                currentProgress += 0.50f;
+            }
+            else if (state == DawnMoonNetworker.BundleState.Loading)
+            {
+                currentProgress += 0.75f;
+            }
+            else if (state == DawnMoonNetworker.BundleState.Done)
+            {
+                currentProgress += 1f;
+            }
+        }
+
+        if (!anyErrors)
+        {
+            _progressSlider.colors = new ColorBlock { normalColor = Color.red };
+        }
+
+        _targetProgress = currentProgress / totalProgress;
 
         // remove any disconnected players (no longer in states dictionary)
         foreach (PlayerControllerB player in _nameplates.Keys)
@@ -73,7 +103,7 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
 
     private void Update()
     {
-        _progressSlider.value = Mathf.Lerp(_progressSlider.value, _targetProgress, _lerpSmoothing * Time.deltaTime);
+        _progressSlider.value = Mathf.Lerp(_progressSlider.value, _targetProgress, Time.deltaTime);
     }
 
     public void Setup(string moonName)

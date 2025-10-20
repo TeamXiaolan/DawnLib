@@ -26,6 +26,8 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
     [field: SerializeField]
     public bool IsDecor { get; private set; }
     [field: SerializeField]
+    public bool GenerateUnlockableTypeConfig { get; private set; }
+    [field: SerializeField]
     public int Cost { get; private set; }
 
     [field: Header("Configs | Misc")]
@@ -102,8 +104,8 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
         {
             DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
             DisableUnlockRequirement = GenerateDisableUnlockRequirementConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
-            IsDecor = context.Bind($"{EntityNameReference} | Is Decor", $"Whether {EntityNameReference} is considered a decor.", IsDecor),
-            IsShipUpgrade = context.Bind($"{EntityNameReference} | Is Ship Upgrade", $"Whether {EntityNameReference} is considered a ship upgrade.", IsShipUpgrade),
+            IsDecor = GenerateUnlockableTypeConfig ? context.Bind($"{EntityNameReference} | Is Decor", $"Whether {EntityNameReference} is considered a decor.", IsDecor) : null,
+            IsShipUpgrade = GenerateUnlockableTypeConfig ? context.Bind($"{EntityNameReference} | Is Ship Upgrade", $"Whether {EntityNameReference} is considered a ship upgrade.", IsShipUpgrade) : null,
             Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
         };
     }
