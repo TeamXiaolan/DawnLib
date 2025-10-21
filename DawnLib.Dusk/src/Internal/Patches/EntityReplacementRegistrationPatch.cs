@@ -24,6 +24,7 @@ static class EntityReplacementRegistrationPatch
         LethalContent.Enemies.BeforeFreeze += RegisterEnemyReplacements;
         LethalContent.Items.BeforeFreeze += RegisterItemReplacements;
         LethalContent.Unlockables.BeforeFreeze += RegisterUnlockableReplacements;
+        LethalContent.MapObjects.BeforeFreeze += RegisterMapObjectReplacements;
         using (new DetourContext(priority: int.MaxValue))
         {
             On.StartOfRound.Awake += RegisterScenePlacedUnlockableReplacements;
@@ -84,6 +85,17 @@ static class EntityReplacementRegistrationPatch
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+
+    private static void RegisterMapObjectReplacements()
+    {
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        {
+            if (mapObjectInfo.MapObject.GetComponent<DuskMapObject>())
+                continue;
+
+            mapObjectInfo.MapObject.AddComponent<DuskMapObject>();
+        }
     }
 
     private static void RegisterScenePlacedUnlockableReplacements(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -188,11 +200,11 @@ static class EntityReplacementRegistrationPatch
         }
 
         // todo: save the current skin and try to restore it if this runs in orbit
-        if (StartOfRound.Instance.inShipPhase)
+        /*if (StartOfRound.Instance.inShipPhase)
         {
             orig(self);
             return;
-        }
+        }*/
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
@@ -351,13 +363,11 @@ static class EntityReplacementRegistrationPatch
     {
         foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
         {
-            Debuggers.ReplaceThis?.Log($"1. Registering replacement for {entityReplacementDefinition.EntityToReplaceKey} with {entityReplacementDefinition.TypedKey}");
             if (entityReplacementDefinition is not DuskEnemyReplacementDefinition enemyReplacementDefinition)
                 continue;
 
             if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
             {
-                Debuggers.Enemies?.Log($"2. Registering replacement success");
                 if (!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? list))
                 {
                     DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
@@ -367,9 +377,7 @@ static class EntityReplacementRegistrationPatch
                     enemyInfo.CustomData.Set(Key, list);
                 }
                 list.Add(enemyReplacementDefinition);
-                continue;
             }
-            Debuggers.Enemies?.Log($"3. Registering replacement failure");
         }
     }
 

@@ -129,6 +129,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
                 .SetDisplayText($"You have requested to order {value.unlockableName}.\nTotal cost of item: [totalCost].\n\nPlease CONFIRM or DENY.\n")
                 .SetMaxCharactersToType(15)
                 .SetShipUnlockableIndex(-1)
+                .SetClearPreviousText(true)
                 .SetCreatureName(value.unlockableName)
                 .SetOverrideOptions(true)
                 .SetTerminalOptions([confirmBuyCompatibleNoun, cancelDenyCompatibleNoun])

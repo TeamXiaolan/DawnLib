@@ -32,49 +32,47 @@ public class DatePredicate : DuskPredicate
 
     public override bool Evaluate()
     {
-        DateTime currentDateTime = DateTime.Now;
-        if (DateTimeFlags.HasFlag(DateTimeFlags.Year))
+        int year = DateTime.Now.Year;
+        int month = DateTime.Now.Month;
+        int day = DateTime.Now.Day;
+        int hour = DateTime.Now.Hour;
+        int minute = DateTime.Now.Minute;
+        int second = DateTime.Now.Second;
+        DateTime startDateTime = new(DawnStartDateTime.Year, DawnStartDateTime.Month, DawnStartDateTime.Day, DawnStartDateTime.Hour, DawnStartDateTime.Minute, DawnStartDateTime.Second);
+        DateTime endDateTime = new(DawnEndDateTime.Year, DawnEndDateTime.Month, DawnEndDateTime.Day, DawnEndDateTime.Hour, DawnEndDateTime.Minute, DawnEndDateTime.Second);
+
+        if (!DateTimeFlags.HasFlag(DateTimeFlags.Year))
         {
-            int year = currentDateTime.Year;
-            if (year < DawnStartDateTime.Year || year > DawnEndDateTime.Year)
-                return false;
+            year = startDateTime.Year;
         }
 
-        if (DateTimeFlags.HasFlag(DateTimeFlags.Month))
+        if (!DateTimeFlags.HasFlag(DateTimeFlags.Month))
         {
-            int month = currentDateTime.Month;
-            if (month < DawnStartDateTime.Month || month > DawnEndDateTime.Month)
-                return false;
+            month = startDateTime.Month;
         }
 
-        if (DateTimeFlags.HasFlag(DateTimeFlags.Day))
+        if (!DateTimeFlags.HasFlag(DateTimeFlags.Day))
         {
-            int day = currentDateTime.Day;
-            if (day < DawnStartDateTime.Day || day > DawnEndDateTime.Day)
-                return false;
+            day = startDateTime.Day;
         }
 
-        if (DateTimeFlags.HasFlag(DateTimeFlags.Hour))
+        if (!DateTimeFlags.HasFlag(DateTimeFlags.Hour))
         {
-            int hour = currentDateTime.Hour;
-            if (hour < DawnStartDateTime.Hour || hour > DawnEndDateTime.Hour)
-                return false;
+            hour = startDateTime.Hour;
         }
 
-        if (DateTimeFlags.HasFlag(DateTimeFlags.Minute))
+        if (!DateTimeFlags.HasFlag(DateTimeFlags.Minute))
         {
-            int minute = currentDateTime.Minute;
-            if (minute < DawnStartDateTime.Minute || minute > DawnEndDateTime.Minute)
-                return false;
+            minute = startDateTime.Minute;
         }
 
-        if (DateTimeFlags.HasFlag(DateTimeFlags.Second))
+        if (!DateTimeFlags.HasFlag(DateTimeFlags.Second))
         {
-            int second = currentDateTime.Second;
-            if (second < DawnStartDateTime.Second || second > DawnEndDateTime.Second)
-                return false;
+            second = startDateTime.Second;
         }
-        return true;
+
+        DateTime currentDateTime = new(year, month, day, hour, minute, second);
+        return currentDateTime >= startDateTime && currentDateTime <= endDateTime;
     }
 
     public override void Register(NamespacedKey namespacedKey)

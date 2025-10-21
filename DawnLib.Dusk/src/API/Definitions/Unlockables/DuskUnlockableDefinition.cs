@@ -61,7 +61,6 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
             {
                 builder.DefinePlaceableObject(shopBuilder =>
                 {
-                    shopBuilder.Build();
                     if (Config.IsShipUpgrade?.Value ?? IsShipUpgrade)
                     {
                         Debuggers.Unlockables?.Log($"Making {UnlockableItem.unlockableName} a Ship Upgrade");
@@ -81,7 +80,6 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
                 {
                     suitBuilder.OverrideSuitMaterial(UnlockableItem.suitMaterial);
                     suitBuilder.OverrideJumpAudioClip(UnlockableItem.jumpAudio);
-                    suitBuilder.Build();
                 });
             }
 
