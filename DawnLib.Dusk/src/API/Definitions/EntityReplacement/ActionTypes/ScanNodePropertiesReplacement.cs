@@ -33,7 +33,7 @@ public class ScanNodePropertiesReplacement : Hierarchy
         ScanNodeProperties scanNodeProperties = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<ScanNodeProperties>() : rootTransform.GetComponent<ScanNodeProperties>();
         if (MaxRange > -1) scanNodeProperties.maxRange = MaxRange;
         if (MinRange > -1) scanNodeProperties.minRange = MinRange;
-        scanNodeProperties.nodeType = NodeType;
+        if (NodeType > -1) scanNodeProperties.nodeType = NodeType;
         scanNodeProperties.requiresLineOfSight = RequiresLineOfSight;
         if (HeaderText != "Leave as such if not replacing") scanNodeProperties.headerText = HeaderText;
         if (SubText != "Leave as such if not replacing") scanNodeProperties.subText = SubText;
