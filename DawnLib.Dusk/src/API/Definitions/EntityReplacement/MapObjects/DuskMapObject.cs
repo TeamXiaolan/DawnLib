@@ -32,10 +32,10 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement, IDawnSave
 
     public void Start()
     {
-        DawnMapObjectInfoContainer? container = GetComponent<DawnMapObjectInfoContainer>();
+        DawnMapObjectNamespacedKeyContainer? container = GetComponent<DawnMapObjectNamespacedKeyContainer>();
         if (container == null)
         {
-            DuskPlugin.Logger.LogWarning($"DuskMapObject: {gameObject.name} doesn't have a DawnMapObjectInfoContainer component, this means that you cannot replace this map object.");
+            DuskPlugin.Logger.LogWarning($"DuskMapObject: {gameObject.name} doesn't have a DawnMapObjectNamespacedKeyContainer component, this means that you cannot replace this map object.");
             return;
         }
 
@@ -45,7 +45,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement, IDawnSave
             return;
         }
 
-        if (!container.Value.CustomData.TryGet(EntityReplacementRegistrationPatch.Key, out List<DuskMapObjectReplacementDefinition>? replacements))
+        if (!LethalContent.MapObjects[container.Value.AsTyped<DawnMapObjectInfo>()].CustomData.TryGet(EntityReplacementRegistrationPatch.Key, out List<DuskMapObjectReplacementDefinition>? replacements))
         {
             return;
         }
@@ -76,6 +76,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement, IDawnSave
                 break;
 
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(this));
+            break;
         }
     }
 

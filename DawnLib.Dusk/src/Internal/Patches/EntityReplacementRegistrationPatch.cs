@@ -89,6 +89,25 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterMapObjectReplacements()
     {
+        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+        {
+            if (entityReplacementDefinition is not DuskMapObjectReplacementDefinition mapObjectReplacementDefinition)
+                continue;
+
+            if (LethalContent.MapObjects.TryGetValue(mapObjectReplacementDefinition.EntityToReplaceKey, out DawnMapObjectInfo mapObjectInfo))
+            {
+                if (!mapObjectInfo.CustomData.TryGet(Key, out List<DuskMapObjectReplacementDefinition>? list))
+                {
+                    DuskMapObjectReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskMapObjectReplacementDefinition>();
+                    vanilla.IsDefault = true;
+                    vanilla.Register(null);
+                    list = [vanilla];
+                    mapObjectInfo.CustomData.Set(Key, list);
+                }
+                list.Add(mapObjectReplacementDefinition);
+            }
+        }
+
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             if (mapObjectInfo.MapObject.GetComponent<DuskMapObject>())
@@ -228,6 +247,7 @@ static class EntityReplacementRegistrationPatch
                 break;
 
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
+            break;
         }
         orig(self);
     }
@@ -421,6 +441,7 @@ static class EntityReplacementRegistrationPatch
                 break;
 
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
+            break;
         }
     }
 }

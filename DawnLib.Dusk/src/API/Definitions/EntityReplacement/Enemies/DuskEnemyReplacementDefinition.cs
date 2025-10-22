@@ -43,7 +43,7 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
         {
             yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(nest.transform));
         }
-
+        
         nest.SetNestReplacement(this);
     }
 }

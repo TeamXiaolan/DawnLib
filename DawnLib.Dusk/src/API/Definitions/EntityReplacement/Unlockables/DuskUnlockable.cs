@@ -84,6 +84,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
                 break;
 
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(this));
+            break;
         }
     }
 

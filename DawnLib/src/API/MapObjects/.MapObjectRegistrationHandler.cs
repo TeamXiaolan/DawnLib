@@ -264,7 +264,7 @@ static class MapObjectRegistrationHandler
 
         foreach (GameObject mapObject in realMapObjects)
         {
-            if (mapObject.GetComponent<DawnMapObjectInfoContainer>())
+            if (mapObject.GetComponent<DawnMapObjectNamespacedKeyContainer>())
             {
                 Debuggers.MapObjects?.Log($"Already registered {mapObject}");
                 continue;
@@ -284,8 +284,8 @@ static class MapObjectRegistrationHandler
             if (LethalContent.MapObjects.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                DawnMapObjectInfoContainer duplicateContainer = mapObject.AddComponent<DawnMapObjectInfoContainer>();
-                duplicateContainer.Value = LethalContent.MapObjects[key];
+                DawnMapObjectNamespacedKeyContainer duplicateContainer = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
+                duplicateContainer.Value = key;
                 continue;
             }
 
@@ -293,8 +293,8 @@ static class MapObjectRegistrationHandler
             realOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo, null);
-            DawnMapObjectInfoContainer container = mapObject.AddComponent<DawnMapObjectInfoContainer>();
-            container.Value = mapObjectInfo;
+            DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
+            container.Value = key;
             LethalContent.MapObjects.Register(mapObjectInfo);
         }
         LethalContent.MapObjects.Freeze();

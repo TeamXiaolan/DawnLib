@@ -99,8 +99,8 @@ public static class DawnLib
         MapObjectInfoBuilder builder = new(key, mapObject);
         callback(builder);
         DawnMapObjectInfo info = builder.Build();
-        DawnMapObjectInfoContainer container = mapObject.AddComponent<DawnMapObjectInfoContainer>();
-        container.Value = info;
+        DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
+        container.Value = info.TypedKey;
 
         LethalContent.MapObjects.Register(info);
         return info;
