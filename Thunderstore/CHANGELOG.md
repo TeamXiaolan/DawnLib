@@ -1,10 +1,18 @@
-# v0.3.9
+# v0.3.10
+
+- Fixed an issue where all replacements wouldn't take more than 1 replacement at once.
+- Added MapObject replacements.
+- Fixed DatePredicate being inaccurate.
+- Made buying unlockables clear terminal text.
+
+## v0.3.9
 
 - Added more logging for a specific issue that shouldn't really happen?
 - Added a `WaitAction` to replacements so you can have a wait happen inbetween actions.
 - Fixed an issue where the combination of the mods WeatherTweaks, TerminalFormatter and OpenMonitors would break the ship monitor.
 - Cleaned up the hotloading UI a bit more.
 - Created ProgressiveMoonScrap that when interacted with, unlocks a specified moon and destroys itself.
+- Added more config options to unlockable definition
 
 ## v0.3.8
 
