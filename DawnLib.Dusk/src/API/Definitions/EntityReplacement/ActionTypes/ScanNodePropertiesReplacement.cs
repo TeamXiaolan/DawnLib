@@ -25,7 +25,7 @@ public class ScanNodePropertiesReplacement : Hierarchy
     [field: Space(3f)]
     [field: Tooltip("0 = Blue | 1 = Red | 2 = Green")]
     [field: SerializeField]
-    public int NodeType { get; private set; }
+    public int NodeType { get; private set; } = -1;
 
     public override IEnumerator Apply(Transform rootTransform)
     {
