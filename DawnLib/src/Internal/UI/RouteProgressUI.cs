@@ -119,7 +119,7 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
 
     public void Setup(string moonName)
     {
-        _routingToText.text = $"Routing to: {moonName}";
+        _routingToText.text = $"  {moonName}";
         _nameplateParent.KillAllChildren();
         _nameplates.Clear();
         _progressSlider.value = 0;
