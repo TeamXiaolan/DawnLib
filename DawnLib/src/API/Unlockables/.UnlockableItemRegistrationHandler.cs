@@ -2,20 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
+using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn;
 
+[HarmonyPatch]
 static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
-        using (new DetourContext(priority: int.MaxValue))
-        {
-            On.Terminal.Awake += RegisterShipUnlockables;
-        }
-
         On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
     }
 
@@ -81,7 +78,9 @@ static class UnlockableRegistrationHandler
         }
     }
 
-    private static void RegisterShipUnlockables(On.Terminal.orig_Awake orig, Terminal self)
+    
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyAfter("x753.More_Suits")]
+    private static void RegisterShipUnlockables()
     {
         if (MoreSuitsCompat.Enabled)
         {
@@ -96,7 +95,6 @@ static class UnlockableRegistrationHandler
             }
         }
         
-        orig(self);
         if (LethalContent.Unlockables.IsFrozen)
         {
             return;
