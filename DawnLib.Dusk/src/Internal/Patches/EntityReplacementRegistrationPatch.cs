@@ -84,7 +84,98 @@ static class EntityReplacementRegistrationPatch
 
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
+        
+        DuskPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceItemProperties', this transpiler runs on a lot of functions, so this may take a second!");
+        
+        IL.DepositItemsDesk.PlaceItemOnCounter += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.LateUpdate += DynamicallyReplaceItemProperties;
+        IL.PlaceableObjectsSurface.itemPlacementPosition += DynamicallyReplaceItemProperties;
+        IL.HUDManager.DisplayNewScrapFound += DynamicallyReplaceItemProperties;
+        
+        // IL.RoundManager.SpawnScrapInLevel += DynamicallyReplaceItemProperties; - this does a lot of work on the raw item scriptable object, so it will need special attention
+        // IL.HUDManager.CreateToolAdModel += DynamicallyReplaceAudioClips; - works on raw scriptable object
+        
+        IL.GrabbableObject.FallToGround += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.GetItemFloorPosition += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.GetPhysicsRegionOfDroppedObject += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.FallWithCurve += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.Update += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.LateUpdate += DynamicallyReplaceItemProperties;
+        
+        IL.CaveDwellerPhysicsProp.Update += DynamicallyReplaceItemProperties;
+        IL.CaveDwellerPhysicsProp.LateUpdate += DynamicallyReplaceItemProperties;
+        
+        IL.SoccerBallProp.FallWithCurve += DynamicallyReplaceItemProperties;
+        IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
+        
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+    // note!!! this transpiler should only be used on enemy AIs!
+    private static readonly Dictionary<string, Func<GrabbableObject, Vector3, Vector3>> offsetReplacerFunctions = new()
+    {
+        { nameof(Item.restingRotation), GenerateOffsetReplacer(it => it.RestingRotation) },
+        { nameof(Item.rotationOffset), GenerateOffsetReplacer(it => it.RotationOffset) },
+        { nameof(Item.positionOffset), GenerateOffsetReplacer(it => it.PositionOffset) }
+    };
+    
+    private static void DynamicallyReplaceItemProperties(ILContext il)
+    {
+        Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceItemProperties)}. il count {il.Body.Instructions.Count}");
+        ILCursor c = new ILCursor(il);
+
+        // evil for loop.
+        for (; c.Index < c.Instrs.Count; c.Index++)
+        {
+            if (c.Next.OpCode != OpCodes.Ldfld)
+                continue;
+
+            if (c.Next.MatchLdfld<Item>(nameof(Item.verticalOffset)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, float, float>>((self, existing) =>
+                {
+                    if (!self.HasGrabbableObjectReplacement())
+                    {
+                        return existing;
+                    }
+                    return self.GetGrabbableObjectReplacement().VerticalOffset;
+                });
+                continue;
+            }
+            
+            if (c.Next.MatchLdfld<Item>(nameof(Item.floorYOffset)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, int, int>>((self, existing) =>
+                {
+                    if (!self.HasGrabbableObjectReplacement())
+                    {
+                        return existing;
+                    }
+                    return self.GetGrabbableObjectReplacement().FloorYOffset;
+                });
+                continue;
+            }
+            
+            foreach ((string name, var replacer) in offsetReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<Item>(name))
+                    continue;
+
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate(replacer);
+                break;
+            }
+        }
     }
 
     private static void RegisterMapObjectReplacements()
@@ -325,6 +416,18 @@ static class EntityReplacementRegistrationPatch
                 return existing;
 
             return replacedClip;
+        };
+    }
+    
+    static Func<GrabbableObject, Vector3, Vector3> GenerateOffsetReplacer(Func<DuskItemReplacementDefinition, Vector3> generator)
+    {
+        return (self, existing) =>
+        {
+            ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
+            if (replacement.CurrentEntityReplacement == null)
+                return existing;
+
+            return generator((DuskItemReplacementDefinition)replacement.CurrentEntityReplacement);
         };
     }
 

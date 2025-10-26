@@ -19,6 +19,21 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
     [field: SerializeField]
     public AudioClip? ThrowSFX { get; private set; }
 
+    [field: SerializeField]
+    public float VerticalOffset { get; private set; }
+    
+    [field: SerializeField]
+    public int FloorYOffset { get; private set; }
+
+    [field: SerializeField]
+    public Vector3 RestingRotation { get; private set; } = new Vector3(0f, 0f, 90f);
+    
+    [field: SerializeField]
+    public Vector3 RotationOffset { get; private set; }
+    
+    [field: SerializeField]
+    public Vector3 PositionOffset { get; private set; }
+    
     public override IEnumerator Apply(GrabbableObject ai)
     {
         yield break;
