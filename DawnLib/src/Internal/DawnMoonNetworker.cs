@@ -172,7 +172,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(customMoon.AssetBundlePath);
                 yield return request;
 
-                bool hasError = CheckMoonBundleSuccess(customMoon, request);
+                bool hasError = CheckMoonBundleFailed(customMoon, request);
                 
                 // todo: more graceful error handling?
                 if (hasError)
@@ -195,27 +195,27 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
-    bool CheckMoonBundleSuccess(CustomMoonSceneInfo sceneInfo, AssetBundleCreateRequest request)
+    bool CheckMoonBundleFailed(CustomMoonSceneInfo sceneInfo, AssetBundleCreateRequest request)
     {
         if (!request.isDone || request.assetBundle == null)
         {
-            return false;
+            return true;
         }
 
         AssetBundle bundle = request.assetBundle;
         if (!bundle.isStreamedSceneAssetBundle)
         {
             DawnPlugin.Logger.LogError($"Bundle: {Path.GetFileName(sceneInfo.AssetBundlePath)} (should contain scene: {sceneInfo.SceneName}) is not a scene bundle?");
-            return false;
+            return true;
         }
 
         if (!bundle.GetAllScenePaths().Contains(sceneInfo.ScenePath))
         {
             DawnPlugin.Logger.LogError($"Bundle: {Path.GetFileName(sceneInfo.AssetBundlePath)} does not contain scene: {sceneInfo.SceneName}.");
             DawnPlugin.Logger.LogError("If the scene was moved/renamed, you may need to reassign it in the editor.");
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public void ReplaceShipAnimations(AnimationClip originalClip, AnimationClip? newClip)
