@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using BepInEx.AssemblyPublicizer;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Dawn;
+
+[JsonObject(MemberSerialization.OptIn)]
 public class DataContainer : IDataContainer
 {
+    [JsonProperty]
     protected Dictionary<NamespacedKey, object> dictionary = [];
 
     public bool Has(NamespacedKey key)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ public class PersistentDataContainer : DataContainer
             _container.MarkDirty();
         }
     }
-
+    
     public PersistentDataContainer(string filePath)
     {
         Debuggers.PersistentDataContainer?.Log($"new PersistentDataContainer: {Path.GetFileName(filePath)}");
@@ -53,12 +54,34 @@ public class PersistentDataContainer : DataContainer
         {
             DawnPlugin.Logger.LogFatal($"Exception when loading from persistent data container ({Path.GetFileName(_filePath)}):\n{exception}");
             HasCorruptedData.Add(this);
+            return;
         }
+
+        foreach (object dictionaryValue in dictionary.Values)
+        {
+            if (dictionaryValue is ChildPersistentDataContainer child)
+            {
+                Debuggers.PersistentDataContainer?.Log($"updated parent for a loaded persistent data container. count = {child.Count}: {string.Join(", ", child.Keys.Select(it => it.ToString()))}");
+                
+                child.Internal_SetParent(this);
+            }
+        }
+        
         Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
     }
 
     public override void Set<T>(NamespacedKey key, T value)
     {
+        if (value is IDataContainer && value is not ChildPersistentDataContainer)
+        {
+            throw new NotSupportedException($"{key} is a {value.GetType().Name}, which is not supported by persistent data container. Only ChildPersistentDataContainer is supported.");
+        }
+
+        if (value is ChildPersistentDataContainer child && child.Parent != this)
+        {
+            throw new NotSupportedException($"{key} is a child persistent data container being added to '{FileName}' when it belongs to '{child.Parent.FileName}'.");
+        }
+        
         base.Set(key, value);
         if (AutoSave)
             Task.Run(SaveAsync);
@@ -123,4 +146,26 @@ public class PersistentDataContainer : DataContainer
     }
 
     public string FileName => Path.GetFileName(_filePath);
+}
+
+public class ChildPersistentDataContainer : DataContainer
+{
+    public PersistentDataContainer Parent { get; private set; }
+
+    internal ChildPersistentDataContainer() { }
+
+    public ChildPersistentDataContainer(PersistentDataContainer parent)
+    {
+        Parent = parent;
+    }
+    
+    public override void MarkDirty()
+    {
+        if(Parent.AutoSave)
+            Parent.MarkDirty();
+    }
+
+    public override IDisposable CreateEditContext() => Parent.CreateEditContext();
+
+    internal void Internal_SetParent(PersistentDataContainer parent) => Parent = parent;
 }
