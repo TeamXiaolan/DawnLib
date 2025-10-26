@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using BepInEx;
 using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
@@ -45,6 +46,17 @@ public static class DawnLib
         return DawnNetworker.Instance?.ContractContainer;
     }
 
+    /// <summary>
+    /// This save is stored within the BepInEx folder, and therefore is different for each install/Thunderstore profile
+    /// </summary>
+    /// <returns>The persistent data container for the profile</returns>
+    private static PersistentDataContainer? _profileContainer;
+    public static PersistentDataContainer GetCurrentInstallSave()
+    {
+        _profileContainer ??= new PersistentDataContainer(Path.Combine(Paths.BepInExRootPath, "DawnLib.dawndata"));
+        return _profileContainer;
+    }
+    
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
         if (!prefab)
