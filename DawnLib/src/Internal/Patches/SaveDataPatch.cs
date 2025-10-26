@@ -13,7 +13,6 @@ static class SaveDataPatch
     internal static void Init()
     {
         On.DeleteFileButton.DeleteFile += ResetSaveFile;
-        On.GameNetworkManager.SaveItemsInShip += SaveData;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
 
@@ -65,13 +64,15 @@ static class SaveDataPatch
         DawnNetworker.Instance?.SaveData();
     }
 
-    private static void SaveData(On.GameNetworkManager.orig_SaveItemsInShip orig, GameNetworkManager self)
+    [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SaveItemsInShip)), HarmonyPrefix]
+    static bool SaveData()
     {
         if (DawnConfig.DisableDawnItemSaving)
         {
-            orig(self);
+            return true;
         }
         DawnNetworker.Instance?.SaveData();
+        return false;
     }
 
     private static void ResetSaveFile(On.GameNetworkManager.orig_ResetSavedGameValues orig, GameNetworkManager self)

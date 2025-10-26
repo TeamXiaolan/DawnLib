@@ -1,4 +1,3 @@
-using Dawn;
 using Dawn.Internal;
 using Dawn.Utils;
 using Unity.Netcode;
@@ -16,9 +15,7 @@ static class NetworkerPatch
 
     private static void CreateNetworker(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
-        orig(self);
         MoreLayerMasks.Init();
-
         self.NetworkObject.OnSpawn(() =>
         {
             if (self.IsServer || self.IsHost)
@@ -31,7 +28,11 @@ static class NetworkerPatch
                 }
             }
 
-            if (AchievementUIGetCanvas.Instance == null) Object.Instantiate(DuskPlugin.Main.AchievementGetUICanvasPrefab);
+            if (AchievementUIGetCanvas.Instance == null)
+            {
+                Object.Instantiate(DuskPlugin.Main.AchievementGetUICanvasPrefab);
+            }
         });
+        orig(self);
     }
 }
