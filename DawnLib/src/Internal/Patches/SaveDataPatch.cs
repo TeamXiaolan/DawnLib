@@ -5,6 +5,7 @@ using MonoMod.RuntimeDetour;
 
 namespace Dawn.Internal;
 
+[HarmonyPatch]
 static class SaveDataPatch
 {
     internal static PersistentDataContainer? contractContainer;
@@ -15,9 +16,6 @@ static class SaveDataPatch
         On.GameNetworkManager.SaveItemsInShip += SaveData;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
-
-        On.StartOfRound.LoadShipGrabbableItems += LoadShipGrabbableItems;
-        On.StartOfRound.LoadUnlockables += LoadUnlockables;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "Awake"), OnPlaceableShipObjectAwake));
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "OnDestroy"), OnPlaceableShipObjectOnDestroy));
@@ -35,28 +33,32 @@ static class SaveDataPatch
         orig(self);
     }
 
-    private static void LoadUnlockables(On.StartOfRound.orig_LoadUnlockables orig, StartOfRound self)
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.LoadUnlockables)), HarmonyPrefix]
+    static bool LoadUnlockables()
     {
         if (DawnConfig.DisableDawnUnlockableSaving)
         {
-            orig(self);
-            return;
+            return true;
         }
+
         contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
+        return false;
     }
 
-    private static void LoadShipGrabbableItems(On.StartOfRound.orig_LoadShipGrabbableItems orig, StartOfRound self)
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.LoadShipGrabbableItems)), HarmonyPrefix]
+    static bool LoadShipGrabbableItems()
     {
         if (DawnConfig.DisableDawnItemSaving)
         {
-            orig(self);
-            return;
+            return true;
         }
+        
         contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         ItemSaveDataHandler.LoadSavedItems(contractContainer);
+        return false;
     }
-
+    
     private static void SaveData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);

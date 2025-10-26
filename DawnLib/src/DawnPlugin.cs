@@ -6,6 +6,7 @@ using BepInEx;
 using BepInEx.Logging;
 using Dawn.Internal;
 using Dawn.Utils;
+using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using PathfindingLib;
 using Unity.Netcode;
@@ -80,6 +81,8 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
 
+        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
+        
         DawnNetworkSceneManager.Init();
 
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
