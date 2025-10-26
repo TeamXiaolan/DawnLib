@@ -87,7 +87,7 @@ static class SaveDataPatch
         PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete}");
         contractContainer.Clear();
 
-        PersistentDataContainer saveContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete}");
+        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete}");
         saveContainer.Clear();
     }
 }
