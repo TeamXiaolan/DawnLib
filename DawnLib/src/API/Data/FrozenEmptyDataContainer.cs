@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Dawn;
@@ -34,4 +35,12 @@ public class FrozenEmptyDataContainer : IDataContainer
     }
     public IEnumerable<NamespacedKey> Keys { get; } = [];
     public int Count => 0;
+    public void MarkDirty()
+    {
+        throw new RegistryFrozenException();
+    }
+    public IDisposable CreateEditContext()
+    {
+        throw new RegistryFrozenException();
+    }
 }

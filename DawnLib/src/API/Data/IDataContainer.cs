@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Dawn;
@@ -13,4 +14,7 @@ public interface IDataContainer
 
     IEnumerable<NamespacedKey> Keys { get; }
     int Count { get; }
+
+    void MarkDirty();
+    IDisposable CreateEditContext();
 }

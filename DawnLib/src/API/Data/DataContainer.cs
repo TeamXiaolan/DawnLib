@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using BepInEx.AssemblyPublicizer;
 using Newtonsoft.Json.Linq;
 
 namespace Dawn;
@@ -84,4 +85,12 @@ public class DataContainer : IDataContainer
 
     public IEnumerable<NamespacedKey> Keys => dictionary.Keys;
     public int Count => dictionary.Count;
+    public virtual void MarkDirty() { } // marking dirty does nothing here
+    public virtual IDisposable CreateEditContext() => new NoOpDisposable();
+    
+    class NoOpDisposable : IDisposable
+    {
+        public void Dispose()
+        { }
+    }
 }

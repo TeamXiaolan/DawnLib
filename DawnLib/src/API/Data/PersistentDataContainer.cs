@@ -12,7 +12,7 @@ namespace Dawn;
 public class PersistentDataContainer : DataContainer
 {
     private string _filePath;
-    private bool _autoSave = true;
+    public bool AutoSave { get; private set; } = true;
 
     private readonly SemaphoreSlim _saveLock = new(1, 1);
 
@@ -21,17 +21,19 @@ public class PersistentDataContainer : DataContainer
     public class EditContext : IDisposable
     {
         private PersistentDataContainer _container;
+        private bool _prevAutoSave; // incase the persistent data container gets passed around, we don't want to accidentally re-enable auto-saving
 
         public EditContext(PersistentDataContainer container)
         {
             _container = container;
-            _container._autoSave = false;
+            _prevAutoSave = _container.AutoSave;
+            _container.AutoSave = false;
         }
 
         public void Dispose()
         {
-            _container._autoSave = true;
-            Task.Run(_container.SaveAsync);
+            _container.AutoSave = _prevAutoSave;
+            _container.MarkDirty();
         }
     }
 
@@ -39,46 +41,54 @@ public class PersistentDataContainer : DataContainer
     {
         Debuggers.PersistentDataContainer?.Log($"new PersistentDataContainer: {Path.GetFileName(filePath)}");
         _filePath = filePath;
-        if (File.Exists(filePath))
+        if (!File.Exists(filePath)) 
+            return;
+        
+        Debuggers.PersistentDataContainer?.Log("loading existing file");
+        try
         {
-            Debuggers.PersistentDataContainer?.Log("loading existing file");
-            try
-            {
-                dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings)!;
-            }
-            catch (Exception exception)
-            {
-                DawnPlugin.Logger.LogFatal($"Exception when loading from persistent data container ({Path.GetFileName(_filePath)}):\n{exception}");
-                HasCorruptedData.Add(this);
-            }
-            Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
+            dictionary = JsonConvert.DeserializeObject<Dictionary<NamespacedKey, object>>(File.ReadAllText(_filePath), DawnLib.JSONSettings)!;
         }
+        catch (Exception exception)
+        {
+            DawnPlugin.Logger.LogFatal($"Exception when loading from persistent data container ({Path.GetFileName(_filePath)}):\n{exception}");
+            HasCorruptedData.Add(this);
+        }
+        Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
     }
 
     public override void Set<T>(NamespacedKey key, T value)
     {
         base.Set(key, value);
-        if (_autoSave)
+        if (AutoSave)
             Task.Run(SaveAsync);
     }
 
     public override void Clear()
     {
         base.Clear();
-        if (_autoSave)
-            Task.Run(SaveAsync);
+        if (AutoSave)
+            MarkDirty();
     }
 
     public override void Remove(NamespacedKey key)
     {
         base.Remove(key);
-        if (_autoSave)
-            Task.Run(SaveAsync);
+        if (AutoSave)
+            MarkDirty();
     }
 
-    public IDisposable LargeEdit()
+    [Obsolete("Use CreateEditContext()")]
+    public IDisposable LargeEdit() => CreateEditContext();
+
+    public override IDisposable CreateEditContext()
     {
         return new EditContext(this);
+    }
+
+    public override void MarkDirty()
+    {
+        Task.Run(SaveAsync);
     }
 
     private async Task SaveAsync()
