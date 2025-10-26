@@ -4,7 +4,7 @@
 - Added ways to edit the item's holding rotation, resting rotation, position offsets etc for skins.
 - Fixed incompat with mod UnlockOnStart.
 - Fixed incompat with mod TooManySuits.
-- Touched up hotloading UI a bit.
+- Touched up hotloading UI a bit. (will do more later)
 
 ## v0.3.10
 
