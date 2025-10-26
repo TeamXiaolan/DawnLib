@@ -50,7 +50,7 @@ public static class UnlockableSaveDataHandler
                         }                        
                     }
                 }
-                else
+                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(unlockableItemInfo.IndexInList))
                 {
                     StartOfRound.Instance.SpawnUnlockable(unlockableItemInfo.IndexInList, false);
                 }
@@ -108,10 +108,16 @@ public static class UnlockableSaveDataHandler
             {
                 placedAtQuotaStart = TimeOfDayRefs.Instance.furniturePlacedAtQuotaStart.Contains(unlockableData.shopSelectionNode.shipUnlockableID);
             }
+            if (!unlockableData.alreadyUnlocked)
+            {
+                GameObject unlockableGameObject = StartOfRound.Instance.SpawnedShipUnlockables[unlockableInfo.IndexInList].gameObject;
+                Debuggers.SaveManager?.Log($"Unlockable: {unlockableInfo.TypedKey} has GameObject: {unlockableGameObject}.");
+            }
+
             // TODO: replace the 0 with the proper value by saving all instances of the new unlockable component that i need to make
             allShipItemDatas.Add(new UnlockableSaveData(unlockableInfo.Key, unlockableData.placedPosition, unlockableData.placedRotation, unlockableData.inStorage, unlockableData.hasBeenMoved, placedAtQuotaStart, 0));
         }
-        using (dataContainer.LargeEdit())
+        using (dataContainer.CreateEditContext())
         {
             dataContainer.Set(_namespacedKey, allShipItemDatas);
         }

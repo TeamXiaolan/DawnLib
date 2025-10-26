@@ -84,10 +84,10 @@ static class SaveDataPatch
     private static void ResetSaveFile(On.DeleteFileButton.orig_DeleteFile orig, DeleteFileButton self)
     {
         orig(self);
-        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete}");
+        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete+1}");
         contractContainer.Clear();
 
-        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete}");
+        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete+1}");
         saveContainer.Clear();
     }
 }

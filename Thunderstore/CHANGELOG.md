@@ -1,4 +1,12 @@
-# v0.3.10
+# v0.3.11
+
+- Potentially fixed issues regarding save file not being deleted properly.
+- Added ways to edit the item's holding rotation, resting rotation, position offsets etc for skins.
+- Fixed incompat with mod UnlockOnStart.
+- Fixed incompat with mod TooManySuits.
+- Touched up hotloading UI a bit.
+
+## v0.3.10
 
 - Fixed an issue where all replacements wouldn't take more than 1 replacement at once.
 - Added MapObject replacements.

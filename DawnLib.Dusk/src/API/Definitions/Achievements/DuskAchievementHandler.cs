@@ -12,7 +12,7 @@ static class DuskAchievementHandler
 
     internal static void LoadAll()
     {
-        using (DuskPlugin.PersistentData.LargeEdit())
+        using (DuskPlugin.PersistentData.CreateEditContext())
         {
             foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
             {
@@ -23,7 +23,7 @@ static class DuskAchievementHandler
 
     internal static void SaveAll()
     {
-        using (DuskPlugin.PersistentData.LargeEdit())
+        using (DuskPlugin.PersistentData.CreateEditContext())
         {
             foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
             {

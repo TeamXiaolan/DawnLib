@@ -71,7 +71,7 @@ public static class ItemSaveDataHandler
             allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
         }
 
-        using (dataContainer.LargeEdit())
+        using (dataContainer.CreateEditContext())
         {
             dataContainer.Set(_namespacedKey, allShipItemDatas);
         }

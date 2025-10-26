@@ -81,20 +81,7 @@ static class UnlockableRegistrationHandler
     
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyAfter("x753.More_Suits")]
     private static void RegisterShipUnlockables()
-    {
-        if (MoreSuitsCompat.Enabled)
-        {
-            try
-            {
-                MoreSuitsCompat.ForceMoreSuitsRegistration();
-            }
-            catch (Exception exception)
-            {
-                DawnPlugin.Logger.LogWarning($"MoreSuitsCompat failed: {exception.Message} (complete exception in debug)");
-                DawnPlugin.Logger.LogDebug(exception);
-            }
-        }
-        
+    {        
         if (LethalContent.Unlockables.IsFrozen)
         {
             return;
