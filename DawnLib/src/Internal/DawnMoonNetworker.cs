@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Dawn.Utils;
 using GameNetcodeStuff;
@@ -167,11 +168,14 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
                 yield return null;
 
+
                 AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(customMoon.AssetBundlePath);
                 yield return request;
 
+                bool hasError = CheckMoonBundleSuccess(customMoon, request);
+                
                 // todo: more graceful error handling?
-                if (!request.isDone || request.assetBundle == null)
+                if (hasError)
                 {
                     PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
                     yield break;
@@ -189,6 +193,29 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         }
 
         PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+    }
+
+    bool CheckMoonBundleSuccess(CustomMoonSceneInfo sceneInfo, AssetBundleCreateRequest request)
+    {
+        if (!request.isDone || request.assetBundle == null)
+        {
+            return false;
+        }
+
+        AssetBundle bundle = request.assetBundle;
+        if (!bundle.isStreamedSceneAssetBundle)
+        {
+            DawnPlugin.Logger.LogError($"Bundle: {Path.GetFileName(sceneInfo.AssetBundlePath)} (should contain scene: {sceneInfo.SceneName}) is not a scene bundle?");
+            return false;
+        }
+
+        if (!bundle.GetAllScenePaths().Contains(sceneInfo.ScenePath))
+        {
+            DawnPlugin.Logger.LogError($"Bundle: {Path.GetFileName(sceneInfo.AssetBundlePath)} does not contain scene: {sceneInfo.SceneName}.");
+            DawnPlugin.Logger.LogError("If the scene was moved/renamed, you may need to reassign it in the editor.");
+            return false;
+        }
+        return true;
     }
 
     public void ReplaceShipAnimations(AnimationClip originalClip, AnimationClip? newClip)
