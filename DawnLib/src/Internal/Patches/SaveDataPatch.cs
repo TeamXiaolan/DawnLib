@@ -75,17 +75,17 @@ static class SaveDataPatch
     private static void ResetSaveFile(On.GameNetworkManager.orig_ResetSavedGameValues orig, GameNetworkManager self)
     {
         orig(self);
-        PersistentDataContainer container = DawnNetworker.Instance?.ContractContainer ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        PersistentDataContainer container = DawnNetworker.Instance?.ContractContainer ?? DawnNetworker.CreateContractContainer(self.currentSaveFileName);
         container.Clear();
     }
 
     private static void ResetSaveFile(On.DeleteFileButton.orig_DeleteFile orig, DeleteFileButton self)
     {
         orig(self);
-        PersistentDataContainer contractContainer = DawnNetworker.Instance?.ContractContainer ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete}");
         contractContainer.Clear();
 
-        PersistentDataContainer saveContainer = DawnNetworker.Instance?.SaveContainer ?? DawnNetworker.CreateSaveContainer(GameNetworkManager.Instance.currentSaveFileName);
+        PersistentDataContainer saveContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete}");
         saveContainer.Clear();
     }
 }
