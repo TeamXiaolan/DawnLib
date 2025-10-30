@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dawn.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -81,6 +82,13 @@ public static class UnlockableSaveDataHandler
 
         foreach (PlaceableShipObject placeableShipObject in placeableShipObjects)
         {
+            placeableShipObject.parentObject.NetworkObject.OnSpawn(() =>
+            {
+                if (!placeableShipObject.parentObject.NetworkObject.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject, true))
+                {
+                    DawnPlugin.Logger.LogError($"Parenting of object: {placeableShipObject.parentObject.gameObject.name} failed.");
+                }
+            });
             placeableShipObject.parentObject.MoveToOffset();
         }
         Physics.SyncTransforms();

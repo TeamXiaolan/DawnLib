@@ -68,7 +68,7 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
 
             GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
             addOn.transform.localPosition = gameObjectAddon.PositionOffset;
-            addOn.transform.rotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
+            addOn.transform.localRotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
 
             if (networkObject == null)
                 continue;

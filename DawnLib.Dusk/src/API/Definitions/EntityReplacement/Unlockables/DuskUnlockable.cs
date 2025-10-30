@@ -22,6 +22,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
         return unlockableReplacementDefinition;
     }
 
+
     internal bool HasUnlockableReplacement()
     {
         return GetUnlockableReplacement() != null;

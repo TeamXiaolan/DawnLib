@@ -1,4 +1,9 @@
-# v0.3.13
+# v0.3.14
+
+- Made unlockables parent to the ship to remove a stuttering issue when landing or leaving.
+- Fixed an issue with replacements where the rotation sometimes isn't accurate depending on parent.
+
+## v0.3.13
 
 - Fixed a lobby reload softlock issue.
 - Fixed issue where only half of the unlockables would save.
