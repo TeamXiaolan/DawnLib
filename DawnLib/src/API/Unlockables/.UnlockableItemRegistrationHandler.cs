@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
@@ -13,77 +12,18 @@ static class UnlockableRegistrationHandler
 {
     internal static void Init()
     {
+        using (new DetourContext(priority: -100))
+        {
+            On.Terminal.Awake += RegisterDawnUnlockables;
+        }
         On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
     }
 
-    private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
+    private static void RegisterDawnUnlockables(On.Terminal.orig_Awake orig, Terminal self)
     {
-        if (modifiedDisplayText.Contains("[buyableItemsList]") && modifiedDisplayText.Contains("[unlockablesSelectionList]"))
-        {
-            int index = modifiedDisplayText.IndexOf(@":");
-
-            // example: "* Loud horn    //    Price: $150"
-            foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
-            {
-                if (unlockableItemInfo.ShouldSkipIgnoreOverride())
-                    continue;
-
-                if (!unlockableItemInfo.UnlockableItem.alwaysInStock)
-                    continue; // skip decors
-
-                string? unlockableName = unlockableItemInfo.UnlockableItem.unlockableName;
-                TerminalPurchaseResult result = unlockableItemInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
-                if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
-                {
-                    if (!string.IsNullOrEmpty(failedResult.OverrideName))
-                    {
-                        Debuggers.Unlockables?.Log($"Overriding name of {unlockableItemInfo.Key} with {failedResult.OverrideName}");
-                    }
-                    unlockableName = failedResult.OverrideName;
-                }
-
-                UpdateUnlockablePrices(unlockableItemInfo);
-
-                string newLine = $"\n* {unlockableName ?? string.Empty}    //    Price: ${unlockableItemInfo.RequestNode?.itemCost ?? 0}";
-
-                modifiedDisplayText = modifiedDisplayText.Insert(index + 1, newLine);
-            }
-        }
-
-        return orig(self, modifiedDisplayText, node);
-    }
-
-    internal static void UpdateAllUnlockablePrices()
-    {
-        foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
-        {
-            if (info.ShouldSkipRespectOverride())
-                continue;
-
-            UpdateUnlockablePrices(info);
-        }
-    }
-
-    static void UpdateUnlockablePrices(DawnUnlockableItemInfo info)
-    {
-        int cost = info.DawnPurchaseInfo.Cost.Provide();
-        if (info.RequestNode != null)
-        {
-            info.RequestNode.itemCost = cost;
-        }
-
-        if (info.ConfirmNode != null)
-        {
-            info.ConfirmNode.itemCost = cost;
-        }
-    }
-
-    
-    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyAfter("x753.More_Suits")]
-    private static void RegisterShipUnlockables()
-    {        
         if (LethalContent.Unlockables.IsFrozen)
         {
+            orig(self);
             return;
         }
 
@@ -156,6 +96,79 @@ static class UnlockableRegistrationHandler
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray();
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray();
         terminal.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
+        orig(self);
+    }
+
+    private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
+    {
+        if (modifiedDisplayText.Contains("[buyableItemsList]") && modifiedDisplayText.Contains("[unlockablesSelectionList]"))
+        {
+            int index = modifiedDisplayText.IndexOf(@":");
+
+            // example: "* Loud horn    //    Price: $150"
+            foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+            {
+                if (unlockableItemInfo.ShouldSkipIgnoreOverride())
+                    continue;
+
+                if (!unlockableItemInfo.UnlockableItem.alwaysInStock)
+                    continue; // skip decors
+
+                string? unlockableName = unlockableItemInfo.UnlockableItem.unlockableName;
+                TerminalPurchaseResult result = unlockableItemInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
+                if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
+                {
+                    if (!string.IsNullOrEmpty(failedResult.OverrideName))
+                    {
+                        Debuggers.Unlockables?.Log($"Overriding name of {unlockableItemInfo.Key} with {failedResult.OverrideName}");
+                    }
+                    unlockableName = failedResult.OverrideName;
+                }
+
+                UpdateUnlockablePrices(unlockableItemInfo);
+
+                string newLine = $"\n* {unlockableName ?? string.Empty}    //    Price: ${unlockableItemInfo.RequestNode?.itemCost ?? 0}";
+
+                modifiedDisplayText = modifiedDisplayText.Insert(index + 1, newLine);
+            }
+        }
+
+        return orig(self, modifiedDisplayText, node);
+    }
+
+    internal static void UpdateAllUnlockablePrices()
+    {
+        foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
+        {
+            if (info.ShouldSkipRespectOverride())
+                continue;
+
+            UpdateUnlockablePrices(info);
+        }
+    }
+
+    static void UpdateUnlockablePrices(DawnUnlockableItemInfo info)
+    {
+        int cost = info.DawnPurchaseInfo.Cost.Provide();
+        if (info.RequestNode != null)
+        {
+            info.RequestNode.itemCost = cost;
+        }
+
+        if (info.ConfirmNode != null)
+        {
+            info.ConfirmNode.itemCost = cost;
+        }
+    }
+
+    
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyAfter("x753.More_Suits")]
+    private static void FreezeShipUnlockables()
+    {        
+        if (LethalContent.Unlockables.IsFrozen)
+        {
+            return;
+        }
 
         foreach (UnlockableItem unlockableItem in StartOfRoundRefs.Instance.unlockablesList.unlockables)
         {
@@ -212,7 +225,7 @@ static class UnlockableRegistrationHandler
             TerminalNode? infoNode = null;
             if (requestNode != null)
             {
-                infoNode = infoKeyword.compatibleNouns.Where(x => x.noun == unlockableBuyKeyword)?.Select(x => x.result).FirstOrDefault();
+                infoNode = TerminalRefs.InfoKeyword.compatibleNouns.Where(x => x.noun == unlockableBuyKeyword)?.Select(x => x.result).FirstOrDefault();
             }
 
             DawnUnlockableItemInfo unlockableItemInfo = new(key, [DawnLibTags.IsExternal], unlockableItem, new DawnPurchaseInfo(new SimpleProvider<int>(cost), ITerminalPurchasePredicate.AlwaysSuccess()), suitInfo, placeableObjectInfo, requestNode, confirmNode, unlockableBuyKeyword, infoNode, null);
@@ -220,14 +233,6 @@ static class UnlockableRegistrationHandler
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 
-        for (int i = 0; i < StartOfRoundRefs.Instance.unlockablesList.unlockables.Count; i++)
-        {
-            UnlockableItem unlockableItem = StartOfRoundRefs.Instance.unlockablesList.unlockables[i];
-            if (!unlockableItem.HasDawnInfo())
-                continue;
-
-            unlockableItem.GetDawnInfo().IndexInList = i;
-        }
         int roomLayer = LayerMask.NameToLayer("Room");
         // Table
         StartOfRoundRefs.Instance.unlockablesList.unlockables[13].prefabObject.transform.Find("TableMesh").gameObject.layer = roomLayer;

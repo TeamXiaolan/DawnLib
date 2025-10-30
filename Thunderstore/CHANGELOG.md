@@ -1,4 +1,10 @@
-# v0.3.11
+# v0.3.12
+
+- Added `ContentOrder` attribute to apply to content handlers if you'd like them to run in specific order.
+- Fixed client/host desync in unlockable skins and unlockable id causing position desyncs.
+- Touched up UI a little bit.
+
+## v0.3.11
 
 - Potentially fixed issues regarding save file not being deleted properly.
 - Added ways to edit the item's holding rotation, resting rotation, position offsets etc for skins.

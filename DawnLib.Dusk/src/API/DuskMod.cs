@@ -159,8 +159,15 @@ public class DuskMod
         IEnumerable<Type> contentHandlers = Assembly.GetLoadableTypes().Where(x =>
             !x.IsNested && x.BaseType != null
             && x.BaseType.IsGenericType
-            && x.BaseType.GetGenericTypeDefinition() == typeof(ContentHandler<>)
-        );
+            && x.BaseType.GetGenericTypeDefinition() == typeof(ContentHandler<>))
+            .Select(t => new
+            {
+                Type = t,
+                Order = t.GetCustomAttribute<ContentOrderAttribute>(inherit: false)?.Order ?? int.MaxValue
+            })
+            .OrderBy(x => x.Order)
+            .ThenBy(x => x.Type.FullName, StringComparer.Ordinal)
+            .Select(x => x.Type);
 
         foreach (Type type in contentHandlers)
         {

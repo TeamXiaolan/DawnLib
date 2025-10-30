@@ -43,16 +43,16 @@ public static class UnlockableSaveDataHandler
                     {
                         foreach (PlaceableShipObject placeableShipObject in placeableShipObjects)
                         {
-                            if (placeableShipObject.unlockableID == unlockableItemInfo.IndexInList)
+                            if (placeableShipObject.unlockableID == unlockableItemInfo.RequestNode.shipUnlockableID)
                             {
                                 ShipBuildModeManager.Instance.PlaceShipObject(unlockableItem.placedPosition, unlockableItem.placedRotation, placeableShipObject, false);
                             }
                         }                        
                     }
                 }
-                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(unlockableItemInfo.IndexInList))
+                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(unlockableItemInfo.RequestNode.shipUnlockableID))
                 {
-                    StartOfRound.Instance.SpawnUnlockable(unlockableItemInfo.IndexInList, false);
+                    StartOfRound.Instance.SpawnUnlockable(unlockableItemInfo.RequestNode.shipUnlockableID, false);
                 }
             }
         }
@@ -110,7 +110,7 @@ public static class UnlockableSaveDataHandler
             }
             if (!unlockableData.alreadyUnlocked)
             {
-                GameObject unlockableGameObject = StartOfRound.Instance.SpawnedShipUnlockables[unlockableInfo.IndexInList].gameObject;
+                GameObject unlockableGameObject = StartOfRound.Instance.SpawnedShipUnlockables[unlockableInfo.RequestNode.shipUnlockableID].gameObject;
                 Debuggers.SaveManager?.Log($"Unlockable: {unlockableInfo.TypedKey} has GameObject: {unlockableGameObject}.");
             }
 

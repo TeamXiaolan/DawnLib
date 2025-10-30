@@ -33,6 +33,11 @@ static class EntityReplacementRegistrationPatch
             On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
         }
 
+        using (new DetourContext(priority: -200))
+        {
+            On.Terminal.Awake += RegisterDuskUnlockables;
+        }
+
         On.StartOfRound.SetShipReadyToLand += (orig, self) =>
         {
             replacementRandom = null;
@@ -110,6 +115,28 @@ static class EntityReplacementRegistrationPatch
         
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
     }
+
+    private static void RegisterDuskUnlockables(On.Terminal.orig_Awake orig, Terminal self)
+    {
+        if (LethalContent.Unlockables.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+        {
+            if (unlockableItemInfo.UnlockableItem.prefabObject == null)
+                continue;
+
+            if (unlockableItemInfo.UnlockableItem.prefabObject.GetComponent<DuskUnlockable>())
+                continue;
+
+            unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
+        }
+        orig(self);
+    }
+
     // note!!! this transpiler should only be used on enemy AIs!
     private static readonly Dictionary<string, Func<GrabbableObject, Vector3, Vector3>> offsetReplacerFunctions = new()
     {

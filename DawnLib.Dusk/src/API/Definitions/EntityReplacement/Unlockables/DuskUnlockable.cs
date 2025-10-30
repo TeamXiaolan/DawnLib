@@ -40,6 +40,11 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
 
     public void Start()
     {
+        Debuggers.Unlockables?.Log($"{this.gameObject.name} dusk unlockable starting...");
+        if (PlaceableShipObject == null)
+        {
+            return;
+        }
         UnlockableItem unlockableItem = StartOfRoundRefs.Instance.unlockablesList.unlockables[PlaceableShipObject.unlockableID];
         if (!unlockableItem.spawnPrefab && unlockableItem.prefabObject == null)
         {
@@ -55,6 +60,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
 
         if (!unlockableItem.GetDawnInfo().CustomData.TryGet(EntityReplacementRegistrationPatch.Key, out List<DuskUnlockableReplacementDefinition>? replacements))
         {
+            Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no replacements!");
             return;
         }
 
