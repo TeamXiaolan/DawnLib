@@ -50,9 +50,9 @@ public static class UnlockableSaveDataHandler
                         }                        
                     }
                 }
-                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(unlockableItemInfo.RequestNode.shipUnlockableID))
+                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem)))
                 {
-                    StartOfRound.Instance.SpawnUnlockable(unlockableItemInfo.RequestNode.shipUnlockableID, false);
+                    StartOfRound.Instance.SpawnUnlockable(StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem), false);
                 }
             }
         }
@@ -89,8 +89,10 @@ public static class UnlockableSaveDataHandler
     internal static void SaveAllUnlockables(PersistentDataContainer dataContainer)
     {
         List<UnlockableSaveData> allShipItemDatas = new();
-        foreach (UnlockableItem unlockableData in StartOfRound.Instance.unlockablesList.unlockables)
+        for (int i = 0; i < StartOfRound.Instance.unlockablesList.unlockables.Count; i++)
         {
+            UnlockableItem unlockableData = StartOfRound.Instance.unlockablesList.unlockables[i];
+            Debuggers.SaveManager?.Log($"Checking whether to save unlockable: {unlockableData.unlockableName} into save data.");
             if (!unlockableData.hasBeenUnlockedByPlayer && !unlockableData.alreadyUnlocked)
             {
                 continue;
@@ -110,13 +112,14 @@ public static class UnlockableSaveDataHandler
             }
             if (!unlockableData.alreadyUnlocked)
             {
-                GameObject unlockableGameObject = StartOfRound.Instance.SpawnedShipUnlockables[unlockableInfo.RequestNode.shipUnlockableID].gameObject;
+                GameObject unlockableGameObject = StartOfRound.Instance.SpawnedShipUnlockables[i].gameObject;
                 Debuggers.SaveManager?.Log($"Unlockable: {unlockableInfo.TypedKey} has GameObject: {unlockableGameObject}.");
             }
 
             // TODO: replace the 0 with the proper value by saving all instances of the new unlockable component that i need to make
             allShipItemDatas.Add(new UnlockableSaveData(unlockableInfo.Key, unlockableData.placedPosition, unlockableData.placedRotation, unlockableData.inStorage, unlockableData.hasBeenMoved, placedAtQuotaStart, 0));
         }
+
         using (dataContainer.CreateEditContext())
         {
             dataContainer.Set(_namespacedKey, allShipItemDatas);

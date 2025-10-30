@@ -14,9 +14,36 @@ static class UnlockableRegistrationHandler
     {
         using (new DetourContext(priority: -100))
         {
+            On.StartOfRound.Awake += FixRegularUnlockables;
             On.Terminal.Awake += RegisterDawnUnlockables;
         }
         On.Terminal.TextPostProcess += AddShipUpgradesToTerminal;
+    }
+
+    private static void FixRegularUnlockables(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        orig(self);
+        int roomLayer = LayerMask.NameToLayer("Room");
+        // Table
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[13].prefabObject.transform.Find("TableMesh").gameObject.layer = roomLayer;
+        // Romantic Table
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[14].prefabObject.transform.Find("RTableMesh").gameObject.layer = roomLayer;
+        // Signal Translator
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[17].prefabObject.transform.Find("Mesh").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[17].prefabObject.transform.Find("Mesh").gameObject.AddComponent<BoxCollider>().size = new Vector3(0.83f, 0.31f, 0.31f);
+        // Microwave
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[28].prefabObject.transform.Find("MicrowaveBody").gameObject.layer = roomLayer;
+        // Sofa
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (1)").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (2)").gameObject.layer = roomLayer;
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (3)").gameObject.layer = roomLayer;
+        // Fridge
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[30].prefabObject.transform.Find("FridgeBody").gameObject.layer = roomLayer;
+        // Electric Chair
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[32].prefabObject.transform.Find("ElectricChair").gameObject.layer = roomLayer;
+        // Dog House
+        StartOfRoundRefs.Instance.unlockablesList.unlockables[33].prefabObject.transform.Find("DoghouseMesh").gameObject.layer = roomLayer;
     }
 
     private static void RegisterDawnUnlockables(On.Terminal.orig_Awake orig, Terminal self)
@@ -194,10 +221,10 @@ static class UnlockableRegistrationHandler
             }
 
             int cost = 0;
-            if (unlockableItem.shopSelectionNode == null && !unlockableItem.alreadyUnlocked)
+            if (unlockableItem.shopSelectionNode == null && !unlockableItem.alreadyUnlocked && !unlockableItem.alwaysInStock)
             {
                 // this is probably a problem?
-                Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no shop selection node and is not already unlocked. This is probably a problem.");
+                DawnPlugin.Logger.LogWarning($"Unlockable {unlockableItem.unlockableName} has no shop selection node and is not already unlocked. This is probably a problem.");
             }
             else if (unlockableItem.shopSelectionNode != null)
             {
@@ -233,27 +260,6 @@ static class UnlockableRegistrationHandler
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 
-        int roomLayer = LayerMask.NameToLayer("Room");
-        // Table
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[13].prefabObject.transform.Find("TableMesh").gameObject.layer = roomLayer;
-        // Romantic Table
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[14].prefabObject.transform.Find("RTableMesh").gameObject.layer = roomLayer;
-        // Signal Translator
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[17].prefabObject.transform.Find("Mesh").gameObject.layer = roomLayer;
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[17].prefabObject.transform.Find("Mesh").gameObject.AddComponent<BoxCollider>().size = new Vector3(0.83f, 0.31f, 0.31f);
-        // Microwave
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[28].prefabObject.transform.Find("MicrowaveBody").gameObject.layer = roomLayer;
-        // Sofa
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube").gameObject.layer = roomLayer;
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (1)").gameObject.layer = roomLayer;
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (2)").gameObject.layer = roomLayer;
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[29].prefabObject.transform.Find("SofaChairMesh/Cube (3)").gameObject.layer = roomLayer;
-        // Fridge
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[30].prefabObject.transform.Find("FridgeBody").gameObject.layer = roomLayer;
-        // Electric Chair
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[32].prefabObject.transform.Find("ElectricChair").gameObject.layer = roomLayer;
-        // Dog House
-        StartOfRoundRefs.Instance.unlockablesList.unlockables[33].prefabObject.transform.Find("DoghouseMesh").gameObject.layer = roomLayer;
         LethalContent.Unlockables.Freeze();
     }
 

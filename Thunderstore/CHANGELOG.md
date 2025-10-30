@@ -1,4 +1,10 @@
-# v0.3.12
+# v0.3.13
+
+- Fixed a lobby reload softlock issue.
+- Fixed issue where only half of the unlockables would save.
+- Removed facility's `#natural` tag.
+
+## v0.3.12
 
 - Added `ContentOrder` attribute to apply to content handlers if you'd like them to run in specific order.
 - Fixed client/host desync in unlockable skins and unlockable id causing position desyncs.
