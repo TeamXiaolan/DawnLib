@@ -163,9 +163,9 @@ public class DuskMod
             .Select(t => new
             {
                 Type = t,
-                Order = t.GetCustomAttribute<ContentOrderAttribute>(inherit: false)?.Order ?? int.MaxValue
+                Order = t.GetCustomAttribute<ContentOrderAttribute>(inherit: false)?.Order ?? 0
             })
-            .OrderBy(x => x.Order)
+            .OrderByDescending(x => x.Order)
             .ThenBy(x => x.Type.FullName, StringComparer.Ordinal)
             .Select(x => x.Type);
 
