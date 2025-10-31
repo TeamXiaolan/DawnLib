@@ -1,4 +1,5 @@
 
+using System;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -12,12 +13,22 @@ static class SaveDataPatch
 
     internal static void Init()
     {
+        On.MenuManager.Start += LCBetterSaveInit;
         On.DeleteFileButton.DeleteFile += ResetSaveFile;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "Awake"), OnPlaceableShipObjectAwake));
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "OnDestroy"), OnPlaceableShipObjectOnDestroy));
+    }
+
+    private static void LCBetterSaveInit(On.MenuManager.orig_Start orig, MenuManager self)
+    {
+        orig(self);
+        if (LCBetterSaveCompat.Enabled)
+        {
+            LCBetterSaveCompat.Init();
+        }
     }
 
     private static void OnPlaceableShipObjectAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlaceableShipObject> orig, PlaceableShipObject self)

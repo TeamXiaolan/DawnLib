@@ -1,4 +1,8 @@
-# v0.3.16
+# v0.4.0
+
+- Fixed incompat with LCBetterSave.
+
+## v0.3.16
 
 - Accidently had ContentOrder as internal, changed to public.
 
