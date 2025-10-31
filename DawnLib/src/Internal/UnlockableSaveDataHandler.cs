@@ -25,6 +25,7 @@ public static class UnlockableSaveDataHandler
             }
 
             UnlockableItem unlockableItem = unlockableItemInfo.UnlockableItem;
+            int indexInList = StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem);
             if (unlockableData.PlacedAtQuotaStart)
             {
                 PlacedAtStartOfQuotas.Add(unlockableItem.shopSelectionNode.shipUnlockableID);
@@ -44,16 +45,16 @@ public static class UnlockableSaveDataHandler
                     {
                         foreach (PlaceableShipObject placeableShipObject in placeableShipObjects)
                         {
-                            if (placeableShipObject.unlockableID == unlockableItemInfo.RequestNode.shipUnlockableID)
+                            if (placeableShipObject.unlockableID == indexInList)
                             {
                                 ShipBuildModeManager.Instance.PlaceShipObject(unlockableItem.placedPosition, unlockableItem.placedRotation, placeableShipObject, false);
                             }
                         }                        
                     }
                 }
-                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem)))
+                else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(indexInList))
                 {
-                    StartOfRound.Instance.SpawnUnlockable(StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem), false);
+                    StartOfRound.Instance.SpawnUnlockable(indexInList, false);
                 }
             }
         }

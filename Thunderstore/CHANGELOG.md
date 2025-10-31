@@ -1,4 +1,8 @@
-# v0.3.14
+# v0.3.15
+
+- Fixed another issue created by some unlockables that caused errors.
+
+## v0.3.14
 
 - Made unlockables parent to the ship to remove a stuttering issue when landing or leaving.
 - Fixed an issue with replacements where the rotation sometimes isn't accurate depending on parent.
