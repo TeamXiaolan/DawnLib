@@ -1,3 +1,4 @@
+using Dawn.Internal;
 using Dusk.Utils;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ static class AchievementRegistrationPatch
     private static void LoadAchievementDataWithUI(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
-        if (DuskModContent.Achievements.Count == 0)
+        if (DuskModContent.Achievements.Count == 0 || DawnConfig.DisableAchievementsButton)
             return;
 
         DuskAchievementHandler.LoadAll();

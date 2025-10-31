@@ -31,3 +31,4 @@ less important:
 ## Needs to be done eventually
 
 - Make a lot of the dusk stuff add-able via code.
+- Take a look into the terminals mooncataloguelist and see if i need to edit that?

@@ -1,6 +1,8 @@
 # v0.3.15
 
 - Fixed another issue created by some unlockables that caused errors.
+- Fixed an incompat between LLL, DawnLib and DarmuhsTerminalStuff that made every moon hidden.
+- Added a config to disable achievements button in the main menu.
 
 ## v0.3.14
 

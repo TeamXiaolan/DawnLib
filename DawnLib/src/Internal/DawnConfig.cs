@@ -12,6 +12,8 @@ static class DawnConfig
 
     public static bool DisableDawnUnlockableSaving;
 
+    public static bool DisableAchievementsButton;
+
     internal static void Bind(ConfigFile file)
     {
         LethalConfigCompatibility = file.Bind(
@@ -40,6 +42,13 @@ static class DawnConfig
             "Unlockable Saving",
             false,
             "Disable the Dawn Save System for unlockable saving"
+        ).Value;
+
+        DisableAchievementsButton = file.Bind(
+            "Achievements",
+            "Disable Achievements Button",
+            false,
+            "Disable the Achievements Button from showing up in the main menu"
         ).Value;
     }
 }

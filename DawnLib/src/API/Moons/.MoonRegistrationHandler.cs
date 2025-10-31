@@ -454,7 +454,7 @@ static class MoonRegistrationHandler
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
-        TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
+        // TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
     }
 
     private static void CollectTestLevel(On.StartOfRound.orig_Awake orig, StartOfRound self)
