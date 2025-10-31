@@ -1,4 +1,8 @@
-# v0.3.15
+# v0.3.16
+
+- Accidently had ContentOrder as internal, changed to public.
+
+## v0.3.15
 
 - Fixed another issue created by some unlockables that caused errors.
 - Fixed an incompat between LLL, DawnLib and DarmuhsTerminalStuff that made every moon hidden.
