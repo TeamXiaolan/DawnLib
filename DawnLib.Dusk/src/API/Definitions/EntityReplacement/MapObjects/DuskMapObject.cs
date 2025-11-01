@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Dusk;
 
-public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement, IDawnSaveData
+public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
 {
     public object? CurrentEntityReplacement { get; set; }
 
@@ -81,14 +81,4 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement, IDawnSave
     }
 
     public void OnDestroy() { }
-
-    public virtual JToken GetDawnDataToSave()
-    {
-        return JToken.FromObject(0);
-    }
-
-    public virtual void LoadDawnSaveData(JToken saveData)
-    {
-
-    }
 }

@@ -97,7 +97,7 @@ public static class UnlockableSaveDataHandler
 
     internal static void SaveAllUnlockables(PersistentDataContainer dataContainer)
     {
-        List<UnlockableSaveData> allShipItemDatas = new();
+        List<UnlockableSaveData> allShipUnlockablesData = new();
         for (int i = 0; i < StartOfRound.Instance.unlockablesList.unlockables.Count; i++)
         {
             UnlockableItem unlockableData = StartOfRound.Instance.unlockablesList.unlockables[i];
@@ -126,12 +126,12 @@ public static class UnlockableSaveDataHandler
             }
 
             // TODO: replace the 0 with the proper value by saving all instances of the new unlockable component that i need to make
-            allShipItemDatas.Add(new UnlockableSaveData(unlockableInfo.Key, unlockableData.placedPosition, unlockableData.placedRotation, unlockableData.inStorage, unlockableData.hasBeenMoved, placedAtQuotaStart, 0));
+            allShipUnlockablesData.Add(new UnlockableSaveData(unlockableInfo.Key, unlockableData.placedPosition, unlockableData.placedRotation, unlockableData.inStorage, unlockableData.hasBeenMoved, placedAtQuotaStart, 0));
         }
 
         using (dataContainer.CreateEditContext())
         {
-            dataContainer.Set(_namespacedKey, allShipItemDatas);
+            dataContainer.Set(_namespacedKey, allShipUnlockablesData);
         }
     }
 

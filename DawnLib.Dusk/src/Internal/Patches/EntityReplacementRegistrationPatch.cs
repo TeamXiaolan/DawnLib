@@ -270,17 +270,6 @@ static class EntityReplacementRegistrationPatch
                 list.Add(unlockableReplacementDefinition);
             }
         }
-
-        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
-        {
-            if (unlockableItemInfo.UnlockableItem.prefabObject == null)
-                continue;
-
-            if (unlockableItemInfo.UnlockableItem.prefabObject.GetComponent<DuskUnlockable>())
-                continue;
-
-            unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
-        }
     }
 
     private static void RegisterItemReplacements()

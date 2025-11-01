@@ -15,7 +15,7 @@ static class MoonRegistrationHandler
 
     // See DuskPlugin
     internal static GameObject RouteProgressUIPrefab;
-    
+
     internal static void Init()
     {
         LethalContent.Moons.AddAutoTaggers(
@@ -45,6 +45,7 @@ static class MoonRegistrationHandler
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
     }
+
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         Object.Instantiate(RouteProgressUIPrefab, self.radarCanvas.transform);

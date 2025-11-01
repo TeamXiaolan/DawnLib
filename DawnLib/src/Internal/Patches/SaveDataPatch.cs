@@ -1,5 +1,4 @@
 
-using System;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;

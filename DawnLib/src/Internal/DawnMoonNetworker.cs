@@ -301,6 +301,11 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         yield return new WaitUntil(() => StartOfRound.Instance.shipTravelCoroutine == null || StartOfRound.Instance.screenLevelDescription.enabled);
         StartOfRound.Instance.shipTravelCoroutine = null;
         StartMatchLeverRefs.Instance.triggerScript.interactable = true;
+        if (!IsServer && !GameNetworkManager.Instance.gameHasStarted)
+        {
+            StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = "[ Waiting for host to start game ]";
+            StartMatchLeverRefs.Instance.triggerScript.interactable = false;
+        }
         if (StartOfRound.Instance.currentLevel.videoReel != null)
         {
             StartOfRound.Instance.screenLevelVideoReel.enabled = true;

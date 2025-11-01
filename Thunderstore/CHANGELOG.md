@@ -1,6 +1,13 @@
-# v0.4.0
+# v0.4.1
+
+- Removed some redundant code.
+- Implemented an OutOfBounds fix from MattyFixes into here due to having a saving system.
+- Fixed client being able to pull lever during the start of the game that would break the lever.
+
+## v0.4.0
 
 - Fixed incompat with LCBetterSave.
+- Totally didn't screw up the content order thing as well.
 
 ## v0.3.16
 
