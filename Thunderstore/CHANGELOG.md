@@ -3,6 +3,7 @@
 - Removed some redundant code.
 - Implemented an OutOfBounds fix from MattyFixes into here due to having a saving system.
 - Fixed client being able to pull lever during the start of the game that would break the lever.
+- Readme and wiki updated with more information about how to create content with DawnLib.
 
 ## v0.4.0
 

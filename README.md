@@ -5,10 +5,29 @@
 DawnLib is a modern API for Lethal Company content and all sizes of mods. It contains:
 
 - DawnLib API
+  - Moons
+  - Weathers
+  - Interiors
+  - Enemies
+  - Items
+  - Map Objects (Inside and Outside hazards)
+  - Unlockables (Ship Upgrades and Furniture)
+  - Additional Tile Sets (injecting more tilesets to interiors)
+
 - DuskMod API
+  - Ship Creation (In-progress)
+  - Achievements
+  - Entity Replacements (Enemy, Item, Unlockable and MapObject skin replacements)
+  - Vehicles (Highly experimental)
+
 - Some extra utilities
+  - SmartAgentNavigator (completely intelligent NavMeshAgent navigator that uses PathfindingLib to performanently be able to use entrance teleports and fire exits reliably).
+  - NetworkAudioSource
+  - And more!
 
 DawnLib also categorises (almost) everything in the game with keys, allowing for easy references to existing vanilla content.
+If you'd like to support in the development of DawnLib, please consider reaching out to `@xuxiaolan` on discord, whether through the modding discord, github, or just
+pinging on the lethal modding discord, we accept any sort of help, UI, Coders, Artists, etc.
 
 **NOTE:** Enemies/Items/etc managed through DawnLib are likely **_unsupported_** by mods like CentralConfig or LethalQuantities.
 This is because of the way DawnLib supports dynamically updating weights and therefore cannot be fixed from DawnLib.
@@ -16,23 +35,15 @@ This is because of the way DawnLib supports dynamically updating weights and the
 ## DawnLib (All C#)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.3.*" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.4.*" />
 
 <!-- Optional Source Generation, mostly for when using the DuskMod API -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.3.*" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.4.*" />
 ```
 
 DawnLib is a hands-off way to register your content. The code to switch from LethalLib to DawnLib is very similar and will require minimal refactoring.
 Most registration methods are under the `DawnLib` static class. When calling `DefineXXX` you are provided with a builder method that
 explains most settings that you can configure.
-
-Supported content:
-
-- Enemies
-- Items
-- Map Objects
-- Unlockables
-- Additional Tile Sets
 
 Example:
 
@@ -61,11 +72,13 @@ In order to make sure everything is ready, you can listen to a registry's "freez
 `OnFreeze` will only run once _ever_ (even between lobby reloads)
 
 ```csharp
-LethalContent.Enemies.OnFreeze += () => {
+LethalContent.Enemies.OnFreeze += () =>
+{
   // All vanilla content is in and no more modded content can be added.
 };
 
-if(LethalContent.Enemies.IsFrozen) { // or check that the registry has already been frozen
+if (LethalContent.Enemies.IsFrozen)
+{ // or check that the registry has already been frozen
   // ...
 }
 ```
@@ -84,16 +97,16 @@ void Awake() { // Plugin awake
 }
 ```
 
-Note: If you are going to make a large edit (calling `.Set`, `.GetOrSet`, etc multiple times) you should wrap it with `using(container.LargeEdit())`. This delays saving data to the disk until all your edits have been completed.
+Note: If you are going to make a large edit (calling `.Set`, `.GetOrSet`, etc multiple times) you should wrap it with `using(container.CreateEditContext())`. This delays saving data to the disk until all your edits have been completed.
 
 ## DuskMod (C# & Editor)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.3.*" />
-<PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.3.*" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.4.*" />
+<PackageReference Include="TeamXiaolan.DawnLib.DuskMod" Version="0.4.*" />
 
 <!-- Optional Source Generation -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.3.*" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.4.*" />
 ```
 
 The DuskMod API is more opinionated, but automatically handles:
@@ -105,17 +118,11 @@ The DuskMod API is more opinionated, but automatically handles:
 - Automatically generate NamespacedKeys (C# Source Generators)
 - **Registering content with no code!**
 
-It also supports:
-
-- Achievements
-- Weathers (through `WeatherRegistry`)
-- Vehicles (highly experimental)
-- Enemy/Item Model Replacement
-
-And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord for help.
+And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord or github for help.
 
 ### Credits
 
 - Bongo Xiaolan (Code)
-- XuXiaolan (Code)
+- Xu Xiaolan (Code)
+- Fumo (Code)
 - Slayer (Achievement UI)
