@@ -42,11 +42,11 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     [field: SerializeField]
     public string WeatherSpawnWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
     [field: SerializeField]
-    public bool GenerateSpawnWeightsConfig { get; private set; }
+    public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public bool GenerateDisableDateConfig { get; private set; }
+    public bool GenerateDisableDateConfig { get; private set; } = true;
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }

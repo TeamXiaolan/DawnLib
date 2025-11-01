@@ -26,9 +26,9 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public bool GenerateDisableUnlockConfig { get; private set; }
+    public bool GenerateDisableUnlockConfig { get; private set; } = true;
     [field: SerializeField]
-    public bool GenerateDisablePricingStrategyConfig { get; private set; }
+    public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
 
     public VehicleConfig Config { get; private set; }
     public DawnVehicleInfo DawnVehicleInfo { get; private set; }

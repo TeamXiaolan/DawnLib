@@ -38,12 +38,12 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
     [field: SerializeField]
     public bool IsOutsideHazard { get; private set; }
     [field: SerializeField]
-    public bool CreateOutsideHazardConfig { get; private set; }
+    public bool CreateOutsideHazardConfig { get; private set; } = true;
 
     [field: SerializeField]
     public string DefaultOutsideCurveSpawnWeights { get; private set; }
     [field: SerializeField]
-    public bool CreateOutsideCurveSpawnWeightsConfig { get; private set; }
+    public bool CreateOutsideCurveSpawnWeightsConfig { get; private set; } = true;
 
     public MapObjectConfig Config { get; private set; }
 

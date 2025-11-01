@@ -44,7 +44,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     [field: SerializeField]
     public string WeatherSpawnWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
     [field: SerializeField]
-    public bool GenerateSpawnWeightsConfig { get; private set; }
+    public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public EnemyConfig Config { get; private set; }

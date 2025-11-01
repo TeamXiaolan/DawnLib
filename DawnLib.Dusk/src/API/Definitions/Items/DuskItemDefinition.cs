@@ -55,9 +55,9 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public bool GenerateDisableUnlockConfig { get; private set; }
+    public bool GenerateDisableUnlockConfig { get; private set; } = true;
     [field: SerializeField]
-    public bool GenerateDisablePricingStrategyConfig { get; private set; }
+    public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
