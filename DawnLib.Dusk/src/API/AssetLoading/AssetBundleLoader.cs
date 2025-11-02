@@ -77,14 +77,17 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
         // Sort content
         List<Type> definitionOrder = [
+            typeof(DuskMoonDefinition),
             typeof(DuskDungeonDefinition),
             typeof(DuskWeatherDefinition),
+            typeof(DuskVehicleDefinition),
             typeof(DuskMapObjectDefinition),
             typeof(DuskEnemyDefinition),
             typeof(DuskUnlockableDefinition),
             typeof(DuskItemDefinition),
-            typeof(DuskAdditionalTilesDefinition),
+            typeof(DuskEntityReplacementDefinition),
             typeof(DuskAchievementDefinition),
+            typeof(DuskAdditionalTilesDefinition),
         ];
 
         Content = Content.OrderBy(it =>
@@ -123,31 +126,26 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
     internal void TryUnload()
     {
-        if (AssetBundleData?.AlwaysKeepLoaded ?? true)
-            return;
-
         if (_bundle == null)
         {
             DawnPlugin.Logger.LogError("Tried to unload bundle twice?");
             throw new NullReferenceException();
         }
 
-        if (_hasVideoClips)
-        {
-            DawnPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' has at least one VideoClip but is being unloaded! Playing video clips from this bundle could cause errors! Mark `AlwaysKeepLoaded` as true to stop this warning from happening, unloading stopped.");
-            foreach (string videoClipName in _videoClipNames)
-            {
-                Debuggers.AssetLoading?.Log($"VideoClip Name: {videoClipName}");
-            }
-            return;
-        }
-
         if (_hasNonPreloadAudioClips)
         {
-            DawnPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains an AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play this clip, unloading stopped.");
+            DawnPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains atleast one AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play said AudioClips, unloading stopped.");
             foreach (string audioClipName in _audioClipNames)
             {
                 Debuggers.AssetLoading?.Log($"AudioClip Name: {audioClipName}");
+            }
+        }
+
+        if (_hasVideoClips)
+        {
+            foreach (string videoClipName in _videoClipNames)
+            {
+                Debuggers.AssetLoading?.Log($"VideoClip Name: {videoClipName}");
             }
             return;
         }
