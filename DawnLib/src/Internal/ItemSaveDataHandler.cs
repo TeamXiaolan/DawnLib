@@ -68,7 +68,7 @@ public static class ItemSaveDataHandler
             {
                 itemSave = ((IDawnSaveData)itemData).GetDawnDataToSave();
             }
-            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
+            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset + 0.02f, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
         }
 
         using (dataContainer.CreateEditContext())
