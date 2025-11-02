@@ -6,6 +6,7 @@
 - Dead body additions.
 - Handling vehicle spawning when already bought on loading a lobby, also always have the station spawn at the start of the lobby.
 - Handling vehicle no station equaling magnet station.
+- Make stuff in duskmoondefinition more configurable.
 
 less important:
 
