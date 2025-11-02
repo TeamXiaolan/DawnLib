@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.UI}/Marquee")]
 public class MarqueeUI : MonoBehaviour {
     RectTransform _transform, _parent;
 

@@ -1,6 +1,8 @@
 using UnityEngine;
 
 namespace Dawn.Utils;
+
+[AddComponentMenu($"{DawnConstants.Triggers}/Enemy Only Trigger")]
 public class EnemyOnlyTriggers : MonoBehaviour
 {
     public EnemyAI mainScript = null!;

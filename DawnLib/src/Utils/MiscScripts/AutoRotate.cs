@@ -2,6 +2,8 @@ using Dawn.Internal;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Auto Rotate")]
 public class AutoRotate : MonoBehaviour
 {
     [SerializeField]

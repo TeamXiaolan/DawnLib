@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 namespace Dawn.Utils;
 [RequireComponent(typeof(GrabbableObject))]
+[AddComponentMenu($"{DawnConstants.ExtraEvents}/Extra Item Events")]
 public class ExtraItemEvents : MonoBehaviour
 {
     internal static Dictionary<GrabbableObject, ExtraItemEvents> eventListeners = [];

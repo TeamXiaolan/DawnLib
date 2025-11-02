@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace Dusk;
 
+[AddComponentMenu($"{DuskModConstants.MenuName}/Achievements/Achivement Triggers")]
 public class AchievementTriggers : MonoBehaviour
 {
     [SerializeReference]

@@ -2,6 +2,7 @@ using GameNetcodeStuff;
 using UnityEngine;
 
 namespace Dawn.Utils;
+[AddComponentMenu($"{DawnConstants.Triggers}/Player Only Trigger")]
 public class PlayerOnlyTriggers : MonoBehaviour
 {
     public EnemyAI mainScript = null!;

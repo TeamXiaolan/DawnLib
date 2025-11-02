@@ -6,6 +6,7 @@ namespace Dawn.Utils;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(AudioSource))]
+[AddComponentMenu($"{DawnConstants.AudioComponents}/Network Audio Source")]
 public class NetworkAudioSource : NetworkBehaviour
 {
     private class PlayPacket : INetworkSerializable

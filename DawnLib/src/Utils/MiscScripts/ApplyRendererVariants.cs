@@ -22,6 +22,7 @@ public class MaterialRendererVariantWithWeight : IWeighted
     public int GetWeight() => _weight;
 }
 
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Apply Renderer Variants")]
 public class ApplyRendererVariants : NetworkBehaviour
 {
     [SerializeField]

@@ -18,6 +18,7 @@ public struct GenericPath<T>(T generic, float pathLength)
 }
 
 [RequireComponent(typeof(NavMeshAgent))]
+[AddComponentMenu($"{DawnConstants.MenuName}/Smart Agent Navigator")]
 public class SmartAgentNavigator : NetworkBehaviour
 {
     public UnityEvent<bool> OnUseEntranceTeleport = new();

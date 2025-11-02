@@ -4,6 +4,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Spawn Synced Map Object")]
 public class SpawnSyncedDawnLibObject : MonoBehaviour
 {
     [Range(0f, 100f)]

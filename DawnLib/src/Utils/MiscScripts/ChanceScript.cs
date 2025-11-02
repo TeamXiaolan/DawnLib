@@ -7,6 +7,7 @@ using UnityEngine.Events;
 namespace Dawn.Utils;
 
 [DefaultExecutionOrder(-999)]
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Synced Chance")]
 public class ChanceScript : NetworkBehaviour
 {
     [SerializeField]

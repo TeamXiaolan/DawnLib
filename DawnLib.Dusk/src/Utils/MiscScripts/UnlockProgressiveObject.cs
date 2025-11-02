@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Dusk.Utils;
+[AddComponentMenu($"{DuskModConstants.ProgressiveComponents}/Unlock Progressive Object")]
 public class UnlockProgressiveObject : NetworkBehaviour
 {
     [FormerlySerializedAs("interactTrigger")]

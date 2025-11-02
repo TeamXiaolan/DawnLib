@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Dusk;
+
+[AddComponentMenu($"{DuskModConstants.ProgressiveComponents}/Planet Unlocker")]
 public class PlanetUnlocker : GrabbableObject
 {
     [Header("Planet Unlocker Settings")]

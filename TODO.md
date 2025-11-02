@@ -27,6 +27,7 @@ less important:
 - DataContainer for lobby specific info? (things like gamemode settings, etc?)
 - look at converting current info classes to be records
 - NetworkDataContainer
+- switch to using composition over inheritance (e.g. ItemUpgradeScrap, MoonUnlockScrap whatever)
 
 ## Needs to be done eventually
 

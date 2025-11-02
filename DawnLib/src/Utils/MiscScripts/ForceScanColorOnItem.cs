@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Force Scan Color On Item")]
 public class ForceScanColorOnItem : MonoBehaviour
 {
     public GrabbableObject grabbableObject = null!;

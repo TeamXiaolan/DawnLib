@@ -1,6 +1,8 @@
 using UnityEngine;
 
 namespace Dusk;
+
+[AddComponentMenu($"{DuskModConstants.ProgressiveComponents}/Unlockable Upgrade Scrap")]
 public class UnlockableUpgradeScrap : GrabbableObject
 {
     [field: SerializeReference]

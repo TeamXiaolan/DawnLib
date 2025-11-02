@@ -7,6 +7,7 @@ namespace Dawn.Utils;
 /// for transforms that'll always be owned by the server.
 /// </summary>
 [DisallowMultipleComponent]
+[AddComponentMenu($"{DawnConstants.Networking}/Client Network Transform")]
 public class ClientNetworkTransform : NetworkTransform
 {
     /// <summary>

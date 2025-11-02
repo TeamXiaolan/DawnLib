@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 namespace Dawn.Utils;
 [RequireComponent(typeof(ScanNodeProperties))]
+[AddComponentMenu($"{DawnConstants.ExtraEvents}/Extra Scan Events")]
 public class ExtraScanEvents : MonoBehaviour
 {
     private readonly static NamespacedKey _dataKey = NamespacedKey.From("dawn_lib", "already_scanned");
