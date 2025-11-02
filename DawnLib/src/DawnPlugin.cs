@@ -9,7 +9,6 @@ using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using PathfindingLib;
-using Unity.Netcode;
 
 namespace Dawn;
 
@@ -27,12 +26,6 @@ public class DawnPlugin : BaseUnityPlugin
 
     private void Awake()
     {
-        NetworkVariableSerializationTypes.InitializeSerializer_UnmanagedByMemcpy<bool>();
-        NetworkVariableSerializationTypes.InitializeEqualityChecker_UnmanagedIEquatable<bool>();
-
-        NetworkVariableSerializationTypes.InitializeSerializer_UnmanagedByMemcpy<float>();
-        NetworkVariableSerializationTypes.InitializeEqualityChecker_UnmanagedIEquatable<float>();
-
         Logger = base.Logger;
         Debuggers.Bind(Config);
         DawnConfig.Bind(Config);
@@ -64,6 +57,7 @@ public class DawnPlugin : BaseUnityPlugin
 
         ExtendedTOML.Init();
         PersistentDataHandler.Init();
+        NetworkVariableInitalizer.Init();
 
         MoonRegistrationHandler.Init();
         DungeonRegistrationHandler.Init();

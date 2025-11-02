@@ -3,7 +3,7 @@ using GameNetcodeStuff;
 using Unity.Netcode;
 
 namespace Dawn.Utils;
-public class PlayerControllerReference : INetworkSerializable
+public class PlayerControllerReference : INetworkSerializable, IEquatable<PlayerControllerReference>
 {
     private int _playerID;
 
@@ -38,13 +38,19 @@ public class PlayerControllerReference : INetworkSerializable
 
     public override bool Equals(object? obj)
     {
-        if (obj is PlayerControllerReference otherReference) return otherReference._playerID == _playerID;
-        if (obj is PlayerControllerB player) return Array.IndexOf(StartOfRound.Instance.allPlayerScripts, player) == _playerID;
-        return false;
+        if(obj is null) return false;
+        if(ReferenceEquals(this, obj)) return true;
+        if(obj.GetType() != GetType()) return false;
+        return Equals((PlayerControllerReference)obj);
     }
 
     public override int GetHashCode()
     {
         return _playerID;
+    }
+    public bool Equals(PlayerControllerReference? other) {
+        if(other is null) return false;
+        if(ReferenceEquals(this, other)) return true;
+        return _playerID == other._playerID;
     }
 }
