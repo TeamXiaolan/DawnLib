@@ -242,11 +242,7 @@ static class TerminalPatches
             {
                 Debuggers.Patching?.Log($"predicate hidden");
 
-                self.LoadNewNode(new TerminalNodeBuilder("hidden purchase")
-                    .SetDisplayText("You're not supposed to be here") // TODO
-                    .Build()
-                );
-
+                self.LoadNewNode(hiddenResult.ReasonNode);
                 return; // skip orig
             }
         }

@@ -48,14 +48,26 @@ public abstract class TerminalPurchaseResult
     public class HiddenPurchaseResult : TerminalPurchaseResult
     {
         public bool IsFailure { get; private set; } = true;
+        public TerminalNode ReasonNode { get; private set; }
+
+        private static TerminalNode _defaultNode = new TerminalNodeBuilder($"{nameof(HiddenPurchaseResult)}")
+                .SetDisplayText("This content is hidden and made inaccessible.")
+                .Build();
 
         internal HiddenPurchaseResult()
         {
+            ReasonNode = _defaultNode;
         }
 
         public HiddenPurchaseResult SetFailure(bool isFailure)
         {
             IsFailure = isFailure;
+            return this;
+        }
+
+        public HiddenPurchaseResult SetFailNode(TerminalNode terminalNode)
+        {
+            ReasonNode = terminalNode;
             return this;
         }
     }

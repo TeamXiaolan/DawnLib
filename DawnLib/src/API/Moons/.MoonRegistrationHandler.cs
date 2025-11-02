@@ -122,6 +122,7 @@ static class MoonRegistrationHandler
 
         List<TerminalKeyword> allKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
         List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
+        List<SelectableLevel> viewableLevels = TerminalRefs.Instance.moonsCatalogueList.ToList();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
@@ -154,7 +155,13 @@ static class MoonRegistrationHandler
                     result = moonInfo.ReceiptNode
                 }
             ];
+
+            if (moonInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase() is not TerminalPurchaseResult.HiddenPurchaseResult)
+            {
+                viewableLevels.Add(moonInfo.Level);
+            }
         }
+        TerminalRefs.Instance.moonsCatalogueList = viewableLevels.ToArray();
         TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
         orig(self);
@@ -455,7 +462,6 @@ static class MoonRegistrationHandler
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
-        // TerminalRefs.MoonCatalogueNode.displayText = "[moonCatalogue]";
     }
 
     private static void CollectTestLevel(On.StartOfRound.orig_Awake orig, StartOfRound self)

@@ -2,7 +2,6 @@
 using Dawn;
 using Dawn.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Dusk;
 
@@ -10,14 +9,22 @@ namespace Dusk;
 public class PlanetUnlocker : GrabbableObject
 {
     [Header("Planet Unlocker Settings")]
-    [SerializeReference] private DuskMoonReference _moonReference;
-    [SerializeField] private bool _consumeOnUnlock = true;
-    [FormerlySerializedAs("_audio")] [SerializeField, Tooltip("Leave empty to have no audio")]
+    [SerializeReference]
+    private DuskMoonReference _moonReference;
+
+    [SerializeField]
+    private bool _consumeOnUnlock = true;
+
+    [SerializeField]
+    [Tooltip("Leave empty to have no audio")]
     private AudioSource _unlockAudio;
     
     [Header("Notification Settings")]
-    [SerializeField] private bool _showDisplayTip;
-    [SerializeField] private HUDDisplayTip _displayTip;
+    [SerializeField]
+    private bool _showDisplayTip;
+
+    [SerializeField]
+    private HUDDisplayTip _displayTip;
 
     public override void ItemActivate(bool used, bool buttonDown = true)
     {
@@ -33,13 +40,15 @@ public class PlanetUnlocker : GrabbableObject
             ));
         }
 
-        if(_unlockAudio)
+        if (_unlockAudio)
+        {
             _unlockAudio.Play();
+        }
 
         StartCoroutine(WaitToDespawn());
     }
 
-    bool TryUnlock()
+    private bool TryUnlock()
     {
         if (_moonReference.TryResolve(out DawnMoonInfo moonInfo))
         {
@@ -69,11 +78,16 @@ public class PlanetUnlocker : GrabbableObject
         {
             yield return new WaitForSeconds(1f);
         }
+
         playerHeldBy.inSpecialInteractAnimation = false;
         if (!playerHeldBy.IsLocalPlayer())
+        {
             yield break;
+        }
 
-        if(_consumeOnUnlock)
+        if (_consumeOnUnlock)
+        {
             playerHeldBy.DespawnHeldObject();
+        }
     }
 }
