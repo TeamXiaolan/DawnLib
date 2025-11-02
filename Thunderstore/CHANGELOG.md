@@ -4,6 +4,7 @@
 - Added components from DawnLib and DuskMod to be visible within the list in the Add Component Menu
 - Added `PlanetUnlocker` a useable grabbable object to unlock a planet that uses `ProgressivePredicate`
 - Actually implemented the OutOfBounds fix from MattyFixes, I accidently forgot.
+- Removed some unneeded obsolete fields like AlwaysKeepLoaded
 
 ## v0.4.1
 
