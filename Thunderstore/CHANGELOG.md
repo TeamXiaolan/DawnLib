@@ -1,4 +1,9 @@
-# v0.4.1
+# unreleased
+- Added support for `PlayerControllerReference`, `int` and `double` in `NetworkVariable`s
+- Added components from DawnLib and DuskMod to be visible within the list in the Add Component Menu
+- Added `PlanetUnlocker` a useable grabbable object to unlock a planet that uses `ProgressivePredicate`
+
+## v0.4.1
 
 - Removed some redundant code.
 - Implemented an OutOfBounds fix from MattyFixes into here due to having a saving system.
