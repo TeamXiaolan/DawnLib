@@ -101,6 +101,11 @@ public static class UnlockableSaveDataHandler
         for (int i = 0; i < StartOfRound.Instance.unlockablesList.unlockables.Count; i++)
         {
             UnlockableItem unlockableData = StartOfRound.Instance.unlockablesList.unlockables[i];
+            if (unlockableData.unlockableType == 753)
+            {
+                Debuggers.SaveManager?.Log($"Skipping saving unlockable: {unlockableData.unlockableName} into save data, this is probably moresuits adding a bajillion extra orange suit duplicates.");
+                continue;
+            }
             Debuggers.SaveManager?.Log($"Checking whether to save unlockable: {unlockableData.unlockableName} into save data.");
             if (!unlockableData.hasBeenUnlockedByPlayer && !unlockableData.alreadyUnlocked)
             {
