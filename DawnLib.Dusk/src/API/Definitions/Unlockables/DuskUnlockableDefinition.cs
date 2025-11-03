@@ -14,10 +14,10 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
     public string InfoNodeText { get; private set; } = string.Empty;
 
     [field: SerializeField]
-    public DuskTerminalPredicate TerminalPredicate { get; private set; }
+    public DuskTerminalPredicate? TerminalPredicate { get; private set; }
 
     [field: SerializeField]
-    public DuskPricingStrategy PricingStrategy { get; private set; }
+    public DuskPricingStrategy? PricingStrategy { get; private set; }
 
     [field: Space(10)]
     [field: Header("Configs | Main")]

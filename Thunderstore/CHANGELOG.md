@@ -1,4 +1,9 @@
-# v0.4.2
+# v0.4.3
+
+- Fixed incompat with moresuits.
+- Gave more configs to moons.
+
+## v0.4.2
 
 - Added support for `PlayerControllerReference`, `int` and `double` in `NetworkVariable`s
 - Added components from DawnLib and DuskMod to be visible within the list in the Add Component Menu

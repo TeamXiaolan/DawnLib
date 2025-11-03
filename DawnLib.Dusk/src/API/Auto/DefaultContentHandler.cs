@@ -7,10 +7,9 @@ public class DefaultContentHandler : ContentHandler
 {
     public DefaultContentHandler(DuskMod mod) : base(mod)
     {
+        mod.Logger?.LogDebug($"Trying to register bundle: {mod.Content.name} with {mod.Content.assetBundles.Count} assets.");
         foreach (AssetBundleData bundleData in mod.Content.assetBundles)
         {
-            mod.Logger?.LogDebug($"Trying to register bundle: {bundleData}");
-
             if (!IsContentEnabled(bundleData))
                 continue;
 

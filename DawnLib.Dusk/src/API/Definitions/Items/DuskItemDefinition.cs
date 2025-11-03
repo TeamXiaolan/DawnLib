@@ -20,10 +20,10 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     public ShopItemPreset ShopItemPreset { get; private set; } = new();
 
     [field: SerializeField]
-    public DuskTerminalPredicate TerminalPredicate { get; private set; }
+    public DuskTerminalPredicate? TerminalPredicate { get; private set; }
 
     [field: SerializeField]
-    public DuskPricingStrategy PricingStrategy { get; private set; }
+    public DuskPricingStrategy? PricingStrategy { get; private set; }
 
     [field: Space(10)]
     [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]

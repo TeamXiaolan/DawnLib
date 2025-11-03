@@ -17,14 +17,28 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     private List<DuskMoonSceneData> _scenes = [];
 
     [field: SerializeField]
-    public DuskTerminalPredicate TerminalPredicate { get; private set; }
+    public DuskTerminalPredicate? TerminalPredicate { get; private set; }
 
     [field: SerializeField]
-    public DuskPricingStrategy PricingStrategy { get; private set; }
+    public DuskPricingStrategy? PricingStrategy { get; private set; }
+
+    [field: Header("Configs")]
+    [field: SerializeField]
+    public int Cost { get; private set; }
+    [field: SerializeField]
+    public bool GenerateCostConfig { get; private set; } = true;
+    [field: SerializeField]
+    public bool GenerateDisableUnlockConfig { get; private set; } = true;
+    [field: SerializeField]
+    public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
+
+    public MoonConfig Config { get; private set; }
 
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
+        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        Config = CreateMoonConfig(section);
 
         DawnLib.DefineMoon(TypedKey, Level, builder =>
         {
@@ -40,16 +54,34 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
                 );
             }
 
-            if (TerminalPredicate)
+            bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
+            if (!disableUnlockRequirements && TerminalPredicate)
             {
+                TerminalPredicate.Register(TypedKey);
                 builder.SetPurchasePredicate(TerminalPredicate);
             }
 
-            if (PricingStrategy)
+            bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;
+            if (!disablePricingStrategy && PricingStrategy)
             {
+                PricingStrategy.Register(Key);
                 builder.OverrideCost(PricingStrategy);
             }
+            else
+            {
+                builder.OverrideCost(Config.Cost?.Value ?? Cost);
+            }
         });
+    }
+
+    public MoonConfig CreateMoonConfig(ConfigContext context)
+    {
+        return new MoonConfig
+        {
+            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
+            Cost = GenerateCostConfig ? context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
+        };
     }
 
     protected override string EntityNameReference => Level?.PlanetName ?? string.Empty;
