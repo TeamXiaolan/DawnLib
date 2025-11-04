@@ -4,15 +4,17 @@ using Dawn.Internal;
 using EasyTextEffects.Editor.MyBoxCopy.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 
 namespace Dusk.Internal;
 
 static class ShipRegistrationPatch
 {
-    //TODO: show buyable ships list in store
+    //TODO: show buyable ships in store rotataion if its enabled in config
     internal static void Init()
     {
         On.Terminal.Awake += AddShipsToTerminal;
@@ -21,12 +23,16 @@ static class ShipRegistrationPatch
     }
 
     //TODO: rewrite shop entirely?
-    //TODO: fix this
     private static string EditTextPostProcess(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
-        if (!node.displayText.Contains("[buyableShipsList]"))
+        /*if (!node.displayText.Contains("[buyableShipsList]"))
         {
-            node.displayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
+            node.displayText = node.displayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
+        }*/
+
+        if (!modifiedDisplayText.Contains("[buyableShipsList]"))
+        {
+            modifiedDisplayText = modifiedDisplayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
         }
 
         modifiedDisplayText = orig(self,modifiedDisplayText, node);
@@ -35,8 +41,7 @@ static class ShipRegistrationPatch
         foreach (BuyableShip ship in (List<BuyableShip>)((ITerminalBuyableShips)self).buyableShips)
             stringBuilder.Append("\n* " + ship.ShipName + "  //  Price: $" + ship.Cost);
 
-        //could stringbuilder be empty if i have ships?
-        modifiedDisplayText.Replace("[buyableShipsList]", stringBuilder.ToString());
+        modifiedDisplayText = modifiedDisplayText.Replace("[buyableShipsList]", stringBuilder.ToString());
 
         return modifiedDisplayText;
     }
@@ -135,7 +140,7 @@ static class ShipRegistrationPatch
             //for some reason i cant figure out why game doesnt want to spend money when i buy ship
             //so if you can figure it out - please fix it and erase this self.groupCredits = wawawa
             //
-            //prob need to change node.itemCost to buyableShips[node.buyShipIndex].cost or smth like that
+            //int cost = ((List<BuyableShip>)((ITerminalBuyableShips)self).buyableShips)[(int)((ITerminalNodeShipIndex)node).buyShipIndex].Cost; //god
             self.groupCredits = Mathf.Clamp(self.groupCredits - node.itemCost, 0, 10000000);
             //spawn ship here
         }
