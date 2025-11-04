@@ -42,10 +42,7 @@ public class DuskMod
         DuskMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
         noCodeMod.ModInformation = modInfo;
         noCodeMod.Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID);
-        foreach (var assetBundleData in noCodeMod.Content.assetBundles)
-        {
-            _ = new DefaultContentHandler(noCodeMod);
-        }
+        _ = new DefaultContentHandler(noCodeMod);
         return noCodeMod;
     }
 

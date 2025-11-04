@@ -2,6 +2,7 @@
 
 - Fixed incompat with moresuits.
 - Gave more configs to moons.
+- Fixed a long standing issue with registering no-code mods when you have multiple pieces of content.
 
 ## v0.4.2
 
