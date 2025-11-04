@@ -25,6 +25,7 @@ public class DuskPlugin : BaseUnityPlugin
         AchievementRegistrationPatch.Init();
         NetworkerPatch.Init();
         VehicleRegistrationPatch.Init();
+        ShipRegistrationPatch.Init(); //should be after vehicles at least for now
         EntityReplacementRegistrationPatch.Init();
 
         Logger.LogInfo("Loading assets");

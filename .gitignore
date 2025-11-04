@@ -3,3 +3,5 @@ obj/
 Packages/
 DawnLib.Editor/deps/*
 *.user
+/DawnLib.Dusk/GlobalSuppressions.cs
+/.vs

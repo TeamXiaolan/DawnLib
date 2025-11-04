@@ -11,6 +11,12 @@ public class TerminalNodeBuilder
         _node.name = name;
     }
 
+    public TerminalNodeBuilder SetTerminalEvent(string eventName)
+    {
+        _node.terminalEvent = eventName;
+        return this;
+    }
+
     public TerminalNodeBuilder SetBuyItemIndex(int index)
     {
         _node.buyItemIndex = index;
