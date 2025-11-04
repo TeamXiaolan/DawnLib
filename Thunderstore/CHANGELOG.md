@@ -1,4 +1,9 @@
-# v0.4.3
+# v0.4.4
+
+- Fixed some editor side tinks and made it a bit cleaner to create content related to moons.
+- Updated the documentation in the DawnLib's thunderstore Wiki page.
+
+## v0.4.3
 
 - Fixed incompat with moresuits.
 - Gave more configs to moons.
