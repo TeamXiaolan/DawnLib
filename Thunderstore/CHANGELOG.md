@@ -1,4 +1,10 @@
-# v0.4.4
+# v0.4.5
+
+- Fixed a small bug with an oversight in storing unlockables.
+- Updated wiki even more.
+- Added template to github.
+
+## v0.4.4
 
 - Fixed some editor side tinks and made it a bit cleaner to create content related to moons.
 - Updated the documentation in the DawnLib's thunderstore Wiki page.

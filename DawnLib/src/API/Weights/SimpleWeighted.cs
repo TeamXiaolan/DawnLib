@@ -6,7 +6,6 @@ public class SimpleWeighted(int weight) : IWeighted
 
 public class SimpleWeightContextualProvider<TBase>(IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
-
     public int? Provide(TBase info) => weight.GetWeight();
 }
 
@@ -14,6 +13,7 @@ public class SimpleContextualProvider<T, TBase>(T value) : IContextualProvider<T
 {
     public T Provide(TBase info) => value;
 }
+
 public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
 {
     public T? Provide(TBase info)
@@ -34,7 +34,6 @@ public class HasTagContextualProvider<T, TBase>(NamespacedKey tag, T value) : IC
 
 public class MatchingKeyWeightContextualProvider<TBase>(NamespacedKey<TBase> targetKey, IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
 {
-
     public int? Provide(TBase info)
     {
         return Equals(info.Key, targetKey) ? weight.GetWeight() : null;
