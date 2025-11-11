@@ -36,6 +36,7 @@ static class MoonRegistrationHandler
         LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
         LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
         LethalContent.Items.OnFreeze += FixDawnMoonItems;
+        LethalContent.Dungeons.OnFreeze += FixDawnSpawnSyncedObjects;
 
         On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
         On.StartOfRound.OnClientConnect += StartOfRoundOnClientConnect;
@@ -44,6 +45,46 @@ static class MoonRegistrationHandler
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+    }
+
+    private static void FixDawnSpawnSyncedObjects()
+    {
+        List<GameObject> vanillaSpawnSyncedObjects = new();
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            if (!dungeonInfo.TypedKey.IsVanilla())
+                continue;
+
+            foreach (GameObject spawnSyncedObject in dungeonInfo.SpawnSyncedObjects.Select(x => x.spawnPrefab))
+            {
+                if (spawnSyncedObject == null)
+                    continue;
+
+                vanillaSpawnSyncedObjects.Add(spawnSyncedObject);
+            }
+        }
+
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            if (dungeonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            foreach (SpawnSyncedObject spawnSyncedObject in dungeonInfo.SpawnSyncedObjects)
+            {
+                if (spawnSyncedObject.spawnPrefab == null)
+                    continue;
+
+                foreach (GameObject vanillaSpawnSyncedObject in vanillaSpawnSyncedObjects)
+                {
+                    if (spawnSyncedObject.spawnPrefab.name == vanillaSpawnSyncedObject.name)
+                    {
+                        Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {spawnSyncedObject.spawnPrefab.name} with vanilla reference");
+                        spawnSyncedObject.spawnPrefab = vanillaSpawnSyncedObject;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
