@@ -55,6 +55,6 @@ public abstract class DuskContentDefinition<TInfo> : DuskContentDefinition where
 {
     public NamespacedKey<TInfo> TypedKey => Key.AsTyped<TInfo>();
 
-    [field: SerializeField, InspectorName("Namespace")]
+    [field: SerializeField, InspectorName("Namespace"), DefaultKeySource("GetDefaultKey", false)]
     public override NamespacedKey Key { get; protected set; }
 }

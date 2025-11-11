@@ -92,8 +92,9 @@ public class DuskMoonSceneData
 {
     public SceneReference Scene;
     public string BundleName => Scene.BundleName;
+    public string SceneName => Scene.SceneName;
 
-    [InspectorName("Namespace")]
+    [InspectorName("Namespace"), DefaultKeySource("SceneName")]
     public NamespacedKey<IMoonSceneInfo> Key;
 
     [field: SerializeField]

@@ -119,12 +119,9 @@ public static class UnlockableSaveDataHandler
                 continue;
             }
             Debuggers.SaveManager?.Log($"Saving unlockable: {unlockableInfo.Key} into save data.");
-            bool placedAtQuotaStart = false;
-            if (unlockableData.shopSelectionNode != null)
-            {
-                placedAtQuotaStart = TimeOfDayRefs.Instance.furniturePlacedAtQuotaStart.Contains(unlockableData.shopSelectionNode.shipUnlockableID);
-            }
-            if (!unlockableData.alreadyUnlocked)
+            bool placedAtQuotaStart = TimeOfDayRefs.Instance.furniturePlacedAtQuotaStart.Contains(i);
+
+            if (!unlockableData.alreadyUnlocked && !unlockableData.inStorage)
             {
                 GameObject unlockableGameObject = StartOfRound.Instance.SpawnedShipUnlockables[i].gameObject;
                 Debuggers.SaveManager?.Log($"Unlockable: {unlockableInfo.TypedKey} has GameObject: {unlockableGameObject}.");
