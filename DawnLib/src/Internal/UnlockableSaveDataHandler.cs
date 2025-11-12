@@ -28,7 +28,7 @@ public static class UnlockableSaveDataHandler
             int indexInList = StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem);
             if (unlockableData.PlacedAtQuotaStart)
             {
-                PlacedAtStartOfQuotas.Add(unlockableItem.shopSelectionNode.shipUnlockableID);
+                PlacedAtStartOfQuotas.Add(indexInList);
             }
 
             if (!unlockableItem.alreadyUnlocked || unlockableItem.IsPlaceable)

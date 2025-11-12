@@ -1,4 +1,8 @@
-# v0.4.4
+# v0.4.5
+
+- Fixed another issue with unlockables when saving.
+
+## v0.4.4
 
 - Fixed a small bug with an oversight in storing unlockables.
 - Fixed some editor side tinks and made it a bit cleaner to create content related to moons.

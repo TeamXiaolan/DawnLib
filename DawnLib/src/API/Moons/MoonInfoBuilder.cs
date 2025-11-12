@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dawn.Utils;
 using UnityEngine;
 
 namespace Dawn;
@@ -61,6 +62,43 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     public MoonInfoBuilder OverrideCost(int cost)
     {
         return OverrideCost(new SimpleProvider<int>(cost));
+    }
+
+    public MoonInfoBuilder OverrideTimeMultiplier(float multiplier)
+    {
+        value.DaySpeedMultiplier = multiplier;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideMinMaxScrap(BoundedRange range)
+    {
+        value.minScrap = (int)range.Min;
+        value.maxScrap = (int)range.Max;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideEnemyPowerCount(int maxInsidePowerCount, int maxOutsidePowerCount, int maxDaytimePowerCount)
+    {
+        value.maxEnemyPowerCount = maxInsidePowerCount;
+        value.maxOutsideEnemyPowerCount = maxOutsidePowerCount;
+        value.maxDaytimeEnemyPowerCount = maxDaytimePowerCount;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideEnemySpawnCurves(AnimationCurve insideAnimationCurve, AnimationCurve outsideAnimationCurve, AnimationCurve daytimeAnimationCurve)
+    {
+        value.enemySpawnChanceThroughoutDay = insideAnimationCurve;
+        value.outsideEnemySpawnChanceThroughDay = outsideAnimationCurve;
+        value.daytimeEnemySpawnChanceThroughDay = daytimeAnimationCurve;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideEnemySpawnRanges(float insideSpawnRange, float outsideSpawnRange, float daytimeSpawnRange)
+    {
+        value.spawnProbabilityRange = insideSpawnRange;
+        // value.outsideEnemiesProbabilityRange = outsideSpawnRange;
+        value.daytimeEnemiesProbabilityRange = daytimeSpawnRange;
+        return this;
     }
 
     public MoonInfoBuilder OverrideCost(IProvider<int> cost)

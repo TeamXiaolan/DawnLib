@@ -68,6 +68,11 @@ public class ConfigManager(ConfigFile file)
         return TomlTypeConverter.ConvertToValue<AnimationCurve>(keyValuePairs);
     }
 
+    public static string ParseString(AnimationCurve animationCurve)
+    {
+        return TomlTypeConverter.ConvertToString(animationCurve, typeof(AnimationCurve));
+    }
+
     internal static ConfigFile GenerateConfigFile(BepInPlugin plugin)
     {
         return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, plugin.GUID + ".cfg"), false, plugin);
