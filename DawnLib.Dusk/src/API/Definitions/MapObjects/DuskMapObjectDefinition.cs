@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
 using UnityEngine;
@@ -30,7 +32,12 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
     public bool CreateInsideHazardConfig { get; private set; }
 
     [field: SerializeField]
-    public string DefaultInsideCurveSpawnWeights { get; private set; }
+    public List<NamespacedKeyWithAnimationCurve> InsideMoonCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public List<NamespacedKeyWithAnimationCurve> InsideInteriorCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public List<NamespacedKeyWithAnimationCurve> InsideWeatherCurveSpawnWeights { get; private set; } = new();
+
     [field: SerializeField]
     public bool CreateInsideCurveSpawnWeightsConfig { get; private set; }
 
@@ -41,9 +48,24 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
     public bool CreateOutsideHazardConfig { get; private set; } = true;
 
     [field: SerializeField]
-    public string DefaultOutsideCurveSpawnWeights { get; private set; }
+    public List<NamespacedKeyWithAnimationCurve> OutsideMoonCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public List<NamespacedKeyWithAnimationCurve> OutsideInteriorCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public List<NamespacedKeyWithAnimationCurve> OutsideWeatherCurveSpawnWeights { get; private set; } = new();
+
     [field: SerializeField]
     public bool CreateOutsideCurveSpawnWeightsConfig { get; private set; } = true;
+
+    [field: Header("Obsolete")]
+
+    [field: Obsolete]
+    [field: SerializeField]
+    public string DefaultOutsideCurveSpawnWeights { get; private set; }
+
+    [field: SerializeField]
+    [field: Obsolete]
+    public string DefaultInsideCurveSpawnWeights { get; private set; }
 
     public MapObjectConfig Config { get; private set; }
 
@@ -57,7 +79,19 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
         {
             if (Config.InsideHazard?.Value ?? IsInsideHazard)
             {
-                MapObjectSpawnMechanics InsideSpawnMechanics = new(Config.InsideCurveSpawnWeights?.Value ?? DefaultInsideCurveSpawnWeights);
+                string moonStringToUse = Config.InsideCurveSpawnWeights?.Value ?? DefaultInsideCurveSpawnWeights;
+                if (string.IsNullOrEmpty(moonStringToUse))
+                {
+                    foreach (NamespacedKeyWithAnimationCurve curve in InsideMoonCurveSpawnWeights)
+                    {
+                        moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    }
+                    if (moonStringToUse.EndsWith(" | "))
+                    {
+                        moonStringToUse = moonStringToUse[..^3];
+                    }
+                }
+                MapObjectSpawnMechanics InsideSpawnMechanics = new(moonStringToUse);
                 builder.DefineInside(insideBuilder =>
                 {
                     insideBuilder.OverrideSpawnFacingWall(InsideMapObjectSettings.spawnFacingWall);
@@ -75,7 +109,19 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 
             builder.DefineOutside(outsideBuilder =>
             {
-                MapObjectSpawnMechanics OutsideSpawnMechanics = new(Config.OutsideCurveSpawnWeights?.Value ?? DefaultOutsideCurveSpawnWeights);
+                string moonStringToUse = Config.OutsideCurveSpawnWeights?.Value ?? DefaultOutsideCurveSpawnWeights;
+                if (string.IsNullOrEmpty(moonStringToUse))
+                {
+                    foreach (NamespacedKeyWithAnimationCurve curve in InsideMoonCurveSpawnWeights)
+                    {
+                        moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    }
+                    if (moonStringToUse.EndsWith(" | "))
+                    {
+                        moonStringToUse = moonStringToUse[..^3];
+                    }
+                }
+                MapObjectSpawnMechanics OutsideSpawnMechanics = new(moonStringToUse);
                 outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
                 outsideBuilder.SetWeights(weightBuilder =>
                 {
