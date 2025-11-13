@@ -46,12 +46,12 @@ public class ConfigManager(ConfigFile file)
         };
     }
 
-    public static Dictionary<string, string> ParseLevelNameWithCurves(string configMoonRarity)
+    public static Dictionary<string, string> ParseNamespacedKeyWithCurves(string configString)
     {
         Dictionary<string, string> spawnRateByMoonName = new();
-        foreach (string entry in configMoonRarity.Split('|', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()))
+        foreach (string configEntry in configString.Split('|', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()))
         {
-            string[] entryParts = entry.Split('-').Select(s => s.Trim()).ToArray();
+            string[] entryParts = configEntry.Split('-').Select(s => s.Trim()).ToArray();
 
             if (entryParts.Length != 2)
                 continue;

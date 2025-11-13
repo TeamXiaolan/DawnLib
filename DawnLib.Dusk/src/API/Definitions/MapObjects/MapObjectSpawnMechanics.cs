@@ -8,36 +8,70 @@ namespace Dusk;
 
 public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, DawnMoonInfo>
 {
-    public MapObjectSpawnMechanics(string configString)
+    public MapObjectSpawnMechanics(string moonConfigString, string interiorConfigString, bool prioritiseMoons = true)
     {
-        Dictionary<string, string> spawnRateByMoonName = ConfigManager.ParseLevelNameWithCurves(configString);
+        Dictionary<string, string> spawnRateByMoonName = ConfigManager.ParseNamespacedKeyWithCurves(moonConfigString);
+        Dictionary<string, string> spawnRateByInteriorName = ConfigManager.ParseNamespacedKeyWithCurves(interiorConfigString);
 
         foreach ((string key, string value) in spawnRateByMoonName)
         {
             CurvesByMoonOrTagName[NamespacedKey.ForceParse(key)] = ConfigManager.ParseCurve(value);
         }
+
+        foreach ((string key, string value) in spawnRateByInteriorName)
+        {
+            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key)] = ConfigManager.ParseCurve(value);
+        }
+
+        PrioritiseMoons = prioritiseMoons;
     }
 
     public Dictionary<NamespacedKey, AnimationCurve> CurvesByMoonOrTagName { get; } = new();
-
+    public Dictionary<NamespacedKey, AnimationCurve> CurvesByInteriorOrTagName { get; } = new();
+    public bool PrioritiseMoons { get; } = true;
 
     public AnimationCurve CurveFunction(DawnMoonInfo moonInfo)
     {
         if (moonInfo == null || moonInfo.Level == null)
             return AnimationCurve.Constant(0, 1, 0);
 
-        if (CurvesByMoonOrTagName.TryGetValue(moonInfo.Key, out AnimationCurve curve))
+        DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+        if (dungeonInfo == null || dungeonInfo.DungeonFlow == null)
+            return AnimationCurve.Constant(0, 1, 0);
+
+        if (PrioritiseMoons && CurvesByMoonOrTagName.TryGetValue(moonInfo.Key, out AnimationCurve curve))
+        {
+            return curve;
+        }
+        else if (CurvesByInteriorOrTagName.TryGetValue(dungeonInfo.Key, out curve))
+        {
+            return curve;
+        }
+        else if (!PrioritiseMoons && CurvesByMoonOrTagName.TryGetValue(moonInfo.Key, out curve))
         {
             return curve;
         }
 
         List<AnimationCurve> tagCurveCandidates = new();
-        foreach ((NamespacedKey tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)
+        if (PrioritiseMoons)
         {
-            if (!moonInfo.HasTag(tagName))
-                continue;
+            foreach ((NamespacedKey tagName, AnimationCurve tagCurve) in CurvesByMoonOrTagName)
+            {
+                if (!moonInfo.HasTag(tagName))
+                    continue;
 
-            tagCurveCandidates.Add(tagCurve);
+                tagCurveCandidates.Add(tagCurve);
+            }
+        }
+        else
+        {
+            foreach ((NamespacedKey tagName, AnimationCurve tagCurve) in CurvesByInteriorOrTagName)
+            {
+                if (!dungeonInfo.HasTag(tagName))
+                    continue;
+
+                tagCurveCandidates.Add(tagCurve);
+            }
         }
 
         if (tagCurveCandidates.Count > 0)
