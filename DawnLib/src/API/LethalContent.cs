@@ -17,6 +17,6 @@ public static class LethalContent
 public static class DawnLibTags
 {
     internal static readonly NamespacedKey IsExternal = NamespacedKey.From("dawn_lib", "is_external");
-    internal static readonly NamespacedKey LunarConfig = NamespacedKey.From("dawn_lib", "lunar_config");
+    public static readonly NamespacedKey LunarConfig = NamespacedKey.From("dawn_lib", "lunar_config");
     public static readonly NamespacedKey HasBuyingPercent = NamespacedKey.From("dawn_lib", "has_buying_percent");
 }
