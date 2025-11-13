@@ -40,7 +40,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateDungeonConfig(section);
 
-        SpawnWeights.SetupSpawnWeightsPreset(MoonSpawnWeights, string.Empty, WeatherSpawnWeights);
+        SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeights, string.Empty, Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
         DawnLib.DefineDungeon(TypedKey, DungeonFlow, builder =>
         {
             builder.SetMapTileSize(MapTileSize);
