@@ -1,6 +1,10 @@
 # v0.4.5
 
+- Fixed issue with interior registration weights.
+- Added blank reference replacing with interior SpawnSyncedObjects.
 - Fixed another issue with unlockables when saving.
+- Gave DawnLib Interiors SpawnWeight configs.
+- Gave DawnLib Moons a lot more configs.
 
 ## v0.4.4
 

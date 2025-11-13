@@ -81,9 +81,13 @@ public class InteriorWeightTransformer : WeightTransformer
         List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
         foreach (NamespacedKey tagNamespacedKey in dungeonInfo.AllTags())
         {
-            if (MatchingInteriorsWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
+            foreach (NamespacedKey interiorNamespacedKey in MatchingInteriorsWithWeightAndOperationDict.Keys)
             {
-                orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                if (interiorNamespacedKey.Key == tagNamespacedKey.Key)
+                {
+                    orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                    break;
+                }
             }
         }
 

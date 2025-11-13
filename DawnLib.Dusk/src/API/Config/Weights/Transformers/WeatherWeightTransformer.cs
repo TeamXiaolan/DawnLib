@@ -94,9 +94,13 @@ public class WeatherWeightTransformer : WeightTransformer
         List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
         foreach (NamespacedKey tagNamespacedKey in allTags)
         {
-            if (MatchingWeathersWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
+            foreach (NamespacedKey weatherNamespacedKey in MatchingWeathersWithWeightAndOperationDict.Keys)
             {
-                orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                if (weatherNamespacedKey.Key == tagNamespacedKey.Key)
+                {
+                    orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                    break;
+                }
             }
         }
 
