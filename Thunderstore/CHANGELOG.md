@@ -1,4 +1,8 @@
-# v0.4.6
+# v0.4.7
+
+- Fixed issue with GiantKiwi just lying to me about what it has in-game. 
+
+## v0.4.6
 
 - Fixed issues relating to joining multiplayer and landing on a moon.
 Not entirely sure how those happened but they did ig.
