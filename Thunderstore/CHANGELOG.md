@@ -1,4 +1,9 @@
-# v0.4.5
+# v0.4.6
+
+- Fixed issues relating to joining multiplayer and landing on a moon.
+Not entirely sure how those happened but they did ig.
+
+## v0.4.5
 
 - Edited MapObjects in the editor to be much easier to add onto.
 - Added Interior priority onto MapObject SpawnWeights.

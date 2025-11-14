@@ -35,15 +35,13 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
         if (moonInfo == null || moonInfo.Level == null)
             return AnimationCurve.Constant(0, 1, 0);
 
-        DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-        if (dungeonInfo == null || dungeonInfo.DungeonFlow == null)
-            return AnimationCurve.Constant(0, 1, 0);
+        DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
 
         if (PrioritiseMoons && CurvesByMoonOrTagName.TryGetValue(moonInfo.Key, out AnimationCurve curve))
         {
             return curve;
         }
-        else if (CurvesByInteriorOrTagName.TryGetValue(dungeonInfo.Key, out curve))
+        else if (dungeonInfo != null && dungeonInfo.DungeonFlow != null && CurvesByInteriorOrTagName.TryGetValue(dungeonInfo.Key, out curve))
         {
             return curve;
         }
