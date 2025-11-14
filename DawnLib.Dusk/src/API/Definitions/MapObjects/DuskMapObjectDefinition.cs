@@ -214,7 +214,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                 {
                     moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
                 }
-                if (string.IsNullOrEmpty(moonStringToUse))
+                if (!string.IsNullOrEmpty(moonStringToUse))
                 {
                     moonStringToUse = moonStringToUse[..^3];
                 }
