@@ -122,7 +122,10 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 ### Credits
 
-- Bongo Xiaolan (Code)
-- Xu Xiaolan (Code)
-- Fumo (Code)
+- Bongo Xiaolan
+- Xu Xiaolan
+- Fumo (Code, Testing)
 - Slayer (Achievement UI)
+- Pacoito (Testing)
+- Dr. Minecraft (Hotloading UI Feedback)
+- IAmBatby (UI+General Feedback)

@@ -1,12 +1,13 @@
 # v0.4.5
 
 - Edited MapObjects in the editor to be much easier to add onto.
-- Added Interior and Weather onto MapObject spawnweights.
+- Added Interior priority onto MapObject SpawnWeights.
 - Fixed issue with interior registration weights.
 - Added blank reference replacing with interior SpawnSyncedObjects, butlerbees, enemy ai nests, haunted mask, sapsucker, lungprop script.
 - Fixed another issue with unlockables when saving.
 - Gave DawnLib Interiors SpawnWeight configs.
 - Gave DawnLib Moons a lot more configs.
+- Did more work onto documentation and made the editor experience cleaner.
 
 ## v0.4.4
 
