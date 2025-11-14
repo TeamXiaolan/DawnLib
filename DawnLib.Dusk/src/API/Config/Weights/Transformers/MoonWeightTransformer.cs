@@ -85,7 +85,7 @@ public class MoonWeightTransformer : WeightTransformer
             {
                 if (moonNamespacedKey.Key == tagNamespacedKey.Key)
                 {
-                    orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                    orderedAndValidTagNamespacedKeys.Add(moonNamespacedKey);
                     break;
                 }
             }
