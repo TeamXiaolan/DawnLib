@@ -1,4 +1,10 @@
-# v0.4.8
+# v0.4.9
+
+- Cleaned up credits a bit more.
+- Fixed an issue where depending on the pc's locale (country I think?) some configs would get generated incorrectly.
+- Added more logging for the preloader issue that some people rarely have.
+
+## v0.4.8
 
 - Added more null checks just incase.
 - Actually added the GiantKiwi fix what.

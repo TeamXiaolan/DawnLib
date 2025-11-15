@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Mono.Cecil;
@@ -52,19 +50,23 @@ class DawnLibPreloader
         Log.LogInfo($"{MyPluginInfo.PLUGIN_NAME}Prepatcher Started");
         // PluginConfig.Init();
 
-        var pluginPath = Directory.EnumerateDirectories(Paths.PluginPath).FirstOrDefault(d => d.Contains("DawnLib"));
+        var pluginPaths = Directory.EnumerateDirectories(Paths.PluginPath).Where(d => d.Contains("DawnLib"));
 
-        if (pluginPath == null)
+        if (pluginPaths.Count() <= 0)
         {
             Log.LogFatal("Could not find plugins path! DawnLib not found at path: " + Paths.PluginPath);
             return;
         }
 
-        var dllPath = Path.Combine(pluginPath, "DawnLib", "com.github.teamxiaolan.dawnlib.interfaces.dll");
+        foreach (var pluginPath in pluginPaths)
+        {
+            Log.LogInfo("Found DawnLib(s) at path: " + pluginPath);
+        }
+        string dllPath = Path.Combine(pluginPaths.FirstOrDefault(), "DawnLib", "com.github.teamxiaolan.dawnlib.interfaces.dll");
 
         if (!File.Exists(dllPath))
         {
-            Log.LogFatal("Could not find Interfaces dll!");
+            Log.LogFatal("Could not find Interfaces dll at path: " + dllPath + "!");
             return;
         }
 
