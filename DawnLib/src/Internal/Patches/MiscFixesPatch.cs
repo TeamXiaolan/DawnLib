@@ -38,6 +38,9 @@ static class MiscFixesPatch
             if (!enemyInfo.Key.IsVanilla())
                 continue;
 
+            if (self.radMechEnemyType == null)
+                continue;
+
             if ((enemyInfo.EnemyType.name == self.radMechEnemyType.name || enemyInfo.EnemyType.enemyName == self.radMechEnemyType.enemyName) && self.radMechEnemyType != enemyInfo.EnemyType)
             {
                 self.radMechEnemyType = enemyInfo.EnemyType;
@@ -52,6 +55,9 @@ static class MiscFixesPatch
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (!enemyInfo.Key.IsVanilla())
+                continue;
+
+            if (self.baboonHawkType == null)
                 continue;
 
             if ((enemyInfo.EnemyType.name == self.baboonHawkType.name || enemyInfo.EnemyType.enemyName == self.baboonHawkType.enemyName) && self.baboonHawkType != enemyInfo.EnemyType)
@@ -70,6 +76,9 @@ static class MiscFixesPatch
             if (!enemyInfo.Key.IsVanilla())
                 continue;
 
+            if (self.butlerBeesEnemyType == null)
+                continue;
+
             if ((enemyInfo.EnemyType.name == self.butlerBeesEnemyType.name || enemyInfo.EnemyType.enemyName == self.butlerBeesEnemyType.enemyName) && self.butlerBeesEnemyType != enemyInfo.EnemyType)
             {
                 self.butlerBeesEnemyType = enemyInfo.EnemyType;
@@ -86,6 +95,9 @@ static class MiscFixesPatch
             if (!enemyInfo.Key.IsVanilla())
                 continue;
 
+            if (self.enemyType == null)
+                continue;
+
             if ((enemyInfo.EnemyType.name == self.enemyType.name || enemyInfo.EnemyType.enemyName == self.enemyType.enemyName) && self.enemyType != enemyInfo.EnemyType)
             {
                 self.enemyType = enemyInfo.EnemyType;
@@ -100,6 +112,9 @@ static class MiscFixesPatch
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (!enemyInfo.Key.IsVanilla())
+                continue;
+
+            if (self.mimicEnemy == null)
                 continue;
 
             if ((enemyInfo.EnemyType.name == self.mimicEnemy.name || enemyInfo.EnemyType.enemyName == self.mimicEnemy.enemyName) && self.mimicEnemy != enemyInfo.EnemyType)

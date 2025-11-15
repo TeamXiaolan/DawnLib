@@ -1,6 +1,12 @@
-# v0.4.7
+# v0.4.8
 
-- Fixed issue with GiantKiwi just lying to me about what it has in-game. 
+- Added more null checks just incase.
+- Actually added the GiantKiwi fix what.
+- Fixed an issue with some interior stuff being null.
+
+## v0.4.7
+
+- Fixed issue with GiantKiwi just lying to me about what it has in-game.
 
 ## v0.4.6
 

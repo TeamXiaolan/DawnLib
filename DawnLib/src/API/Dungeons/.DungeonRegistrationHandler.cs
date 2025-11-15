@@ -282,6 +282,7 @@ static class DungeonRegistrationHandler
     {
         foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
         {
+            Debuggers.Dungeons?.Log($"Injecting tile sets for {archetype.name}");
             foreach (DawnTileSetInfo tileSet in archetype.GetDawnInfo().TileSets)
             {
                 if (tileSet.ShouldSkipIgnoreOverride())
