@@ -1,5 +1,6 @@
 using System;
 using Dawn;
+using Dawn.Internal;
 using UnityEngine;
 
 namespace Dusk;
@@ -30,8 +31,15 @@ public class DatePredicate : DuskPredicate
     [field: SerializeField]
     public DawnDateTime DawnEndDateTime { get; private set; }
 
+    private NamespacedKey _namespacedKey;
+
     public override bool Evaluate()
     {
+        if (_namespacedKey == null)
+        {
+            return false;
+        }
+
         int year = DateTime.Now.Year;
         int month = DateTime.Now.Month;
         int day = DateTime.Now.Day;
@@ -40,6 +48,11 @@ public class DatePredicate : DuskPredicate
         int second = DateTime.Now.Second;
         DateTime startDateTime = new(DawnStartDateTime.Year, DawnStartDateTime.Month, DawnStartDateTime.Day, DawnStartDateTime.Hour, DawnStartDateTime.Minute, DawnStartDateTime.Second);
         DateTime endDateTime = new(DawnEndDateTime.Year, DawnEndDateTime.Month, DawnEndDateTime.Day, DawnEndDateTime.Hour, DawnEndDateTime.Minute, DawnEndDateTime.Second);
+
+        if (endDateTime < startDateTime)
+        {
+            (startDateTime, endDateTime) = (endDateTime, startDateTime);
+        }
 
         if (!DateTimeFlags.HasFlag(DateTimeFlags.Year))
         {
@@ -71,11 +84,13 @@ public class DatePredicate : DuskPredicate
             second = startDateTime.Second;
         }
 
-        DateTime currentDateTime = new(year, month, day, hour, minute, second);
-        return currentDateTime >= startDateTime && currentDateTime <= endDateTime;
+        DateTime dateTime = new(year, month, day, hour, minute, second);
+        Debuggers.EntityReplacements?.Log($"datetime compared to start: {dateTime.CompareTo(startDateTime)}, compared to end: {dateTime.CompareTo(endDateTime)}");
+        return dateTime >= startDateTime && dateTime <= endDateTime;
     }
 
     public override void Register(NamespacedKey namespacedKey)
     {
+        _namespacedKey = namespacedKey;
     }
 }

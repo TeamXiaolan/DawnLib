@@ -7,15 +7,16 @@ namespace Dawn;
 public class OutsideMapObjectSettings
 {
     [HideInInspector]
-    public bool SpawnFacingAwayFromWall;
-    [HideInInspector]
-    public int ObjectWidth;
-    [HideInInspector]
-    public string[] SpawnableFloorTags;
-    [HideInInspector]
-    public Vector3 RotationOffset;
-    [HideInInspector]
     public AnimationCurve VanillaAnimationCurve;
 
-    public bool AlignWithTerrain;
+    // TODO: implement these like in vanilla
+    public bool SpawnFacingAwayFromWall = false;
+    public int ObjectWidth = 6;
+    public Vector3 RotationOffset = Vector3.zero;
+    public string[] SpawnableFloorTags = [];
+
+    // TODO: implement these too
+    public int MinimumNodeSpawnRequirement = 0;
+    public float MinimumDistanceFromShipAndEntrances = 0f;
+    public bool AlignWithTerrain = false;
 }

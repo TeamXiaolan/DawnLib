@@ -55,6 +55,17 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
             return;
         }
 
+        foreach (DuskMapObjectReplacementDefinition replacement in replacements.ToArray())
+        {
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                replacements.Remove(replacement);
+            }
+        }
+
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
         int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));

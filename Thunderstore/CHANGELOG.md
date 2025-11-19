@@ -1,4 +1,9 @@
-# v0.4.9
+# v0.4.10
+
+- Fixed an issue where the DatePredicate would not run for the entity replacements.
+- Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
+
+## v0.4.9
 
 - Cleaned up credits a bit more.
 - Fixed an issue where depending on the pc's locale (country I think?) some configs would get generated incorrectly.

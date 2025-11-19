@@ -248,8 +248,8 @@ static class MapObjectRegistrationHandler
             DawnOutsideMapObjectInfo outsideInfo = new(
                 table,
                 mapObjectSettings.SpawnFacingAwayFromWall,
-                mapObjectSettings.ObjectWidth,
-                mapObjectSettings.SpawnableFloorTags,
+                mapObjectSettings.ObjectWidth + 6,
+                mapObjectSettings.SpawnableFloorTags ?? [],
                 mapObjectSettings.RotationOffset,
                 mapObjectSettings.VanillaAnimationCurve,
                 mapObjectSettings.AlignWithTerrain
