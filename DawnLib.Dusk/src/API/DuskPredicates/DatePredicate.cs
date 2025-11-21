@@ -37,7 +37,7 @@ public class DatePredicate : DuskPredicate
     {
         if (_namespacedKey == null)
         {
-            return false;
+            return true;
         }
 
         int year = DateTime.Now.Year;
