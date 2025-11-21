@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
-using Dawn.Internal;
 using Dawn.Utils;
 using Unity.Netcode;
 using UnityEngine;
@@ -127,6 +126,12 @@ public class NamespacedKey : INetworkSerializable
         string[] parts = input.Split(Separator);
         if (parts.Length == 1)
         {
+            // todo: try to do smart matching incase no namespace is provided.
+            /*foreach (NamespacedKey namespacedKey in NamespacedKeys)
+            {
+                if (namespacedKey.Key == parts[0])
+                    return namespacedKey;
+            }*/
             parts = [VanillaNamespace, parts[0]];
         }
         return From(parts[0], parts[1]);
@@ -187,6 +192,7 @@ public class NamespacedKey<T> : NamespacedKey where T : INamespaced
     {
         return new NamespacedKey<T>(@namespace, key);
     }
+
     public new static NamespacedKey<T> Vanilla(string key)
     {
         return From(VanillaNamespace, key);

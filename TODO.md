@@ -6,7 +6,6 @@
 - Dead body additions.
 - Handling vehicle spawning when already bought on loading a lobby, also always have the station spawn at the start of the lobby.
 - Handling vehicle no station equaling magnet station.
-- Make stuff in duskmoondefinition more configurable.
 
 less important:
 
@@ -15,6 +14,8 @@ less important:
 - Add a normal border for each achievement mod.
 
 ## Bongo
+
+- NamespacedKey smart matching, take a look at NamespacedKey.ForceParse for more context.
 
 less important:
 
@@ -32,5 +33,3 @@ less important:
 
 ## Needs to be done eventually
 
-- Make a lot of the dusk stuff add-able via code.
-- Take a look into the terminals mooncataloguelist and see if i need to edit that?
