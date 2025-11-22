@@ -7,13 +7,13 @@ using Dusk.Weights.Transformers;
 namespace Dusk.Weights;
 public class SpawnWeightsPreset : IWeighted
 {
-    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = new(string.Empty);
-    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = new(string.Empty);
-    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = new(string.Empty);
+    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = new(new List<NamespacedConfigWeight>());
+    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = new(new List<NamespacedConfigWeight>());
+    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = new(new List<NamespacedConfigWeight>());
 
     private List<WeightTransformer> SpawnWeightsTransformers => new() { MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer };
 
-    public void SetupSpawnWeightsPreset(string moonConfig, string interiorConfig, string weatherConfig)
+    public void SetupSpawnWeightsPreset(List<NamespacedConfigWeight> moonConfig, List<NamespacedConfigWeight> interiorConfig, List<NamespacedConfigWeight> weatherConfig)
     {
         MoonSpawnWeightsTransformer = new MoonWeightTransformer(moonConfig);
         InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
@@ -26,7 +26,7 @@ public class SpawnWeightsPreset : IWeighted
     public int GetWeight()
     {
         float weight = 0;
-        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == "+" || x.GetOperation() == "-").ToList())
+        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == MathOperation.Additive || x.GetOperation() == MathOperation.Subtractive).ToList())
         {
             Debuggers.Weights?.Log($"Old Weight: {weight}");
             weight = weightTransformer.GetNewWeight(weight);
