@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
@@ -27,16 +28,12 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
     [field: Space(10)]
     [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
-    [field: TextArea(1, 10)]
     [field: SerializeField]
-    public string MoonSpawnWeights { get; private set; } = "Vanilla=+0, Custom=+0, Valley=+0, Canyon=+0, Tundra=+0, Marsh=+0, Military=+0, Rocky=+0,Amythest=+0, Experimentation=+0, Assurance=+0, Vow=+0, Offense=+0, March=+0, Adamance=+0, Rend=+0, Dine=+0, Titan=+0, Artifice=+0, Embrion=+0";
-    [field: TextArea(1, 10)]
+    public List<NamespacedConfigWeight> MoonSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
-    public string InteriorSpawnWeights { get; private set; } = "Facility=+0, Mansion=+0, Mineshaft=+0";
-    [field: TextArea(1, 10)]
+    public List<NamespacedConfigWeight> InteriorSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
-    public string WeatherSpawnWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
-    [field: SerializeField]
+    public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
     [field: Header("Configs | Scrap")]
@@ -58,6 +55,16 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     public bool GenerateDisableUnlockConfig { get; private set; } = true;
     [field: SerializeField]
     public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
+    [field: Header("Configs | Obsolete")]
+    [field: SerializeField]
+    [Obsolete]
+    public string MoonSpawnWeights { get; private set; }
+    [field: SerializeField]
+    [Obsolete]
+    public string InteriorSpawnWeights { get; private set; }
+    [field: SerializeField]
+    [Obsolete]
+    public string WeatherSpawnWeights { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ItemConfig Config { get; private set; }
@@ -87,7 +94,11 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
-        SpawnWeights.SetupSpawnWeightsPreset(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeights, Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeights, Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
+        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeights);
+        List<NamespacedConfigWeight> Interiors = NamespacedConfigWeight.ConvertManyFromString(Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeights);
+        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
+
+        SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, Interiors.Count > 0 ? Interiors : InteriorSpawnWeightsConfig, Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
 
         DawnLib.DefineItem(TypedKey, Item, builder =>
         {
@@ -138,9 +149,9 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
         return new ItemConfig
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeights) : null,
-            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeights) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeights) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null,
+            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null,
 
             DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
             DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,

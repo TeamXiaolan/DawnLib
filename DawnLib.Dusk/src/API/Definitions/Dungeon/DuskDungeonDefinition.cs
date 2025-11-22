@@ -36,10 +36,10 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
     [field: Header("Config | Obsolete")]
     [field: SerializeField]
-    [field: Obsolete]
+    [Obsolete]
     public string MoonSpawnWeights { get; private set; }
     [field: SerializeField]
-    [field: Obsolete]
+    [Obsolete]
     public string WeatherSpawnWeights { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
@@ -51,8 +51,8 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateDungeonConfig(section);
 
-        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? (MoonSpawnWeightsConfig.Count <= 0 ? MoonSpawnWeights : string.Empty));
-        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? (WeatherSpawnWeightsConfig.Count <= 0 ? WeatherSpawnWeights : string.Empty));
+        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeights);
+        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
 
         SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
         DawnLib.DefineDungeon(TypedKey, DungeonFlow, builder =>

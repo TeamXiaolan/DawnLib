@@ -65,7 +65,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     internal void HostDecide(DawnMoonInfo moonInfo)
     {
-        int totalWeight = moonInfo.Scenes.Sum(it => it.Weight.Provide());
+        int totalWeight = moonInfo.Scenes.Sum(it => it.Weight.GetFor(moonInfo) ?? 0);
 
         System.Random sceneRandom = new(StartOfRoundRefs.Instance.randomMapSeed + 502 + 0);
         int chosenWeight = sceneRandom.Next(0, totalWeight);
@@ -74,7 +74,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         for (int i = 0; i < moonInfo.Scenes.Count; i++)
         {
             sceneInfo = moonInfo.Scenes[i];
-            chosenWeight -= sceneInfo.Weight.Provide();
+            chosenWeight -= sceneInfo.Weight.GetFor(moonInfo) ?? 0;
             if (chosenWeight <= 0)
             {
                 break;

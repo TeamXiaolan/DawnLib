@@ -136,13 +136,25 @@ public class DuskMoonSceneData
 
     [field: SerializeField]
     public int BaseWeight { get; private set; } = 100;
+    [field: Header("Configs | SpawnWeights")]
     [field: SerializeField]
-    public string WeatherWeights { get; private set; } = "None=*1, DustClouds=*1, Rainy=*1, Stormy=*1, Foggy=*1, Flooded=*1, Eclipsed=*1";
+    public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
 
-    public int Weight() // todo: this shouldn't return an int but an IProviderTable<int>??
+    [field: Header("Configs | Obsolete")]
+    [field: SerializeField]
+    public string WeatherWeights { get; private set; }
+
+    public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
+    private ProviderTable<int?, DawnMoonInfo> _weights;
+
+    public ProviderTable<int?, DawnMoonInfo> Weight() // TODO: make this configurable
     {
-        SpawnWeightsPreset newSpawnWeightsPreset = new();
-        newSpawnWeightsPreset.SetupSpawnWeightsPreset(string.Empty, string.Empty, WeatherWeights);
-        return BaseWeight + newSpawnWeightsPreset.GetWeight();
+        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherWeights);
+
+        SpawnWeights.SetupSpawnWeightsPreset(new(), new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig, BaseWeight);
+        WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
+        builder.SetGlobalWeight(SpawnWeights);
+        _weights = builder.Build();
+        return _weights;
     }
 }

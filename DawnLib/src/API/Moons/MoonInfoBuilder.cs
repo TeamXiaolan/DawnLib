@@ -38,9 +38,9 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         return this;
     }
 
-    public MoonInfoBuilder AddScene(NamespacedKey<IMoonSceneInfo> sceneKey, AnimationClip shipLandingOverrideAnimation, AnimationClip shipTakeoffOverrideAnimation, int weight, string assetBundlePath, string scenePath)
+    public MoonInfoBuilder AddScene(NamespacedKey<IMoonSceneInfo> sceneKey, AnimationClip shipLandingOverrideAnimation, AnimationClip shipTakeoffOverrideAnimation, ProviderTable<int?, DawnMoonInfo> weight, string assetBundlePath, string scenePath)
     {
-        _scenes.Add(new CustomMoonSceneInfo(sceneKey, shipLandingOverrideAnimation, shipTakeoffOverrideAnimation, new SimpleProvider<int>(weight), assetBundlePath, scenePath));
+        _scenes.Add(new CustomMoonSceneInfo(sceneKey, shipLandingOverrideAnimation, shipTakeoffOverrideAnimation, weight, assetBundlePath, scenePath));
         return this;
     }
 

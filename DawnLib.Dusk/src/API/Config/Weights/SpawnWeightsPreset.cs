@@ -7,17 +7,19 @@ using Dusk.Weights.Transformers;
 namespace Dusk.Weights;
 public class SpawnWeightsPreset : IWeighted
 {
-    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = new(new List<NamespacedConfigWeight>());
-    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = new(new List<NamespacedConfigWeight>());
-    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = new(new List<NamespacedConfigWeight>());
+    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; }
+    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; }
+    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; }
 
+    private int _baseWeightIncrease = 0;
     private List<WeightTransformer> SpawnWeightsTransformers => new() { MoonSpawnWeightsTransformer, InteriorSpawnWeightsTransformer, WeatherSpawnWeightsTransformer };
 
-    public void SetupSpawnWeightsPreset(List<NamespacedConfigWeight> moonConfig, List<NamespacedConfigWeight> interiorConfig, List<NamespacedConfigWeight> weatherConfig)
+    public void SetupSpawnWeightsPreset(List<NamespacedConfigWeight> moonConfig, List<NamespacedConfigWeight> interiorConfig, List<NamespacedConfigWeight> weatherConfig, int baseWeightIncrease = 0)
     {
         MoonSpawnWeightsTransformer = new MoonWeightTransformer(moonConfig);
         InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
         WeatherSpawnWeightsTransformer = new WeatherWeightTransformer(weatherConfig);
+        _baseWeightIncrease = baseWeightIncrease;
         // `Namespace:MoonName1=+10,Namespace:MoonName2=-20,Namespace:MoonName3=*1.5`
         // `Namespace:InteriorName1=-10,Namespace:InteriorName2=+10,Namespace:InteriorName3=+300`
         // `Namespace:WeatherName1=10,Namespace:WeatherName2=*2.0,Namespace:WeatherName3=*1.5`
@@ -33,6 +35,6 @@ public class SpawnWeightsPreset : IWeighted
             Debuggers.Weights?.Log($"New Weight: {weight}");
         }
 
-        return (int)weight;
+        return (int)weight + _baseWeightIncrease;
     }
 }
