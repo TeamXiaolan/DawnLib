@@ -1,9 +1,7 @@
 # v0.4.10
 
 - Fixed an issue where the DatePredicate would not run for the entity replacements.
-- Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
 - Improved the Editor UI for spawn weight related options in the different definitions, i.e. enemies, items, etc.
-- Improved the interior editor UI to be more friendly with global props so they are easily configurable without needing to remember specific global prop ID's.
 - Updated Editor dll for better readability in some cases.
 - Improved vehicle registration, it should technically work now?
 - Internally added a `TryRegisterItemToShop` method for non DawnLib items
