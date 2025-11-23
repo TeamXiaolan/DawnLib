@@ -1,5 +1,6 @@
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 using UnityEngine;
 
 namespace Dusk;
@@ -37,6 +38,44 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
 
     public override void Register(DuskMod mod)
     {
+        if (BuyableVehiclePreset.StationPrefab != null)
+        {
+            if (BuyableVehiclePreset.StationPrefab.GetComponent<AutoParentToShip>() == null)
+            {
+                DuskPlugin.Logger.LogError($"The vehicle: {BuyableVehiclePreset.StationPrefab.name} has no {nameof(AutoParentToShip)} component.");
+                return;
+            }
+
+            if (BuyableVehiclePreset.StationPrefab.GetComponentsInChildren<PlaceableShipObject>() == null)
+            {
+                DuskPlugin.Logger.LogError($"The vehicle: {BuyableVehiclePreset.StationPrefab.name} has no {nameof(PlaceableShipObject)} component.");
+                return;
+            }
+
+            NamespacedKey stationKey = BuyableVehiclePreset.StationPrefab.GetComponent<StationBase>().StationKey;
+            UnlockableItem unlockableItem = new UnlockableItem()
+            {
+                unlockableName = $"{stationKey.Key} (Station)",
+                prefabObject = BuyableVehiclePreset.StationPrefab,
+                unlockableType = 1,
+                alwaysInStock = true,
+                IsPlaceable = true
+            };
+            DawnLib.DefineUnlockable(stationKey.AsTyped<DawnUnlockableItemInfo>(), unlockableItem, builder =>
+            {
+                builder.SetCost(99999);
+
+                builder.DefinePlaceableObject(shopBuilder =>
+                {
+                    Debuggers.Unlockables?.Log($"Making {unlockableItem.unlockableName} a Ship Upgrade");
+                    shopBuilder.SetShipUpgrade();
+                });
+
+                ITerminalPurchasePredicate purchasePredicate = ITerminalPurchasePredicate.AlwaysHide();
+                builder.SetPurchasePredicate(purchasePredicate);
+            });
+        }
+
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateVehicleConfig(section);

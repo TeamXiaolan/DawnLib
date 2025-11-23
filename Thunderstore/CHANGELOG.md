@@ -5,6 +5,7 @@
 - Improved the Editor UI for spawn weight related options in the different definitions, i.e. enemies, items, etc.
 - Improved the interior editor UI to be more friendly with global props so they are easily configurable without needing to remember specific global prop ID's.
 - Updated Editor dll for better readability in some cases.
+- Improved vehicle registration, it should technically work now?
 
 ## v0.4.9
 
