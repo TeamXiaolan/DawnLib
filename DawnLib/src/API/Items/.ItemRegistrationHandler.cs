@@ -331,6 +331,21 @@ static class ItemRegistrationHandler
     private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
         orig(self);
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            TryRegisterItemIntoShop(itemInfo.Item);
+        }
+    }
+
+    private static void TryRegisterItemIntoShop(Item item)
+    {
+        DawnItemInfo itemInfo = item.GetDawnInfo();
+        if (itemInfo == null)
+        {
+            DawnPlugin.Logger.LogWarning($"Item: {item.itemName} does not have a dawn info, this means they cannot be registered to the terminal as a shop item");
+            return;
+        }
+
         _ = TerminalRefs.Instance;
         TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
@@ -338,78 +353,76 @@ static class ItemRegistrationHandler
         TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
         TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
 
-        List<Item> newBuyableList = self.buyableItemsList.ToList();
-        List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
-        List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
-        List<TerminalKeyword> newTerminalKeywords = self.terminalNodes.allKeywords.ToList();
+        DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
+        if (shopInfo == null || itemInfo.ShouldSkipRespectOverride() || TerminalRefs.Instance.buyableItemsList.Contains(item))
+            return;
 
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        List<Item> newBuyableList = TerminalRefs.Instance.buyableItemsList.ToList();
+
+        string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();
+
+        newBuyableList.Add(itemInfo.Item);
+
+        foreach (TerminalKeyword TerminalKeyword in TerminalRefs.Instance.terminalNodes.allKeywords)
         {
-            DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
-            if (shopInfo == null || itemInfo.ShouldSkipIgnoreOverride())
-                continue;
-
-            string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();
-
-            newBuyableList.Add(itemInfo.Item);
-
-            foreach (TerminalKeyword TerminalKeyword in newTerminalKeywords)
+            if (TerminalKeyword.word == simplifiedItemName)
             {
-                if (TerminalKeyword.word == simplifiedItemName)
-                {
-                    continue;
-                }
+                return;
             }
-
-            TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-            buyItemKeyword.name = simplifiedItemName;
-            buyItemKeyword.word = simplifiedItemName;
-            buyItemKeyword.isVerb = false;
-            buyItemKeyword.compatibleNouns = null;
-            buyItemKeyword.specialKeywordResult = null;
-            buyItemKeyword.defaultVerb = buyKeyword;
-            buyItemKeyword.accessTerminalObjects = false;
-            newTerminalKeywords.Add(buyItemKeyword);
-
-            TerminalNode receiptNode = shopInfo.ReceiptNode;
-            TerminalNode requestNode = shopInfo.RequestNode;
-
-            UpdateShopItemPrices(shopInfo);
-            receiptNode.buyItemIndex = newBuyableList.Count - 1;
-
-            requestNode.buyItemIndex = newBuyableList.Count - 1;
-            requestNode.isConfirmationNode = true;
-            requestNode.overrideOptions = true;
-            requestNode.terminalOptions =
-            [
-                new CompatibleNoun()
-                {
-                    noun = confirmPurchaseKeyword,
-                    result = receiptNode
-                },
-                new CompatibleNoun()
-                {
-                    noun = denyPurchaseKeyword,
-                    result = cancelPurchaseNode
-                }
-            ];
-
-            newBuyCompatibleNouns.Add(new CompatibleNoun()
-            {
-                noun = buyItemKeyword,
-                result = requestNode
-            });
-            newInfoCompatibleNouns.Add(new CompatibleNoun()
-            {
-                noun = buyItemKeyword,
-                result = shopInfo.InfoNode
-            });
         }
 
-        self.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
+        List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
+        List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
+        List<TerminalKeyword> newTerminalKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
+
+        TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
+        buyItemKeyword.name = simplifiedItemName;
+        buyItemKeyword.word = simplifiedItemName;
+        buyItemKeyword.isVerb = false;
+        buyItemKeyword.compatibleNouns = null;
+        buyItemKeyword.specialKeywordResult = null;
+        buyItemKeyword.defaultVerb = buyKeyword;
+        buyItemKeyword.accessTerminalObjects = false;
+        newTerminalKeywords.Add(buyItemKeyword);
+
+        TerminalNode receiptNode = shopInfo.ReceiptNode;
+        TerminalNode requestNode = shopInfo.RequestNode;
+
+        UpdateShopItemPrices(shopInfo);
+        receiptNode.buyItemIndex = newBuyableList.Count - 1;
+
+        requestNode.buyItemIndex = newBuyableList.Count - 1;
+        requestNode.isConfirmationNode = true;
+        requestNode.overrideOptions = true;
+        requestNode.terminalOptions =
+        [
+            new CompatibleNoun()
+            {
+                noun = confirmPurchaseKeyword,
+                result = receiptNode
+            },
+            new CompatibleNoun()
+            {
+                noun = denyPurchaseKeyword,
+                result = cancelPurchaseNode
+            }
+        ];
+
+        newBuyCompatibleNouns.Add(new CompatibleNoun()
+        {
+            noun = buyItemKeyword,
+            result = requestNode
+        });
+        newInfoCompatibleNouns.Add(new CompatibleNoun()
+        {
+            noun = buyItemKeyword,
+            result = shopInfo.InfoNode
+        });
+
+        TerminalRefs.Instance.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray(); // SO so it sticks
         buyKeyword.compatibleNouns = newBuyCompatibleNouns.ToArray(); // SO so it sticks
-        self.terminalNodes.allKeywords = newTerminalKeywords.ToArray(); // SO so it sticks
+        TerminalRefs.Instance.terminalNodes.allKeywords = newTerminalKeywords.ToArray(); // SO so it sticks
     }
 
     private static void CollectLLLTags(Item item, HashSet<NamespacedKey> tags)

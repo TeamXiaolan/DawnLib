@@ -99,8 +99,8 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     }
 
     public DungeonFlow DungeonFlow { get; }
-    public ProviderTable<int?, DawnMoonInfo>? Weights { get; }
-    public float MapTileSize { get; }
+    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
+    public float MapTileSize { get; private set; }
     public AudioClip? FirstTimeAudio { get; }
 
     public IReadOnlyList<Tile> Tiles => _tiles.AsReadOnly();
