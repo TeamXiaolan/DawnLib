@@ -5,6 +5,8 @@ using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
 using MonoMod.RuntimeDetour;
+using UnityEngine;
+using static DunGen.Graph.DungeonFlow;
 
 namespace Dawn;
 
@@ -28,9 +30,26 @@ static class DungeonRegistrationHandler
 
         On.DunGen.RuntimeDungeon.Generate += (orig, self) =>
         {
+            AdjustFireExits(self.Generator.DungeonFlow);
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static void AdjustFireExits(DungeonFlow dungeonFlow) // code mostly taken from LLL
+    {
+        EntranceTeleport[] moonEntranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Where(e => e.entranceId != 0).ToArray();
+
+        for (int i = 1; i < moonEntranceTeleports.Length + 1; i++)
+        {
+            EntranceTeleport entranceTeleport = moonEntranceTeleports[i];
+            entranceTeleport.entranceId = i;
+        }
+
+        foreach (GlobalPropSettings propSettings in dungeonFlow.GlobalProps.Where(p => p.ID == DawnDungeonInfo.FireExitGlobalPropID))
+        {
+            propSettings.Count = new IntRange(moonEntranceTeleports.Length, moonEntranceTeleports.Length);
+        }
     }
 
     private static void UpdateAllDungeonWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
@@ -278,10 +297,15 @@ static class DungeonRegistrationHandler
         }
     }
 
-    internal static void TryInjectTileSets(DungeonFlow dungeonFlow)
+    private static void TryInjectTileSets(DungeonFlow dungeonFlow)
     {
         foreach (DungeonArchetype archetype in dungeonFlow.GetUsedArchetypes())
         {
+            if (archetype == null)
+            {
+                Debuggers.Dungeons?.Log("Archetype is null in dungeonflow: " + dungeonFlow.name);
+                continue;
+            }
             Debuggers.Dungeons?.Log($"Injecting tile sets for {archetype.name}");
             foreach (DawnTileSetInfo tileSet in archetype.GetDawnInfo().TileSets)
             {

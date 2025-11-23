@@ -18,7 +18,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     private List<SpawnSyncedObject> _spawnSyncedObjects;
     private List<Tile> _tiles;
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo>? weights, float mapTileSize, AudioClip? firstTimeAudio, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         Weights = weights;
@@ -107,4 +107,6 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     public IReadOnlyList<Doorway> Doorways => _doorways.AsReadOnly();
     public IReadOnlyList<SpawnSyncedObject> SpawnSyncedObjects => _spawnSyncedObjects.AsReadOnly();
     public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
+
+    public static int FireExitGlobalPropID = 1231;
 }
