@@ -6,6 +6,8 @@
 - Improved the interior editor UI to be more friendly with global props so they are easily configurable without needing to remember specific global prop ID's.
 - Updated Editor dll for better readability in some cases.
 - Improved vehicle registration, it should technically work now?
+- Internally added a `TryRegisterItemToShop` method for non DawnLib items
+- Internally edited some fields to be private rather than read-only.
 
 ## v0.4.9
 
