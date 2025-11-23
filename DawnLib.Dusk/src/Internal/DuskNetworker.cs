@@ -100,6 +100,21 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         TerminalRefs.LastVehicleDelivered = lastVehicleDelivered;
     }
 
+    [ServerRpc]
+    internal void SyncVehicleIntoDropShipAnimationServerRpc(NetworkObjectReference netObjRef)
+    {
+        SyncVehicleIntoDropShipAnimationClientRpc(netObjRef);
+    }
+
+    [ClientRpc]
+    private void SyncVehicleIntoDropShipAnimationClientRpc(NetworkObjectReference netObjRef)
+    {
+        if (netObjRef.TryGet(out NetworkObject netObj) && netObj.TryGetComponent(out VehicleBase vehicleBase))
+        {
+            vehicleBase.InDropShipAnimation = true;
+        }
+    }
+
     internal void SaveData()
     {
         if (!IsHost) return;

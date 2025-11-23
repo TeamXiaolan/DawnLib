@@ -149,7 +149,8 @@ static class VehicleRegistrationPatch
 
     private static void HandleSpawningDuskVehicle(DuskVehicleDefinition vehicleDefinition)
     {
-        Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.VehiclePrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn(false);
+        GameObject vehicle = Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.VehiclePrefab, RoundManager.Instance.VehiclesContainer);
+        vehicle.GetComponent<NetworkObject>().Spawn(false);
         if (vehicleDefinition.BuyableVehiclePreset.SecondaryPrefab != null)
         {
             Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.SecondaryPrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn(false);
@@ -167,6 +168,12 @@ static class VehicleRegistrationPatch
         else
         {
             // assume it uses magnet somehow?
+        }
+
+        if (vehicle.TryGetComponent(out VehicleBase vehicleBase))
+        {
+            vehicleBase.InDropShipAnimation = true;
+            DuskNetworker.Instance?.SyncVehicleIntoDropShipAnimationServerRpc(new NetworkObjectReference(vehicleBase.NetworkObject));
         }
     }
 
