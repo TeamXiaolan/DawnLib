@@ -80,7 +80,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
     {
         if (InDropShipAnimation)
         {
-            for (int i = RealLength; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 RopeAttachmentEndPoints[i].position = ItemDropshipRefs.Instance.ropes[i].transform.position;
             }
