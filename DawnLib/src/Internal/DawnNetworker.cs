@@ -32,7 +32,8 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
     internal static PersistentDataContainer CreateSaveContainer(string id)
     {
-        return new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Save{id}"));
+        PersistentDataContainer dataContainer = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Save{id}"));
+        return dataContainer;
     }
 
     internal static PersistentDataContainer CreateContractContainer(string id)

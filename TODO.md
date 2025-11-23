@@ -16,6 +16,12 @@ less important:
 ## Bongo
 
 - NamespacedKey smart matching, take a look at NamespacedKey.ForceParse for more context.
+- Hotloading interiors, Xu has a good idea for it.
+  - Load the interior bundle after pulling lever and deciding which interior it is.
+  - Register the network prefabs before any SpawnSyncedObject stuff loads.
+  - Unregister network prefabs as soon as the ship starts leaving.
+  - Unload the interior bundle as soon as interior unloaded.
+- Save system using lookup table with IDs to be slightly faster/more efficient.
 
 less important:
 
@@ -32,4 +38,3 @@ less important:
 - switch to using composition over inheritance (e.g. ItemUpgradeScrap, MoonUnlockScrap whatever)
 
 ## Needs to be done eventually
-

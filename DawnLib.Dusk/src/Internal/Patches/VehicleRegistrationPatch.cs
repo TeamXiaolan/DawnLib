@@ -96,13 +96,34 @@ static class VehicleRegistrationPatch
 
     private static void DeliverDuskVehicleOnServer(ILContext il)
     {
+        /*
+            shipTimer = 0f;
+        +   if (self.terminalScript.buyableVehicles[self.terminalScript.orderedVehicleFromTerminal].TryGetDuskDefinition(out DuskVehicleDefinition? vehicleDefinition))
+        +   {
+        +       HandleSpawningDuskVehicle(vehicleDefinition);
+        +   }
+        +   else
+        +   {
+                Object.Instantiate(terminalScript.buyableVehicles[terminalScript.orderedVehicleFromTerminal].vehiclePrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn();
+                if (terminalScript.buyableVehicles[terminalScript.orderedVehicleFromTerminal].secondaryPrefab != null)
+                {
+                    Object.Instantiate(terminalScript.buyableVehicles[terminalScript.orderedVehicleFromTerminal].secondaryPrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn();
+                }
+        +   }
+            terminalScript.orderedVehicleFromTerminal = -1;
+            terminalScript.vehicleInDropship = false;
+            untetheredVehicle = false;
+            deliveringVehicle = true;
+            deliveringOrder = true;
+            DeliverVehicleClientRpc();
+        */
         ILCursor c = new ILCursor(il);
         c.GotoNext(
             i => i.MatchLdarg(0),
             i => i.MatchLdfld<ItemDropship>(nameof(ItemDropship.terminalScript)),
             i => i.MatchLdcI4(-1)
         );
-        int targetIndex = c.Index;
+        Instruction targetInstruction = c.Instrs[c.Index];
 
         c.Index = 0;
         c.GotoNext(
@@ -123,7 +144,7 @@ static class VehicleRegistrationPatch
             }
             return true;
         });
-        c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
+        c.Emit(OpCodes.Brfalse, targetInstruction);
     }
 
     private static void HandleSpawningDuskVehicle(DuskVehicleDefinition vehicleDefinition)
