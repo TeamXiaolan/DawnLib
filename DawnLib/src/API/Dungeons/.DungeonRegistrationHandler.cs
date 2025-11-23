@@ -40,10 +40,10 @@ static class DungeonRegistrationHandler
     {
         EntranceTeleport[] moonEntranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Where(e => e.entranceId != 0).ToArray();
 
-        for (int i = 1; i < moonEntranceTeleports.Length + 1; i++)
+        for (int i = 0; i < moonEntranceTeleports.Length; i++)
         {
             EntranceTeleport entranceTeleport = moonEntranceTeleports[i];
-            entranceTeleport.entranceId = i;
+            entranceTeleport.entranceId = i + 1;
         }
 
         foreach (GlobalPropSettings propSettings in dungeonFlow.GlobalProps.Where(p => p.ID == DawnDungeonInfo.FireExitGlobalPropID))

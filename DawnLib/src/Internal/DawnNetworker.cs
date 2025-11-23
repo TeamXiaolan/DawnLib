@@ -64,7 +64,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         {
             if (!entrance.FindExitPoint())
             {
-                DawnPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation is installed)");
+                DawnPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation or LethalPerformance is installed)");
             }
         }
     }
