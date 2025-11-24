@@ -158,11 +158,16 @@ static class VehicleRegistrationPatch
 
         if (vehicleDefinition.BuyableVehiclePreset.StationPrefab != null)
         {
-            GameObject station = Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.StationPrefab, StartOfRound.Instance.elevatorTransform.position, Quaternion.identity, null);
-            station.GetComponent<NetworkObject>().Spawn(false);
-            if (station.TryGetComponent(out AutoParentToShip autoParentToShip))
+            for (int i = 0; i < StartOfRoundRefs.Instance.unlockablesList.unlockables.Count; i++)
             {
-                autoParentToShip.unlockableID = -1;
+                if (StartOfRoundRefs.Instance.unlockablesList.unlockables[i].prefabObject == vehicleDefinition.BuyableVehiclePreset.StationPrefab)
+                {
+                    if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(i))
+                    {
+                        StartOfRound.Instance.SpawnUnlockable(i, false);
+                    }
+                    break;
+                }
             }
         }
         else

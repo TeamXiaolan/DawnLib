@@ -1,4 +1,12 @@
-# v0.4.10
+# v0.5.0
+
+- Interior hotloading is real.
+- Polished up vehicle registration's station side a bit more.
+- Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
+- Added NamespacedKey smart matching.
+- Optimised the save system even more.
+
+## v0.4.10
 
 - Fixed an issue where the DatePredicate would not run for the entity replacements.
 - Improved the Editor UI for spawn weight related options in the different definitions, i.e. enemies, items, etc.
