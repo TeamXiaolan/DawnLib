@@ -1,10 +1,7 @@
-# v0.5.0
+# v0.4.11
 
-- Interior hotloading is real.
-- Polished up vehicle registration's station side a bit more.
-- Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
-- Added NamespacedKey smart matching.
-- Optimised the save system even more.
+- Polished vehicle stuff on the station side a bit more.
+- Hotfix for shop items breaking on lobby reload.
 
 ## v0.4.10
 

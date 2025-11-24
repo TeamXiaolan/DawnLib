@@ -367,6 +367,7 @@ static class ItemRegistrationHandler
         {
             if (TerminalKeyword.word == simplifiedItemName)
             {
+                TerminalRefs.Instance.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
                 return;
             }
         }
