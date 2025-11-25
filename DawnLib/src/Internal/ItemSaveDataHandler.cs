@@ -10,16 +10,23 @@ public static class ItemSaveDataHandler
 {
     internal static GrabbableObject[] AllShipItems = [];
     private static NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
+    private static NamespacedKey _itemKeyMapNamespacedKey = NamespacedKey.From("dawn_lib", "ship_items_key_map");
 
     internal static void LoadSavedItems(PersistentDataContainer dataContainer)
     {
         List<ItemSaveData> itemSaveDataList = dataContainer.GetOrCreateDefault<List<ItemSaveData>>(_namespacedKey);
+        Dictionary<ushort, NamespacedKey> itemKeyMap = dataContainer.GetOrCreateDefault<Dictionary<ushort, NamespacedKey>>(_itemKeyMapNamespacedKey);
         foreach (ItemSaveData itemData in itemSaveDataList)
         {
-            Debuggers.SaveManager?.Log($"Loading item: {itemData.ItemNamespacedKey} from save data with information: {itemData.SavedSpawnPosition}, {itemData.SavedSpawnRotation}, {itemData.ScrapValue}, {itemData.ItemSavedData}.");
-            if (!LethalContent.Items.TryGetValue(itemData.ItemNamespacedKey, out DawnItemInfo itemInfo))
+            if (!itemKeyMap.TryGetValue(itemData.ItemKeyId, out NamespacedKey itemNamespacedKey))
             {
-                DawnPlugin.Logger.LogWarning($"Item: {itemData.ItemNamespacedKey} doesn't exist in the game, this means this item cannot be loaded from the savefile, presumably you removed a mod that added this time previously.");
+                DawnPlugin.Logger.LogWarning($"Item key ID {itemData.ItemKeyId} not found in key map, skipping item load.");
+                continue;
+            }
+            Debuggers.SaveManager?.Log($"Loading item: {itemNamespacedKey} from save data with information: {itemData.SavedSpawnPosition}, {itemData.SavedSpawnRotation}, {itemData.ScrapValue}, {itemData.ItemSavedData}.");
+            if (!LethalContent.Items.TryGetValue(itemNamespacedKey, out DawnItemInfo itemInfo))
+            {
+                DawnPlugin.Logger.LogWarning($"Item: {itemNamespacedKey} doesn't exist in the game, this means this item cannot be loaded from the savefile, presumably you removed a mod that added this time previously.");
                 continue;
             }
             Vector3 spawnPosition = itemData.SavedSpawnPosition;
@@ -54,6 +61,9 @@ public static class ItemSaveDataHandler
     {
         AllShipItems = GameObject.FindObjectsOfType<GrabbableObject>();
         List<ItemSaveData> allShipItemDatas = new();
+        Dictionary<NamespacedKey, ushort> itemKeyToIdMap = new();
+        ushort nextId = 0;
+        
         foreach (GrabbableObject itemData in AllShipItems)
         {
             DawnItemInfo? itemInfo = itemData.itemProperties.GetDawnInfo();
@@ -68,18 +78,32 @@ public static class ItemSaveDataHandler
             {
                 itemSave = ((IDawnSaveData)itemData).GetDawnDataToSave();
             }
-            allShipItemDatas.Add(new ItemSaveData(itemInfo.Key, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset + 0.02f, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
+            
+            if (!itemKeyToIdMap.TryGetValue(itemInfo.Key, out ushort itemId))
+            {
+                itemId = nextId++;
+                itemKeyToIdMap[itemInfo.Key] = itemId;
+            }
+            
+            allShipItemDatas.Add(new ItemSaveData(itemId, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset + 0.02f, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
         }
 
         using (dataContainer.CreateEditContext())
         {
+            Dictionary<ushort, NamespacedKey> idToKeyMap = new Dictionary<ushort, NamespacedKey>();
+            foreach (var kvp in itemKeyToIdMap)
+            {
+                idToKeyMap[kvp.Value] = kvp.Key;
+            }
+            
             dataContainer.Set(_namespacedKey, allShipItemDatas);
+            dataContainer.Set(_itemKeyMapNamespacedKey, idToKeyMap);
         }
     }
 
-    public struct ItemSaveData(NamespacedKey itemNamespacedKey, Vector3 savePosition, Vector3 saveRotation, int scrapValue, JToken itemSavedData)
+    public struct ItemSaveData(ushort itemKeyId, Vector3 savePosition, Vector3 saveRotation, int scrapValue, JToken itemSavedData)
     {
-        public NamespacedKey ItemNamespacedKey = itemNamespacedKey;
+        public ushort ItemKeyId = itemKeyId;
         [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnPosition = savePosition;
         [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnRotation = saveRotation;
         public int ScrapValue = scrapValue;
