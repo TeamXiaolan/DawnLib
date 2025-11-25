@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
@@ -20,6 +21,7 @@ static class DungeonRegistrationHandler
             On.StartOfRound.Awake += RegisterDawnDungeons;
         }
 
+        On.StartOfRound.EndOfGame += UnloadCustomDawnDungeon;
         On.RoundManager.SpawnSyncedProps += FixDawnSpawnSyncedObjects;
 
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
@@ -39,8 +41,15 @@ static class DungeonRegistrationHandler
         };
     }
 
-    private static void FixDawnSpawnSyncedObjects(On.RoundManager.orig_SpawnSyncedProps orig, RoundManager self)
+    private static IEnumerator UnloadCustomDawnDungeon(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
+        // TODO: unload dawn dungeonflow
+        DungeonFlow flowToUnload = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
+        yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
+    }
+
+    private static void FixDawnSpawnSyncedObjects(On.RoundManager.orig_SpawnSyncedProps orig, RoundManager self)
+    { // TODO: sync this to all players
         SpawnSyncedObject[] allSpawnSyncedObjects = GameObject.FindObjectsOfType<SpawnSyncedObject>();
         List<GameObject> vanillaSpawnSyncedObjects = new();
         foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
