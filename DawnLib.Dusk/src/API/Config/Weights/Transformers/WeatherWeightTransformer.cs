@@ -18,6 +18,7 @@ public class WeatherWeightTransformer : WeightTransformer
             MatchingWeathersWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
         }
     }
+
     public Dictionary<NamespacedKey, (MathOperation operation, float weight)> MatchingWeathersWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight)

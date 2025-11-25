@@ -3,6 +3,7 @@ using System.Linq;
 using Dawn;
 using Dawn.Internal;
 using Dusk.Weights.Transformers;
+using UnityEngine;
 
 namespace Dusk.Weights;
 public class SpawnWeightsPreset : IWeighted
@@ -28,13 +29,13 @@ public class SpawnWeightsPreset : IWeighted
     public int GetWeight()
     {
         float weight = 0;
-        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers.OrderBy(x => x.GetOperation() == MathOperation.Additive || x.GetOperation() == MathOperation.Subtractive).ToList())
+        foreach (WeightTransformer weightTransformer in SpawnWeightsTransformers.OrderByDescending(x => x.GetOperation() == MathOperation.Additive || x.GetOperation() == MathOperation.Subtractive).ToList())
         {
             Debuggers.Weights?.Log($"Old Weight: {weight}");
             weight = weightTransformer.GetNewWeight(weight);
             Debuggers.Weights?.Log($"New Weight: {weight}");
         }
 
-        return (int)weight + _baseWeightIncrease;
+        return Mathf.RoundToInt(weight + _baseWeightIncrease);
     }
 }

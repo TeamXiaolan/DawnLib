@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Dawn;
+using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
 
@@ -57,7 +59,8 @@ public class NamespacedConfigWeight
 
     internal static NamespacedConfigWeight ConvertFromString(string input)
     {
-        string[] parts = input.Split('=');
+        string[] parts = input.Split('=', StringSplitOptions.RemoveEmptyEntries);
+        Debuggers.Weights?.Log($"Converting NamespacedConfigWeight from string: {input}");
         NamespacedKey namespacedKey = NamespacedKey.ForceParse(parts[0]);
         MathOperation operation = MathOperation.Additive;
         float weight = 0;
@@ -83,6 +86,7 @@ public class NamespacedConfigWeight
             MathOperation = operation,
             Weight = weight
         };
+        Debuggers.Weights?.Log($"Converted NamespacedConfigWeight: {ConvertToString(result)}");
         return result;
     }
 
@@ -91,18 +95,23 @@ public class NamespacedConfigWeight
         List<NamespacedConfigWeight> result = new(input.Count);
         foreach (string item in input)
         {
-            result.Add(ConvertFromString(item));
+            result.Add(ConvertFromString(item.Trim().ToLowerInvariant().Replace(" ", "_")));
         }
         return result;
     }
 
+    private static Regex _splitRegex = new(@"\s+");
     internal static List<NamespacedConfigWeight> ConvertManyFromString(string input)
     {
-        string[] inputList = input.Split(',');
-        List<NamespacedConfigWeight> result = new(inputList.Length);
+        if (string.IsNullOrEmpty(input))
+            return new List<NamespacedConfigWeight>();
+
+        string[] inputList = input.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        List<NamespacedConfigWeight> result = new List<NamespacedConfigWeight>(inputList.Length);
         foreach (string item in inputList)
         {
-            result.Add(ConvertFromString(item));
+            string normalized = _splitRegex.Replace(item.Trim().ToLowerInvariant(), "_");
+            result.Add(ConvertFromString(normalized));
         }
         return result;
     }

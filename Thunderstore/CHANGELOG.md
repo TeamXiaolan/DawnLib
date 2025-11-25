@@ -1,9 +1,6 @@
-# v0.5.0
+# v0.4.12
 
-- Interior hotloading is real.
-- Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
-- Added NamespacedKey smart matching.
-- Optimised the save system even more.
+- Made weight configs more user friendly to avoid unexpected issues.
 
 ## v0.4.11
 
