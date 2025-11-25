@@ -44,10 +44,23 @@ static class DungeonRegistrationHandler
     private static IEnumerator UnloadCustomDawnDungeon(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
         // TODO: unload dawn dungeonflow
+        foreach (GameObject obj in _objectsToUnregister)
+        {
+            NetworkManager.Singleton.RemoveNetworkPrefab(obj);
+        }
+        _objectsToUnregister.Clear();
         DungeonFlow flowToUnload = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
+        DawnDungeonInfo? dungeonInfo = flowToUnload.GetDawnInfo();
+        if (dungeonInfo == null || dungeonInfo.Key.IsVanilla())
+        {
+            yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
+            yield break;
+        }
+        // do unload here
         yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
     }
 
+    private static List<GameObject> _objectsToUnregister = new();
     private static void FixDawnSpawnSyncedObjects(On.RoundManager.orig_SpawnSyncedProps orig, RoundManager self)
     { // TODO: sync this to all players
         SpawnSyncedObject[] allSpawnSyncedObjects = GameObject.FindObjectsOfType<SpawnSyncedObject>();
@@ -104,6 +117,7 @@ static class DungeonRegistrationHandler
             if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(spawnSyncedObject.spawnPrefab))
                 continue;
 
+            _objectsToUnregister.Add(spawnSyncedObject.spawnPrefab);
             NetworkManager.Singleton.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
         }
         orig(self);
