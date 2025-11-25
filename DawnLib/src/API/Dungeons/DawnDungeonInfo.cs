@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using DunGen.Graph;
+using UnityEngine;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using DunGen;
-using DunGen.Graph;
 using Unity.Netcode;
-using UnityEngine;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
@@ -23,7 +23,10 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
         DungeonFlow = dungeonFlow;
         Weights = weights;
         MapTileSize = mapTileSize;
-        firstTimeAudio = FirstTimeAudio;
+        FirstTimeAudio = firstTimeAudio;
+
+        if (!TypedKey.IsVanilla())
+            return;
 
         _sockets = new();
         _tiles = DungeonFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
@@ -75,26 +78,6 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
                     _spawnSyncedObjects.Add(spawnSyncedObject);
                 }
             }
-        }
-
-        if (Key.IsVanilla())
-        {
-            return;
-        }
-
-        foreach (SpawnSyncedObject spawnSyncedObject in SpawnSyncedObjects)
-        {
-            if (spawnSyncedObject.spawnPrefab == null)
-                continue;
-
-            if (spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
-            {
-                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(Key.ToString() + spawnSyncedObject.spawnPrefab.name));
-                NetworkObject networkObject = spawnSyncedObject.spawnPrefab.AddComponent<NetworkObject>();
-                networkObject.GlobalObjectIdHash = BitConverter.ToUInt32(hash, 0);
-            }
-
-            DawnLib.RegisterNetworkPrefab(spawnSyncedObject.spawnPrefab);
         }
     }
 

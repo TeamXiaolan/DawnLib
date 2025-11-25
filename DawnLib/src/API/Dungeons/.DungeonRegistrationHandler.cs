@@ -5,6 +5,7 @@ using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
 using MonoMod.RuntimeDetour;
+using Unity.Netcode;
 using UnityEngine;
 using static DunGen.Graph.DungeonFlow;
 
@@ -18,6 +19,8 @@ static class DungeonRegistrationHandler
         {
             On.StartOfRound.Awake += RegisterDawnDungeons;
         }
+
+        On.RoundManager.SpawnSyncedProps += FixDawnSpawnSyncedObjects;
 
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
@@ -34,6 +37,67 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static void FixDawnSpawnSyncedObjects(On.RoundManager.orig_SpawnSyncedProps orig, RoundManager self)
+    {
+        SpawnSyncedObject[] allSpawnSyncedObjects = GameObject.FindObjectsOfType<SpawnSyncedObject>();
+        List<GameObject> vanillaSpawnSyncedObjects = new();
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            if (!dungeonInfo.TypedKey.IsVanilla())
+                continue;
+
+            foreach (GameObject spawnSyncedObject in dungeonInfo.SpawnSyncedObjects.Select(x => x.spawnPrefab))
+            {
+                if (spawnSyncedObject == null)
+                    continue;
+
+                vanillaSpawnSyncedObjects.Add(spawnSyncedObject);
+            }
+        }
+
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            if (dungeonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            foreach (SpawnSyncedObject spawnSyncedObject in allSpawnSyncedObjects)
+            {
+                if (spawnSyncedObject.spawnPrefab == null)
+                    continue;
+
+                foreach (GameObject vanillaSpawnSyncedObject in vanillaSpawnSyncedObjects)
+                {
+                    if (spawnSyncedObject.spawnPrefab.name == vanillaSpawnSyncedObject.name)
+                    {
+                        Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {spawnSyncedObject.spawnPrefab.name} with vanilla reference");
+                        spawnSyncedObject.spawnPrefab = vanillaSpawnSyncedObject;
+                        break;
+                    }
+                }
+            }
+        }
+
+        foreach (SpawnSyncedObject spawnSyncedObject in allSpawnSyncedObjects)
+        {
+            if (spawnSyncedObject.spawnPrefab == null || vanillaSpawnSyncedObjects.Contains(spawnSyncedObject.spawnPrefab))
+                continue;
+
+            // TODO: is this even necessary?
+            /*if (spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
+            {
+                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(Key.ToString() + spawnSyncedObject.spawnPrefab.name));
+                NetworkObject networkObject = spawnSyncedObject.spawnPrefab.AddComponent<NetworkObject>();
+                networkObject.GlobalObjectIdHash = BitConverter.ToUInt32(hash, 0);
+            }*/
+
+            if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(spawnSyncedObject.spawnPrefab))
+                continue;
+
+            NetworkManager.Singleton.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
+        }
+        orig(self);
     }
 
     private static void AdjustFireExits(DungeonFlow dungeonFlow) // code mostly taken from LLL
