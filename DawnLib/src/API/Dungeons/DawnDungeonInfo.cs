@@ -3,10 +3,7 @@ using DunGen.Graph;
 using UnityEngine;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using DunGen;
-using Unity.Netcode;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
@@ -25,7 +22,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
         MapTileSize = mapTileSize;
         FirstTimeAudio = firstTimeAudio;
 
-        if (!TypedKey.IsVanilla())
+        if (!ShouldSkipIgnoreOverride())
             return;
 
         _sockets = new();
@@ -82,6 +79,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     }
 
     public DungeonFlow DungeonFlow { get; }
+    public string AssetBundlePath { get; }
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
     public float MapTileSize { get; private set; }
     public AudioClip? FirstTimeAudio { get; }

@@ -44,82 +44,25 @@ static class DungeonRegistrationHandler
     private static IEnumerator UnloadCustomDawnDungeon(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
         // TODO: unload dawn dungeonflow
-        foreach (GameObject obj in _objectsToUnregister)
-        {
-            NetworkManager.Singleton.RemoveNetworkPrefab(obj);
-        }
-        _objectsToUnregister.Clear();
-        DungeonFlow flowToUnload = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
-        DawnDungeonInfo? dungeonInfo = flowToUnload.GetDawnInfo();
-        if (dungeonInfo == null || dungeonInfo.Key.IsVanilla())
+        DawnDungeonNetworker.Instance?.SyncSpawnSyncedObjectsServerRpc(false);
+
+        DungeonFlow flowToClear = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
+        DawnDungeonInfo? dungeonInfo = flowToClear.GetDawnInfo();
+        if (dungeonInfo == null || dungeonInfo.ShouldSkipIgnoreOverride())
         {
             yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
             yield break;
         }
+
         // do unload here
+        // clear flow values here etc.
         yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
     }
 
-    private static List<GameObject> _objectsToUnregister = new();
     private static void FixDawnSpawnSyncedObjects(On.RoundManager.orig_SpawnSyncedProps orig, RoundManager self)
-    { // TODO: sync this to all players
-        SpawnSyncedObject[] allSpawnSyncedObjects = GameObject.FindObjectsOfType<SpawnSyncedObject>();
-        List<GameObject> vanillaSpawnSyncedObjects = new();
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
-        {
-            if (!dungeonInfo.TypedKey.IsVanilla())
-                continue;
-
-            foreach (GameObject spawnSyncedObject in dungeonInfo.SpawnSyncedObjects.Select(x => x.spawnPrefab))
-            {
-                if (spawnSyncedObject == null)
-                    continue;
-
-                vanillaSpawnSyncedObjects.Add(spawnSyncedObject);
-            }
-        }
-
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
-        {
-            if (dungeonInfo.ShouldSkipIgnoreOverride())
-                continue;
-
-            foreach (SpawnSyncedObject spawnSyncedObject in allSpawnSyncedObjects)
-            {
-                if (spawnSyncedObject.spawnPrefab == null)
-                    continue;
-
-                foreach (GameObject vanillaSpawnSyncedObject in vanillaSpawnSyncedObjects)
-                {
-                    if (spawnSyncedObject.spawnPrefab.name == vanillaSpawnSyncedObject.name)
-                    {
-                        Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {spawnSyncedObject.spawnPrefab.name} with vanilla reference");
-                        spawnSyncedObject.spawnPrefab = vanillaSpawnSyncedObject;
-                        break;
-                    }
-                }
-            }
-        }
-
-        foreach (SpawnSyncedObject spawnSyncedObject in allSpawnSyncedObjects)
-        {
-            if (spawnSyncedObject.spawnPrefab == null || vanillaSpawnSyncedObjects.Contains(spawnSyncedObject.spawnPrefab))
-                continue;
-
-            // TODO: is this even necessary?
-            /*if (spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
-            {
-                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(Key.ToString() + spawnSyncedObject.spawnPrefab.name));
-                NetworkObject networkObject = spawnSyncedObject.spawnPrefab.AddComponent<NetworkObject>();
-                networkObject.GlobalObjectIdHash = BitConverter.ToUInt32(hash, 0);
-            }*/
-
-            if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(spawnSyncedObject.spawnPrefab))
-                continue;
-
-            _objectsToUnregister.Add(spawnSyncedObject.spawnPrefab);
-            NetworkManager.Singleton.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
-        }
+    {
+        // TODO this will probably be too late because it's an rpc?
+        DawnDungeonNetworker.Instance?.SyncSpawnSyncedObjectsServerRpc(true);
         orig(self);
     }
 

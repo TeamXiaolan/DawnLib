@@ -251,7 +251,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
 
-        Debuggers.Moons?.Log($"{nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
+        Debuggers.Moons?.Log($"Moon {nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
         Debuggers.Moons?.Log($"connected players amount: {_playerStates.Count}. done players = {_playerStates.Count(it => it.Value == BundleState.Done)}");
 
         if (remainingPlayers <= 0)
