@@ -77,6 +77,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         if (importantDungeonInfo.ShouldSkipIgnoreOverride())
             return;
 
+        NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
         if (register)
         {
             List<GameObject> vanillaSpawnSyncedObjects = new();
@@ -138,11 +139,12 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             }
             _objectsToUnregister.Clear();
         }
+        NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
     }
 
     // todo: this is technically insecure. i dont care
     [ServerRpc(RequireOwnership = false)]
-    private void PlayerSetBundleStateServerRpc(PlayerControllerReference reference, BundleState state)
+    internal void PlayerSetBundleStateServerRpc(PlayerControllerReference reference, BundleState state)
     {
         PlayerSetBundleStateClientRpc(reference, state);
     }
@@ -235,8 +237,11 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         base.OnNetworkDespawn();
 
         // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
+        if (_currentBundle == null)
+            return;
+
         SyncSpawnSyncedObjects(false);
-        _currentBundle?.Unload(true);
+        _currentBundle.Unload(true);
     }
 
     internal IEnumerator UnloadExisting()
@@ -261,13 +266,12 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         dungeonInfo.tiles.Clear();
         
         _currentlyLoadedDungeonFlow = null;
+        _currentDungeonKey = default;
 
         yield return _currentBundle.UnloadAsync(true);
-
-        Resources.UnloadUnusedAssets();
-
         _currentBundle = null;
         _currentBundlePath = null;
+        Resources.UnloadUnusedAssets();
     }
 
     private void CheckReady()

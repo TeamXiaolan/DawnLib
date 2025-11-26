@@ -7,6 +7,7 @@ using DunGen;
 using DunGen.Graph;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
+using static Dawn.Internal.DawnMoonNetworker;
 using static DunGen.Graph.DungeonFlow;
 
 namespace Dawn;
@@ -42,15 +43,34 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator UnloadDungeonBundleForAllPlayers(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
-        yield return DawnDungeonNetworker.Instance!.StartCoroutine(DawnDungeonNetworker.Instance.UnloadExisting());
-        yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
+        IEnumerator unloadIEnumerator = DawnDungeonNetworker.Instance!.UnloadExisting();
+        while (unloadIEnumerator.MoveNext())
+        {
+            yield return unloadIEnumerator.Current;
+        }
+        DawnDungeonNetworker.Instance.PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+
+        IEnumerator origIEnumerator = orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
+        while (origIEnumerator.MoveNext())
+        {
+            yield return origIEnumerator.Current;
+        }
     }
 
     private static IEnumerator LoadDungeonBundle(On.DunGen.DungeonGenerator.orig_OuterGenerate orig, DungeonGenerator self)
     {
         DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(self.DungeonFlow.GetDawnInfo().Key);
-        yield return new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
-        yield return orig(self);
+        IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
+        while (waitForLoad.MoveNext())
+        {
+            yield return waitForLoad.Current;
+        }
+
+        IEnumerator origIEnumerator = orig(self);
+        while (origIEnumerator.MoveNext())
+        {
+            yield return origIEnumerator.Current;
+        }
     }
 
     private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
@@ -81,6 +101,7 @@ static class DungeonRegistrationHandler
 
     private static void UpdateAllDungeonWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
     {
+        // TODO: update on lever pull
         orig(self, connectedPlayersOnServer);
         UpdateDungeonWeightOnLevel(self.currentLevel);
     }

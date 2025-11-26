@@ -15,26 +15,27 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     [field: SerializeField]
     public AudioClip? StingerAudio { get; private set; }
 
-    [field: Space(10)]
-    [field: Header("Config | Weights")]
+    [field: Space(5)]
+    [field: Header("Configs | Spawn Weights")]
     [field: SerializeField]
     public List<NamespacedConfigWeight> MoonSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
 
-    [field: Header("Config | Generation")]
+    [field: Header("Configs | Generation")]
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
-    [field: Header("Config | Misc")]
+    [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public float MapTileSize { get; private set; }
+    public float MapTileSize { get; private set; } = 1f;
     [field: SerializeField]
     public bool StingerPlaysMoreThanOnce { get; private set; }
     [field: SerializeField]
+    [field: Range(0, 100)]
     public float StingerPlayChance { get; private set; }
 
-    [field: Header("Config | Obsolete")]
+    [field: Header("Configs | Obsolete")]
     [field: SerializeField]
     [Obsolete]
     public string MoonSpawnWeights { get; private set; }
