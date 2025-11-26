@@ -25,6 +25,7 @@ static class DungeonRegistrationHandler
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
+        On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
             self.GenerateOnStart = false;
@@ -39,6 +40,11 @@ static class DungeonRegistrationHandler
         };
     }
 
+    private static IEnumerator UnloadDungeonBundleForAllPlayers(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
+    {
+        yield return DawnDungeonNetworker.Instance!.StartCoroutine(DawnDungeonNetworker.Instance.UnloadExisting());
+        yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
+    }
 
     private static IEnumerator LoadDungeonBundle(On.DunGen.DungeonGenerator.orig_OuterGenerate orig, DungeonGenerator self)
     {

@@ -235,6 +235,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         base.OnNetworkDespawn();
 
         // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
+        SyncSpawnSyncedObjects(false);
         _currentBundle?.Unload(true);
     }
 
