@@ -10,38 +10,39 @@ namespace Dawn;
 
 public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
-    private List<DoorwaySocket> _sockets;
-    private List<Doorway> _doorways;
-    private List<SpawnSyncedObject> _spawnSyncedObjects;
-    private List<Tile> _tiles;
+    internal List<DoorwaySocket> sockets;
+    internal List<Doorway> doorways;
+    internal List<SpawnSyncedObject> spawnSyncedObjects;
+    internal List<Tile> tiles;
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, string assetBundlePath, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         Weights = weights;
         MapTileSize = mapTileSize;
         FirstTimeAudio = firstTimeAudio;
+        AssetBundlePath = assetBundlePath;
 
         if (!ShouldSkipIgnoreOverride())
             return;
 
-        _sockets = new();
-        _tiles = DungeonFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
-        _doorways = new();
-        _spawnSyncedObjects = new();
+        sockets = new();
+        tiles = DungeonFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
+        doorways = new();
+        spawnSyncedObjects = new();
 
         foreach (Tile dungeonTile in Tiles)
         {
             foreach (Doorway dungeonDoorway in dungeonTile.gameObject.GetComponentsInChildren<Doorway>())
             {
-                if (!_doorways.Contains(dungeonDoorway))
+                if (!Doorways.Contains(dungeonDoorway))
                 {
-                    _doorways.Add(dungeonDoorway);
+                    doorways.Add(dungeonDoorway);
                 }
 
                 if (!Sockets.Contains(dungeonDoorway.socket))
                 {
-                    _sockets.Add(dungeonDoorway.socket);
+                    sockets.Add(dungeonDoorway.socket);
                 }
 
                 foreach (GameObjectWeight doorwayTileWeight in dungeonDoorway.ConnectorPrefabWeights)
@@ -50,7 +51,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
                     {
                         if (!SpawnSyncedObjects.Contains(spawnSyncedObject))
                         {
-                            _spawnSyncedObjects.Add(spawnSyncedObject);
+                            spawnSyncedObjects.Add(spawnSyncedObject);
                         }
                     }
                 }
@@ -62,7 +63,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
                     {
                         if (!SpawnSyncedObjects.Contains(spawnSyncedObject))
                         {
-                            _spawnSyncedObjects.Add(spawnSyncedObject);
+                            spawnSyncedObjects.Add(spawnSyncedObject);
                         }
                     }
                 }
@@ -72,7 +73,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
             {
                 if (!SpawnSyncedObjects.Contains(spawnSyncedObject))
                 {
-                    _spawnSyncedObjects.Add(spawnSyncedObject);
+                    spawnSyncedObjects.Add(spawnSyncedObject);
                 }
             }
         }
@@ -84,10 +85,10 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     public float MapTileSize { get; private set; }
     public AudioClip? FirstTimeAudio { get; }
 
-    public IReadOnlyList<Tile> Tiles => _tiles.AsReadOnly();
-    public IReadOnlyList<Doorway> Doorways => _doorways.AsReadOnly();
-    public IReadOnlyList<SpawnSyncedObject> SpawnSyncedObjects => _spawnSyncedObjects.AsReadOnly();
-    public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
+    public IReadOnlyList<Tile> Tiles => tiles.AsReadOnly();
+    public IReadOnlyList<Doorway> Doorways => doorways.AsReadOnly();
+    public IReadOnlyList<SpawnSyncedObject> SpawnSyncedObjects => spawnSyncedObjects.AsReadOnly();
+    public IReadOnlyList<DoorwaySocket> Sockets => sockets.AsReadOnly();
 
     public static int FireExitGlobalPropID = 1231;
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Dawn;
-using DunGen.Graph;
+using Dusk.Utils;
 using Dusk.Weights;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace Dusk;
 public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 {
     [field: SerializeField]
-    public DungeonFlow DungeonFlow { get; private set; }
+    public DungeonFlowReference DungeonFlowReference { get; private set; }
     [field: SerializeField]
     public AudioClip? StingerAudio { get; private set; }
 
@@ -55,8 +55,9 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
 
         SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
-        DawnLib.DefineDungeon(TypedKey, DungeonFlow, builder =>
+        DawnLib.DefineDungeon(TypedKey, builder =>
         {
+            builder.SetAssetBundlePath(mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             builder.SetFirstTimeAudio(StingerAudio);
             builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
@@ -73,5 +74,5 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         };
     }
 
-    protected override string EntityNameReference => DungeonFlow?.name ?? string.Empty;
+    protected override string EntityNameReference => DungeonFlowReference?.FlowAssetName ?? string.Empty;
 }

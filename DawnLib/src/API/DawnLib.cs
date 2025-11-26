@@ -86,8 +86,9 @@ public static class DawnLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
-    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, DungeonFlow dungeonFlow, Action<DungeonFlowInfoBuilder> callback)
+    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, Action<DungeonFlowInfoBuilder> callback)
     {
+        DungeonFlow dungeonFlow = ScriptableObject.CreateInstance<DungeonFlow>();
         DungeonFlowInfoBuilder builder = new(key, dungeonFlow);
         callback(builder);
         DawnDungeonInfo dungeonFlowInfo = builder.Build();

@@ -6,7 +6,6 @@ using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
 using MonoMod.RuntimeDetour;
-using Unity.Netcode;
 using UnityEngine;
 using static DunGen.Graph.DungeonFlow;
 
@@ -21,9 +20,8 @@ static class DungeonRegistrationHandler
             On.StartOfRound.Awake += RegisterDawnDungeons;
         }
 
-        On.StartOfRound.EndOfGame += UnloadCustomDawnDungeon;
-        On.RoundManager.SpawnSyncedProps += FixDawnSpawnSyncedObjects;
-
+        On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
+        On.DunGen.DungeonGenerator.OuterGenerate += LoadDungeonBundle;
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
@@ -41,29 +39,22 @@ static class DungeonRegistrationHandler
         };
     }
 
-    private static IEnumerator UnloadCustomDawnDungeon(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
+
+    private static IEnumerator LoadDungeonBundle(On.DunGen.DungeonGenerator.orig_OuterGenerate orig, DungeonGenerator self)
     {
-        // TODO: unload dawn dungeonflow
-        DawnDungeonNetworker.Instance?.SyncSpawnSyncedObjectsServerRpc(false);
-
-        DungeonFlow flowToClear = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
-        DawnDungeonInfo? dungeonInfo = flowToClear.GetDawnInfo();
-        if (dungeonInfo == null || dungeonInfo.ShouldSkipIgnoreOverride())
-        {
-            yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
-            yield break;
-        }
-
-        // do unload here
-        // clear flow values here etc.
-        yield return orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
+        DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(self.DungeonFlow.GetDawnInfo().Key);
+        yield return new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
+        yield return orig(self);
     }
 
-    private static void FixDawnSpawnSyncedObjects(On.RoundManager.orig_SpawnSyncedProps orig, RoundManager self)
+    private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
     {
-        // TODO this will probably be too late because it's an rpc?
-        DawnDungeonNetworker.Instance?.SyncSpawnSyncedObjectsServerRpc(true);
-        orig(self);
+        orig(self, clientid);
+
+        if (self.IsServer && self.inShipPhase)
+        {
+            DawnDungeonNetworker.Instance?.HostRebroadcastQueue();
+        }
     }
 
     private static void AdjustFireExits(DungeonFlow dungeonFlow) // code mostly taken from LLL
@@ -200,7 +191,7 @@ static class DungeonRegistrationHandler
             dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
             weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo>();
 
-            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, null);
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, string.Empty, null);
             indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }

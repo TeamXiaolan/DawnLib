@@ -8,6 +8,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     private float _mapTileSize = 0f;
     private AudioClip? _firstTimeAudio = null;
     private ProviderTable<int?, DawnMoonInfo>? _weights;
+    private string _assetBundlePath = string.Empty;
 
     internal DungeonFlowInfoBuilder(NamespacedKey<DawnDungeonInfo> key, DungeonFlow value) : base(key, value)
     {
@@ -16,6 +17,12 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     public DungeonFlowInfoBuilder SetMapTileSize(float mapTileSize)
     {
         _mapTileSize = mapTileSize;
+        return this;
+    }
+
+    public DungeonFlowInfoBuilder SetAssetBundlePath(string assetBundlePath)
+    {
+        _assetBundlePath = assetBundlePath;
         return this;
     }
 
@@ -35,6 +42,6 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
 
     override internal DawnDungeonInfo Build()
     {
-        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, _firstTimeAudio, customData);
+        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, _firstTimeAudio, _assetBundlePath, customData);
     }
 }

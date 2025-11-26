@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Dawn.Utils;
+using DunGen;
 using DunGen.Graph;
 using GameNetcodeStuff;
 using Unity.Netcode;
@@ -31,22 +32,27 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     internal void HostDecide(DawnDungeonInfo dungeonInfo)
     {
-        QueueMoonSceneLoadingServerRpc(dungeonInfo.Key);
+        QueueDungeonBundleLoadingServerRpc(dungeonInfo.Key);
     }
 
     internal void HostRebroadcastQueue()
     {
-        QueueMoonSceneLoadingServerRpc(_currentDungeonKey);
+        QueueDungeonBundleLoadingServerRpc(_currentDungeonKey);
     }
 
     [ServerRpc]
-    private void QueueMoonSceneLoadingServerRpc(NamespacedKey dungeonKey)
+    private void QueueDungeonBundleLoadingServerRpc(NamespacedKey dungeonKey)
     {
-        QueueMoonSceneLoadingClientRpc(dungeonKey);
+        QueueDungeonBundleLoadingClientRpc(dungeonKey);
     }
 
     [ClientRpc]
-    private void QueueMoonSceneLoadingClientRpc(NamespacedKey dungeonKey)
+    private void QueueDungeonBundleLoadingClientRpc(NamespacedKey dungeonKey)
+    {
+        QueueDungeonBundleLoading(dungeonKey);
+    }
+
+    internal void QueueDungeonBundleLoading(NamespacedKey dungeonKey)
     {
         DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[dungeonKey.AsTyped<DawnDungeonInfo>()];
 
@@ -59,29 +65,20 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             _playerStates[player] = BundleState.Queued;
         }
 
-        CheckReadyAndUpdateUI();
+        CheckReady();
         StartCoroutine(DoDungeonBundleLoading(dungeonInfo));
     }
 
     private static List<GameObject> _objectsToUnregister = new();
 
-    [ServerRpc]
-    internal void SyncSpawnSyncedObjectsServerRpc(bool register)
+    internal void SyncSpawnSyncedObjects(bool register)
     {
-        SyncSpawnSyncedObjectsClientRpc(register);
-    }
-
-    [ClientRpc]
-    private void SyncSpawnSyncedObjectsClientRpc(bool register)
-    {
-        DungeonFlow dungeonFlow = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
-
-        if (dungeonFlow.GetDawnInfo().ShouldSkipIgnoreOverride())
+        DawnDungeonInfo importantDungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
+        if (importantDungeonInfo.ShouldSkipIgnoreOverride())
             return;
 
         if (register)
         {
-            SpawnSyncedObject[] allSpawnSyncedObjects = GameObject.FindObjectsOfType<SpawnSyncedObject>();
             List<GameObject> vanillaSpawnSyncedObjects = new();
             foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
             {
@@ -97,7 +94,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 }
             }
 
-            foreach (SpawnSyncedObject spawnSyncedObject in allSpawnSyncedObjects)
+            foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
             {
                 if (spawnSyncedObject.spawnPrefab == null)
                     continue;
@@ -113,7 +110,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 }
             }
 
-            foreach (SpawnSyncedObject spawnSyncedObject in allSpawnSyncedObjects)
+            foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
             {
                 if (spawnSyncedObject.spawnPrefab == null || vanillaSpawnSyncedObjects.Contains(spawnSyncedObject.spawnPrefab))
                     continue;
@@ -156,7 +153,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         PlayerControllerB player = reference;
 
         _playerStates[reference] = state;
-        CheckReadyAndUpdateUI();
+        CheckReady();
 
         if (state == BundleState.Error)
         {
@@ -167,7 +164,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     private IEnumerator DoDungeonBundleLoading(DawnDungeonInfo dungeonInfo)
     {
-        yield return new WaitForSeconds(0.05f); // here to avoid a race condition, i think a client coudl recieve PlayerReadyToRoute before QueueMoonScene and fuck shit up
+        yield return new WaitForSeconds(0.05f); // here to avoid a race condition.
 
         if (Equals(dungeonInfo.TypedKey, _currentDungeonKey))
         {
@@ -175,7 +172,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             yield break;
         }
         _currentDungeonKey = dungeonInfo.TypedKey;
-
 
         if (!dungeonInfo.ShouldSkipIgnoreOverride())
         {
@@ -240,49 +236,54 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
         // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
         _currentBundle?.Unload(true);
-        _currentlyLoadedDungeonFlow = null;
     }
 
-    private IEnumerator UnloadExisting()
+    internal IEnumerator UnloadExisting()
     {
         if (_currentBundle == null)
             yield break;
 
         PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
+        SyncSpawnSyncedObjects(false);
+
+        DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
+        DungeonFlow flowToClear = dungeonInfo.DungeonFlow;
+        flowToClear.KeyManager = null;
+        flowToClear.TileInjectionRules.Clear();
+        flowToClear.Nodes.Clear();
+        flowToClear.Lines.Clear();
+        
+        dungeonInfo.sockets.Clear();
+        dungeonInfo.doorways.Clear();
+        dungeonInfo.spawnSyncedObjects.Clear();
+        dungeonInfo.tiles.Clear();
+        
+        _currentlyLoadedDungeonFlow = null;
+
         yield return _currentBundle.UnloadAsync(true);
 
+        Resources.UnloadUnusedAssets();
+
         _currentBundle = null;
-        _currentlyLoadedDungeonFlow = null;
         _currentBundlePath = null;
     }
 
-    private void CheckReadyAndUpdateUI()
+    private void CheckReady()
     {
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
 
-        Debuggers.Dungeons?.Log($"Dungeon {nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
+        Debuggers.Dungeons?.Log($"Dungeon {nameof(CheckReady)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
         Debuggers.Dungeons?.Log($"connected players amount: {_playerStates.Count}. done players = {_playerStates.Count(it => it.Value == BundleState.Done)}");
 
         if (remainingPlayers <= 0)
         {
-            // ready!
-            StartCoroutine(UnlockGame());
+            UnlockGame();
         }
         else
         {
             LockGame();
-
-            if (anyFailedPlayers)
-            {
-                // StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = " [ Someone failed to pre-load the moon, report this! ] ";
-            }
-            else
-            {
-                // todo: add a call out for players with bad connection that they're taking their sweet time.
-                // StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip = $" [ {remainingPlayers} player(s) still need to load ] ";
-            }
         }
     }
 
@@ -291,14 +292,83 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         allPlayersDone = false;
     }
 
-    private IEnumerator UnlockGame()
+    private void UnlockGame()
     {
-        allPlayersDone = true;
-        yield return new WaitUntil(() => allPlayersDone);
-
         if (_currentlyLoadedDungeonFlow != null && RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow.name == _currentlyLoadedDungeonFlow.name)
         {
-            RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow = _currentlyLoadedDungeonFlow;
+            DungeonFlow fakeFlow = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
+            fakeFlow.globalPropGroupID_obsolete = _currentlyLoadedDungeonFlow.globalPropGroupID_obsolete;
+            fakeFlow.globalPropRanges_obsolete = _currentlyLoadedDungeonFlow.globalPropRanges_obsolete;
+            fakeFlow.Length = _currentlyLoadedDungeonFlow.Length;
+            fakeFlow.BranchMode = _currentlyLoadedDungeonFlow.BranchMode;
+            fakeFlow.BranchCount = _currentlyLoadedDungeonFlow.BranchCount;
+            fakeFlow.GlobalProps = _currentlyLoadedDungeonFlow.GlobalProps;
+            fakeFlow.KeyManager = _currentlyLoadedDungeonFlow.KeyManager;
+            fakeFlow.DoorwayConnectionChance = _currentlyLoadedDungeonFlow.DoorwayConnectionChance;
+            fakeFlow.RestrictConnectionToSameSection = _currentlyLoadedDungeonFlow.RestrictConnectionToSameSection;
+            fakeFlow.TileInjectionRules = _currentlyLoadedDungeonFlow.TileInjectionRules;
+            fakeFlow.TileTagConnectionMode = _currentlyLoadedDungeonFlow.TileTagConnectionMode;
+            fakeFlow.TileConnectionTags = _currentlyLoadedDungeonFlow.TileConnectionTags;
+            fakeFlow.BranchTagPruneMode = _currentlyLoadedDungeonFlow.BranchTagPruneMode;
+            fakeFlow.BranchPruneTags = _currentlyLoadedDungeonFlow.BranchPruneTags;
+            fakeFlow.Nodes = _currentlyLoadedDungeonFlow.Nodes;
+            fakeFlow.Lines = _currentlyLoadedDungeonFlow.Lines;
+            fakeFlow.currentFileVersion = _currentlyLoadedDungeonFlow.currentFileVersion;
+            DawnDungeonInfo dungeonInfo = fakeFlow.GetDawnInfo();
+
+            dungeonInfo.sockets = new();
+            dungeonInfo.tiles = fakeFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
+            dungeonInfo.doorways = new();
+            dungeonInfo.spawnSyncedObjects = new();
+
+            foreach (Tile dungeonTile in dungeonInfo.Tiles)
+            {
+                foreach (Doorway dungeonDoorway in dungeonTile.gameObject.GetComponentsInChildren<Doorway>())
+                {
+                    if (!dungeonInfo.Doorways.Contains(dungeonDoorway))
+                    {
+                        dungeonInfo.doorways.Add(dungeonDoorway);
+                    }
+
+                    if (!dungeonInfo.Sockets.Contains(dungeonDoorway.socket))
+                    {
+                        dungeonInfo.sockets.Add(dungeonDoorway.socket);
+                    }
+
+                    foreach (GameObjectWeight doorwayTileWeight in dungeonDoorway.ConnectorPrefabWeights)
+                    {
+                        foreach (SpawnSyncedObject spawnSyncedObject in doorwayTileWeight.GameObject.GetComponentsInChildren<SpawnSyncedObject>())
+                        {
+                            if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
+                            {
+                                dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
+                            }
+                        }
+                    }
+
+
+                    foreach (GameObjectWeight doorwayTileWeight in dungeonDoorway.BlockerPrefabWeights)
+                    {
+                        foreach (SpawnSyncedObject spawnSyncedObject in doorwayTileWeight.GameObject.GetComponentsInChildren<SpawnSyncedObject>())
+                        {
+                            if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
+                            {
+                                dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
+                            }
+                        }
+                    }
+                }
+
+                foreach (SpawnSyncedObject spawnSyncedObject in dungeonTile.gameObject.GetComponentsInChildren<SpawnSyncedObject>())
+                {
+                    if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
+                    {
+                        dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
+                    }
+                }
+            }
+            SyncSpawnSyncedObjects(true);
         }
+        allPlayersDone = true;
     }
 }
