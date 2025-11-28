@@ -29,6 +29,7 @@ static class DungeonRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         IL.RoundManager.GenerateNewFloor += DelayDungeonGeneration;
+        IL.RoundManager.Generator_OnGenerationStatusChanged += FixVanillaGenerationStatusChangedBug;
         On.RoundManager.GenerateNewFloor += (orig, self) =>
         {
             UpdateDungeonWeightOnLevel(self.currentLevel);
@@ -47,6 +48,48 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    public static void FixVanillaGenerationStatusChangedBug(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+        if (!c.TryGotoNext(
+                MoveType.After,
+                i => i.MatchLdarg(2),
+                i => i.MatchLdcI4(6),
+                i => i.MatchBneUn(out _)))
+        {
+            DawnPlugin.Logger.LogError("Failed to find the bne instruction in Generator_OnGenerationStatusChanged");
+            return;
+        }
+
+        Instruction bneInstruction = c.Previous;
+
+        c.Goto(0);
+
+        if (!c.TryGotoNext(
+                MoveType.After,
+                i => i.MatchLdarg(0),
+                i => i.MatchLdfld<RoundManager>("dungeonCompletedGenerating"),
+                i => i.MatchBrtrue(out _)))
+        {
+            DawnPlugin.Logger.LogError("Failed to find brtrue instruction in Generator_OnGenerationStatusChanged");
+            return;
+        }
+
+        Instruction brtrueInstruction = c.Previous;
+
+        if (!c.TryGotoNext(
+                MoveType.After,
+                i => i.MatchRet()))
+        {
+            DawnPlugin.Logger.LogError("Failed to find ret instruction in Generator_OnGenerationStatusChanged");
+            return;
+        }
+
+        Instruction retInstruction = c.Previous;
+        brtrueInstruction.Operand = retInstruction;
+        bneInstruction.Operand = retInstruction;
     }
 
     private static void CleanDawnDungeonReferences()

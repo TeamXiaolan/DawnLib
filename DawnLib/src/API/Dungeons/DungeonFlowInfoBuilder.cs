@@ -41,13 +41,13 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
             {
                 tileSet = ScriptableObject.CreateInstance<TileSet>();
                 tileSet.name = name;
-                DawnPlugin.Logger.LogFatal($"Creating new TileSet '{name}' for archetype '{archetypeName}'");
-
                 tileSetLookup.Add(name, tileSet);
             }
 
             if (!tileSetsToUse.Contains(tileSet))
+            {
                 tileSetsToUse.Add(tileSet);
+            }
         }
 
         DungeonArchetype? targetArchetype = null;
