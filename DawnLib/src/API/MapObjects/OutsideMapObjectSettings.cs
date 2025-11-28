@@ -6,9 +6,6 @@ namespace Dawn;
 [Serializable]
 public class OutsideMapObjectSettings
 {
-    [HideInInspector]
-    public AnimationCurve VanillaAnimationCurve;
-
     // TODO: implement these like in vanilla
     public bool SpawnFacingAwayFromWall = false;
     public int ObjectWidth = 6;
