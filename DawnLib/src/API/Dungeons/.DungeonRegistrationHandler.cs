@@ -5,6 +5,8 @@ using System.Linq;
 using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using static Dawn.Internal.DawnMoonNetworker;
@@ -22,11 +24,12 @@ static class DungeonRegistrationHandler
         }
 
         On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
-        On.DunGen.DungeonGenerator.OuterGenerate += LoadDungeonBundle;
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
+        IL.RoundManager.GenerateNewFloor += DelayDungeonGeneration;
+        LethalContent.Dungeons.BeforeFreeze += CleanDawnDungeonReferences;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
             self.GenerateOnStart = false;
@@ -39,6 +42,51 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static void CleanDawnDungeonReferences()
+    {
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            if (dungeonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            List<DungeonArchetype> archetypes = dungeonInfo.DungeonFlow.GetUsedArchetypes().Distinct().ToList();
+            List<TileSet> tileSets = dungeonInfo.DungeonFlow.GetUsedTileSets().Distinct().ToList();
+            dungeonInfo.DungeonFlow.Nodes.Clear();
+            dungeonInfo.DungeonFlow.Lines.Clear();
+            for (int i = archetypes.Count - 1; i >= 0; i--)
+            {
+                ScriptableObject.Destroy(archetypes[i]);
+            }
+            for (int i = tileSets.Count - 1; i >= 0; i--)
+            {
+                ScriptableObject.Destroy(tileSets[i]);
+            }
+        }
+    }
+
+    private static void DelayDungeonGeneration(ILContext il)
+    {
+        ILCursor c = new(il);
+
+        if (c.TryGotoNext(MoveType.Before,
+                i => i.MatchLdarg(0),
+                i => i.MatchLdfld<RoundManager>("dungeonGenerator"),
+                i => i.MatchCallvirt<RuntimeDungeon>("Generate")))
+        {
+            c.RemoveRange(3);
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<IEnumerator>>(LoadDungeonBundle);
+
+            var startCoroutine = typeof(MonoBehaviour).GetMethod("StartCoroutine", new[] { typeof(IEnumerator) })!;
+            c.Emit(OpCodes.Callvirt, startCoroutine);
+            c.Emit(OpCodes.Pop);
+        }
+        else
+        {
+            DawnPlugin.Logger.LogError("Failed to apply DawnLib dungeon generation delay patch!");
+        }
     }
 
     private static IEnumerator UnloadDungeonBundleForAllPlayers(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
@@ -57,20 +105,20 @@ static class DungeonRegistrationHandler
         }
     }
 
-    private static IEnumerator LoadDungeonBundle(On.DunGen.DungeonGenerator.orig_OuterGenerate orig, DungeonGenerator self)
+    private static IEnumerator LoadDungeonBundle()
     {
-        DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(self.DungeonFlow.GetDawnInfo().Key);
-        IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
-        while (waitForLoad.MoveNext())
+        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+        if (!dungeonInfo.ShouldSkipIgnoreOverride())
         {
-            yield return waitForLoad.Current;
+            DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(dungeonInfo.Key);
+            IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
+            while (waitForLoad.MoveNext())
+            {
+                yield return waitForLoad.Current;
+            }
         }
-
-        IEnumerator origIEnumerator = orig(self);
-        while (origIEnumerator.MoveNext())
-        {
-            yield return origIEnumerator.Current;
-        }
+        yield return new WaitForSeconds(0.1f);
+        RoundManager.Instance.dungeonGenerator.Generate();
     }
 
     private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
@@ -257,12 +305,17 @@ static class DungeonRegistrationHandler
                     continue;
                 }
 
-                DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, [DawnLibTags.IsExternal], dungeonArchetype, null);
+                HashSet<NamespacedKey> archetypeTags = [];
+                if (dungeonInfo.HasTag(DawnLibTags.IsExternal))
+                {
+                    archetypeTags.Add(DawnLibTags.IsExternal);
+                }
+                DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, archetypeTags, dungeonArchetype, null);
                 dungeonArchetype.SetDawnInfo(info);
                 info.ParentInfo = dungeonInfo;
                 LethalContent.Archetypes.Register(info);
 
-                IEnumerable<TileSet> allTiles = [.. dungeonArchetype.TileSets, .. dungeonArchetype.BranchCapTileSets];
+                List<TileSet> allTiles = [.. dungeonArchetype.TileSets, .. dungeonArchetype.BranchCapTileSets];
                 foreach (TileSet tileSet in allTiles)
                 {
                     NamespacedKey<DawnTileSetInfo>? tileSetKey;
@@ -279,7 +332,7 @@ static class DungeonRegistrationHandler
                     }
                     else
                     {
-                        tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
+                        tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, false));
                     }
 
                     if (LethalContent.TileSets.ContainsKey(tileSetKey))
@@ -288,7 +341,13 @@ static class DungeonRegistrationHandler
                         tileSet.SetDawnInfo(LethalContent.TileSets[tileSetKey]);
                         continue;
                     }
-                    DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, [DawnLibTags.IsExternal], ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet), null);
+
+                    HashSet<NamespacedKey> tileSetTags = [];
+                    if (dungeonInfo.HasTag(DawnLibTags.IsExternal))
+                    {
+                        tileSetTags.Add(DawnLibTags.IsExternal);
+                    }
+                    DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, tileSetTags, ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet), null);
                     info.AddTileSet(tileSetInfo);
                     tileSet.SetDawnInfo(tileSetInfo);
                     LethalContent.TileSets.Register(tileSetInfo);
@@ -355,29 +414,26 @@ static class DungeonRegistrationHandler
                 continue;
             }
             Debuggers.Dungeons?.Log($"Injecting tile sets for {archetype.name}");
-            foreach (DawnTileSetInfo tileSet in archetype.GetDawnInfo().TileSets)
+            foreach (DawnTileSetInfo tileSetInfo in archetype.GetDawnInfo().TileSets)
             {
-                if (tileSet.ShouldSkipIgnoreOverride())
+                if (tileSetInfo.ShouldSkipIgnoreOverride())
                     continue;
 
                 // remove unconditionally.
-                if (archetype.BranchCapTileSets.Contains(tileSet.TileSet))
-                    archetype.BranchCapTileSets.Remove(tileSet.TileSet);
-
-                if (archetype.TileSets.Contains(tileSet.TileSet))
-                    archetype.TileSets.Remove(tileSet.TileSet);
+                archetype.BranchCapTileSets.Remove(tileSetInfo.TileSet);
+                archetype.TileSets.Remove(tileSetInfo.TileSet);
 
                 // then if this passes, re-add to the archetype.
-                if (!tileSet.InjectionPredicate.Evaluate())
+                if (!tileSetInfo.InjectionPredicate.Evaluate())
                     continue;
 
-                if (tileSet.IsBranchCap)
+                if (tileSetInfo.IsBranchCap)
                 {
-                    archetype.BranchCapTileSets.Add(tileSet.TileSet);
+                    archetype.BranchCapTileSets.Add(tileSetInfo.TileSet);
                 }
-                if (tileSet.IsRegular)
+                if (tileSetInfo.IsRegular)
                 {
-                    archetype.TileSets.Add(tileSet.TileSet);
+                    archetype.TileSets.Add(tileSetInfo.TileSet);
                 }
             }
         }

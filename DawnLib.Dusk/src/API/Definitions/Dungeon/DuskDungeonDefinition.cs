@@ -56,8 +56,12 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
 
         SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
-        DawnLib.DefineDungeon(TypedKey, builder =>
+        DawnLib.DefineDungeon(TypedKey, DungeonFlowReference.FlowAssetName, builder =>
         {
+            foreach (var mapping in DungeonFlowReference.ArchetypeTileSets)
+            {
+                builder.SetArchetypeTileSetMapping(mapping.ArchetypeName, mapping.TileSetNames);
+            }
             builder.SetAssetBundlePath(mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             builder.SetFirstTimeAudio(StingerAudio);

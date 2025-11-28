@@ -10,10 +10,10 @@ namespace Dawn;
 
 public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
-    internal List<DoorwaySocket> sockets;
-    internal List<Doorway> doorways;
-    internal List<SpawnSyncedObject> spawnSyncedObjects;
-    internal List<Tile> tiles;
+    internal List<DoorwaySocket> sockets = new();
+    internal List<Doorway> doorways = new();
+    internal List<SpawnSyncedObject> spawnSyncedObjects = new();
+    internal List<Tile> tiles = new();
 
     internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, string assetBundlePath, IDataContainer? customData) : base(key, tags, customData)
     {

@@ -16,8 +16,6 @@ less important:
 
 ## Bongo
 
-- Save system using lookup table with IDs to be slightly faster/more efficient.
-
 less important:
 
 - Config grabbing in AssetBundleLoader should be more optimised.

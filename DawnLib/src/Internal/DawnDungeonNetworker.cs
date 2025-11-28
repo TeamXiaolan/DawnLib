@@ -318,9 +318,52 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             fakeFlow.BranchPruneTags = _currentlyLoadedDungeonFlow.BranchPruneTags;
             fakeFlow.Nodes = _currentlyLoadedDungeonFlow.Nodes;
             fakeFlow.Lines = _currentlyLoadedDungeonFlow.Lines;
+            foreach (GraphNode node in fakeFlow.Nodes)
+            {
+                node.Graph = fakeFlow;
+            }
+            foreach (GraphLine line in fakeFlow.Lines)
+            {
+                line.Graph = fakeFlow;
+            }
             fakeFlow.currentFileVersion = _currentlyLoadedDungeonFlow.currentFileVersion;
-            DawnDungeonInfo dungeonInfo = fakeFlow.GetDawnInfo();
 
+            foreach (TileSet tileSet in fakeFlow.GetUsedTileSets())
+            {
+                Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
+                foreach (DawnTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
+                {
+                    Debuggers.Dungeons?.Log($"tileSetInfo.Key.Key: {tileSetInfo.Key.Key}");
+                    if (tileSetInfo.ShouldSkipIgnoreOverride())
+                        continue;
+
+                    if (tileSet.name.Replace(" ", "_").Equals(tileSetInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tileSet.SetDawnInfo(tileSetInfo);
+                        break;
+                    }
+                }
+            }
+
+            foreach (DungeonArchetype dungeonArchetype in fakeFlow.GetUsedArchetypes())
+            {
+                Debuggers.Dungeons?.Log($"dungeonArchetype.name: {dungeonArchetype.name}");
+                foreach (DawnArchetypeInfo archetypeInfo in LethalContent.Archetypes.Values)
+                {
+                    if (archetypeInfo.ShouldSkipIgnoreOverride())
+                        continue;
+
+                    Debuggers.Dungeons?.Log($"archetypeInfo.Key.Key: {archetypeInfo.Key.Key}");
+
+                    if (dungeonArchetype.name.Replace(" ", "_").Equals(archetypeInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        dungeonArchetype.SetDawnInfo(archetypeInfo);
+                        break;
+                    }
+                }
+            }
+
+            DawnDungeonInfo dungeonInfo = fakeFlow.GetDawnInfo();
             dungeonInfo.sockets = new();
             dungeonInfo.tiles = fakeFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
             dungeonInfo.doorways = new();
