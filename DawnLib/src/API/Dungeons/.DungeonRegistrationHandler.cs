@@ -29,6 +29,11 @@ static class DungeonRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         IL.RoundManager.GenerateNewFloor += DelayDungeonGeneration;
+        On.RoundManager.GenerateNewFloor += (orig, self) =>
+        {
+            UpdateDungeonWeightOnLevel(self.currentLevel);
+            orig(self);
+        };
         LethalContent.Dungeons.BeforeFreeze += CleanDawnDungeonReferences;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
