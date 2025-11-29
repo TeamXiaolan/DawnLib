@@ -113,7 +113,7 @@ static class MapObjectRegistrationHandler
                     spawnableOutsideObjectWithRarity.spawnableObject.objectWidth = mapObjectInfo.OutsideInfo.ObjectWidth;
                     spawnableOutsideObjectWithRarity.spawnableObject.spawnableFloorTags = mapObjectInfo.OutsideInfo.SpawnableFloorTags;
                     spawnableOutsideObjectWithRarity.spawnableObject.rotationOffset = mapObjectInfo.OutsideInfo.RotationOffset;
-                    spawnableOutsideObjectWithRarity.randomAmount = mapObjectInfo.OutsideInfo.VanillaAnimationCurve;
+                    spawnableOutsideObjectWithRarity.randomAmount = mapObjectInfo.OutsideInfo.SpawnWeights.GetFor(moonInfo) ?? AnimationCurve.Constant(0, 1, 0);
                     break;
                 }
             }
@@ -224,7 +224,6 @@ static class MapObjectRegistrationHandler
         {
             GameObject prefab = kvp.Key;
             ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
-
             insidePlacementByPrefab.TryGetValue(prefab.name, out InsideMapObjectSettings mapObjectSettings);
             DawnInsideMapObjectInfo insideInfo = new(
                 table,
@@ -251,7 +250,6 @@ static class MapObjectRegistrationHandler
                 mapObjectSettings.ObjectWidth + 6,
                 mapObjectSettings.SpawnableFloorTags ?? [],
                 mapObjectSettings.RotationOffset,
-                mapObjectSettings.VanillaAnimationCurve,
                 mapObjectSettings.AlignWithTerrain
             );
             realOutsideMapObjectsDict[prefab] = outsideInfo;

@@ -91,21 +91,27 @@ public class PersistentDataContainer : DataContainer
         
         base.Set(key, value);
         if (AutoSave)
+        {
             Task.Run(SaveAsync);
+        }
     }
 
     public override void Clear()
     {
         base.Clear();
         if (AutoSave)
+        {
             MarkDirty();
+        }
     }
 
     public override void Remove(NamespacedKey key)
     {
         base.Remove(key);
         if (AutoSave)
+        {
             MarkDirty();
+        }
     }
 
     [Obsolete("Use CreateEditContext()")]
@@ -168,8 +174,10 @@ public class ChildPersistentDataContainer : DataContainer
     
     public override void MarkDirty()
     {
-        if(Parent.AutoSave)
+        if (Parent.AutoSave)
+        {
             Parent.MarkDirty();
+        }
     }
 
     public override IDisposable CreateEditContext() => Parent.CreateEditContext();

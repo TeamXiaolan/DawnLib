@@ -6,7 +6,7 @@ public sealed class DawnOutsideMapObjectInfo
 {
     public DawnMapObjectInfo ParentInfo { get; internal set; }
 
-    internal DawnOutsideMapObjectInfo(ProviderTable<AnimationCurve?, DawnMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, int objectWidth, string[] spawnableFloorTags, Vector3 rotationOffset, AnimationCurve vanillaAnimationCurve, bool alignWithTerrain)
+    internal DawnOutsideMapObjectInfo(ProviderTable<AnimationCurve?, DawnMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, int objectWidth, string[] spawnableFloorTags, Vector3 rotationOffset, bool alignWithTerrain)
     {
         SpawnWeights = spawnWeights;
         AlignWithTerrain = alignWithTerrain;
@@ -16,7 +16,6 @@ public sealed class DawnOutsideMapObjectInfo
         ObjectWidth = objectWidth;
         SpawnableFloorTags = spawnableFloorTags;
         RotationOffset = rotationOffset;
-        VanillaAnimationCurve = vanillaAnimationCurve;
     }
 
     public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; private set; }
@@ -26,5 +25,4 @@ public sealed class DawnOutsideMapObjectInfo
     public int ObjectWidth { get; private set; }
     public string[] SpawnableFloorTags { get; private set; }
     public Vector3 RotationOffset { get; private set; }
-    public AnimationCurve VanillaAnimationCurve { get; private set; }
 }

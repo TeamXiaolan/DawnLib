@@ -1,47 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using DunGen;
+﻿using System.Collections.Generic;
 using DunGen.Graph;
-using Unity.Netcode;
 using UnityEngine;
+using System;
+using System.Linq;
+using DunGen;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
 
 public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
-    private List<DoorwaySocket> _sockets;
-    private List<Doorway> _doorways;
-    private List<SpawnSyncedObject> _spawnSyncedObjects;
-    private List<Tile> _tiles;
+    internal List<DoorwaySocket> sockets = new();
+    internal List<Doorway> doorways = new();
+    internal List<SpawnSyncedObject> spawnSyncedObjects = new();
+    internal List<Tile> tiles = new();
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, string assetBundlePath, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         Weights = weights;
         MapTileSize = mapTileSize;
-        firstTimeAudio = FirstTimeAudio;
+        FirstTimeAudio = firstTimeAudio;
+        AssetBundlePath = assetBundlePath;
 
-        _sockets = new();
-        _tiles = DungeonFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
-        _doorways = new();
-        _spawnSyncedObjects = new();
+        if (!ShouldSkipIgnoreOverride())
+            return;
+
+        sockets = new();
+        var tileSets = DungeonFlow.TileInjectionRules.Select(it => it.TileSet).Concat(DungeonFlow.GetUsedTileSets()).Distinct();
+        tiles = tileSets.Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
+        doorways = new();
+        spawnSyncedObjects = new();
 
         foreach (Tile dungeonTile in Tiles)
         {
             foreach (Doorway dungeonDoorway in dungeonTile.gameObject.GetComponentsInChildren<Doorway>())
             {
-                if (!_doorways.Contains(dungeonDoorway))
+                if (!Doorways.Contains(dungeonDoorway))
                 {
-                    _doorways.Add(dungeonDoorway);
+                    doorways.Add(dungeonDoorway);
                 }
 
                 if (!Sockets.Contains(dungeonDoorway.socket))
                 {
-                    _sockets.Add(dungeonDoorway.socket);
+                    sockets.Add(dungeonDoorway.socket);
                 }
 
                 foreach (GameObjectWeight doorwayTileWeight in dungeonDoorway.ConnectorPrefabWeights)
@@ -50,7 +52,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
                     {
                         if (!SpawnSyncedObjects.Contains(spawnSyncedObject))
                         {
-                            _spawnSyncedObjects.Add(spawnSyncedObject);
+                            spawnSyncedObjects.Add(spawnSyncedObject);
                         }
                     }
                 }
@@ -62,7 +64,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
                     {
                         if (!SpawnSyncedObjects.Contains(spawnSyncedObject))
                         {
-                            _spawnSyncedObjects.Add(spawnSyncedObject);
+                            spawnSyncedObjects.Add(spawnSyncedObject);
                         }
                     }
                 }
@@ -72,41 +74,22 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
             {
                 if (!SpawnSyncedObjects.Contains(spawnSyncedObject))
                 {
-                    _spawnSyncedObjects.Add(spawnSyncedObject);
+                    spawnSyncedObjects.Add(spawnSyncedObject);
                 }
             }
-        }
-
-        if (Key.IsVanilla())
-        {
-            return;
-        }
-
-        foreach (SpawnSyncedObject spawnSyncedObject in SpawnSyncedObjects)
-        {
-            if (spawnSyncedObject.spawnPrefab == null)
-                continue;
-
-            if (spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
-            {
-                byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(Key.ToString() + spawnSyncedObject.spawnPrefab.name));
-                NetworkObject networkObject = spawnSyncedObject.spawnPrefab.AddComponent<NetworkObject>();
-                networkObject.GlobalObjectIdHash = BitConverter.ToUInt32(hash, 0);
-            }
-
-            DawnLib.RegisterNetworkPrefab(spawnSyncedObject.spawnPrefab);
         }
     }
 
     public DungeonFlow DungeonFlow { get; }
+    public string AssetBundlePath { get; }
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
     public float MapTileSize { get; private set; }
     public AudioClip? FirstTimeAudio { get; }
 
-    public IReadOnlyList<Tile> Tiles => _tiles.AsReadOnly();
-    public IReadOnlyList<Doorway> Doorways => _doorways.AsReadOnly();
-    public IReadOnlyList<SpawnSyncedObject> SpawnSyncedObjects => _spawnSyncedObjects.AsReadOnly();
-    public IReadOnlyList<DoorwaySocket> Sockets => _sockets.AsReadOnly();
+    public IReadOnlyList<Tile> Tiles => tiles.AsReadOnly();
+    public IReadOnlyList<Doorway> Doorways => doorways.AsReadOnly();
+    public IReadOnlyList<SpawnSyncedObject> SpawnSyncedObjects => spawnSyncedObjects.AsReadOnly();
+    public IReadOnlyList<DoorwaySocket> Sockets => sockets.AsReadOnly();
 
     public static int FireExitGlobalPropID = 1231;
 }

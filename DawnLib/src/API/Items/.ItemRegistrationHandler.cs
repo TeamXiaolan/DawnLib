@@ -365,7 +365,7 @@ static class ItemRegistrationHandler
 
         foreach (TerminalKeyword TerminalKeyword in TerminalRefs.Instance.terminalNodes.allKeywords)
         {
-            if (TerminalKeyword.word == simplifiedItemName)
+            if (TerminalKeyword.name == simplifiedItemName)
             {
                 TerminalRefs.Instance.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
                 return;

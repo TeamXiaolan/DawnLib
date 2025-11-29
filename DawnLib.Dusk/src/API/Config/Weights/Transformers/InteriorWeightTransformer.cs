@@ -33,13 +33,18 @@ public class InteriorWeightTransformer : WeightTransformer
         }
 
         List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
+        HashSet<string> processedKeys = new();
+
         foreach (NamespacedKey tagNamespacedKey in dungeonInfo.AllTags())
         {
-            foreach (NamespacedKey interiorNamespacedKey in MatchingInteriorsWithWeightAndOperationDict.Keys)
+            if (!processedKeys.Add(tagNamespacedKey.Key))
+                continue;
+
+            foreach (NamespacedKey moonNamespacedKey in MatchingInteriorsWithWeightAndOperationDict.Keys)
             {
-                if (interiorNamespacedKey.Key == tagNamespacedKey.Key)
+                if (moonNamespacedKey.Key == tagNamespacedKey.Key)
                 {
-                    orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                    orderedAndValidTagNamespacedKeys.Add(moonNamespacedKey);
                     break;
                 }
             }

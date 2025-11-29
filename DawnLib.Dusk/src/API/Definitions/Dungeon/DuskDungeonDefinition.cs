@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Dawn;
-using DunGen.Graph;
+using Dusk.Utils;
 using Dusk.Weights;
 using UnityEngine;
 
@@ -11,30 +11,31 @@ namespace Dusk;
 public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 {
     [field: SerializeField]
-    public DungeonFlow DungeonFlow { get; private set; }
+    public DungeonFlowReference DungeonFlowReference { get; private set; }
     [field: SerializeField]
     public AudioClip? StingerAudio { get; private set; }
 
-    [field: Space(10)]
-    [field: Header("Config | Weights")]
+    [field: Space(5)]
+    [field: Header("Configs | Spawn Weights")]
     [field: SerializeField]
     public List<NamespacedConfigWeight> MoonSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
 
-    [field: Header("Config | Generation")]
+    [field: Header("Configs | Generation")]
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
-    [field: Header("Config | Misc")]
+    [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public float MapTileSize { get; private set; }
+    public float MapTileSize { get; private set; } = 1f;
     [field: SerializeField]
     public bool StingerPlaysMoreThanOnce { get; private set; }
     [field: SerializeField]
+    [field: Range(0, 100)]
     public float StingerPlayChance { get; private set; }
 
-    [field: Header("Config | Obsolete")]
+    [field: Header("Configs | Obsolete")]
     [field: SerializeField]
     [Obsolete]
     public string MoonSpawnWeights { get; private set; }
@@ -55,8 +56,13 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeights);
 
         SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
-        DawnLib.DefineDungeon(TypedKey, DungeonFlow, builder =>
+        DawnLib.DefineDungeon(TypedKey, DungeonFlowReference.FlowAssetName, builder =>
         {
+            foreach (var mapping in DungeonFlowReference.ArchetypeTileSets)
+            {
+                builder.SetArchetypeTileSetMapping(mapping.ArchetypeName, mapping.TileSetNames);
+            }
+            builder.SetAssetBundlePath(mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             builder.SetFirstTimeAudio(StingerAudio);
             builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
@@ -73,5 +79,5 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         };
     }
 
-    protected override string EntityNameReference => DungeonFlow?.name ?? string.Empty;
+    protected override string EntityNameReference => DungeonFlowReference?.FlowAssetName ?? string.Empty;
 }

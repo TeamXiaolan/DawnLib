@@ -46,13 +46,18 @@ public class WeatherWeightTransformer : WeightTransformer
         }
 
         List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
+        HashSet<string> processedKeys = new();
+
         foreach (NamespacedKey tagNamespacedKey in allTags)
         {
-            foreach (NamespacedKey weatherNamespacedKey in MatchingWeathersWithWeightAndOperationDict.Keys)
+            if (!processedKeys.Add(tagNamespacedKey.Key))
+                continue;
+
+            foreach (NamespacedKey moonNamespacedKey in MatchingWeathersWithWeightAndOperationDict.Keys)
             {
-                if (weatherNamespacedKey.Key == tagNamespacedKey.Key)
+                if (moonNamespacedKey.Key == tagNamespacedKey.Key)
                 {
-                    orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                    orderedAndValidTagNamespacedKeys.Add(moonNamespacedKey);
                     break;
                 }
             }
