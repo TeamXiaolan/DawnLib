@@ -141,7 +141,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         {
             foreach (GameObject obj in _objectsToUnregister)
             {
-                DawnPlugin.Logger.LogFatal($"Unregistering SpawnSyncedObject prefab: {obj.name} for dungeon: {importantDungeonInfo.Key.Key}");
                 NetworkManager.Singleton.PrefabHandler.RemoveNetworkPrefab(obj);
             }
             _objectsToUnregister.Clear();
@@ -278,7 +277,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         yield return _currentBundle.UnloadAsync(true);
         _currentBundle = null;
         _currentBundlePath = null;
-        Resources.UnloadUnusedAssets();
+        yield return Resources.UnloadUnusedAssets();
+        System.GC.Collect();
     }
 
     private void CheckReady()
