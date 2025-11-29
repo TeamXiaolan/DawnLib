@@ -27,7 +27,8 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
             return;
 
         sockets = new();
-        tiles = DungeonFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
+        var tileSets = DungeonFlow.TileInjectionRules.Select(it => it.TileSet).Concat(DungeonFlow.GetUsedTileSets()).Distinct();
+        tiles = tileSets.Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
         doorways = new();
         spawnSyncedObjects = new();
 

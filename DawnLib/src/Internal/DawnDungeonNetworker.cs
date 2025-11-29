@@ -37,6 +37,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     internal void HostRebroadcastQueue()
     {
+        if (_currentDungeonKey == default) return;
         QueueDungeonBundleLoadingServerRpc(_currentDungeonKey);
     }
 
@@ -83,7 +84,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             List<GameObject> vanillaSpawnSyncedObjects = new();
             foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
             {
-                if (!dungeonInfo.ShouldSkipIgnoreOverride())
+                if (!dungeonInfo.Key.IsVanilla())
                     continue;
 
                 foreach (GameObject spawnSyncedObject in dungeonInfo.SpawnSyncedObjects.Select(x => x.spawnPrefab))
@@ -128,14 +129,20 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                     continue;
 
                 _objectsToUnregister.Add(spawnSyncedObject.spawnPrefab);
-                NetworkManager.Singleton.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
+                NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
+                var netObj = spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>();
+                DawnPlugin.Logger.LogInfo(
+                    $"Registered network prefab '{spawnSyncedObject.spawnPrefab.name}' " +
+                    $"with hash={netObj.GlobalObjectIdHash} " +
+                    $"(IsServer={NetworkManager.Singleton.IsServer}, IsClient={NetworkManager.Singleton.IsClient})");
             }
         }
         else
         {
             foreach (GameObject obj in _objectsToUnregister)
             {
-                NetworkManager.Singleton.RemoveNetworkPrefab(obj);
+                DawnPlugin.Logger.LogFatal($"Unregistering SpawnSyncedObject prefab: {obj.name} for dungeon: {importantDungeonInfo.Key.Key}");
+                NetworkManager.Singleton.PrefabHandler.RemoveNetworkPrefab(obj);
             }
             _objectsToUnregister.Clear();
         }
@@ -365,7 +372,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             DawnDungeonInfo dungeonInfo = fakeFlow.GetDawnInfo();
             dungeonInfo.sockets = new();
-            dungeonInfo.tiles = fakeFlow.GetUsedTileSets().Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
+            var tileSets = fakeFlow.TileInjectionRules.Select(it => it.TileSet).Concat(fakeFlow.GetUsedTileSets()).Distinct();
+            dungeonInfo.tiles = tileSets.Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
             dungeonInfo.doorways = new();
             dungeonInfo.spawnSyncedObjects = new();
 
