@@ -32,8 +32,13 @@ public class MoonWeightTransformer : WeightTransformer
         }
 
         List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
+        HashSet<string> processedKeys = new();
+
         foreach (NamespacedKey tagNamespacedKey in moonInfo.AllTags())
         {
+            if (!processedKeys.Add(tagNamespacedKey.Key))
+                continue;
+
             foreach (NamespacedKey moonNamespacedKey in MatchingMoonsWithWeightAndOperationDict.Keys)
             {
                 if (moonNamespacedKey.Key == tagNamespacedKey.Key)

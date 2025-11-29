@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
@@ -28,8 +29,8 @@ static class DungeonRegistrationHandler
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
-        IL.RoundManager.GenerateNewFloor += DelayDungeonGeneration;
         IL.RoundManager.Generator_OnGenerationStatusChanged += FixVanillaGenerationStatusChangedBug;
+        On.MenuManager.Awake += DeleteLLLTranspilerAndEnsureDelayedDungeon;
         On.RoundManager.GenerateNewFloor += (orig, self) =>
         {
             UpdateDungeonWeightOnLevel(self.currentLevel);
@@ -48,6 +49,23 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static bool _alreadyPatched = false;
+    private static void DeleteLLLTranspilerAndEnsureDelayedDungeon(On.MenuManager.orig_Awake orig, MenuManager self)
+    {
+        orig(self);
+        if (!_alreadyPatched)
+        {
+            if (LethalLevelLoaderCompat.Enabled)
+            {
+                DawnPlugin.Logger.LogDebug($"Removing LethalLevelLoader dungeon generation transpiler.");
+                LethalLevelLoaderCompat.TryRemoveLLLDungeonTranspiler();
+                LethalLevelLoaderCompat.ScrewWithLLLDynamicDungeonRarity();
+            }
+            IL.RoundManager.GenerateNewFloor += DelayDungeonGeneration;
+            _alreadyPatched = true;
+        }
     }
 
     public static void FixVanillaGenerationStatusChangedBug(ILContext il)
@@ -127,13 +145,15 @@ static class DungeonRegistrationHandler
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<IEnumerator>>(LoadDungeonBundle);
 
-            var startCoroutine = typeof(MonoBehaviour).GetMethod("StartCoroutine", new[] { typeof(IEnumerator) })!;
+            MethodInfo startCoroutine = typeof(MonoBehaviour).GetMethod("StartCoroutine", new[] { typeof(IEnumerator) })!;
             c.Emit(OpCodes.Callvirt, startCoroutine);
             c.Emit(OpCodes.Pop);
         }
         else
         {
             DawnPlugin.Logger.LogError("Failed to apply DawnLib dungeon generation delay patch!");
+            DawnPlugin.Logger.LogError("IL code:");
+            DawnPlugin.Logger.LogError(il.ToString());
         }
     }
 
@@ -197,7 +217,6 @@ static class DungeonRegistrationHandler
 
     private static void UpdateAllDungeonWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
     {
-        // TODO: update on lever pull
         orig(self, connectedPlayersOnServer);
         UpdateDungeonWeightOnLevel(self.currentLevel);
     }

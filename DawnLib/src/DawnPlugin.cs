@@ -23,6 +23,7 @@ public class DawnPlugin : BaseUnityPlugin
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
     internal static readonly List<Hook> Hooks = new();
+    internal static readonly Harmony _harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
     private void Awake()
     {
@@ -75,7 +76,7 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
 
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
+        _harmony.PatchAll(Assembly.GetExecutingAssembly());
         
         DawnNetworkSceneManager.Init();
 

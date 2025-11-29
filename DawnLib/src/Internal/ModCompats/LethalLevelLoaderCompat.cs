@@ -1,15 +1,45 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using DunGen.Graph;
+using HarmonyLib;
 using LethalLevelLoader;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 
 namespace Dawn.Internal;
 
 static class LethalLevelLoaderCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(Plugin.ModGUID);
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void ScrewWithLLLDynamicDungeonRarity()
+    {
+        // DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalLevelLoader.DungeonMatchingProperties), "GetDynamicRarity"), EnsureCorrectDawnDungeonDynamicRarity));
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalLevelLoader.LevelMatchingProperties), "GetDynamicRarity"), EnsureCorrectDawnDungeonDynamicRarity));
+    }
+
+    private static int EnsureCorrectDawnDungeonDynamicRarity(RuntimeILReferenceBag.FastDelegateInvokers.Func<LevelMatchingProperties, ExtendedLevel, int> orig, LevelMatchingProperties self, ExtendedLevel extendedLevel)
+    {
+        ExtendedDungeonFlow? extendedDungeonFlow = LethalLevelLoader.PatchedContent.ExtendedDungeonFlows.Where(x => x.LevelMatchingProperties.Equals(self)).FirstOrDefault();
+        DungeonFlow? dungeonFlow = extendedDungeonFlow?.DungeonFlow;
+        if (dungeonFlow != null && dungeonFlow.HasDawnInfo() && !dungeonFlow.GetDawnInfo().ShouldSkipRespectOverride())
+        {
+            return dungeonFlow.GetDawnInfo().Weights.GetFor(extendedLevel.SelectableLevel.GetDawnInfo()) ?? 0;
+        }
+        return orig(self, extendedLevel);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void TryRemoveLLLDungeonTranspiler()
+    {
+        MethodBase originalMethod = typeof(RoundManager).GetMethod(nameof(RoundManager.GenerateNewFloor));
+        DawnPlugin._harmony.Unpatch(originalMethod, HarmonyLib.HarmonyPatchType.Transpiler, LethalLevelLoader.Plugin.ModGUID);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static bool TryGetExtendedLevelModName(SelectableLevel level, out string modName)
