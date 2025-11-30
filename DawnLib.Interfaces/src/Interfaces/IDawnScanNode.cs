@@ -1,4 +1,6 @@
-using Dawn.Preloader;
+using InjectionLibrary.Attributes;
+
+[assembly: RequiresInjections]
 
 namespace Dawn.Interfaces;
 

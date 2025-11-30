@@ -1,5 +1,7 @@
-using Dawn.Preloader;
+using InjectionLibrary.Attributes;
 using Newtonsoft.Json.Linq;
+
+[assembly: RequiresInjections]
 
 namespace Dawn.Interfaces;
 
