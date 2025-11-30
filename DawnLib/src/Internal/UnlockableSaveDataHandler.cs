@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Dawn.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -11,68 +12,21 @@ public static class UnlockableSaveDataHandler
 
     internal static void LoadSavedUnlockables(PersistentDataContainer dataContainer)
     {
-        JObject root = dataContainer.GetOrCreateDefault<JObject>(_namespacedKey) ?? new JObject();
-
-        JArray keysArray = root["keys"] as JArray ?? new JArray();
-        JArray itemsArray = root["items"] as JArray ?? new JArray();
-
+        // TODO: replace a lot of the things here with the new component when i make it
+        List<UnlockableSaveData> UnlockableSaveDataList = dataContainer.GetOrCreateDefault<List<UnlockableSaveData>>(_namespacedKey);
         List<int> PlacedAtStartOfQuotas = new();
-
-        foreach (JToken token in itemsArray)
+        foreach (UnlockableSaveData unlockableData in UnlockableSaveDataList)
         {
-            if (token is not JArray row || row.Count < 10)
+            Debuggers.SaveManager?.Log($"Loading unlockable: {unlockableData.UnlockableNamespacedKey} from save data with information: {unlockableData.SavedSpawnPosition}, {unlockableData.SavedSpawnRotation}, {unlockableData.InStorage}, {unlockableData.HasBeenMoved}, {unlockableData.PlacedAtQuotaStart}.");
+            if (!LethalContent.Unlockables.TryGetValue(unlockableData.UnlockableNamespacedKey, out DawnUnlockableItemInfo unlockableItemInfo))
             {
-                DawnPlugin.Logger.LogWarning("Malformed unlockable row in save data; skipping.");
+                DawnPlugin.Logger.LogWarning($"Unlockable: {unlockableData.UnlockableNamespacedKey} doesn't exist in the game, this means this item cannot be loaded from the savefile, presumably you removed a mod that added this time previously.");
                 continue;
             }
-
-            int keyIndex = row[0]!.ToObject<int>();
-            if (keyIndex < 0 || keyIndex >= keysArray.Count)
-            {
-                DawnPlugin.Logger.LogWarning($"Invalid unlockable key index {keyIndex} in save; skipping.");
-                continue;
-            }
-
-            string? keyString = keysArray[keyIndex].ToObject<string>();
-            if (string.IsNullOrEmpty(keyString) || !NamespacedKey.TryParse(keyString, out NamespacedKey? unlockableKey))
-            {
-                DawnPlugin.Logger.LogWarning($"Invalid unlockable key '{keyString}' in save; skipping.");
-                continue;
-            }
-
-            if (!LethalContent.Unlockables.TryGetValue(unlockableKey, out DawnUnlockableItemInfo unlockableItemInfo))
-            {
-                DawnPlugin.Logger.LogWarning(
-                    $"Unlockable: {unlockableKey} doesn't exist anymore (mod removed?); skipping.");
-                continue;
-            }
-
-            // 1–3: position
-            float px = row[1].ToObject<float>();
-            float py = row[2].ToObject<float>();
-            float pz = row[3].ToObject<float>();
-            Vector3 savedPos = new(px, py, pz);
-
-            // 4–6: rotation
-            float rx = row[4].ToObject<float>();
-            float ry = row[5].ToObject<float>();
-            float rz = row[6].ToObject<float>();
-            Vector3 savedRot = new(rx, ry, rz);
-
-            // 7–9: flags
-            bool inStorage = row[7].ToObject<bool>();
-            bool hasBeenMoved = row[8].ToObject<bool>();
-            bool placedAtQuotaStart = row[9].ToObject<bool>();
-
-            // 10: savedData
-            JToken savedData = row.Count > 10 ? row[10] : 0;
-
-            Debuggers.SaveManager?.Log($"Loading unlockable: {unlockableKey} from save data with information: " + $"{savedPos}, {savedRot}, {inStorage}, {hasBeenMoved}, {placedAtQuotaStart}.");
 
             UnlockableItem unlockableItem = unlockableItemInfo.UnlockableItem;
-            int indexInList = StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItem);
-
-            if (placedAtQuotaStart)
+            int indexInList = StartOfRound.Instance.unlockablesList.unlockables.IndexOf(unlockableItemInfo.UnlockableItem);
+            if (unlockableData.PlacedAtQuotaStart)
             {
                 PlacedAtStartOfQuotas.Add(indexInList);
             }
@@ -81,24 +35,21 @@ public static class UnlockableSaveDataHandler
             {
                 unlockableItem.hasBeenUnlockedByPlayer = !unlockableItem.alreadyUnlocked;
 
-                unlockableItem.placedPosition = savedPos;
-                unlockableItem.placedRotation = savedRot;
-                unlockableItem.inStorage = inStorage;
-                unlockableItem.hasBeenMoved = hasBeenMoved;
-
-
-                if (inStorage)
+                unlockableItem.placedPosition = unlockableData.SavedSpawnPosition;
+                unlockableItem.placedRotation = unlockableData.SavedSpawnRotation;
+                unlockableItem.inStorage = unlockableData.InStorage;
+                unlockableItem.hasBeenMoved = unlockableData.HasBeenMoved;
+                if (unlockableData.InStorage)
                 {
-                    if (hasBeenMoved && !unlockableItem.spawnPrefab)
+                    if (unlockableData.HasBeenMoved && !unlockableItem.spawnPrefab)
                     {
                         foreach (PlaceableShipObject placeableShipObject in placeableShipObjects)
                         {
                             if (placeableShipObject.unlockableID == indexInList)
                             {
-                                ShipBuildModeManager.Instance.PlaceShipObject(unlockableItem.placedPosition, unlockableItem.placedRotation, placeableShipObject, false
-                                );
+                                ShipBuildModeManager.Instance.PlaceShipObject(unlockableItem.placedPosition, unlockableItem.placedRotation, placeableShipObject, false);
                             }
-                        }
+                        }                        
                     }
                 }
                 else if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(indexInList))
@@ -141,31 +92,21 @@ public static class UnlockableSaveDataHandler
             });
             placeableShipObject.parentObject.MoveToOffset();
         }
-
         Physics.SyncTransforms();
     }
 
     internal static void SaveAllUnlockables(PersistentDataContainer dataContainer)
     {
-        // keys[i] = "mod_namespace:unlockable_name"
-        List<string> keysList = new();
-        Dictionary<string, int> keyIndexLookup = new();
-
-        // items = [ [ keyIndex, px, py, pz, rx, ry, rz, inStorage, hasBeenMoved, placedAtQuotaStart, savedData ], ... ]
-        JArray itemsArray = new();
-
+        List<UnlockableSaveData> allShipUnlockablesData = new();
         for (int i = 0; i < StartOfRound.Instance.unlockablesList.unlockables.Count; i++)
         {
             UnlockableItem unlockableData = StartOfRound.Instance.unlockablesList.unlockables[i];
-
             if (unlockableData.unlockableType == 753)
             {
-                Debuggers.SaveManager?.Log($"Skipping saving unlockable: {unlockableData.unlockableName} into save data, " + "this is probably moresuits adding a bajillion extra orange suit duplicates.");
+                Debuggers.SaveManager?.Log($"Skipping saving unlockable: {unlockableData.unlockableName} into save data, this is probably moresuits adding a bajillion extra orange suit duplicates.");
                 continue;
             }
-
             Debuggers.SaveManager?.Log($"Checking whether to save unlockable: {unlockableData.unlockableName} into save data.");
-
             if (!unlockableData.hasBeenUnlockedByPlayer && !unlockableData.alreadyUnlocked)
             {
                 continue;
@@ -174,18 +115,9 @@ public static class UnlockableSaveDataHandler
             DawnUnlockableItemInfo? unlockableInfo = unlockableData.GetDawnInfo();
             if (unlockableInfo == null)
             {
-                DawnPlugin.Logger.LogError($"Unlockable: {unlockableData.unlockableName} doesn't have a DawnUnlockableInfo, " + "this means this unlockable cannot be committed to the savefile, " + "contact the developer of this unlockable to fix this ASAP!");
+                DawnPlugin.Logger.LogError($"Unlockable: {unlockableData.unlockableName} doesn't have a DawnUnlockableInfo, this means this unlockable cannot be committed to the savefile, contact the developer of this unlockable to fix this ASAP!");
                 continue;
             }
-
-            string keyString = unlockableInfo.Key.ToString();
-            if (!keyIndexLookup.TryGetValue(keyString, out int keyIndex))
-            {
-                keyIndex = keysList.Count;
-                keysList.Add(keyString);
-                keyIndexLookup[keyString] = keyIndex;
-            }
-
             Debuggers.SaveManager?.Log($"Saving unlockable: {unlockableInfo.Key} into save data.");
             bool placedAtQuotaStart = TimeOfDayRefs.Instance.furniturePlacedAtQuotaStart.Contains(i);
 
@@ -195,36 +127,24 @@ public static class UnlockableSaveDataHandler
                 Debuggers.SaveManager?.Log($"Unlockable: {unlockableInfo.TypedKey} has GameObject: {unlockableGameObject}.");
             }
 
-            // TODO
-            JToken savedData = 0;
-
-            JArray row = new()
-            {
-                keyIndex,                             // 0
-                unlockableData.placedPosition.x,      // 1
-                unlockableData.placedPosition.y,      // 2
-                unlockableData.placedPosition.z,      // 3
-                unlockableData.placedRotation.x,      // 4
-                unlockableData.placedRotation.y,      // 5
-                unlockableData.placedRotation.z,      // 6
-                unlockableData.inStorage,             // 7
-                unlockableData.hasBeenMoved,          // 8
-                placedAtQuotaStart,                   // 9
-                savedData                             // 10
-            };
-
-            itemsArray.Add(row);
+            // TODO: replace the 0 with the proper value by saving all instances of the new unlockable component that i need to make
+            allShipUnlockablesData.Add(new UnlockableSaveData(unlockableInfo.Key, unlockableData.placedPosition, unlockableData.placedRotation, unlockableData.inStorage, unlockableData.hasBeenMoved, placedAtQuotaStart, 0));
         }
-
-        JObject root = new()
-        {
-            ["keys"] = new JArray(keysList),
-            ["items"] = itemsArray
-        };
 
         using (dataContainer.CreateEditContext())
         {
-            dataContainer.Set(_namespacedKey, root);
+            dataContainer.Set(_namespacedKey, allShipUnlockablesData);
         }
+    }
+
+    public struct UnlockableSaveData(NamespacedKey unlockableNamespacedKey, Vector3 savePosition, Vector3 saveRotation, bool inStorage, bool hasBeenMoved, bool PlacedAtQuotaStart, JToken jToken)
+    {
+        public NamespacedKey UnlockableNamespacedKey = unlockableNamespacedKey;
+        [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnPosition = savePosition;
+        [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnRotation = saveRotation;
+        public bool InStorage = inStorage;
+        public bool HasBeenMoved = hasBeenMoved;
+        public bool PlacedAtQuotaStart = PlacedAtQuotaStart;
+        public JToken SavedData = jToken;
     }
 }
