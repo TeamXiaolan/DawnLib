@@ -3,6 +3,7 @@
 - Optimised the save system even more.
 - Interior hotloading is real.
 - Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
+- Added NamespacedKey smart matching, so you should be able to do stuff like `oxyde` without typing in `code_rebirth:oxyde`, needs more testing but should work.
 
 ## v0.4.12
 

@@ -61,7 +61,7 @@ public class NamespacedConfigWeight
     {
         string[] parts = input.Split('=', StringSplitOptions.RemoveEmptyEntries);
         Debuggers.Weights?.Log($"Converting NamespacedConfigWeight from string: {input}");
-        NamespacedKey namespacedKey = NamespacedKey.ForceParse(parts[0]);
+        NamespacedKey namespacedKey = NamespacedKey.ForceParse(parts[0], true);
         MathOperation operation = MathOperation.Additive;
         float weight = 0;
         if (parts.Length > 1)

@@ -15,12 +15,12 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
 
         foreach ((string key, string value) in spawnRateByMoonName)
         {
-            CurvesByMoonOrTagName[NamespacedKey.ForceParse(key)] = ConfigManager.ParseCurve(value);
+            CurvesByMoonOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
         }
 
         foreach ((string key, string value) in spawnRateByInteriorName)
         {
-            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key)] = ConfigManager.ParseCurve(value);
+            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
         }
 
         PrioritiseMoons = prioritiseMoons;

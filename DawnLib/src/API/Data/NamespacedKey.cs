@@ -14,6 +14,7 @@ namespace Dawn;
 public class NamespacedKey : INetworkSerializable
 {
     private static readonly Regex NamespacedKeyRegex = new(@"[?!.\n\t""`\[\]'-]");
+    private static readonly List<NamespacedKey> AllNamespacedKeys = new();
 
     private static readonly Dictionary<char, string> NumberWords = new()
     {
@@ -84,6 +85,7 @@ public class NamespacedKey : INetworkSerializable
     {
         _namespace = @namespace;
         _key = key;
+        AllNamespacedKeys.Add(this);
     }
 
     /// <summary>
@@ -121,17 +123,19 @@ public class NamespacedKey : INetworkSerializable
         return true;
     }
 
-    public static NamespacedKey ForceParse(string input)
+    public static NamespacedKey ForceParse(string input, bool useSmartMatching = false)
     {
         string[] parts = input.Split(Separator);
         if (parts.Length == 1)
         {
-            // todo: try to do smart matching incase no namespace is provided.
-            /*foreach (NamespacedKey namespacedKey in NamespacedKeys)
+            if (useSmartMatching)
             {
-                if (namespacedKey.Key == parts[0])
-                    return namespacedKey;
-            }*/
+                foreach (NamespacedKey namespacedKey in AllNamespacedKeys)
+                {
+                    if (namespacedKey.Key == parts[0])
+                        return namespacedKey;
+                }
+            }
             parts = [VanillaNamespace, parts[0]];
         }
         return From(parts[0], parts[1]);
