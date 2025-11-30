@@ -147,6 +147,11 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                 builder.DefineOutside(outsideBuilder =>
                 {
                     outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
+                    outsideBuilder.OverrideMinimumNodeSpawnRequirement(OutsideMapObjectSettings.MinimumAINodeSpawnRequirement);
+                    outsideBuilder.OverrideObjectWidth(OutsideMapObjectSettings.ObjectWidth);
+                    outsideBuilder.OverrideRotationOffset(OutsideMapObjectSettings.RotationOffset);
+                    outsideBuilder.OverrideSpawnFacingAwayFromWall(OutsideMapObjectSettings.SpawnFacingAwayFromWall);
+                    outsideBuilder.OverrideSpawnableFloorTags(OutsideMapObjectSettings.SpawnableFloorTags);
                     outsideBuilder.SetWeights(weightBuilder =>
                     {
                         weightBuilder.SetGlobalCurve(OutsideSpawnMechanics);

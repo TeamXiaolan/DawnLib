@@ -250,7 +250,8 @@ static class MapObjectRegistrationHandler
                 mapObjectSettings.ObjectWidth + 6,
                 mapObjectSettings.SpawnableFloorTags ?? [],
                 mapObjectSettings.RotationOffset,
-                mapObjectSettings.AlignWithTerrain
+                mapObjectSettings.AlignWithTerrain,
+                mapObjectSettings.MinimumAINodeSpawnRequirement
             );
             realOutsideMapObjectsDict[prefab] = outsideInfo;
         }
@@ -308,26 +309,35 @@ static class MapObjectRegistrationHandler
     {
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
+        List<Vector3> occupiedPositions = new();
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
-            var outsideInfo = mapObjectInfo.OutsideInfo;
+            DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
             if (outsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            HandleSpawningOutsideObjects(outsideInfo, everyoneRandom, serverOnlyRandom);
+            HandleSpawningOutsideObjects(outsideInfo, occupiedPositions, everyoneRandom, serverOnlyRandom);
         }
         orig(self);
         _spawnedObjects = 0;
     }
 
-    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, System.Random everyoneRandom, System.Random serverOnlyRandom)
+    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<Vector3> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom)
     {
+        if (RoundManager.Instance.outsideAINodes != null && RoundManager.Instance.outsideAINodes.Length <= outsideInfo.MinimumAINodeSpawnRequirement)
+        {
+
+            return;
+        }
+
         SelectableLevel level = RoundManager.Instance.currentLevel;
-        GameObject prefabToSpawn = outsideInfo.ParentInfo.MapObject;
+        DawnMapObjectInfo mapObjectInfo = outsideInfo.ParentInfo;
+
+        GameObject prefabToSpawn = mapObjectInfo.MapObject;
         AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
 
         int randomNumberToSpawn;
-        if (outsideInfo.ParentInfo.HasNetworkObject)
+        if (mapObjectInfo.HasNetworkObject)
         {
             if (!NetworkManager.Singleton.IsServer)
                 return;
@@ -344,38 +354,144 @@ static class MapObjectRegistrationHandler
         }
 
         Debuggers.MapObjects?.Log($"Spawning {randomNumberToSpawn} of {prefabToSpawn.name} for level {level}");
+
+        Transform[] shipSpawnPathPoints = RoundManager.Instance.shipSpawnPathPoints;
+        GameObject[] spawnDenialPoints = RoundManager.Instance.spawnDenialPoints;
+        GameObject itemShipLandingNode = GameObject.FindGameObjectWithTag("ItemShipLandingNode");
+
+        float objectWidth = outsideInfo.ObjectWidth;
+
         for (int i = 0; i < randomNumberToSpawn; i++)
         {
-            Vector3 spawnPos;
-            if (outsideInfo.ParentInfo.HasNetworkObject)
-            {
-                spawnPos = RoundManager.Instance.outsideAINodes[serverOnlyRandom.Next(0, RoundManager.Instance.outsideAINodes.Length)].transform.position;
-                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, serverOnlyRandom, -1) + (Vector3.up * 2);
-            }
-            else
-            {
-                spawnPos = RoundManager.Instance.outsideAINodes[everyoneRandom.Next(RoundManager.Instance.outsideAINodes.Length)].transform.position;
-                spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, everyoneRandom, -1) + (Vector3.up * 2);
-            }
+            System.Random rng = mapObjectInfo.HasNetworkObject ? serverOnlyRandom : everyoneRandom;
 
-            if (!Physics.Raycast(spawnPos, Vector3.down, out RaycastHit hit, 100, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
+            GameObject node = RoundManager.Instance.outsideAINodes[rng.Next(0, RoundManager.Instance.outsideAINodes.Length)];
+
+            Vector3 spawnPos = node.transform.position;
+            spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, rng, -1) + (Vector3.up * 2f);
+
+            if (!Physics.Raycast(spawnPos, Vector3.down, out RaycastHit hit, 100f, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
                 continue;
 
             if (!hit.collider)
                 continue;
 
-            GameObject spawnedPrefab = Object.Instantiate(prefabToSpawn, hit.point, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
-            Debuggers.MapObjects?.Log($"Spawning {spawnedPrefab.name} at {hit.point}");
+            string[] floorTags = outsideInfo.SpawnableFloorTags;
+            if (floorTags != null && floorTags.Length > 0)
+            {
+                bool validFloor = false;
+                Transform hitTransform = hit.collider.transform;
+
+                for (int t = 0; t < floorTags.Length; t++)
+                {
+                    if (hitTransform.CompareTag(floorTags[t]))
+                    {
+                        validFloor = true;
+                        break;
+                    }
+                }
+
+                if (!validFloor)
+                    continue;
+            }
+
+            Vector3 finalPos = RoundManager.Instance.PositionEdgeCheck(hit.point, objectWidth);
+            if (finalPos == Vector3.zero)
+                continue;
+
+            bool blocked = false;
+
+            if (shipSpawnPathPoints != null)
+            {
+                for (int s = 0; s < shipSpawnPathPoints.Length; s++)
+                {
+                    if (Vector3.Distance(shipSpawnPathPoints[s].transform.position, finalPos) < objectWidth + 6)
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
+            }
+
+            foreach (EntranceTeleport entranceTeleport in DawnNetworker.EntrancePoints)
+            {
+                if (Vector3.Distance(entranceTeleport.transform.position, finalPos) < objectWidth + 6)
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+
+            if (blocked)
+                continue;
+
+            if (spawnDenialPoints != null)
+            {
+                for (int d = 0; d < spawnDenialPoints.Length; d++)
+                {
+                    if (Vector3.Distance(spawnDenialPoints[d].transform.position, finalPos) < objectWidth)
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
+            }
+
+            if (blocked)
+                continue;
+
+            if (itemShipLandingNode != null && Vector3.Distance(itemShipLandingNode.transform.position, finalPos) < objectWidth)
+            {
+                continue;
+            }
+
+            if (objectWidth > 4f)
+            {
+                for (int p = 0; p < occupiedPositions.Count; p++)
+                {
+                    if (Vector3.Distance(finalPos, occupiedPositions[p]) < objectWidth)
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
+
+                if (blocked)
+                    continue;
+            }
+
+            occupiedPositions.Add(finalPos);
+
+            GameObject spawnedPrefab = Object.Instantiate(prefabToSpawn, finalPos, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
+
+            Debuggers.MapObjects?.Log($"Spawning {spawnedPrefab.name} at {finalPos}");
+
             if (outsideInfo.AlignWithTerrain)
             {
                 spawnedPrefab.transform.up = hit.normal;
             }
 
-            if (!outsideInfo.ParentInfo.HasNetworkObject)
+            Vector3 euler = spawnedPrefab.transform.eulerAngles;
+
+            if (outsideInfo.SpawnFacingAwayFromWall)
+            {
+                float yRot = RoundManager.Instance.YRotationThatFacesTheFarthestFromPosition(finalPos + Vector3.up * 0.2f, 25f, 6);
+                euler.y = yRot;
+            }
+            else
+            {
+                int randomY = rng.Next(0, 360);
+                euler.y = randomY;
+            }
+
+            spawnedPrefab.transform.eulerAngles = euler;
+            spawnedPrefab.transform.localEulerAngles += outsideInfo.RotationOffset;
+
+            _spawnedObjects++;
+            if (!mapObjectInfo.HasNetworkObject)
                 continue;
 
             spawnedPrefab.GetComponent<NetworkObject>().Spawn(true);
-            _spawnedObjects++;
         }
     }
 

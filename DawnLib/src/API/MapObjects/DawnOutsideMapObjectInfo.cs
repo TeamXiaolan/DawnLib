@@ -6,12 +6,12 @@ public sealed class DawnOutsideMapObjectInfo
 {
     public DawnMapObjectInfo ParentInfo { get; internal set; }
 
-    internal DawnOutsideMapObjectInfo(ProviderTable<AnimationCurve?, DawnMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, int objectWidth, string[] spawnableFloorTags, Vector3 rotationOffset, bool alignWithTerrain)
+    internal DawnOutsideMapObjectInfo(ProviderTable<AnimationCurve?, DawnMoonInfo> spawnWeights, bool spawnFacingAwayFromWall, int objectWidth, string[] spawnableFloorTags, Vector3 rotationOffset, bool alignWithTerrain, int minimumAINodeSpawnRequirement)
     {
         SpawnWeights = spawnWeights;
         AlignWithTerrain = alignWithTerrain;
+        MinimumAINodeSpawnRequirement = minimumAINodeSpawnRequirement;
 
-        // anything from here is unused in dawnlib but is here for vanilla compatibility
         SpawnFacingAwayFromWall = spawnFacingAwayFromWall;
         ObjectWidth = objectWidth;
         SpawnableFloorTags = spawnableFloorTags;
@@ -20,6 +20,7 @@ public sealed class DawnOutsideMapObjectInfo
 
     public ProviderTable<AnimationCurve?, DawnMoonInfo> SpawnWeights { get; private set; }
     public bool AlignWithTerrain { get; private set; }
+    public int MinimumAINodeSpawnRequirement { get; private set; }
 
     public bool SpawnFacingAwayFromWall { get; private set; }
     public int ObjectWidth { get; private set; }
