@@ -39,9 +39,9 @@ static class LethalLevelLoaderCompat
 
             int rarity = extendedDungeonFlow.LevelMatchingProperties.GetDynamicRarity(extendedLevel);
             IntWithRarity intWithRarity = new IntWithRarity();
-            for (int i = 0; i < RoundManager.Instance.dungeonFlowTypes.Length; i++)
+            for (int i = 0; i < RoundManagerRefs.Instance.dungeonFlowTypes.Length; i++)
             {
-                if (RoundManager.Instance.dungeonFlowTypes[i].dungeonFlow == extendedDungeonFlow.DungeonFlow)
+                if (RoundManagerRefs.Instance.dungeonFlowTypes[i].dungeonFlow == extendedDungeonFlow.DungeonFlow)
                 {
                     intWithRarity.id = i;
                     intWithRarity.rarity = rarity;

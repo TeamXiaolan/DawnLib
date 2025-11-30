@@ -1,4 +1,9 @@
-# v0.5.2
+# v0.5.3
+
+- Not sure how I missed this issue when testing: fixed not being able to play?
+- Created a migrator for the new saving.
+
+## v0.5.2
 
 - Reverted save system to what it was before temporarily to create a migration system.
 
