@@ -1,6 +1,6 @@
 # v0.5.1
 
-- Optimised saving system even more.
+- Optimised saving system a lot more, it should be a lot faster.
 - Made editor experience cleaner again
 
 ## v0.5.0

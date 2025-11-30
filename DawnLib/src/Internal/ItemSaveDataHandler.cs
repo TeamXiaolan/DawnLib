@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Dawn.Interfaces;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -10,42 +9,79 @@ public static class ItemSaveDataHandler
 {
     internal static GrabbableObject[] AllShipItems = [];
     private static NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
-    private static NamespacedKey _itemKeyMapNamespacedKey = NamespacedKey.From("dawn_lib", "ship_items_key_map");
 
     internal static void LoadSavedItems(PersistentDataContainer dataContainer)
     {
-        List<ItemSaveData> itemSaveDataList = dataContainer.GetOrCreateDefault<List<ItemSaveData>>(_namespacedKey);
-        Dictionary<ushort, NamespacedKey> itemKeyMap = dataContainer.GetOrCreateDefault<Dictionary<ushort, NamespacedKey>>(_itemKeyMapNamespacedKey);
-        foreach (ItemSaveData itemData in itemSaveDataList)
+        JObject root = dataContainer.GetOrCreateDefault<JObject>(_namespacedKey);
+
+        if (root == null)
+            return;
+
+        JArray keysArray = root["keys"] as JArray ?? new JArray();
+        JArray itemsArray = root["items"] as JArray ?? new JArray();
+
+        foreach (JToken token in itemsArray)
         {
-            if (!itemKeyMap.TryGetValue(itemData.ItemKeyId, out NamespacedKey itemNamespacedKey))
+            if (token is not JArray row || row.Count < 8)
             {
-                DawnPlugin.Logger.LogWarning($"Item key ID {itemData.ItemKeyId} not found in key map, skipping item load.");
+                DawnPlugin.Logger.LogWarning("Malformed ship item row in save data; skipping.");
                 continue;
             }
-            Debuggers.SaveManager?.Log($"Loading item: {itemNamespacedKey} from save data with information: {itemData.SavedSpawnPosition}, {itemData.SavedSpawnRotation}, {itemData.ScrapValue}, {itemData.ItemSavedData}.");
-            if (!LethalContent.Items.TryGetValue(itemNamespacedKey, out DawnItemInfo itemInfo))
+
+            int keyIndex = row[0]!.ToObject<int>();
+            if (keyIndex < 0 || keyIndex >= keysArray.Count)
             {
-                DawnPlugin.Logger.LogWarning($"Item: {itemNamespacedKey} doesn't exist in the game, this means this item cannot be loaded from the savefile, presumably you removed a mod that added this time previously.");
+                DawnPlugin.Logger.LogWarning($"Invalid key index {keyIndex} in save; skipping.");
                 continue;
             }
-            Vector3 spawnPosition = itemData.SavedSpawnPosition;
+
+            string? keyString = keysArray[keyIndex].ToObject<string>();
+            if (string.IsNullOrEmpty(keyString) || !NamespacedKey.TryParse(keyString, out NamespacedKey? itemKey))
+            {
+                DawnPlugin.Logger.LogWarning($"Invalid item key '{keyString}' in save; skipping.");
+                continue;
+            }
+
+            if (!LethalContent.Items.TryGetValue(itemKey, out DawnItemInfo itemInfo))
+            {
+                DawnPlugin.Logger.LogWarning($"Item: {itemKey} no longer exists (mod removed?); skipping.");
+                continue;
+            }
+
+            float px = row[1].ToObject<float>();
+            float py = row[2].ToObject<float>();
+            float pz = row[3].ToObject<float>();
+            Vector3 spawnPosition = new(px, py, pz);
+
+            float rx = row[4].ToObject<float>();
+            float ry = row[5].ToObject<float>();
+            float rz = row[6].ToObject<float>();
+            Vector3 rotation = new(rx, ry, rz);
+
+            int scrap = row[7].ToObject<int>();
+
+            JToken itemSavedData = row.Count > 8 ? row[8] : 0;
+
             if (!StartOfRoundRefs.Instance.shipBounds.bounds.Contains(spawnPosition))
             {
                 spawnPosition = StartOfRoundRefs.Instance.playerSpawnPositions[1].position;
             }
-            GrabbableObject grabbableObject = Object.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(itemData.SavedSpawnRotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
-            grabbableObject.fallTime = 0f;
-            grabbableObject.scrapPersistedThroughRounds = true;
-            grabbableObject.isInElevator = true;
-            grabbableObject.isInShipRoom = true;
-            grabbableObject.SetScrapValue(itemData.ScrapValue);
-            if (grabbableObject.itemProperties.saveItemVariable)
+
+            GrabbableObject grabbable = Object.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(rotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
+
+            grabbable.fallTime = 0f;
+            grabbable.scrapPersistedThroughRounds = true;
+            grabbable.isInElevator = true;
+            grabbable.isInShipRoom = true;
+            grabbable.SetScrapValue(scrap);
+
+            if (grabbable.itemProperties.saveItemVariable && itemSavedData is not null && itemSavedData.Type != JTokenType.Null && !(itemSavedData.Type == JTokenType.Integer && itemSavedData.Value<int>() == 0))
             {
-                ((IDawnSaveData)grabbableObject).LoadDawnSaveData(itemData.ItemSavedData);
+                ((IDawnSaveData)grabbable).LoadDawnSaveData(itemSavedData);
             }
-            grabbableObject.NetworkObject.Spawn(false);
-            StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbableObject.transform, itemData.SavedSpawnRotation));
+
+            grabbable.NetworkObject.Spawn(false);
+            StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbable.transform, rotation));
         }
     }
 
@@ -60,53 +96,69 @@ public static class ItemSaveDataHandler
     internal static void SaveAllItems(PersistentDataContainer dataContainer)
     {
         AllShipItems = GameObject.FindObjectsOfType<GrabbableObject>();
-        List<ItemSaveData> allShipItemDatas = new();
-        Dictionary<NamespacedKey, ushort> itemKeyToIdMap = new();
-        ushort nextId = 0;
-        
-        foreach (GrabbableObject itemData in AllShipItems)
+
+        List<string> keysList = new();
+        Dictionary<string, int> keyIndexLookup = new();
+
+        JArray itemsArray = new();
+
+        foreach (GrabbableObject item in AllShipItems)
         {
-            DawnItemInfo? itemInfo = itemData.itemProperties.GetDawnInfo();
+            DawnItemInfo? itemInfo = item.itemProperties.GetDawnInfo();
             if (itemInfo == null)
             {
-                DawnPlugin.Logger.LogError($"Item: {itemData.name} doesn't have a DawnItemInfo, this means this item cannot be committed to the savefile, contact the developer of this item to fix this ASAP!");
+                DawnPlugin.Logger.LogError($"Item: {item.name} doesn't have a DawnItemInfo; cannot save. " + "Contact the developer of this item.");
                 continue;
             }
-            Debuggers.Items?.Log($"Saving item: {itemInfo.Key} into save data.");
+
+            string keyString = itemInfo.Key.ToString();
+
+            if (!keyIndexLookup.TryGetValue(keyString, out int keyIndex))
+            {
+                keyIndex = keysList.Count;
+                keysList.Add(keyString);
+                keyIndexLookup[keyString] = keyIndex;
+            }
+
+            Debuggers.Items?.Log($"Saving item: {keyString} into save data.");
+
             JToken itemSave = 0;
-            if (itemData.itemProperties.saveItemVariable)
+            if (item.itemProperties.saveItemVariable)
             {
-                itemSave = ((IDawnSaveData)itemData).GetDawnDataToSave();
+                itemSave = ((IDawnSaveData)item).GetDawnDataToSave() ?? 0;
             }
-            
-            if (!itemKeyToIdMap.TryGetValue(itemInfo.Key, out ushort itemId))
+
+            Vector3 worldPos = item.transform.position;
+            Vector3 savePos = new(worldPos.x, worldPos.y - item.itemProperties.verticalOffset + 0.02f, worldPos.z);
+            Vector3 rotation = item.transform.rotation.eulerAngles;
+
+            // Row format:
+            // [ keyIndex, px, py, pz, rx, ry, rz, scrap, itemSavedData ]
+            JArray row = new()
             {
-                itemId = nextId++;
-                itemKeyToIdMap[itemInfo.Key] = itemId;
-            }
-            
-            allShipItemDatas.Add(new ItemSaveData(itemId, new Vector3(itemData.transform.position.x, itemData.transform.position.y - itemData.itemProperties.verticalOffset + 0.02f, itemData.transform.position.z), itemData.transform.rotation.eulerAngles, itemData.scrapValue, itemSave));
+                keyIndex,          // 0
+                savePos.x,         // 1
+                savePos.y,         // 2
+                savePos.z,         // 3
+                rotation.x,        // 4
+                rotation.y,        // 5
+                rotation.z,        // 6
+                item.scrapValue,   // 7
+                itemSave           // 8
+            };
+
+            itemsArray.Add(row);
         }
+
+        JObject root = new()
+        {
+            ["keys"] = new JArray(keysList),
+            ["items"] = itemsArray
+        };
 
         using (dataContainer.CreateEditContext())
         {
-            Dictionary<ushort, NamespacedKey> idToKeyMap = new Dictionary<ushort, NamespacedKey>();
-            foreach (var kvp in itemKeyToIdMap)
-            {
-                idToKeyMap[kvp.Value] = kvp.Key;
-            }
-            
-            dataContainer.Set(_namespacedKey, allShipItemDatas);
-            dataContainer.Set(_itemKeyMapNamespacedKey, idToKeyMap);
+            dataContainer.Set(_namespacedKey, root);
         }
-    }
-
-    public struct ItemSaveData(ushort itemKeyId, Vector3 savePosition, Vector3 saveRotation, int scrapValue, JToken itemSavedData)
-    {
-        public ushort ItemKeyId = itemKeyId;
-        [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnPosition = savePosition;
-        [JsonConverter(typeof(Vector3Converter))] public Vector3 SavedSpawnRotation = saveRotation;
-        public int ScrapValue = scrapValue;
-        public JToken ItemSavedData = itemSavedData;
     }
 }
