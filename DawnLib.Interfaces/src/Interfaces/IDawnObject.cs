@@ -1,4 +1,6 @@
-﻿using Dawn.Preloader;
+﻿using InjectionLibrary.Attributes;
+
+[assembly: RequiresInjections]
 
 namespace Dawn.Interfaces;
 
@@ -7,9 +9,9 @@ namespace Dawn.Interfaces;
 [InjectInterface("EnemyType")]
 [InjectInterface("Item")]
 [InjectInterface("UnlockableItem")]
-[InjectInterface("TileSet")]
-[InjectInterface("DungeonArchetype")]
-[InjectInterface("DungeonFlow")]
+[InjectInterface("DunGen.TileSet")]
+[InjectInterface("DunGen.DungeonArchetype")]
+[InjectInterface("DunGen.Graph.DungeonFlow")]
 [InjectInterface("BuyableVehicle")]
 public interface IDawnObject
 {
