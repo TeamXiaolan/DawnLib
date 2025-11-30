@@ -2,10 +2,8 @@
 
 ## Xu
 
-- Make a hide if empty drawer
 - DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool.
 - Dead body additions.
-- Handling vehicle spawning when already bought on loading a lobby, also always have the station spawn at the start of the lobby.
 - Handling vehicle no station equaling magnet station.
 
 less important:

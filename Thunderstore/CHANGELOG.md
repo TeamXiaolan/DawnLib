@@ -1,4 +1,9 @@
-# v0.5.0
+# v0.5.1
+
+- Optimised saving system even more.
+- Made editor experience cleaner again
+
+## v0.5.0
 
 - Optimised the save system even more.
 - Interior hotloading is real.

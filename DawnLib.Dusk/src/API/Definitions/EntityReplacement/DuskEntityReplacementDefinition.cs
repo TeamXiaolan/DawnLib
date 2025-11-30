@@ -48,12 +48,15 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public bool GenerateDisableDateConfig { get; private set; } = true;
     [field: Header("Configs | Obsolete")]
     [field: SerializeField]
+    [field: DontDrawIfEmpty]
     [Obsolete]
     public string MoonSpawnWeights { get; private set; }
     [field: SerializeField]
+    [field: DontDrawIfEmpty]
     [Obsolete]
     public string InteriorSpawnWeights { get; private set; }
     [field: SerializeField]
+    [field: DontDrawIfEmpty]
     [Obsolete]
     public string WeatherSpawnWeights { get; private set; }
 

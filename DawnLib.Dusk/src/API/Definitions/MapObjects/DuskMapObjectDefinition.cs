@@ -58,10 +58,12 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
     public bool CreateOutsideCurveSpawnWeightsConfig { get; private set; } = true;
 
     [field: Header("Obsolete")]
-    [Obsolete]
     [field: SerializeField]
+    [field: DontDrawIfEmpty]
+    [Obsolete]
     public string DefaultOutsideCurveSpawnWeights { get; private set; }
     [field: SerializeField]
+    [field: DontDrawIfEmpty]
     [Obsolete]
     public string DefaultInsideCurveSpawnWeights { get; private set; }
 
