@@ -9,6 +9,7 @@ using HarmonyLib;
 using LethalLevelLoader;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn.Internal;
 
@@ -19,8 +20,37 @@ static class LethalLevelLoaderCompat
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void ScrewWithLLLDynamicDungeonRarity()
     {
-        // DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalLevelLoader.DungeonMatchingProperties), "GetDynamicRarity"), EnsureCorrectDawnDungeonDynamicRarity));
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalLevelLoader.LevelMatchingProperties), "GetDynamicRarity"), EnsureCorrectDawnDungeonDynamicRarity));
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static List<IntWithRarity> GetCustomDungeonsWithRarities(SelectableLevel selectableLevel)
+    {
+        List<ExtendedDungeonFlow> availableFlows = PatchedContent.CustomExtendedDungeonFlows;
+        List<IntWithRarity> intsWithRarity = new();
+        foreach (ExtendedDungeonFlow extendedDungeonFlow in availableFlows)
+        {
+            if (extendedDungeonFlow.LevelMatchingProperties == null)
+                continue;
+
+            ExtendedLevel? extendedLevel = LevelManager.GetExtendedLevel(selectableLevel);
+            if (extendedLevel == null)
+                continue;
+
+            int rarity = extendedDungeonFlow.LevelMatchingProperties.GetDynamicRarity(extendedLevel);
+            IntWithRarity intWithRarity = new IntWithRarity();
+            for (int i = 0; i < RoundManager.Instance.dungeonFlowTypes.Length; i++)
+            {
+                if (RoundManager.Instance.dungeonFlowTypes[i].dungeonFlow == extendedDungeonFlow.DungeonFlow)
+                {
+                    intWithRarity.id = i;
+                    intWithRarity.rarity = rarity;
+                    break;
+                }
+            }
+            intsWithRarity.Add(intWithRarity);
+        }
+        return intsWithRarity;
     }
 
     private static int EnsureCorrectDawnDungeonDynamicRarity(RuntimeILReferenceBag.FastDelegateInvokers.Func<LevelMatchingProperties, ExtendedLevel, int> orig, LevelMatchingProperties self, ExtendedLevel extendedLevel)

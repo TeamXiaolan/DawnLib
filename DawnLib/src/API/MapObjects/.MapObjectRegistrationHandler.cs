@@ -310,23 +310,27 @@ static class MapObjectRegistrationHandler
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
         List<Vector3> occupiedPositions = new();
+        EntranceTeleport[] entranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        Transform[] shipSpawnPathPoints = RoundManager.Instance.shipSpawnPathPoints;
+        GameObject[] spawnDenialPoints = GameObject.FindGameObjectsWithTag("SpawnDenialPoint");
+        GameObject itemShipLandingNode = GameObject.FindGameObjectWithTag("ItemShipLandingNode");
+
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
             if (outsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            HandleSpawningOutsideObjects(outsideInfo, occupiedPositions, everyoneRandom, serverOnlyRandom);
+            HandleSpawningOutsideObjects(outsideInfo, occupiedPositions, everyoneRandom, serverOnlyRandom, entranceTeleports, shipSpawnPathPoints, spawnDenialPoints, itemShipLandingNode);
         }
         orig(self);
         _spawnedObjects = 0;
     }
 
-    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<Vector3> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom)
+    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<Vector3> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom, EntranceTeleport[] entranceTeleports, Transform[] shipSpawnPathPoints, GameObject[] spawnDenialPoints, GameObject itemShipLandingNode)
     {
-        if (RoundManager.Instance.outsideAINodes != null && RoundManager.Instance.outsideAINodes.Length <= outsideInfo.MinimumAINodeSpawnRequirement)
+        if (RoundManager.Instance.outsideAINodes.Length <= outsideInfo.MinimumAINodeSpawnRequirement)
         {
-
             return;
         }
 
@@ -354,10 +358,6 @@ static class MapObjectRegistrationHandler
         }
 
         Debuggers.MapObjects?.Log($"Spawning {randomNumberToSpawn} of {prefabToSpawn.name} for level {level}");
-
-        Transform[] shipSpawnPathPoints = RoundManager.Instance.shipSpawnPathPoints;
-        GameObject[] spawnDenialPoints = RoundManager.Instance.spawnDenialPoints;
-        GameObject itemShipLandingNode = GameObject.FindGameObjectWithTag("ItemShipLandingNode");
 
         float objectWidth = outsideInfo.ObjectWidth;
 
@@ -413,7 +413,7 @@ static class MapObjectRegistrationHandler
                 }
             }
 
-            foreach (EntranceTeleport entranceTeleport in DawnNetworker.EntrancePoints)
+            foreach (EntranceTeleport entranceTeleport in entranceTeleports)
             {
                 if (Vector3.Distance(entranceTeleport.transform.position, finalPos) < objectWidth + 6)
                 {

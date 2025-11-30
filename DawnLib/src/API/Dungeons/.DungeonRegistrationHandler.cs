@@ -284,8 +284,13 @@ static class DungeonRegistrationHandler
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
+            List<IntWithRarity> intsWithRarity = level.dungeonFlowTypes.ToList();
+            if (LethalLevelLoaderCompat.Enabled)
+            {
+                intsWithRarity.AddRange(LethalLevelLoaderCompat.GetCustomDungeonsWithRarities(level));
+            }
 
-            foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
+            foreach (IntWithRarity intWithRarity in intsWithRarity)
             {
                 DungeonFlow dungeonFlow = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow;
                 if (!dungeonWeightBuilder.TryGetValue(dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
