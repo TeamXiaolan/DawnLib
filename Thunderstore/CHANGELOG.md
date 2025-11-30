@@ -1,4 +1,8 @@
-# v0.5.1
+# v0.5.2
+
+- Reverted save system to what it was before temporarily to create a migration system.
+
+## v0.5.1
 
 - Optimised saving system a lot more, it should be a lot faster.
 - If you have a current ongoing save, disable the saving system so it does not delete every item and unlockable in that save, then re-enable it when you make a new save.
