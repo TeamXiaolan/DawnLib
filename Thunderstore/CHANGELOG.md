@@ -1,6 +1,7 @@
 # v0.5.1
 
 - Optimised saving system a lot more, it should be a lot faster.
+- If you have a current ongoing save, disable the saving system so it does not delete every item and unlockable in that save, then re-enable it when you make a new save.
 - Made editor experience cleaner again
 
 ## v0.5.0
