@@ -123,7 +123,12 @@ public class NamespacedKey : INetworkSerializable
         return true;
     }
 
-    public static NamespacedKey ForceParse(string input, bool useSmartMatching = false)
+    public static NamespacedKey ForceParse(string input)
+    {
+        return ForceParse(input, false);
+    }
+
+    public static NamespacedKey ForceParse(string input, bool useSmartMatching)
     {
         string[] parts = input.Split(Separator);
         if (parts.Length == 1)
