@@ -215,7 +215,7 @@ static class VehicleRegistrationPatch
                 continue;
 
             TerminalKeyword buyDuskKeyword = new TerminalKeywordBuilder($"{vehicleDefinition.name}BuyKeyword")
-                .SetWord(!string.IsNullOrEmpty(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}")
+                .SetWord(!string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}")
                 .SetDefaultVerb(buyKeyword)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.BuyKeyword = buyDuskKeyword;
@@ -244,7 +244,7 @@ static class VehicleRegistrationPatch
                 },
             ];
             TerminalNode buyDuskNode = new TerminalNodeBuilder($"{vehicleDefinition.name}BuyNode")
-                .SetDisplayText(!string.IsNullOrEmpty(vehicleDefinition.BuyableVehiclePreset.DisplayNodeText) ? vehicleDefinition.BuyableVehiclePreset.DisplayNodeText : $"You have requested to order the {vehicleDefinition.VehicleDisplayName}.\n[warranty] Total cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\n")
+                .SetDisplayText(!string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.DisplayNodeText) ? vehicleDefinition.BuyableVehiclePreset.DisplayNodeText : $"You have requested to order the {vehicleDefinition.VehicleDisplayName}.\n[warranty] Total cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(15)
                 .SetIsConfirmationNode(true)

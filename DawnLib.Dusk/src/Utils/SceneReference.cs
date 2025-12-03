@@ -16,7 +16,7 @@ public class SceneReference
 
     public string ScenePath => _scenePath;
     public string BundleName => _bundleName;
-    public string SceneName => !string.IsNullOrEmpty(ScenePath) ? DawnNetworkSceneManager.GetSceneNameFromPath(ScenePath) : string.Empty;
+    public string SceneName => !string.IsNullOrWhiteSpace(ScenePath) ? DawnNetworkSceneManager.GetSceneNameFromPath(ScenePath) : string.Empty;
 
     public static implicit operator string(SceneReference reference)
     {

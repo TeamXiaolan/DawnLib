@@ -26,7 +26,7 @@ public class NamespacedConfigWeight
     internal static string ConvertToString(NamespacedConfigWeight input)
     {
         // End Result: {NamespacedKey}={Operation}{Weight}
-        if (input == null || input.NamespacedKey == null || string.IsNullOrEmpty(input.NamespacedKey.Namespace) || string.IsNullOrEmpty(input.NamespacedKey.Key))
+        if (input == null || input.NamespacedKey == null || string.IsNullOrWhiteSpace(input.NamespacedKey.Namespace) || string.IsNullOrWhiteSpace(input.NamespacedKey.Key))
         {
             DuskPlugin.Logger.LogWarning($"Invalid Conversion from NamespacedConfigWeight to string: {input}");
             return string.Empty;
@@ -103,7 +103,7 @@ public class NamespacedConfigWeight
     private static Regex _splitRegex = new(@"\s+");
     internal static List<NamespacedConfigWeight> ConvertManyFromString(string input)
     {
-        if (string.IsNullOrEmpty(input))
+        if (string.IsNullOrWhiteSpace(input))
             return new List<NamespacedConfigWeight>();
 
         string[] inputList = input.Split(',', StringSplitOptions.RemoveEmptyEntries);

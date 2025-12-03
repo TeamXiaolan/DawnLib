@@ -104,7 +104,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
                 });
             }
 
-            if (!string.IsNullOrEmpty(BestiaryNodeText))
+            if (!string.IsNullOrWhiteSpace(BestiaryNodeText))
             {
                 builder.CreateBestiaryNode(BestiaryNodeText);
                 builder.CreateNameKeyword(BestiaryWordOverride);

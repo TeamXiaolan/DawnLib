@@ -145,7 +145,7 @@ static class UnlockableRegistrationHandler
                 TerminalPurchaseResult result = unlockableItemInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
-                    if (!string.IsNullOrEmpty(failedResult.OverrideName))
+                    if (!string.IsNullOrWhiteSpace(failedResult.OverrideName))
                     {
                         Debuggers.Unlockables?.Log($"Overriding name of {unlockableItemInfo.Key} with {failedResult.OverrideName}");
                     }
@@ -188,10 +188,10 @@ static class UnlockableRegistrationHandler
         }
     }
 
-    
+
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyAfter("x753.More_Suits")]
     private static void FreezeShipUnlockables()
-    {        
+    {
         if (LethalContent.Unlockables.IsFrozen)
         {
             return;

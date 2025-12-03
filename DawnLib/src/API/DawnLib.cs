@@ -56,7 +56,7 @@ public static class DawnLib
         _profileContainer ??= new PersistentDataContainer(Path.Combine(Paths.BepInExRootPath, "DawnLib.dawndata"));
         return _profileContainer;
     }
-    
+
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
         if (!prefab)

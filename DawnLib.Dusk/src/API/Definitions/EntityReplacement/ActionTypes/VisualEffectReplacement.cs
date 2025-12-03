@@ -13,7 +13,7 @@ public class VisualEffectReplacement : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        VisualEffect visualEffect = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
+        VisualEffect visualEffect = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
         visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
     }
 }

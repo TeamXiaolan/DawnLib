@@ -18,7 +18,7 @@ public class PlanetUnlocker : GrabbableObject
     [SerializeField]
     [Tooltip("Leave empty to have no audio")]
     private AudioSource _unlockAudio;
-    
+
     [Header("Notification Settings")]
     [SerializeField]
     private bool _showDisplayTip;
@@ -67,7 +67,7 @@ public class PlanetUnlocker : GrabbableObject
             return false;
         }
     }
-    
+
     private IEnumerator WaitToDespawn()
     {
         if (_unlockAudio && _unlockAudio.clip != null)

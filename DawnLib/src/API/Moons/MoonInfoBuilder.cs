@@ -24,7 +24,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
 
     public MoonInfoBuilder CreateNameKeyword(string wordOverride)
     {
-        if (string.IsNullOrEmpty(wordOverride))
+        if (string.IsNullOrWhiteSpace(wordOverride))
         {
             wordOverride = value.PlanetName.ToLowerInvariant().Replace(' ', '-');
         }

@@ -12,7 +12,7 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
         for (int i = 0; i < value.keys.Length; i++)
         {
             Keyframe keyframe = value.keys[i];
-            string timeStr  = keyframe.time.ToString("0.00", CultureInfo.InvariantCulture);
+            string timeStr = keyframe.time.ToString("0.00", CultureInfo.InvariantCulture);
             string valueStr = keyframe.value.ToString("0.00", CultureInfo.InvariantCulture);
 
             pairs[i] = $"{timeStr}, {valueStr}";

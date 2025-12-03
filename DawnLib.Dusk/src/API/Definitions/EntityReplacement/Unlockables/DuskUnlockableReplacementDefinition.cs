@@ -27,7 +27,7 @@ public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableRep
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            if (string.IsNullOrEmpty(gameObjectAddon.PathToGameObject))
+            if (string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject))
             {
                 continue;
             }

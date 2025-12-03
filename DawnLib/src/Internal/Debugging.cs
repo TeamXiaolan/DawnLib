@@ -30,6 +30,7 @@ internal static class Debuggers
     internal static DebugLogSource? PersistentDataContainer;
     internal static DebugLogSource? SceneManager;
     internal static DebugLogSource? SaveManager;
+    internal static DebugLogSource? NamespacedKeys;
 
     internal static void Bind(ConfigFile file)
     {

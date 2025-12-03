@@ -77,7 +77,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPatches.Init();
 
         _harmony.PatchAll(Assembly.GetExecutingAssembly());
-        
+
         DawnNetworkSceneManager.Init();
 
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);

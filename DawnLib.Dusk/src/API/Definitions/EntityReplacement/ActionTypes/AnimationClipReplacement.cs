@@ -18,7 +18,7 @@ public class AnimationClipReplacement : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        Animator animator = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
+        Animator animator = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
         AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
         foreach (AnimationEventAddition animationEventAddition in PotentialAnimationEvents)
         {

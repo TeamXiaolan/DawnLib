@@ -14,7 +14,7 @@ public class SkinnedMeshReplacement : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        ReplaceSkinnedMeshRenderer(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>() : rootTransform.GetComponent<SkinnedMeshRenderer>());
+        ReplaceSkinnedMeshRenderer(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>() : rootTransform.GetComponent<SkinnedMeshRenderer>());
     }
 
     private void ReplaceSkinnedMeshRenderer(SkinnedMeshRenderer targetSkinned)
@@ -29,7 +29,7 @@ public class SkinnedMeshReplacement : Hierarchy
         for (int i = 0; i < srcBones.Length; i++)
         {
             string? name = srcBones[i] ? srcBones[i].name : null;
-            if (string.IsNullOrEmpty(name) || !targetLookup.TryGetValue(name, out Transform transform))
+            if (string.IsNullOrWhiteSpace(name) || !targetLookup.TryGetValue(name, out Transform transform))
             {
                 DuskPlugin.Logger.LogWarning($"TransferSMR: Could not map bone '{name}' with replacement: {ReplacementRenderer.name}. Using root fallback.");
                 transform = targetRoot;
@@ -80,7 +80,7 @@ public class MeshReplacement : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        ReplaceMeshRenderer(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>() : rootTransform.GetComponent<MeshRenderer>(), !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>() : rootTransform.GetComponent<MeshFilter>());
+        ReplaceMeshRenderer(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>() : rootTransform.GetComponent<MeshRenderer>(), !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>() : rootTransform.GetComponent<MeshFilter>());
     }
 
     private void ReplaceMeshRenderer(MeshRenderer targetMeshRenderer, MeshFilter targetMeshFilter)
@@ -99,7 +99,7 @@ public class MaterialsReplacement : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        ReplaceMaterials(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
+        ReplaceMaterials(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
     private void ReplaceMaterials(Renderer targetRenderer)
@@ -162,7 +162,7 @@ public class TextureReplacement : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        ReplaceMaterials(!string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
+        ReplaceMaterials(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
     private void ReplaceMaterials(Renderer targetRenderer)

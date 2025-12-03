@@ -125,7 +125,7 @@ public static class ItemSaveDataHandler
             }
 
             string? keyString = keysArray[keyIndex].ToObject<string>();
-            if (string.IsNullOrEmpty(keyString) || !NamespacedKey.TryParse(keyString, out NamespacedKey? itemKey))
+            if (string.IsNullOrWhiteSpace(keyString) || !NamespacedKey.TryParse(keyString, out NamespacedKey? itemKey))
             {
                 DawnPlugin.Logger.LogWarning($"Invalid item key '{keyString}' in save; skipping.");
                 continue;

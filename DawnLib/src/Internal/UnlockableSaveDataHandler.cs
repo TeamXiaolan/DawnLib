@@ -47,7 +47,7 @@ public static class UnlockableSaveDataHandler
             }
 
             string? keyString = keysArray[keyIndex].ToObject<string>();
-            if (string.IsNullOrEmpty(keyString) || !NamespacedKey.TryParse(keyString, out NamespacedKey? unlockableKey))
+            if (string.IsNullOrWhiteSpace(keyString) || !NamespacedKey.TryParse(keyString, out NamespacedKey? unlockableKey))
             {
                 DawnPlugin.Logger.LogWarning($"Invalid unlockable key '{keyString}' in save; skipping.");
                 continue;

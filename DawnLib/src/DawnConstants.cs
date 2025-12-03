@@ -2,7 +2,7 @@
 static class DawnConstants
 {
     internal const string MenuName = "DawnLib";
-    
+
     // Components
     internal const string ExtraEvents = $"{MenuName}/Extra Events";
     internal const string AudioComponents = $"{MenuName}/Audio";

@@ -198,7 +198,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 yield return request;
 
                 DungeonFlow? flowToLoad = CheckDungeonBundleFailed(dungeonInfo, request);
-                
+
                 // todo: more graceful error handling?
                 if (flowToLoad == null)
                 {
@@ -265,12 +265,12 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         flowToClear.TileInjectionRules.Clear();
         flowToClear.Nodes.Clear();
         flowToClear.Lines.Clear();
-        
+
         dungeonInfo.sockets.Clear();
         dungeonInfo.doorways.Clear();
         dungeonInfo.spawnSyncedObjects.Clear();
         dungeonInfo.tiles.Clear();
-        
+
         _currentlyLoadedDungeonFlow = null;
         _currentDungeonKey = default;
 

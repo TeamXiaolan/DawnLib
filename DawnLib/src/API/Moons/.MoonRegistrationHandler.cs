@@ -303,7 +303,7 @@ static class MoonRegistrationHandler
         {
             builder.AppendLine("");
 
-            if (!string.IsNullOrEmpty(group.GroupName))
+            if (!string.IsNullOrWhiteSpace(group.GroupName))
             {
                 builder.AppendLine(group.GroupName);
             }

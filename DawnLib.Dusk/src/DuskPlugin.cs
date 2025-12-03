@@ -37,7 +37,7 @@ public class DuskPlugin : BaseUnityPlugin
          * we have to manually set this field in MoonRegistrationHandler as a workaround
          */
         MoonRegistrationHandler.RouteProgressUIPrefab = Main.RouteProgressUIPrefab;
-        
+
         Logger.LogInfo("Registering auto DuskMods!");
         AutoDuskModHandler.AutoRegisterMods();
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");

@@ -28,7 +28,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private NamespacedKey<IMoonSceneInfo> _currentSceneKey;
 
     internal bool allPlayersDone { get; private set; }
-    
+
     private string? _previousDisabledTooltip = null;
 
     public enum BundleState
@@ -173,7 +173,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 yield return request;
 
                 bool hasError = CheckMoonBundleFailed(customMoon, request);
-                
+
                 // todo: more graceful error handling?
                 if (hasError)
                 {
@@ -247,7 +247,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private void CheckReadyAndUpdateUI()
     {
         RouteProgressUI.Instance.Refresh(_playerStates);
-        
+
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
 

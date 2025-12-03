@@ -37,14 +37,14 @@ public class PersistentDataContainer : DataContainer
             _container.MarkDirty();
         }
     }
-    
+
     public PersistentDataContainer(string filePath)
     {
         Debuggers.PersistentDataContainer?.Log($"new PersistentDataContainer: {Path.GetFileName(filePath)}");
         _filePath = filePath;
-        if (!File.Exists(filePath)) 
+        if (!File.Exists(filePath))
             return;
-        
+
         Debuggers.PersistentDataContainer?.Log("loading existing file");
         try
         {
@@ -69,11 +69,11 @@ public class PersistentDataContainer : DataContainer
             if (dictionaryValue is ChildPersistentDataContainer child)
             {
                 Debuggers.PersistentDataContainer?.Log($"updated parent for a loaded persistent data container. count = {child.Count}: {string.Join(", ", child.Keys.Select(it => it.ToString()))}");
-                
+
                 child.Internal_SetParent(this);
             }
         }
-        
+
         Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
     }
 
@@ -88,7 +88,7 @@ public class PersistentDataContainer : DataContainer
         {
             throw new NotSupportedException($"{key} is a child persistent data container being added to '{FileName}' when it belongs to '{child.Parent.FileName}'.");
         }
-        
+
         base.Set(key, value);
         if (AutoSave)
         {
@@ -171,7 +171,7 @@ public class ChildPersistentDataContainer : DataContainer
     {
         Parent = parent;
     }
-    
+
     public override void MarkDirty()
     {
         if (Parent.AutoSave)

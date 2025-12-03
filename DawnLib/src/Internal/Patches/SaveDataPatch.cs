@@ -62,12 +62,12 @@ static class SaveDataPatch
         {
             return true;
         }
-        
+
         contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         ItemSaveDataHandler.LoadSavedItems(contractContainer);
         return false;
     }
-    
+
     private static void SaveData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);
@@ -95,10 +95,10 @@ static class SaveDataPatch
     private static void ResetSaveFile(On.DeleteFileButton.orig_DeleteFile orig, DeleteFileButton self)
     {
         orig(self);
-        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete+1}");
+        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete + 1}");
         contractContainer.Clear();
 
-        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete+1}");
+        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete + 1}");
         saveContainer.Clear();
     }
 }
