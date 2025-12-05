@@ -307,6 +307,8 @@ static class MapObjectRegistrationHandler
 
     private static void SpawnOutsideMapObjects(On.RoundManager.orig_SpawnOutsideHazards orig, RoundManager self)
     {
+        UpdateOutsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
+
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
         List<Vector3> occupiedPositions = new();
@@ -499,6 +501,7 @@ static class MapObjectRegistrationHandler
     {
         orig(self, connectedPlayersOnServer);
         UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
+        UpdateOutsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
     }
 
     internal static void UpdateInsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
@@ -531,7 +534,40 @@ static class MapObjectRegistrationHandler
                 newSpawnableMapObjects.Add(spawnableMapObject);
                 level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
             }
-            spawnableMapObject.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo());
+            spawnableMapObject.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
+        }
+    }
+
+    internal static void UpdateOutsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
+    {
+        if (!LethalContent.Weathers.IsFrozen || !LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
+            return;
+
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        {
+            DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
+            if (outsideInfo == null || !mapObjectInfo.HasTag(DawnLibTags.IsExternal) || !mapObjectInfo.HasTag(DawnLibTags.LunarConfig))
+                continue;
+
+            SpawnableOutsideObjectWithRarity? spawnableOutsideObjectWithRarity = level.spawnableOutsideObjects.FirstOrDefault(mapObject => mapObject.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject);
+            if (spawnableOutsideObjectWithRarity == null)
+            {
+                SpawnableOutsideObject? spawnableOutsideObject = StartOfRound.Instance.levels.SelectMany(x => x.spawnableOutsideObjects).FirstOrDefault(x => x.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject).spawnableObject;
+                if (spawnableOutsideObject == null)
+                {
+                    continue;
+                }
+                spawnableOutsideObjectWithRarity = new()
+                {
+                    spawnableObject = spawnableOutsideObject,
+                    randomAmount = AnimationCurve.Constant(0, 1, 0)
+                };
+                List<SpawnableOutsideObjectWithRarity> newSpawnableOutsideObjects = level.spawnableOutsideObjects.ToList();
+                newSpawnableOutsideObjects.Add(spawnableOutsideObjectWithRarity);
+                level.spawnableOutsideObjects = newSpawnableOutsideObjects.ToArray();
+            }
+            Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
+            spawnableOutsideObjectWithRarity.randomAmount = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 

@@ -31,6 +31,7 @@ internal static class Debuggers
     internal static DebugLogSource? SceneManager;
     internal static DebugLogSource? SaveManager;
     internal static DebugLogSource? NamespacedKeys;
+    internal static DebugLogSource? StoryLogs;
 
     internal static void Bind(ConfigFile file)
     {

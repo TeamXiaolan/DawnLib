@@ -26,7 +26,7 @@ static class DungeonRegistrationHandler
 
         On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
-        On.RoundManager.Awake += CollectNonDawnDungeons;
+        LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         IL.RoundManager.Generator_OnGenerationStatusChanged += FixVanillaGenerationStatusChangedBug;
@@ -278,9 +278,8 @@ static class DungeonRegistrationHandler
         orig(self);
     }
 
-    private static void CollectNonDawnDungeons(On.RoundManager.orig_Awake orig, RoundManager self)
+    private static void CollectNonDawnDungeons()
     {
-        orig(self);
         Dictionary<string, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {

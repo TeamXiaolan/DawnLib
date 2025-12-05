@@ -11,6 +11,7 @@ namespace Dawn.Interfaces;
 [InjectInterface("DungeonArchetype")]
 [InjectInterface("DungeonFlow")]
 [InjectInterface("BuyableVehicle")]
+[InjectInterface("StoryLog")]
 public interface IDawnObject
 {
     object DawnInfo { get; set; }

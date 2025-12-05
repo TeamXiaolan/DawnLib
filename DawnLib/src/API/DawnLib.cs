@@ -86,6 +86,18 @@ public static class DawnLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
+    public static DawnStoryLogInfo DefineStoryLog(NamespacedKey<DawnStoryLogInfo> key, GameObject storyLogGameObject, Action<StoryLogInfoBuilder> callback)
+    {
+        StoryLogInfoBuilder builder = new(key, storyLogGameObject);
+        callback(builder);
+        DawnStoryLogInfo storyLogInfo = builder.Build();
+        DawnStoryLogNamespacedKeyContainer container = storyLogGameObject.AddComponent<DawnStoryLogNamespacedKeyContainer>();
+        container.Value = storyLogInfo.TypedKey;
+
+        LethalContent.StoryLogs.Register(storyLogInfo);
+        return storyLogInfo;
+    }
+
     public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, string flowName, Action<DungeonFlowInfoBuilder> callback)
     {
         DungeonFlow dungeonFlow = ScriptableObject.CreateInstance<DungeonFlow>();

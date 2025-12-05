@@ -133,6 +133,14 @@
     "Ring": "lethal_company:ring",
     "Toyrobot": "lethal_company:toy_robot",
     "RubberDucky": "lethal_company:rubber_ducky",
+    "Bone": "lethal_company:bone",
+    "Ribcage": "lethal_company:ribcage",
+    "Ear": "lethal_company:ear",
+    "Foot": "lethal_company:foot",
+    "Hand": "lethal_company:hand",
+    "Heart": "lethal_company:heart",
+    "Knee": "lethal_company:knee",
+    "Tongue": "lethal_company:tongue",
     "Shotgun": "lethal_company:shotgun",
     "Shovel": "lethal_company:shovel",
     "Soccerball": "lethal_company:soccer_ball",
@@ -154,15 +162,7 @@
     "Whoopiecushion": "lethal_company:whoopie_cushion",
     "Yieldsign": "lethal_company:yield_sign",
     "Zapgun": "lethal_company:zap_gun",
-    "ZedDog": "lethal_company:zed_dog",
-    "Hand": "lethal_company:hand",
-    "Bone": "lethal_company:bone",
-    "Ribcage": "lethal_company:ribcage",
-    "Ear": "lethal_company:ear",
-    "Knee": "lethal_company:knee",
-    "Heart": "lethal_company:heart",
-    "Tongue": "lethal_company:tongue",
-    "Foot": "lethal_company:foot"
+    "ZedDog": "lethal_company:zed_dog"
   },
   "MoonKeys": {
     "__type": "DawnMoonInfo",
@@ -240,5 +240,23 @@
     "Foggy": "lethal_company:foggy",
     "Flooded": "lethal_company:flooded",
     "Eclipsed": "lethal_company:eclipsed"
+  },
+  "StoryLogKeys": {
+    "__type": "DawnStoryLogInfo",
+    "FirstLogAugTwoTwo": "lethal_company:first_log__aug_twotwo",
+    "MummyAugTwoFour": "lethal_company:mummy__aug_twofour",
+    "SwingofthingsAugTwoSeven": "lethal_company:swing_of_things__aug_twoseven",
+    "AutopilotAugThreeOne": "lethal_company:autopilot__aug_threeone",
+    "BehindTheWallSepFour": "lethal_company:behind_the_wall__sep_four",
+    "GoodbyeSepSeven": "lethal_company:goodbye__sep_seven",
+    "ScreamsSepOneThree": "lethal_company:screams__sep_onethree",
+    "GoldenplanetAug": "lethal_company:golden_planet__aug_",
+    "IdeaSepOneEight": "lethal_company:idea__sep_oneeight",
+    "NonsenseSepTwoSeven": "lethal_company:nonsense__sep_twoseven",
+    "HidingSepThreeZero": "lethal_company:hiding__sep_threezero",
+    "RealJobOctOne": "lethal_company:real_job__oct_one",
+    "DesmondOctNine": "lethal_company:desmond__oct_nine",
+    "TeamSynergyOctOneZero": "lethal_company:team_synergy__oct_onezero",
+    "LetterOfResignationOctOneThree": "lethal_company:letter_of_resignation__oct_onethree"
   }
 }

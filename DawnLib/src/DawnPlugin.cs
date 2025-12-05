@@ -60,6 +60,7 @@ public class DawnPlugin : BaseUnityPlugin
         PersistentDataHandler.Init();
         NetworkVariableInitalizer.Init();
 
+        StoryLogRegistrationHandler.Init();
         MoonRegistrationHandler.Init();
         DungeonRegistrationHandler.Init();
         ItemRegistrationHandler.Init();
@@ -89,6 +90,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Tile Sets", LethalContent.TileSets, tileInfo => tileInfo.TileSet.name);
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
+        DebugPrintRegistryResult("Story Logs", LethalContent.StoryLogs, storyLogInfo => storyLogInfo.StoryLogGameObject.name);
 
         PersistentData = this.GetPersistentDataContainer();
         PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);

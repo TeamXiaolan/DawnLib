@@ -1,4 +1,9 @@
-# v0.5.3
+# v0.5.4
+
+- Added Storylog registration.
+- Added `DawnStoryLogSpawner` component to utils addcomponent menu.
+
+## v0.5.3
 
 - Not sure how I missed this issue when testing: fixed not being able to play?
 - Created a migrator for the new saving.

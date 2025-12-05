@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using Dawn.Internal;
 using Dawn.Utils;
+using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn;
 
+[HarmonyPatch]
 static class MoonRegistrationHandler
 {
     private static IMoonGroupAlgorithm _groupAlgorithm = new RankGroupAlgorithm();
@@ -165,6 +167,11 @@ static class MoonRegistrationHandler
         TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
         orig(self);
+    }
+
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyPriority(-999)]
+    private static void FreezeMoonRegistry()
+    {
         LethalContent.Moons.Freeze();
     }
 

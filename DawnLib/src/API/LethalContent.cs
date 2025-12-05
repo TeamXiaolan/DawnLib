@@ -12,6 +12,7 @@ public static class LethalContent
     public static TaggedRegistry<DawnUnlockableItemInfo> Unlockables = new();
     public static TaggedRegistry<DawnWeatherEffectInfo> Weathers = new();
     public static Registry<DawnArchetypeInfo> Archetypes = new();
+    public static Registry<DawnStoryLogInfo> StoryLogs = new();
 }
 
 public static class DawnLibTags
