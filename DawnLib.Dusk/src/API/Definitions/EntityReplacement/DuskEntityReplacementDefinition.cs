@@ -104,7 +104,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             DatePredicate = DatePredicate.Instantiate(DatePredicate);
         }
         bool disableDateCheck = Config.DisableDateCheck?.Value ?? false;
-        if (!disableDateCheck)
+        if (DatePredicate && !disableDateCheck)
         {
             DatePredicate.Register(Key);
         }

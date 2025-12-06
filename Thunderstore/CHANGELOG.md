@@ -1,4 +1,8 @@
-# v0.5.6
+# v0.5.7
+
+- Fixed another minor issue with DatePredicate in some edge cases.
+
+## v0.5.6
 
 - Added a fallback for unity being weird about assets not being picked up sometimes.
 
