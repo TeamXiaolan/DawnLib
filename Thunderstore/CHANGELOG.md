@@ -1,4 +1,8 @@
-# v0.5.4
+# v0.5.5
+
+- Fixed a null ref with some story log mods that add story logs late.
+
+## v0.5.4
 
 - Added Storylog registration.
 - Added `DawnStoryLogSpawner` component to utils addcomponent menu.

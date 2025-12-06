@@ -15,10 +15,10 @@ static class StoryLogRegistrationHandler
         {
             On.GameNetworkManager.Start += CollectAllStoryLogs;
         }
-        On.Terminal.Awake += RegisterStoryLogs;
+        On.Terminal.Start += RegisterStoryLogs;
     }
 
-    private static void RegisterStoryLogs(On.Terminal.orig_Awake orig, Terminal self)
+    private static void RegisterStoryLogs(On.Terminal.orig_Start orig, Terminal self)
     {
         orig(self);
         _ = TerminalRefs.Instance;
@@ -55,13 +55,20 @@ static class StoryLogRegistrationHandler
 
         foreach (GameObject storyLogGameObject in _networkPrefabStoryLogTypes)
         {
+            Debuggers.StoryLogs?.Log($"Registering {storyLogGameObject}");
             if (storyLogGameObject.GetComponent<DawnStoryLogNamespacedKeyContainer>())
             {
                 Debuggers.StoryLogs?.Log($"Already registered {storyLogGameObject}");
                 continue;
             }
 
-            CompatibleNoun compatibleNoun = TerminalRefs.ViewKeyword.compatibleNouns.Where(x => x.result.storyLogFileID == storyLogGameObject.GetComponent<StoryLog>().storyLogID).FirstOrDefault();
+            CompatibleNoun? compatibleNoun = TerminalRefs.ViewKeyword.compatibleNouns.Where(x => x.result.storyLogFileID == storyLogGameObject.GetComponent<StoryLog>().storyLogID).FirstOrDefault();
+
+            if (compatibleNoun == null || compatibleNoun.result == null)
+            {
+                Debuggers.StoryLogs?.Log($"Could not find compatible noun for {storyLogGameObject}");
+                continue;
+            }
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(compatibleNoun.result.creatureName, true);
             NamespacedKey<DawnStoryLogInfo>? key = StoryLogKeys.GetByReflection(name);
