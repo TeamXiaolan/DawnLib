@@ -166,6 +166,9 @@ static class EnemyRegistrationHandler
         {
             foreach (var node in insideNodes)
             {
+                if (node == null)
+                    continue;
+
                 float distance = Vector3.Distance(node.transform.position, self.transform.position);
                 if (distance >= closestDistance)
                     continue;
@@ -177,6 +180,9 @@ static class EnemyRegistrationHandler
         {
             foreach (var node in outsideNodes)
             {
+                if (node == null)
+                    continue;
+
                 float distance = Vector3.Distance(node.transform.position, self.transform.position);
                 if (distance < closestDistance)
                 {
