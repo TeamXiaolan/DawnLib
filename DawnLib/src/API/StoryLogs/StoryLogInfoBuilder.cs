@@ -5,7 +5,6 @@ namespace Dawn;
 public class StoryLogInfoBuilder : BaseInfoBuilder<DawnStoryLogInfo, GameObject, StoryLogInfoBuilder>
 {
     private TerminalNode? _storyLogTerminalNode = null;
-    private TerminalKeyword? _storyLogTerminalKeyword = null;
 
     private string _storyLogTitle, _storyLogKeyword;
     private string _storyLogDescription = "The developer of this story log left this empty!";
@@ -16,22 +15,6 @@ public class StoryLogInfoBuilder : BaseInfoBuilder<DawnStoryLogInfo, GameObject,
     public StoryLogInfoBuilder OverrideTerminalNode(TerminalNode terminalNode)
     {
         _storyLogTerminalNode = terminalNode;
-        return this;
-    }
-
-    public StoryLogInfoBuilder OverrideTerminalKeyword(TerminalKeyword terminalKeyword)
-    {
-        _storyLogTerminalKeyword = terminalKeyword;
-        return this;
-    }
-
-    public StoryLogInfoBuilder OverrideDescription(string description)
-    {
-        if (_storyLogTerminalNode != null)
-        {
-            _storyLogTerminalNode.displayText = description;
-        }
-        _storyLogDescription = description;
         return this;
     }
 
@@ -65,12 +48,15 @@ public class StoryLogInfoBuilder : BaseInfoBuilder<DawnStoryLogInfo, GameObject,
                                         .Build();
         }
 
-        if (_storyLogTerminalKeyword == null)
+        if (string.IsNullOrEmpty(_storyLogKeyword))
         {
-            _storyLogTerminalKeyword = new TerminalKeywordBuilder($"{key}TerminalKeyword")
-                                        .SetWord(_storyLogKeyword)
-                                        .Build();
+            DawnPlugin.Logger.LogWarning($"StoryLog: '{key}' didn't set keyword, please call .SetKeyword on the builder.");
         }
-        return new DawnStoryLogInfo(key, tags, value, _storyLogTerminalNode, _storyLogTerminalKeyword, customData);
+
+        TerminalKeyword storyLogTerminalKeyword = new TerminalKeywordBuilder($"{key}TerminalKeyword")
+                                    .SetWord(_storyLogKeyword)
+                                    .Build();
+
+        return new DawnStoryLogInfo(key, tags, value, _storyLogTerminalNode, storyLogTerminalKeyword, customData);
     }
 }
