@@ -1,5 +1,6 @@
 using Dawn;
 using Dawn.Internal;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -106,6 +107,17 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
             IsShipUpgrade = GenerateUnlockableTypeConfig && IsShipUpgrade ? context.Bind($"{EntityNameReference} | Is Ship Upgrade", $"Whether {EntityNameReference} is considered a ship upgrade.", IsShipUpgrade) : null,
             Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (UnlockableItem.prefabObject == null)
+            return;
+
+        if (!UnlockableItem.prefabObject.TryGetComponent(out NetworkObject _))
+            return;
+
+        DawnLib.RegisterNetworkPrefab(UnlockableItem.prefabObject);
     }
 
     protected override string EntityNameReference => UnlockableItem.unlockableName;

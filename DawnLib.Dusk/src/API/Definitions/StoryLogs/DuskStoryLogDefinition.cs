@@ -1,4 +1,5 @@
 using Dawn;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -45,6 +46,14 @@ public class DuskStoryLogDefinition : DuskContentDefinition<DawnStoryLogInfo>
         return new StoryLogConfig
         {
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (!StoryLogGameObject.TryGetComponent(out NetworkObject _))
+            return;
+
+        DawnLib.RegisterNetworkPrefab(StoryLogGameObject);
     }
 
     protected override string EntityNameReference => Title;

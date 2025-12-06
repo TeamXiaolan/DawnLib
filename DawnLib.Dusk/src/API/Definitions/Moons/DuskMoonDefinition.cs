@@ -116,6 +116,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
         };
     }
 
+    public override void TryNetworkRegisterAssets() { }
     protected override string EntityNameReference => Level?.PlanetName ?? string.Empty;
 }
 

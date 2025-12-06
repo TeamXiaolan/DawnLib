@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using Dawn;
 using Dawn.Utils;
 using Dusk.Weights;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -162,6 +163,14 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
             IsShopItem = isShopItem,
             Cost = isShopItem?.Value ?? IsShopItem ? context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (!Item.spawnPrefab.TryGetComponent(out NetworkObject _))
+            return;
+
+        DawnLib.RegisterNetworkPrefab(Item.spawnPrefab);
     }
 
     protected override string EntityNameReference => Item?.itemName ?? string.Empty;

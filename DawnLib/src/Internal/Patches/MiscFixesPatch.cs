@@ -12,9 +12,9 @@ namespace Dawn.Internal;
 
 static class MiscFixesPatch
 {
-    internal static List<GameObject> networkPrefabsToAdd = new();
-    internal static List<GameObject> soundPrefabsToFix = new();
-    internal static List<GameObject> tilesToFixSockets = new();
+    internal static HashSet<GameObject> networkPrefabsToAdd = new();
+    internal static HashSet<GameObject> soundPrefabsToFix = new();
+    internal static HashSet<GameObject> tilesToFixSockets = new();
 
     internal static void Init()
     {

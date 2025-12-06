@@ -62,4 +62,6 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
 
     public float MaxProgress => ChildrenAchievementReferences.Count;
     public float CurrentProgress => CountCompleted();
+
+    public override void TryNetworkRegisterAssets() { }
 }

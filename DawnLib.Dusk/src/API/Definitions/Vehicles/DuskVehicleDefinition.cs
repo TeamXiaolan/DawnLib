@@ -1,6 +1,7 @@
 using System.Linq;
 using Dawn;
 using Dawn.Internal;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -103,6 +104,24 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
             DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
             Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (BuyableVehiclePreset.VehiclePrefab != null && BuyableVehiclePreset.VehiclePrefab.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(BuyableVehiclePreset.VehiclePrefab);
+        }
+
+        if (BuyableVehiclePreset.SecondaryPrefab != null && BuyableVehiclePreset.SecondaryPrefab.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(BuyableVehiclePreset.SecondaryPrefab);
+        }
+
+        if (BuyableVehiclePreset.StationPrefab != null && BuyableVehiclePreset.StationPrefab.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(BuyableVehiclePreset.StationPrefab);
+        }
     }
 
     protected override string EntityNameReference => VehicleDisplayName;

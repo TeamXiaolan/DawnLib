@@ -81,5 +81,6 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         };
     }
 
+    public override void TryNetworkRegisterAssets() { }
     protected override string EntityNameReference => DungeonFlowReference?.FlowAssetName ?? string.Empty;
 }

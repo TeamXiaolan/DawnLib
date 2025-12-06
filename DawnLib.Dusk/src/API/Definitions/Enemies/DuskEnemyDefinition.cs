@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Dawn;
 using Dusk.Weights;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -125,6 +126,14 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             PowerLevel = section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", EnemyType.PowerLevel),
             MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", EnemyType.MaxCount),
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (!EnemyType.enemyPrefab.TryGetComponent(out NetworkObject _))
+            return;
+
+        DawnLib.RegisterNetworkPrefab(EnemyType.enemyPrefab);
     }
 
     protected override string EntityNameReference => EnemyType?.enemyName ?? string.Empty;

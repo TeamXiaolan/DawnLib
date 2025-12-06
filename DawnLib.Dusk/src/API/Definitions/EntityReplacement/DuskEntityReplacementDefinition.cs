@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn;
 using Dusk.Weights;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -63,6 +65,17 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
     public EntityReplacementConfig Config { get; private set; }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        foreach (GameObject gameObject in GameObjectAddons.Select(x => x.GameObjectToCreate))
+        {
+            if (!gameObject.TryGetComponent(out NetworkObject _))
+                continue;
+
+            DawnLib.RegisterNetworkPrefab(gameObject);
+        }
+    }
 
     public override void Register(DuskMod mod)
     {

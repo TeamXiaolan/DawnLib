@@ -36,7 +36,10 @@ public abstract class DuskContentDefinition : ScriptableObject
         {
             generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
         }
+        TryNetworkRegisterAssets();
     }
+
+    public abstract void TryNetworkRegisterAssets();
 
     public string GetDefaultKey()
     {

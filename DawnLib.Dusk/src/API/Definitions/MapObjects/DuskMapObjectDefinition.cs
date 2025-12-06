@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -253,6 +254,14 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
             InsidePrioritiseMoon = insidePrioritiseMoon,
             OutsidePrioritiseMoon = outsidePrioritiseMoon
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (!GameObject.TryGetComponent(out NetworkObject _))
+            return;
+
+        DawnLib.RegisterNetworkPrefab(GameObject);
     }
 
     protected override string EntityNameReference => MapObjectName;

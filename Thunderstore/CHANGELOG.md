@@ -1,4 +1,8 @@
-# v0.5.5
+# v0.5.6
+
+- Added a fallback for unity being weird about assets not being picked up sometimes.
+
+## v0.5.5
 
 - Fixed a null ref with some story log mods that add story logs late.
 
