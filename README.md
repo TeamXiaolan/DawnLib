@@ -129,10 +129,11 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 ### Credits - Misc
 
 - Slayer (Achievement UI)
-- Dr. Minecraft (Hotloading UI Feedback)
+- Monty (Hotloading UI Feedback)
 - IAmBatby (UI+General Feedback)
 - Zaggy (Advice + other stuff I forgor)
 - Matty (Preloader stuff)
+- Scoops (Unity Editor support + their goated base game shader work)
 
 ### Credits - Testers
 

@@ -2,6 +2,13 @@
 
 - Added Storylog registration.
 - Added `DawnStoryLogSpawner` component to utils addcomponent menu.
+- Properly implemented smart matching.
+- Fixed an obsolete editor oopsie with interior and moon weights for entity replacements.
+- Fixed interior mapobjects blanks not being replaced.
+- Created `StoryLogKeys` for vanilla story logs.
+- Moved where most registries freeze to be after a harmony patch of startofround.start prefix for more compat with more mods that add items etc late.
+- Publicised a few internal methods.
+- Updated wiki to adding a new page on how to make the editor look more like base-game thanks to help by `Scoops`.
 
 ## v0.5.3
 
