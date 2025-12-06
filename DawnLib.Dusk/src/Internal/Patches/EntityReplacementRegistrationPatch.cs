@@ -302,27 +302,29 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
+        if (self.HasGrabbableObjectReplacement())
+        {
+            orig(self);
+            return;
+        }
+
         if (!self.itemProperties.GetDawnInfo().CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? replacements))
         {
             orig(self);
             return;
         }
 
-        foreach (DuskItemReplacementDefinition replacement in replacements.ToArray())
+        List<DuskItemReplacementDefinition> newReplacements = new List<DuskItemReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
+            DuskItemReplacementDefinition replacement = newReplacements[i];
             if (replacement.DatePredicate == null)
                 continue;
 
             if (!replacement.DatePredicate.Evaluate())
             {
-                replacements.Remove(replacement);
+                newReplacements.RemoveAt(i);
             }
-        }
-
-        if (self.HasGrabbableObjectReplacement())
-        {
-            orig(self);
-            return;
         }
 
         // todo: save the current skin and try to restore it if this runs in orbit
@@ -332,20 +334,9 @@ static class EntityReplacementRegistrationPatch
             return;
         }*/
 
-        foreach (DuskItemReplacementDefinition replacement in replacements.ToArray())
-        {
-            if (replacement.DatePredicate == null)
-                continue;
-
-            if (!replacement.DatePredicate.Evaluate())
-            {
-                replacements.Remove(replacement);
-            }
-        }
-
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
             orig(self);
@@ -355,7 +346,7 @@ static class EntityReplacementRegistrationPatch
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
-        foreach (DuskItemReplacementDefinition replacement in replacements)
+        foreach (DuskItemReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
             if (chosenWeight > 0)
@@ -550,20 +541,22 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        foreach (DuskEnemyReplacementDefinition replacement in replacements.ToArray())
+        List<DuskEnemyReplacementDefinition> newReplacements = new List<DuskEnemyReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
+            DuskEnemyReplacementDefinition replacement = newReplacements[i];
             if (replacement.DatePredicate == null)
                 continue;
 
             if (!replacement.DatePredicate.Evaluate())
             {
-                replacements.Remove(replacement);
+                newReplacements.RemoveAt(i);
             }
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
             return;
@@ -572,7 +565,7 @@ static class EntityReplacementRegistrationPatch
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
-        foreach (DuskEnemyReplacementDefinition replacement in replacements)
+        foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
             if (chosenWeight > 0)

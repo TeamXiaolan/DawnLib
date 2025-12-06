@@ -31,7 +31,7 @@ public class DatePredicate : DuskPredicate
     [field: SerializeField]
     public DawnDateTime DawnEndDateTime { get; private set; }
 
-    private NamespacedKey _namespacedKey;
+    private NamespacedKey _namespacedKey = null;
 
     public override bool Evaluate()
     {

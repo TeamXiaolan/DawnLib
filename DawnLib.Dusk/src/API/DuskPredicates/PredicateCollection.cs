@@ -17,6 +17,7 @@ public class PredicateCollection : DuskPredicate
             predicate.Register(namespacedKey);
         }
     }
+
     public override bool Evaluate()
     {
         foreach (DuskPredicate predicate in _predicates)

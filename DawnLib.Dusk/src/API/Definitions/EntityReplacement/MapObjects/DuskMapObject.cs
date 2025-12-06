@@ -55,20 +55,22 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
             return;
         }
 
-        foreach (DuskMapObjectReplacementDefinition replacement in replacements.ToArray())
+        List<DuskMapObjectReplacementDefinition> newReplacements = new List<DuskMapObjectReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
+            DuskMapObjectReplacementDefinition replacement = newReplacements[i];
             if (replacement.DatePredicate == null)
                 continue;
 
             if (!replacement.DatePredicate.Evaluate())
             {
-                replacements.Remove(replacement);
+                newReplacements.RemoveAt(i);
             }
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
             return;
@@ -77,7 +79,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
         EntityReplacementRegistrationPatch.replacementRandom ??= new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
 
         int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value);
-        foreach (DuskMapObjectReplacementDefinition replacement in replacements)
+        foreach (DuskMapObjectReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
             if (chosenWeight > 0)

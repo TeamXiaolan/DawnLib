@@ -69,21 +69,22 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             return;
         }
 
-        foreach (DuskUnlockableReplacementDefinition replacement in replacements.ToArray())
+        List<DuskUnlockableReplacementDefinition> newReplacements = new List<DuskUnlockableReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
+            DuskUnlockableReplacementDefinition replacement = newReplacements[i];
             if (replacement.DatePredicate == null)
                 continue;
 
             if (!replacement.DatePredicate.Evaluate())
             {
-                replacements.Remove(replacement);
+                newReplacements.RemoveAt(i);
             }
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        List<DuskUnlockableReplacementDefinition> filteredReplacements = replacements.Where(it => it.DatePredicate == null || it.DatePredicate.Evaluate()).ToList();
-        int? totalWeight = filteredReplacements.Sum(it => it.Weights.GetFor(currentMoon));
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
             return;
@@ -92,7 +93,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
         EntityReplacementRegistrationPatch.replacementRandom ??= new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
 
         int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value);
-        foreach (DuskUnlockableReplacementDefinition replacement in filteredReplacements)
+        foreach (DuskUnlockableReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
             if (chosenWeight > 0)

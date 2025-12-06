@@ -86,8 +86,12 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             .SetGlobalWeight(SpawnWeights)
             .Build();
 
+        if (DatePredicate != null)
+        {
+            DatePredicate = DatePredicate.Instantiate(DatePredicate);
+        }
         bool disableDateCheck = Config.DisableDateCheck?.Value ?? false;
-        if (DatePredicate && !disableDateCheck)
+        if (!disableDateCheck)
         {
             DatePredicate.Register(Key);
         }
