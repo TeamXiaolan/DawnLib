@@ -6,6 +6,7 @@ using System.Reflection;
 using Dawn.Internal;
 using DunGen;
 using DunGen.Graph;
+using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -25,6 +26,12 @@ static class DungeonRegistrationHandler
         }
 
         On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
+
+        using (new DetourContext(priority: 200))
+        {
+            DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), FixRandomMapObjects));
+        }
+
         LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
@@ -49,6 +56,22 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static void FixRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
+    {
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        {
+            for (int i = 0; i < self.spawnablePrefabs.Count; i++)
+            {
+                if (self.spawnablePrefabs[i].name.Equals(mapObjectInfo.MapObject.name, StringComparison.OrdinalIgnoreCase))
+                {
+                    self.spawnablePrefabs[i] = mapObjectInfo.MapObject;
+                    break;
+                }
+            }
+        }
+        orig(self);
     }
 
     private static bool _alreadyPatched = false;
