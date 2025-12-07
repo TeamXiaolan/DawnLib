@@ -14,6 +14,7 @@ public class DuskStoryLogDefinition : DuskContentDefinition<DawnStoryLogInfo>
     public string Title { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(2, 20)]
     public string Description { get; private set; }
 
     [field: SerializeField]

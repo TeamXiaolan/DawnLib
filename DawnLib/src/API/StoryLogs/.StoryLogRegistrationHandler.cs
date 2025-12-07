@@ -23,6 +23,7 @@ static class StoryLogRegistrationHandler
         orig(self);
         _ = TerminalRefs.Instance;
         List<CompatibleNoun> viewCompatibleNouns = TerminalRefs.ViewKeyword.compatibleNouns.ToList();
+        List<TerminalKeyword> newTerminalKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
         foreach (DawnStoryLogInfo storyLogInfo in LethalContent.StoryLogs.Values)
         {
             if (storyLogInfo.ShouldSkipIgnoreOverride())
@@ -35,7 +36,7 @@ static class StoryLogRegistrationHandler
 
             storyLogInfo.StoryLogTerminalKeyword.defaultVerb = TerminalRefs.ViewKeyword;
 
-            int index = self.logEntryFiles.Count;
+            int index = self.logEntryFiles.Count - 1;
             storyLogInfo.StoryLogGameObject.GetComponent<StoryLog>().SetStoryLogID(index);
             storyLogInfo.StoryLogTerminalNode.storyLogFileID = index;
 
@@ -46,29 +47,19 @@ static class StoryLogRegistrationHandler
             };
 
             viewCompatibleNouns.Add(compatibleNoun);
+            newTerminalKeywords.Add(storyLogInfo.StoryLogTerminalKeyword);
         }
 
         if (LethalContent.StoryLogs.IsFrozen)
             return;
 
+        TerminalRefs.Instance.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
         TerminalRefs.ViewKeyword.compatibleNouns = viewCompatibleNouns.ToArray();
 
-        foreach (GameObject storyLogGameObject in _networkPrefabStoryLogTypes)
+        foreach (CompatibleNoun compatibleNoun in TerminalRefs.ViewKeyword.compatibleNouns.Where(x => x.result.storyLogFileID > -1))
         {
-            Debuggers.StoryLogs?.Log($"Registering {storyLogGameObject}");
-            if (storyLogGameObject.GetComponent<DawnStoryLogNamespacedKeyContainer>())
-            {
-                Debuggers.StoryLogs?.Log($"Already registered {storyLogGameObject}");
+            if (compatibleNoun.result == null || compatibleNoun.result.storyLogFileID < 0)
                 continue;
-            }
-
-            CompatibleNoun? compatibleNoun = TerminalRefs.ViewKeyword.compatibleNouns.Where(x => x.result.storyLogFileID == storyLogGameObject.GetComponent<StoryLog>().storyLogID).FirstOrDefault();
-
-            if (compatibleNoun == null || compatibleNoun.result == null)
-            {
-                Debuggers.StoryLogs?.Log($"Could not find compatible noun for {storyLogGameObject}");
-                continue;
-            }
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(compatibleNoun.result.creatureName, true);
             NamespacedKey<DawnStoryLogInfo>? key = StoryLogKeys.GetByReflection(name);
@@ -80,20 +71,24 @@ static class StoryLogRegistrationHandler
             if (LethalContent.StoryLogs.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"StoryLog {compatibleNoun.result.creatureName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                DawnStoryLogNamespacedKeyContainer duplicateContainer = storyLogGameObject.AddComponent<DawnStoryLogNamespacedKeyContainer>();
-                duplicateContainer.Value = key;
                 continue;
             }
 
-            TerminalNode terminalNode = compatibleNoun.result;
-            TerminalKeyword terminalKeyword = compatibleNoun.noun;
-            DawnStoryLogInfo storyLogInfo = new(key, [DawnLibTags.IsExternal], storyLogGameObject, terminalNode, terminalKeyword, null);
+            GameObject? storyLogGameObject = null;
+            foreach (GameObject prefab in _networkPrefabStoryLogTypes)
+            {
+                if (prefab.GetComponent<StoryLog>().storyLogID == compatibleNoun.result.storyLogFileID)
+                {
+                    storyLogGameObject = prefab;
+                    break;
+                }
+            }
+            DawnStoryLogInfo storyLogInfo = new(key, [DawnLibTags.IsExternal], storyLogGameObject, compatibleNoun.result, compatibleNoun.noun, null);
         }
         LethalContent.StoryLogs.Freeze();
     }
 
     private static List<GameObject> _networkPrefabStoryLogTypes = new();
-
     private static void CollectAllStoryLogs(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
     {
         orig(self);

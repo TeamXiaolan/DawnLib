@@ -1,4 +1,8 @@
-# v0.5.7
+# v0.5.8
+
+- Fixed vanilla story logs not being registered because zeekerss never actually made prefabs for them.
+
+## v0.5.7
 
 - Fixed another minor issue with DatePredicate in some edge cases.
 

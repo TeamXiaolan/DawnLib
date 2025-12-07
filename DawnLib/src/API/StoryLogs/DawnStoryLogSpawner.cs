@@ -17,6 +17,12 @@ public class DawnStoryLogSpawner : MonoBehaviour
             return;
         }
 
+        if (storyLogInfo.StoryLogGameObject == null)
+        {
+            DawnPlugin.Logger.LogWarning($"StoryLog: '{NamespacedKey}' has no game object to spawn, this is likely because this is a vanilla story log and zeekerss never made prefabs so it's not possible for DawnLib to grab them... yeah.");
+            return;
+        }
+
         GameObject gameObject = GameObject.Instantiate(storyLogInfo.StoryLogGameObject, transform.position, transform.rotation, transform);
         gameObject.GetComponent<NetworkObject>().Spawn(true);
     }

@@ -552,14 +552,33 @@ static class MapObjectRegistrationHandler
             SpawnableOutsideObjectWithRarity? spawnableOutsideObjectWithRarity = level.spawnableOutsideObjects.FirstOrDefault(mapObject => mapObject.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject);
             if (spawnableOutsideObjectWithRarity == null)
             {
-                SpawnableOutsideObject? spawnableOutsideObject = StartOfRound.Instance.levels.SelectMany(x => x.spawnableOutsideObjects).FirstOrDefault(x => x.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject).spawnableObject;
-                if (spawnableOutsideObject == null)
+                foreach (SelectableLevel selectableLevel in StartOfRound.Instance.levels)
                 {
-                    continue;
+                    bool found = false;
+                    foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObject in selectableLevel.spawnableOutsideObjects)
+                    {
+                        if (spawnableOutsideObject == null || spawnableOutsideObject.spawnableObject == null)
+                            continue;
+
+                        if (spawnableOutsideObject.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject)
+                        {
+                            found = true;
+                            spawnableOutsideObjectWithRarity = spawnableOutsideObject;
+                            break;
+                        }
+                    }
+                    if (found)
+                    {
+                        break;
+                    }
                 }
+
+                if (spawnableOutsideObjectWithRarity == null)
+                    continue;
+
                 spawnableOutsideObjectWithRarity = new()
                 {
-                    spawnableObject = spawnableOutsideObject,
+                    spawnableObject = spawnableOutsideObjectWithRarity.spawnableObject,
                     randomAmount = AnimationCurve.Constant(0, 1, 0)
                 };
                 List<SpawnableOutsideObjectWithRarity> newSpawnableOutsideObjects = level.spawnableOutsideObjects.ToList();
