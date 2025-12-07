@@ -1,6 +1,8 @@
 # v0.5.8
 
 - Fixed vanilla story logs not being registered because zeekerss never actually made prefabs for them.
+- Added a config to give LLL control over vanilla moon visibility whether they're locked or hidden, defaulted to false.
+- Made it cleaner to add storylogs' text.
 
 ## v0.5.7
 
