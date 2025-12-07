@@ -460,6 +460,10 @@ static class MoonRegistrationHandler
             {
                 predicate = new LethalLevelLoaderTerminalPredicate(extendedLevel);
             }
+            else if (LethalLevelLoaderCompat.Enabled && DawnConfig.AllowLLLToOverrideVanillaStatus && key.Namespace == NamespacedKey.VanillaNamespace)
+            {
+                predicate = new LethalLevelLoaderTerminalPredicate(level);
+            }
             else if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
             {
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
