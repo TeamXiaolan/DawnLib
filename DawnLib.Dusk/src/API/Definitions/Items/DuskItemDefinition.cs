@@ -59,12 +59,15 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     [field: Header("Configs | Obsolete")]
     [field: SerializeField]
     [Obsolete]
+    [field: DontDrawIfEmpty]
     public string MoonSpawnWeights { get; private set; }
     [field: SerializeField]
     [Obsolete]
+    [field: DontDrawIfEmpty]
     public string InteriorSpawnWeights { get; private set; }
     [field: SerializeField]
     [Obsolete]
+    [field: DontDrawIfEmpty]
     public string WeatherSpawnWeights { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
