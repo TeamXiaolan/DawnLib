@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 
@@ -13,7 +14,20 @@ public class MoonWeightTransformer : WeightTransformer
         if (moonConfig.Count <= 0)
             return;
 
+        _moonConfig = moonConfig;
         foreach (NamespacedConfigWeight configWeight in moonConfig)
+        {
+            MatchingMoonsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
+        }
+
+        LethalContent.Moons.OnFreeze += ReregisterMoonConfig;
+    }
+
+    private List<NamespacedConfigWeight> _moonConfig = new();
+    private void ReregisterMoonConfig()
+    {
+        MatchingMoonsWithWeightAndOperationDict.Clear();
+        foreach (NamespacedConfigWeight configWeight in _moonConfig)
         {
             MatchingMoonsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
         }
@@ -52,6 +66,7 @@ public class MoonWeightTransformer : WeightTransformer
         orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => MatchingMoonsWithWeightAndOperationDict[x].operation == MathOperation.Additive || MatchingMoonsWithWeightAndOperationDict[x].operation == MathOperation.Subtractive).ToList();
         foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
         {
+            Debuggers.Weights?.Log($"NamespacedKey: {namespacedKey}");
             operationWithWeight = MatchingMoonsWithWeightAndOperationDict[namespacedKey];
             currentWeight = DoOperation(currentWeight, operationWithWeight);
         }

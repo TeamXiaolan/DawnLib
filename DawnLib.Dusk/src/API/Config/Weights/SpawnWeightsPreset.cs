@@ -29,7 +29,7 @@ public class SpawnWeightsPreset : IWeighted
     public int GetWeight()
     {
         float weight = 0;
-        List<WeightTransformer> transformers = SpawnWeightsTransformers.Where(x => x.GetOperation() == MathOperation.Additive || x.GetOperation() == MathOperation.Subtractive).ToList();
+        List<WeightTransformer> transformers = SpawnWeightsTransformers.OrderByDescending(x => x.GetOperation() == MathOperation.Additive || x.GetOperation() == MathOperation.Subtractive).ToList();
         foreach (WeightTransformer weightTransformer in transformers)
         {
             Debuggers.Weights?.Log($"Old Weight: {weight}");

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Dawn;
+using Dawn.Utils;
 using Dusk.Utils;
 using Dusk.Weights;
 using UnityEngine;
@@ -27,6 +28,8 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
     [field: Header("Configs | Misc")]
+    [field: SerializeField]
+    public BoundedRange DungeonRangeClamp { get; private set; }
     [field: SerializeField]
     public float MapTileSize { get; private set; } = 1f;
     [field: SerializeField]
@@ -67,6 +70,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             builder.SetAssetBundlePath(mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             builder.SetFirstTimeAudio(StingerAudio);
+            builder.SetDungeonRangeClamp(DungeonRangeClamp);
             builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
             ApplyTagsTo(builder);
         });
@@ -78,6 +82,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         {
             MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null,
             WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null,
+            DungeonRangeClamp = section.Bind($"{EntityNameReference} | Dungeon Range Clamp", $"Dungeon range clamp for {EntityNameReference}.", DungeonRangeClamp),
         };
     }
 

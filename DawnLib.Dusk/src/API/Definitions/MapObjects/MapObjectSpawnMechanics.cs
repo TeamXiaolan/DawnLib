@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
@@ -10,20 +11,44 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
 {
     public MapObjectSpawnMechanics(string moonConfigString, string interiorConfigString, bool prioritiseMoons = true)
     {
-        Dictionary<string, string> spawnRateByMoonName = ConfigManager.ParseNamespacedKeyWithCurves(moonConfigString);
-        Dictionary<string, string> spawnRateByInteriorName = ConfigManager.ParseNamespacedKeyWithCurves(interiorConfigString);
+        _spawnRateByMoonName = ConfigManager.ParseNamespacedKeyWithCurves(moonConfigString);
+        _spawnRateByInteriorName = ConfigManager.ParseNamespacedKeyWithCurves(interiorConfigString);
 
-        foreach ((string key, string value) in spawnRateByMoonName)
+        foreach ((string key, string value) in _spawnRateByMoonName)
         {
             CurvesByMoonOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
         }
 
-        foreach ((string key, string value) in spawnRateByInteriorName)
+        foreach ((string key, string value) in _spawnRateByInteriorName)
         {
             CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
         }
 
         PrioritiseMoons = prioritiseMoons;
+
+        LethalContent.Moons.OnFreeze += ReregisterMoonCurves;
+        LethalContent.Dungeons.OnFreeze += ReregisterDungeonCurves;
+    }
+
+    private Dictionary<string, string> _spawnRateByMoonName { get; } = new();
+    private Dictionary<string, string> _spawnRateByInteriorName { get; } = new();
+
+    private void ReregisterMoonCurves()
+    {
+        CurvesByMoonOrTagName.Clear();
+        foreach ((string key, string value) in _spawnRateByMoonName)
+        {
+            CurvesByMoonOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
+        }
+    }
+
+    private void ReregisterDungeonCurves()
+    {
+        CurvesByInteriorOrTagName.Clear();
+        foreach ((string key, string value) in _spawnRateByInteriorName)
+        {
+            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
+        }
     }
 
     public Dictionary<NamespacedKey, AnimationCurve> CurvesByMoonOrTagName { get; } = new();
@@ -48,6 +73,11 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
         else if (!PrioritiseMoons && CurvesByMoonOrTagName.TryGetValue(moonInfo.Key, out curve))
         {
             return curve;
+        }
+
+        if (dungeonInfo == null || dungeonInfo.DungeonFlow == null)
+        {
+            return AnimationCurve.Constant(0, 1, 0);
         }
 
         List<AnimationCurve> tagCurveCandidates = new();

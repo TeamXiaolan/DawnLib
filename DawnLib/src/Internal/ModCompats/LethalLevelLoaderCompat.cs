@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
+using Dawn.Utils;
 using DunGen.Graph;
 using HarmonyLib;
 using LethalLevelLoader;
@@ -21,6 +22,28 @@ static class LethalLevelLoaderCompat
     public static void ScrewWithLLLDynamicDungeonRarity()
     {
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalLevelLoader.LevelMatchingProperties), "GetDynamicRarity"), EnsureCorrectDawnDungeonDynamicRarity));
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void LetLLLHandleGeneration()
+    {
+        LethalLevelLoader.Patches.InjectHostDungeonSizeSelection(RoundManager.Instance);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static BoundedRange GetDungeonClamp(DungeonFlow dungeonFlow)
+    {
+        BoundedRange dungeonRangeClamp;
+        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
+        {
+            if (extendedDungeonFlow.IsDynamicDungeonSizeRestrictionEnabled)
+            {
+                dungeonRangeClamp = new BoundedRange(extendedDungeonFlow.DynamicDungeonSizeMinMax.x, extendedDungeonFlow.DynamicDungeonSizeMinMax.y);
+                return dungeonRangeClamp;
+            }
+            return new BoundedRange(0, 0);
+        }
+        return new BoundedRange(0, 0);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]

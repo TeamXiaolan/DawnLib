@@ -1,4 +1,11 @@
-# v0.5.8
+# v0.5.9
+
+- Added compatibility with LLL clamping.
+- Added interior clamping.
+- Added a null check in the map objects.
+- Fixed a small issue with first landing not being accurate with smart matching.
+
+## v0.5.8
 
 - Fixed vanilla story logs not being registered because zeekerss never actually made prefabs for them.
 - Added a config to give LLL control over vanilla moon visibility whether they're locked or hidden, defaulted to false.

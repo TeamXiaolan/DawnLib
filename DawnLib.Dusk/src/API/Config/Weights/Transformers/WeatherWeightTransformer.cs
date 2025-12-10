@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 
@@ -13,7 +14,20 @@ public class WeatherWeightTransformer : WeightTransformer
         if (weatherConfig.Count <= 0)
             return;
 
+        _weatherConfig = weatherConfig;
         foreach (NamespacedConfigWeight configWeight in weatherConfig)
+        {
+            MatchingWeathersWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
+        }
+
+        LethalContent.Weathers.OnFreeze += ReregisterWeatherConfig;
+    }
+
+    private List<NamespacedConfigWeight> _weatherConfig = new();
+    private void ReregisterWeatherConfig()
+    {
+        MatchingWeathersWithWeightAndOperationDict.Clear();
+        foreach (NamespacedConfigWeight configWeight in _weatherConfig)
         {
             MatchingWeathersWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
         }
@@ -42,6 +56,7 @@ public class WeatherWeightTransformer : WeightTransformer
 
         if (MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out (MathOperation operation, float weight) operationWithWeight))
         {
+            Debuggers.Weights?.Log($"NamespacedKey: {currentWeatherNamespacedKey}");
             return DoOperation(currentWeight, operationWithWeight);
         }
 
@@ -66,6 +81,7 @@ public class WeatherWeightTransformer : WeightTransformer
         orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => MatchingWeathersWithWeightAndOperationDict[x].operation == MathOperation.Additive || MatchingWeathersWithWeightAndOperationDict[x].operation == MathOperation.Subtractive).ToList();
         foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
         {
+            Debuggers.Weights?.Log($"NamespacedKey: {namespacedKey}");
             operationWithWeight = MatchingWeathersWithWeightAndOperationDict[namespacedKey];
             currentWeight = DoOperation(currentWeight, operationWithWeight);
         }

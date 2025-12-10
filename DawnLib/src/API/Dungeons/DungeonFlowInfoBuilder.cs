@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Dawn.Utils;
 using DunGen;
 using DunGen.Graph;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     private AudioClip? _firstTimeAudio = null;
     private ProviderTable<int?, DawnMoonInfo> _weights;
     private string _assetBundlePath = string.Empty;
+    private BoundedRange _dungeonRangeClamp = new BoundedRange(0, 0);
 
     internal DungeonFlowInfoBuilder(NamespacedKey<DawnDungeonInfo> key, DungeonFlow value) : base(key, value)
     {
@@ -124,6 +126,12 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
+    public DungeonFlowInfoBuilder SetDungeonRangeClamp(BoundedRange dungeonRangeClamp)
+    {
+        _dungeonRangeClamp = dungeonRangeClamp;
+        return this;
+    }
+
     override internal DawnDungeonInfo Build()
     {
         if (_weights == null)
@@ -131,6 +139,6 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
             DawnPlugin.Logger.LogWarning($"DungeonFlow '{key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
             _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
         }
-        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, _firstTimeAudio, _assetBundlePath, customData);
+        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, _firstTimeAudio, _assetBundlePath, _dungeonRangeClamp, customData);
     }
 }

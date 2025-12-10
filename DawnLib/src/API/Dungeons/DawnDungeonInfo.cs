@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using DunGen;
 using UnityEngine.InputSystem.Utilities;
+using Dawn.Utils;
 
 namespace Dawn;
 
@@ -15,13 +16,14 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     internal List<SpawnSyncedObject> spawnSyncedObjects = new();
     internal List<Tile> tiles = new();
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, string assetBundlePath, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, string assetBundlePath, BoundedRange dungeonClampRange, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         Weights = weights;
         MapTileSize = mapTileSize;
         FirstTimeAudio = firstTimeAudio;
         AssetBundlePath = assetBundlePath;
+        DungeonClampRange = dungeonClampRange;
 
         if (!ShouldSkipIgnoreOverride())
             return;
@@ -85,6 +87,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
     public float MapTileSize { get; private set; }
     public AudioClip? FirstTimeAudio { get; }
+    public BoundedRange DungeonClampRange { get; private set; }
 
     public IReadOnlyList<Tile> Tiles => tiles.AsReadOnly();
     public IReadOnlyList<Doorway> Doorways => doorways.AsReadOnly();

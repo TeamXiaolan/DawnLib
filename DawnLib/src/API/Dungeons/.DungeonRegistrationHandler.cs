@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dawn.Internal;
+using Dawn.Utils;
 using DunGen;
 using DunGen.Graph;
 using HarmonyLib;
@@ -209,7 +210,19 @@ static class DungeonRegistrationHandler
             }
         }
         yield return new WaitForSeconds(0.1f);
-        RoundManager.Instance.dungeonGenerator.Generate();
+
+        if (LethalLevelLoaderCompat.Enabled && dungeonInfo.ShouldSkipRespectOverride())
+        {
+            LethalLevelLoaderCompat.LetLLLHandleGeneration();
+        }
+        else
+        {
+            if (dungeonInfo.DungeonClampRange.Min > 0 && dungeonInfo.DungeonClampRange.Max > 0)
+            {
+                RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, dungeonInfo.DungeonClampRange.Min, dungeonInfo.DungeonClampRange.Max);
+            }
+            RoundManager.Instance.dungeonGenerator.Generate();
+        }
     }
 
     private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
@@ -339,9 +352,11 @@ static class DungeonRegistrationHandler
 
             string name = FormatFlowName(indoorMapType.dungeonFlow);
             NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
+            BoundedRange dungeonRangeClamp = new(0, 0);
             if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedDungeonModName(indoorMapType.dungeonFlow, out string dungeonModName))
             {
                 key = NamespacedKey<DawnDungeonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(dungeonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(indoorMapType.dungeonFlow.name, false));
+                dungeonRangeClamp = LethalLevelLoaderCompat.GetDungeonClamp(indoorMapType.dungeonFlow);
             }
             else if (key == null)
             {
@@ -361,7 +376,7 @@ static class DungeonRegistrationHandler
             dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
             weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo>();
 
-            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, string.Empty, null);
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, string.Empty, dungeonRangeClamp, null);
             indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
