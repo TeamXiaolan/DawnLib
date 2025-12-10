@@ -3,7 +3,8 @@
 - Added compatibility with LLL clamping.
 - Added interior clamping.
 - Added a null check in the map objects.
-- Fixed a small issue with first landing not being accurate with smart matching.
+- Fixed a small issue with smart matching not always working.
+- Fixed an issue where a config with no additive or substractive weights would work
 
 ## v0.5.8
 
