@@ -323,6 +323,11 @@ static class MapObjectRegistrationHandler
             if (outsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
                 continue;
 
+            if (outsideInfo.ParentInfo == null)
+            {
+                DawnPlugin.Logger.LogError($"Failed to get outside parent info for {mapObjectInfo.MapObject.name}");
+                continue;
+            }
             HandleSpawningOutsideObjects(outsideInfo, occupiedPositions, everyoneRandom, serverOnlyRandom, entranceTeleports, shipSpawnPathPoints, spawnDenialPoints, itemShipLandingNode);
         }
         orig(self);
