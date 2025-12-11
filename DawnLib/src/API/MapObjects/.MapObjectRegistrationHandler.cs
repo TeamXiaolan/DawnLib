@@ -22,7 +22,7 @@ static class MapObjectRegistrationHandler
             On.StartOfRound.Awake += CollectVanillaMapObjects;
         }
 
-        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), OnRandomMapObjectSpawnAwake));
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), AddPrefabsToRandomMapObjects));
 
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
         IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
@@ -34,11 +34,11 @@ static class MapObjectRegistrationHandler
         LethalContent.MapObjects.OnFreeze += FixMapObjectBlanks;
     }
 
-    private static void OnRandomMapObjectSpawnAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
+    private static void AddPrefabsToRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
     {
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
-            if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
+            if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride() || !mapObjectInfo.HasNetworkObject)
                 continue;
 
             self.spawnablePrefabs.Add(mapObjectInfo.MapObject);
@@ -320,7 +320,7 @@ static class MapObjectRegistrationHandler
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || mapObjectInfo.ShouldSkipIgnoreOverride())
+            if (outsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                 continue;
 
             if (outsideInfo.ParentInfo == null)
@@ -328,6 +328,7 @@ static class MapObjectRegistrationHandler
                 DawnPlugin.Logger.LogError($"Failed to get outside parent info for {mapObjectInfo.MapObject.name}");
                 continue;
             }
+
             HandleSpawningOutsideObjects(outsideInfo, occupiedPositions, everyoneRandom, serverOnlyRandom, entranceTeleports, shipSpawnPathPoints, spawnDenialPoints, itemShipLandingNode);
         }
         orig(self);
@@ -551,47 +552,17 @@ static class MapObjectRegistrationHandler
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
-            if (outsideInfo == null || !mapObjectInfo.HasTag(DawnLibTags.IsExternal) || !mapObjectInfo.HasTag(DawnLibTags.LunarConfig))
+            if (outsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                 continue;
 
             SpawnableOutsideObjectWithRarity? spawnableOutsideObjectWithRarity = level.spawnableOutsideObjects.FirstOrDefault(mapObject => mapObject.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject);
-            if (spawnableOutsideObjectWithRarity == null)
+            if (spawnableOutsideObjectWithRarity != null)
             {
-                foreach (SelectableLevel selectableLevel in StartOfRound.Instance.levels)
-                {
-                    bool found = false;
-                    foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObject in selectableLevel.spawnableOutsideObjects)
-                    {
-                        if (spawnableOutsideObject == null || spawnableOutsideObject.spawnableObject == null)
-                            continue;
-
-                        if (spawnableOutsideObject.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject)
-                        {
-                            found = true;
-                            spawnableOutsideObjectWithRarity = spawnableOutsideObject;
-                            break;
-                        }
-                    }
-                    if (found)
-                    {
-                        break;
-                    }
-                }
-
-                if (spawnableOutsideObjectWithRarity == null)
-                    continue;
-
-                spawnableOutsideObjectWithRarity = new()
-                {
-                    spawnableObject = spawnableOutsideObjectWithRarity.spawnableObject,
-                    randomAmount = AnimationCurve.Constant(0, 1, 0)
-                };
-                List<SpawnableOutsideObjectWithRarity> newSpawnableOutsideObjects = level.spawnableOutsideObjects.ToList();
-                newSpawnableOutsideObjects.Add(spawnableOutsideObjectWithRarity);
-                level.spawnableOutsideObjects = newSpawnableOutsideObjects.ToArray();
+                var newSpawnableMapObjects = level.spawnableOutsideObjects.ToList();
+                newSpawnableMapObjects.Remove(spawnableOutsideObjectWithRarity);
+                level.spawnableOutsideObjects = newSpawnableMapObjects.ToArray();
+                Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
             }
-            Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
-            spawnableOutsideObjectWithRarity.randomAmount = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 
