@@ -89,6 +89,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
                     .SetDisplayText($"Ordered [variableAmount] {_parentBuilder.value.itemName}. Your new balance is [playerCredits].\n\nOur contractors enjoy fast, free shipping while on the job! Any purchased items will arrive hourly at your approximate location.\r\n\r\n")
                     .SetClearPreviousText(true)
                     .SetMaxCharactersToType(15)
+                    .SetPlaySyncedClip(0)
                     .Build();
             }
 

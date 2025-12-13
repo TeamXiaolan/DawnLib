@@ -227,6 +227,7 @@ static class VehicleRegistrationPatch
                 .SetMaxCharactersToType(35)
                 .SetBuyVehicleIndex(currentVehicleIndex)
                 .SetItemCost(vehicleDefinition.Config.Cost.Value)
+                .SetPlaySyncedClip(0)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode = confirmDuskNode;
 
