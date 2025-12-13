@@ -1,4 +1,10 @@
-# v0.5.9
+# v0.5.10
+
+- Dungeon blank references uses network prefabs list.
+- Added more null checks.
+- Started supporting Vector3 and Vector2 for network variables.
+
+## v0.5.9
 
 - Added compatibility with LLL clamping.
 - Added interior clamping.
