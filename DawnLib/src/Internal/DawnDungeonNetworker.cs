@@ -81,19 +81,10 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
         if (register)
         {
-            List<GameObject> vanillaSpawnSyncedObjects = new();
-            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            List<GameObject> potentialPrefabs = new();
+            foreach (NetworkPrefab networkPrefabs in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
             {
-                if (!dungeonInfo.Key.IsVanilla())
-                    continue;
-
-                foreach (GameObject spawnSyncedObject in dungeonInfo.SpawnSyncedObjects.Select(x => x.spawnPrefab))
-                {
-                    if (spawnSyncedObject == null)
-                        continue;
-
-                    vanillaSpawnSyncedObjects.Add(spawnSyncedObject);
-                }
+                potentialPrefabs.Add(networkPrefabs.Prefab);
             }
 
             foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
@@ -101,12 +92,12 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 if (spawnSyncedObject.spawnPrefab == null)
                     continue;
 
-                foreach (GameObject vanillaSpawnSyncedObject in vanillaSpawnSyncedObjects)
+                foreach (GameObject potentialPrefab in potentialPrefabs)
                 {
-                    if (spawnSyncedObject.spawnPrefab.name == vanillaSpawnSyncedObject.name)
+                    if (spawnSyncedObject.spawnPrefab.name == potentialPrefab.name)
                     {
-                        Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {spawnSyncedObject.spawnPrefab.name} with vanilla reference");
-                        spawnSyncedObject.spawnPrefab = vanillaSpawnSyncedObject;
+                        Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {spawnSyncedObject.spawnPrefab.name} with reference");
+                        spawnSyncedObject.spawnPrefab = potentialPrefab;
                         break;
                     }
                 }
@@ -114,24 +105,16 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
             {
-                if (spawnSyncedObject.spawnPrefab == null || vanillaSpawnSyncedObjects.Contains(spawnSyncedObject.spawnPrefab))
+                if (spawnSyncedObject.spawnPrefab == null || spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
                     continue;
-
-                // TODO: is this even necessary?
-                /*if (spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
-                {
-                    byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(Key.ToString() + spawnSyncedObject.spawnPrefab.name));
-                    NetworkObject networkObject = spawnSyncedObject.spawnPrefab.AddComponent<NetworkObject>();
-                    networkObject.GlobalObjectIdHash = BitConverter.ToUInt32(hash, 0);
-                }*/
 
                 if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(spawnSyncedObject.spawnPrefab))
                     continue;
 
                 _objectsToUnregister.Add(spawnSyncedObject.spawnPrefab);
                 NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
-                var netObj = spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>();
-                DawnPlugin.Logger.LogInfo(
+                NetworkObject netObj = spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>();
+                DawnPlugin.Logger.LogDebug(
                     $"Registered network prefab '{spawnSyncedObject.spawnPrefab.name}' " +
                     $"with hash={netObj.GlobalObjectIdHash} " +
                     $"(IsServer={NetworkManager.Singleton.IsServer}, IsClient={NetworkManager.Singleton.IsClient})");
