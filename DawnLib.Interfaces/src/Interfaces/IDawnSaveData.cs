@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Dawn.Interfaces;
 
-[InjectInterface("GrabbableObject")]
+[InjectInterface(typeof(GrabbableObject))]
 public interface IDawnSaveData
 {
     public virtual JToken GetDawnDataToSave()

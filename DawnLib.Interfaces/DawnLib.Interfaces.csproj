@@ -12,8 +12,8 @@
     <ItemGroup>
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all"/>
         <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" PrivateAssets="all" Publicize="true"/>
-        <Reference Include="Monkey Injection Library">
-            <HintPath>deps\Monkey Injection Library.dll</HintPath>
+        <Reference Include="MonkeyInjectionLibrary">
+            <HintPath>deps\MonkeyInjectionLibrary.dll</HintPath>
         </Reference>
     </ItemGroup>
 	

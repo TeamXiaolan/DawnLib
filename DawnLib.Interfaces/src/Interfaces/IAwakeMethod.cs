@@ -5,10 +5,10 @@
 namespace Dawn.Interfaces;
 
 [HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
-[InjectInterface("EnemyAINestSpawnObject")]
-[InjectInterface("RandomMapObject")]
-[InjectInterface("PlaceableShipObject")]
-[InjectInterface("HauntedMaskItem")]
+[InjectInterface(typeof(EnemyAINestSpawnObject))]
+[InjectInterface(typeof(RandomMapObject))]
+[InjectInterface(typeof(PlaceableShipObject))]
+[InjectInterface(typeof(HauntedMaskItem))]
 interface IAwakeMethod
 {
     [HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]

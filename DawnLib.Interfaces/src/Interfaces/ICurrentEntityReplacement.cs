@@ -4,9 +4,9 @@ using InjectionLibrary.Attributes;
 
 namespace Dawn.Interfaces;
 
-[InjectInterface("EnemyAI")]
-[InjectInterface("GrabbableObject")]
-[InjectInterface("EnemyAINestSpawnObject")]
+[InjectInterface(typeof(EnemyAI))]
+[InjectInterface(typeof(GrabbableObject))]
+[InjectInterface(typeof(EnemyAINestSpawnObject))]
 public interface ICurrentEntityReplacement
 {
     object? CurrentEntityReplacement { get; set; }
