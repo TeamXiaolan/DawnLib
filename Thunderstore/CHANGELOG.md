@@ -1,4 +1,8 @@
-# v0.5.10
+# v0.5.11
+
+- Fixed DawnLib items and unlockables not making the purchased sound on buying.
+
+## v0.5.10
 
 - Dungeon blank references uses network prefabs list.
 - Added more null checks.
