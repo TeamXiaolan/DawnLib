@@ -78,8 +78,16 @@ static class LethalLevelLoaderCompat
 
     private static int EnsureCorrectDawnDungeonDynamicRarity(RuntimeILReferenceBag.FastDelegateInvokers.Func<LevelMatchingProperties, ExtendedLevel, int> orig, LevelMatchingProperties self, ExtendedLevel extendedLevel)
     {
-        ExtendedDungeonFlow? extendedDungeonFlow = LethalLevelLoader.PatchedContent.ExtendedDungeonFlows.Where(x => x.LevelMatchingProperties.Equals(self)).FirstOrDefault();
-        DungeonFlow? dungeonFlow = extendedDungeonFlow?.DungeonFlow;
+        ExtendedDungeonFlow? extendedDungeonFlowOfInterest = null;
+        foreach (ExtendedDungeonFlow extendedDungeonFlow in LethalLevelLoader.PatchedContent.ExtendedDungeonFlows)
+        {
+            if (extendedDungeonFlow.LevelMatchingProperties.Equals(self))
+            {
+                extendedDungeonFlowOfInterest = extendedDungeonFlow;
+                break;
+            }
+        }
+        DungeonFlow? dungeonFlow = extendedDungeonFlowOfInterest?.DungeonFlow;
         if (dungeonFlow != null && dungeonFlow.HasDawnInfo() && !dungeonFlow.GetDawnInfo().ShouldSkipRespectOverride())
         {
             return dungeonFlow.GetDawnInfo().Weights.GetFor(extendedLevel.SelectableLevel.GetDawnInfo()) ?? 0;

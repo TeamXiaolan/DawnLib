@@ -1,6 +1,7 @@
 # v0.5.11
 
 - Fixed DawnLib items and unlockables not making the purchased sound on buying.
+- Fixed soft dependency issue caused by linq.
 
 ## v0.5.10
 
