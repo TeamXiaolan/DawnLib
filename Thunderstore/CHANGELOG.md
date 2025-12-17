@@ -1,4 +1,8 @@
-# v0.5.11
+# v0.5.12
+
+- Fixed DuskUnlockable not going to every UnlockableItem as it should be (the non-modded ones).
+
+## v0.5.11
 
 - Fixed DawnLib items and unlockables not making the purchased sound on buying.
 - Fixed soft dependency issue caused by linq.
