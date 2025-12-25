@@ -1,4 +1,9 @@
-# v0.5.12
+# v0.5.13
+
+- Backported a fix for ClientNetworkTransform's that used to work but didn't after the `Netcode for GameObjects` update.
+- Added the `WeightedOutcomeScript`, which allows you to roll a select/random amounts of weighted events.
+
+## v0.5.12
 
 - Fixed DuskUnlockable not going to every UnlockableItem as it should be (the non-modded ones).
 

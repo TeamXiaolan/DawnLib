@@ -18,4 +18,14 @@ public class ClientNetworkTransform : NetworkTransform
     {
         return false;
     }
+
+    public override void OnOwnershipChanged(ulong previous, ulong current)
+    {
+        if (m_CachedNetworkManager.IsServer)
+        {
+            InternalInitialization(isOwnershipChange: true);
+            DawnPlugin.Logger.LogDebug($"[ClientNetworkTransform] Ownership changed from {previous} to {current}. Re-initialized NetworkTransform.");
+        }
+        base.OnOwnershipChanged(previous, current);
+    }
 }
