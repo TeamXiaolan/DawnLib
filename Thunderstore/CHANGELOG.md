@@ -1,4 +1,8 @@
-# v0.5.14
+# v0.5.15
+
+- Added dependency of MonkeyInjectionLibrary to let it handle the preloader shenanigans.
+
+## v0.5.14
 
 - Adjusted a rare scenario where a 0 weight enemy would spawn due to vanilla game infestations.
 - Fixed UnlockProgressiveObject breaking for some odd reason, not sure why.
