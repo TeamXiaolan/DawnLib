@@ -1,4 +1,9 @@
-# v0.5.13
+# v0.5.14
+
+- Adjusted a rare scenario where a 0 weight enemy would spawn due to vanilla game infestations.
+- Fixed UnlockProgressiveObject breaking for some odd reason, not sure why.
+
+## v0.5.13
 
 - Backported a fix for ClientNetworkTransform's that used to work but didn't after the `Netcode for GameObjects` update.
 - Added the `WeightedOutcomeScript`, which allows you to roll a select/random amounts of weighted events.

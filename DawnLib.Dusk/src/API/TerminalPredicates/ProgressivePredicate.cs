@@ -45,15 +45,11 @@ public class ProgressivePredicate : DuskTerminalPredicate
         }
         else if (_isHidden)
         {
-            if (_isLocked && _failNode)
-            {
-                return TerminalPurchaseResult.Hidden()
-                    .SetFailure(true)
-                    .SetFailNode(_failNode);
-            }
-            return TerminalPurchaseResult.Hidden().SetFailure(true);
+            return TerminalPurchaseResult.Hidden()
+                .SetFailure(true)
+                .SetFailNode(_failNode);
         }
-        else if (_isLocked && _failNode)
+        else if (!IsUnlocked && _isLocked)
         {
             return TerminalPurchaseResult.Fail(_failNode)
                 .SetOverrideName(_lockedName);
