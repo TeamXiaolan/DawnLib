@@ -2,6 +2,7 @@
 
 - Adjusted a rare scenario where a 0 weight enemy would spawn due to vanilla game infestations.
 - Fixed UnlockProgressiveObject breaking for some odd reason, not sure why.
+- Fixed an issue with not grabbing the correct rotation offset and settings of vanilla outside objects.
 
 ## v0.5.13
 
