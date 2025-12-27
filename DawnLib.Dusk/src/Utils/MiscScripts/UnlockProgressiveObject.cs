@@ -69,8 +69,8 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 return;
             }
 
-            string header = _successDisplayTip.Header.Replace("ProgressiveName", definition.UnlockableItem.unlockableName, true, System.Globalization.CultureInfo.InvariantCulture);
-            string body = _successDisplayTip.Body.Replace("ProgressiveName", definition.UnlockableItem.unlockableName, true, System.Globalization.CultureInfo.InvariantCulture);
+            string header = _successDisplayTip.Header.Replace("ProgressiveName", definition.UnlockableItem.unlockableName);
+            string body = _successDisplayTip.Body.Replace("ProgressiveName", definition.UnlockableItem.unlockableName);
             HUDDisplayTip.AlertType alertType = _successDisplayTip.Type;
             _successDisplayTip = new HUDDisplayTip(header, body, alertType);
             progressive.Unlock(_successDisplayTip);
@@ -105,8 +105,8 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 return;
             }
 
-            string header = _successDisplayTip.Header.Replace("ProgressiveName", definition.Item.itemName, true, System.Globalization.CultureInfo.InvariantCulture);
-            string body = _successDisplayTip.Body.Replace("ProgressiveName", definition.Item.itemName, true, System.Globalization.CultureInfo.InvariantCulture);
+            string header = _successDisplayTip.Header.Replace("ProgressiveName", definition.Item.itemName);
+            string body = _successDisplayTip.Body.Replace("ProgressiveName", definition.Item.itemName);
             HUDDisplayTip.AlertType alertType = _successDisplayTip.Type;
             _successDisplayTip = new HUDDisplayTip(header, body, alertType);
             progressive.Unlock(_successDisplayTip);
@@ -135,8 +135,8 @@ public class UnlockProgressiveObject : NetworkBehaviour
                 return;
             }
 
-            string header = _successDisplayTip.Header.Replace("ProgressiveName", definition.GetNumberlessPlanetName(), true, System.Globalization.CultureInfo.InvariantCulture);
-            string body = _successDisplayTip.Body.Replace("ProgressiveName", definition.GetNumberlessPlanetName(), true, System.Globalization.CultureInfo.InvariantCulture);
+            string header = _successDisplayTip.Header.Replace("ProgressiveName", definition.GetNumberlessPlanetName());
+            string body = _successDisplayTip.Body.Replace("ProgressiveName", definition.GetNumberlessPlanetName());
             HUDDisplayTip.AlertType alertType = _successDisplayTip.Type;
             _successDisplayTip = new HUDDisplayTip(header, body, alertType);
             progressive.Unlock(_successDisplayTip);

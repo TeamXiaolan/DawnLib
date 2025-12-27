@@ -211,6 +211,11 @@ static class MapObjectRegistrationHandler
                         outsidePlacementByPrefab[prefab.name] = new OutsideMapObjectSettings()
                         {
                             AlignWithTerrain = false,
+                            MinimumAINodeSpawnRequirement = 0,
+                            ObjectWidth = spawnable.objectWidth,
+                            SpawnFacingAwayFromWall = spawnable.spawnFacingAwayFromWall,
+                            SpawnableFloorTags = spawnable.spawnableFloorTags,
+                            RotationOffset = spawnable.rotationOffset
                         };
                     }
                 }

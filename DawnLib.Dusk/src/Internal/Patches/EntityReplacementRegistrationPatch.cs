@@ -134,6 +134,17 @@ static class EntityReplacementRegistrationPatch
 
             unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
         }
+
+        foreach (UnlockableItem unlockableItem in StartOfRoundRefs.Instance.unlockablesList.unlockables)
+        {
+            if (unlockableItem.prefabObject == null)
+                continue;
+
+            if (unlockableItem.prefabObject.GetComponent<DuskUnlockable>())
+                continue;
+
+            unlockableItem.prefabObject.AddComponent<DuskUnlockable>();
+        }
         orig(self);
     }
 

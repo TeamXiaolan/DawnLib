@@ -10,6 +10,7 @@ namespace Dawn;
 static class EnemyRegistrationHandler
 {
     private static List<EnemyType> _networkPrefabEnemyTypes = new();
+
     internal static void Init()
     {
         LethalContent.Enemies.AddAutoTaggers(
@@ -20,6 +21,7 @@ static class EnemyRegistrationHandler
         );
 
         On.RoundManager.RefreshEnemiesList += UpdateEnemyWeights;
+        On.RoundManager.AssignRandomEnemyToVent += CheckIfEnemyCanSpawn;
         On.StartOfRound.SetPlanetsWeather += UpdateEnemyWeights;
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
@@ -32,6 +34,44 @@ static class EnemyRegistrationHandler
 
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
+    }
+
+    private static bool CheckIfEnemyCanSpawn(On.RoundManager.orig_AssignRandomEnemyToVent orig, RoundManager self, EnemyVent vent, float spawnTime)
+    {
+        if (self.enemyRushIndex == -1)
+        {
+            return orig(self, vent, spawnTime);
+        }
+
+        List<EnemyType> enemiesEdited = new();
+        foreach (EnemyType enemyType in self.currentLevel.Enemies.Select(def => def.enemyType))
+        {
+            if (!enemyType.HasDawnInfo())
+                continue;
+
+            DawnEnemyInfo enemyInfo = enemyType.GetDawnInfo();
+            if (enemyInfo.ShouldSkipRespectOverride())
+                continue;
+
+            if (enemyInfo.EnemyType.spawningDisabled)
+                continue;
+
+            if (enemyInfo.Inside == null)
+                continue;
+
+            if (enemyInfo.Inside.Weights.GetFor(self.currentLevel.GetDawnInfo()) != 0)
+                continue;
+
+            enemyType.spawningDisabled = true;
+            enemiesEdited.Add(enemyType);
+        }
+
+        orig(self, vent, spawnTime);
+        foreach (EnemyType enemyType in enemiesEdited)
+        {
+            enemyType.spawningDisabled = false;
+        }
+        return true;
     }
 
     private static void RedoEnemiesDebugMenu()

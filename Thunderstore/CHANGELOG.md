@@ -1,4 +1,19 @@
-# v0.5.11
+# v0.5.14
+
+- Adjusted a rare scenario where a 0 weight enemy would spawn due to vanilla game infestations.
+- Fixed UnlockProgressiveObject breaking for some odd reason, not sure why.
+- Fixed an issue with not grabbing the correct rotation offset and settings of vanilla outside objects.
+
+## v0.5.13
+
+- Backported a fix for ClientNetworkTransform's that used to work but didn't after the `Netcode for GameObjects` update.
+- Added the `WeightedOutcomeScript`, which allows you to roll a select/random amounts of weighted events.
+
+## v0.5.12
+
+- Fixed DuskUnlockable not going to every UnlockableItem as it should be (the non-modded ones).
+
+## v0.5.11
 
 - Fixed DawnLib items and unlockables not making the purchased sound on buying.
 - Fixed soft dependency issue caused by linq.
