@@ -1,16 +1,18 @@
-﻿using Dawn.Preloader;
+﻿using InjectionLibrary.Attributes;
+
+[assembly: RequiresInjections]
 
 namespace Dawn.Interfaces;
 
-[InjectInterface("SelectableLevel")]
-[InjectInterface("WeatherEffect")]
-[InjectInterface("EnemyType")]
-[InjectInterface("Item")]
-[InjectInterface("UnlockableItem")]
-[InjectInterface("TileSet")]
-[InjectInterface("DungeonArchetype")]
-[InjectInterface("DungeonFlow")]
-[InjectInterface("BuyableVehicle")]
+[InjectInterface(typeof(SelectableLevel))]
+[InjectInterface(typeof(WeatherEffect))]
+[InjectInterface(typeof(EnemyType))]
+[InjectInterface(typeof(Item))]
+[InjectInterface(typeof(UnlockableItem))]
+[InjectInterface(typeof(DunGen.TileSet))]
+[InjectInterface(typeof(DunGen.DungeonArchetype))]
+[InjectInterface(typeof(DunGen.Graph.DungeonFlow))]
+[InjectInterface(typeof(BuyableVehicle))]
 public interface IDawnObject
 {
     object DawnInfo { get; set; }
