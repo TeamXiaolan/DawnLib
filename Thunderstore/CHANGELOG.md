@@ -1,4 +1,8 @@
-# v0.5.15
+# v0.5.16
+
+- Fixed not grabbing of non-DawnLib moon Confirmation nodes.
+
+## v0.5.15
 
 - Added dependency of MonkeyInjectionLibrary to let it handle the preloader shenanigans.
 

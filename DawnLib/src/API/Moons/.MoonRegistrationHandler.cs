@@ -444,12 +444,14 @@ static class MoonRegistrationHandler
             CollectLLLTags(level, tags);
 
             TerminalNode? routeNode = null;
+            TerminalNode? receiptNode = null;
             TerminalKeyword? nameKeyword = null;
             foreach (CompatibleNoun compatibleNoun in TerminalRefs.RouteKeyword.compatibleNouns)
             {
                 if (compatibleNoun.result.displayPlanetInfo == level.levelID)
                 {
                     routeNode = compatibleNoun.result;
+                    if (routeNode.terminalOptions.Length > 1) receiptNode = routeNode.terminalOptions[1].result;
                     nameKeyword = compatibleNoun.noun;
                     break;
                 }
@@ -469,7 +471,7 @@ static class MoonRegistrationHandler
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
