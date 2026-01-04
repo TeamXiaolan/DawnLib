@@ -378,7 +378,12 @@ static class MapObjectRegistrationHandler
         {
             System.Random rng = mapObjectInfo.HasNetworkObject ? serverOnlyRandom : everyoneRandom;
 
-            GameObject node = RoundManager.Instance.outsideAINodes[rng.Next(0, RoundManager.Instance.outsideAINodes.Length)];
+            GameObject? node = RoundManager.Instance.outsideAINodes[rng.Next(0, RoundManager.Instance.outsideAINodes.Length)];
+            if (node == null)
+            {
+                DawnPlugin.Logger.LogWarning($"Failed to get a valid outside AI node to spawn map object at level: {level.sceneName}.");
+                continue;
+            }
 
             Vector3 spawnPos = node.transform.position;
             spawnPos = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(spawnPos, 10f, default, rng, -1) + (Vector3.up * 2f);

@@ -26,6 +26,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
     private string? _currentBundlePath = null;
     private AssetBundle? _currentBundle = null;
     private DungeonFlow? _currentlyLoadedDungeonFlow = null;
+    private DungeonFlow? _temporaryDungeonFlow = null;
 
     private NamespacedKey<DawnDungeonInfo> _currentDungeonKey;
     internal bool allPlayersDone { get; private set; }
@@ -244,10 +245,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
         DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
         DungeonFlow flowToClear = dungeonInfo.DungeonFlow;
-        flowToClear.KeyManager = null;
-        flowToClear.TileInjectionRules.Clear();
-        flowToClear.Nodes.Clear();
-        flowToClear.Lines.Clear();
+        SwapReferences(ref flowToClear, ref _temporaryDungeonFlow!);
 
         dungeonInfo.sockets.Clear();
         dungeonInfo.doorways.Clear();
@@ -255,6 +253,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         dungeonInfo.tiles.Clear();
 
         _currentlyLoadedDungeonFlow = null;
+        ScriptableObject.Destroy(_temporaryDungeonFlow);
+        _temporaryDungeonFlow = null;
         _currentDungeonKey = default;
 
         yield return _currentBundle.UnloadAsync(true);
@@ -292,31 +292,9 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         if (_currentlyLoadedDungeonFlow != null && RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow.name == _currentlyLoadedDungeonFlow.name)
         {
             DungeonFlow fakeFlow = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
-            fakeFlow.globalPropGroupID_obsolete = _currentlyLoadedDungeonFlow.globalPropGroupID_obsolete;
-            fakeFlow.globalPropRanges_obsolete = _currentlyLoadedDungeonFlow.globalPropRanges_obsolete;
-            fakeFlow.Length = _currentlyLoadedDungeonFlow.Length;
-            fakeFlow.BranchMode = _currentlyLoadedDungeonFlow.BranchMode;
-            fakeFlow.BranchCount = _currentlyLoadedDungeonFlow.BranchCount;
-            fakeFlow.GlobalProps = _currentlyLoadedDungeonFlow.GlobalProps;
-            fakeFlow.KeyManager = _currentlyLoadedDungeonFlow.KeyManager;
-            fakeFlow.DoorwayConnectionChance = _currentlyLoadedDungeonFlow.DoorwayConnectionChance;
-            fakeFlow.RestrictConnectionToSameSection = _currentlyLoadedDungeonFlow.RestrictConnectionToSameSection;
-            fakeFlow.TileInjectionRules = _currentlyLoadedDungeonFlow.TileInjectionRules;
-            fakeFlow.TileTagConnectionMode = _currentlyLoadedDungeonFlow.TileTagConnectionMode;
-            fakeFlow.TileConnectionTags = _currentlyLoadedDungeonFlow.TileConnectionTags;
-            fakeFlow.BranchTagPruneMode = _currentlyLoadedDungeonFlow.BranchTagPruneMode;
-            fakeFlow.BranchPruneTags = _currentlyLoadedDungeonFlow.BranchPruneTags;
-            fakeFlow.Nodes = _currentlyLoadedDungeonFlow.Nodes;
-            fakeFlow.Lines = _currentlyLoadedDungeonFlow.Lines;
-            foreach (GraphNode node in fakeFlow.Nodes)
-            {
-                node.Graph = fakeFlow;
-            }
-            foreach (GraphLine line in fakeFlow.Lines)
-            {
-                line.Graph = fakeFlow;
-            }
-            fakeFlow.currentFileVersion = _currentlyLoadedDungeonFlow.currentFileVersion;
+            _temporaryDungeonFlow = ScriptableObject.CreateInstance<DungeonFlow>();
+            SwapReferences(ref _temporaryDungeonFlow, ref fakeFlow);
+            SwapReferences(ref fakeFlow, ref _currentlyLoadedDungeonFlow);
 
             foreach (TileSet tileSet in fakeFlow.GetUsedTileSets())
             {
@@ -409,5 +387,34 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             SyncSpawnSyncedObjects(true);
         }
         allPlayersDone = true;
+    }
+
+    private void SwapReferences(ref DungeonFlow dungeonA, ref DungeonFlow dungeonB)
+    {
+        dungeonA.globalPropGroupID_obsolete = dungeonB.globalPropGroupID_obsolete;
+        dungeonA.globalPropRanges_obsolete = dungeonB.globalPropRanges_obsolete;
+        dungeonA.Length = dungeonB.Length;
+        dungeonA.BranchMode = dungeonB.BranchMode;
+        dungeonA.BranchCount = dungeonB.BranchCount;
+        dungeonA.GlobalProps = dungeonB.GlobalProps;
+        dungeonA.KeyManager = dungeonB.KeyManager;
+        dungeonA.DoorwayConnectionChance = dungeonB.DoorwayConnectionChance;
+        dungeonA.RestrictConnectionToSameSection = dungeonB.RestrictConnectionToSameSection;
+        dungeonA.TileInjectionRules = dungeonB.TileInjectionRules;
+        dungeonA.TileTagConnectionMode = dungeonB.TileTagConnectionMode;
+        dungeonA.TileConnectionTags = dungeonB.TileConnectionTags;
+        dungeonA.BranchTagPruneMode = dungeonB.BranchTagPruneMode;
+        dungeonA.BranchPruneTags = dungeonB.BranchPruneTags;
+        dungeonA.Nodes = dungeonB.Nodes;
+        dungeonA.Lines = dungeonB.Lines;
+        foreach (GraphNode node in dungeonA.Nodes)
+        {
+            node.Graph = dungeonA;
+        }
+        foreach (GraphLine line in dungeonA.Lines)
+        {
+            line.Graph = dungeonA;
+        }
+        dungeonA.currentFileVersion = dungeonB.currentFileVersion;
     }
 }

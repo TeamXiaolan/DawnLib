@@ -1,4 +1,9 @@
-# v0.5.16
+# v0.5.17
+
+- Added more null checking because of mods deleting AINodes mid round.
+- Refined interior registration a bit more internally.
+
+## v0.5.16
 
 - Fixed not grabbing of non-DawnLib moon Confirmation nodes.
 
