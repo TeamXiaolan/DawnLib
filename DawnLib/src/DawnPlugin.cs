@@ -91,6 +91,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
         DebugPrintRegistryResult("Story Logs", LethalContent.StoryLogs, storyLogInfo => storyLogInfo.StoryLogTerminalNode.creatureName);
+        DebugPrintRegistryResult("Surfaces", LethalContent.Surfaces, surfaceInfo => surfaceInfo.Surface.surfaceTag);
 
         PersistentData = this.GetPersistentDataContainer();
         PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);
