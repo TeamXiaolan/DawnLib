@@ -2,6 +2,8 @@
 
 - Added more null checking because of mods deleting AINodes mid round.
 - Refined interior registration a bit more internally.
+- Set the parent of unlockables on purchasing rather than just on lobby load.
+- Removed the overriding of all terminal keywords to be a specific format.
 
 ## v0.5.16
 

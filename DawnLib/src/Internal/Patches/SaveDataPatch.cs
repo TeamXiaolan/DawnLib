@@ -1,4 +1,5 @@
 
+using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -34,6 +35,13 @@ static class SaveDataPatch
     {
         UnlockableSaveDataHandler.placeableShipObjects.Add(self);
         orig(self);
+        self.parentObject.NetworkObject.OnSpawn(() =>
+        {
+            if (!self.parentObject.NetworkObject.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject, true))
+            {
+                DawnPlugin.Logger.LogError($"Parenting of object: {self.parentObject.gameObject.name} failed.");
+            }
+        });
     }
 
     private static void OnPlaceableShipObjectOnDestroy(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlaceableShipObject> orig, PlaceableShipObject self)

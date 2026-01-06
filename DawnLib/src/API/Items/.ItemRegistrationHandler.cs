@@ -172,11 +172,6 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> infoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> terminalKeywords = terminal.terminalNodes.allKeywords.ToList();
 
-        foreach (TerminalKeyword terminalKeyword in terminalKeywords)
-        {
-            terminalKeyword.word = terminalKeyword.word.Replace(" ", "-").ToLowerInvariant();
-        }
-
         for (int i = 0; i < terminal.buyableItemsList.Length; i++)
         {
             Item buyableItem = terminal.buyableItemsList[i];
@@ -193,7 +188,7 @@ static class ItemRegistrationHandler
                 continue;
             }
             receiptNode = requestNode.terminalOptions[0].result;
-            TerminalKeyword? buyKeywordOfSignificance = TerminalRefs.BuyKeyword.compatibleNouns.Where(noun => noun.result == requestNode).Select(noun => noun.noun).FirstOrDefault() ?? terminalKeywords.FirstOrDefault(keyword => keyword.word == simplifiedItemName);
+            TerminalKeyword? buyKeywordOfSignificance = TerminalRefs.BuyKeyword.compatibleNouns.Where(noun => noun.result == requestNode).Select(noun => noun.noun).FirstOrDefault();
             if (buyKeywordOfSignificance == null)
             {
                 DawnPlugin.Logger.LogWarning($"No buy Keyword found for {buyableItem.itemName} despite it being a buyable item, this is likely the result of an item being removed from the shop items list by LethalLib, i.e. Night Vision Goggles from MoreShipUpgrades");
