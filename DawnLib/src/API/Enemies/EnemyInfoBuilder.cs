@@ -80,7 +80,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
     {
         if (string.IsNullOrWhiteSpace(wordOverride))
         {
-            wordOverride = value.enemyName.ToLowerInvariant().Replace(' ', '-');
+            wordOverride = value.enemyName.ToLowerInvariant();
         }
 
         _nameKeyword = new TerminalKeywordBuilder($"{value.enemyName}NameKeyword")
