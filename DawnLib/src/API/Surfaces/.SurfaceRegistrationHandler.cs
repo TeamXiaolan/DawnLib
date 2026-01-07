@@ -31,11 +31,11 @@ static class SurfaceRegistrationHandler
             if (surfaceInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            newSurfaces.Add(surfaceInfo.Surface);
             surfaceInfo.SurfaceIndex = newSurfaces.Count;
+            newSurfaces.Add(surfaceInfo.Surface);
         }
         StartOfRoundRefs.Instance.footstepSurfaces = newSurfaces.ToArray();
-        LethalContent.StoryLogs.Freeze();
+        LethalContent.Surfaces.Freeze();
     }
 
     private static void CollectVanillaSurfaces(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -80,22 +80,63 @@ static class SurfaceRegistrationHandler
     {
         return new CodeMatcher(instructions, generator).MatchForward(useEnd: false,
                 new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldloc_0),
-                new(OpCodes.Stfld, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex))))
-            .Advance(-1)
-            .MatchBack(useEnd: false, new CodeMatch(OpCodes.Ldarg_0))
+                new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
+                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
+                new(OpCodes.Call, AccessTools.Method(typeof(StartOfRound), "get_Instance")),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(StartOfRound), nameof(StartOfRound.footstepSurfaces))))
             .CreateLabel(out Label vanillaFootstep)
-            .InsertAndAdvance(
+            .Insert(
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
                 new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex))),
                 new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndex))),
-                new(OpCodes.Brfalse, vanillaFootstep),
+                new(OpCodes.Brfalse_S, vanillaFootstep),
                 new(OpCodes.Ret))
             .InstructionEnumeration();
     }
+
+    [HarmonyPatch(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.GetMaterialStandingOn)), HarmonyTranspiler]
+    private static IEnumerable<CodeInstruction> GetMaterialStandingOn(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        return new CodeMatcher(instructions, generator).MatchForward(useEnd: false,
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
+                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
+                new(OpCodes.Call, AccessTools.Method(typeof(StartOfRound), "get_Instance")),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(StartOfRound), nameof(StartOfRound.footstepSurfaces))))
+            .CreateLabel(out Label vanillaFootstep)
+            .Insert(
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.enemyRayHit))),
+                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.currentFootstepSurfaceIndex))),
+                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndex))),
+                new(OpCodes.Brfalse_S, vanillaFootstep),
+                new(OpCodes.Ret))
+            .InstructionEnumeration();
+    }
+
+    /* [HarmonyPatch(typeof(Shovel), nameof(Shovel.HitShovel)), HarmonyTranspiler]
+    private static IEnumerable<CodeInstruction> HitShovel(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        CodeMatcher codeMatcher = new CodeMatcher(instructions, generator)
+            .MatchForward(useEnd: false,
+                new(OpCodes.Ldc_I4_1),
+                new(OpCodes.Ldc_I4_1),
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(Shovel), nameof(Shovel.objectsHitByShovelList))))
+            .Advance(2)
+            .CreateLabel(out Label vanillaSurface)
+            .Insert(
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(Shovel), nameof(Shovel.objectsHitByShovelList))),
+                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
+                new(OpCodes.Ldloc_S));
+        return codeMatcher.InstructionEnumeration();
+    } */
 
     private static bool TryGetAndSetDawnSurfaceIndex(Collider collider, ref int currentFootstepSurfaceIndex)
     {

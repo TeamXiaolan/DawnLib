@@ -13,6 +13,7 @@ namespace Dawn.Interfaces;
 [InjectInterface(typeof(DunGen.DungeonArchetype))]
 [InjectInterface(typeof(DunGen.Graph.DungeonFlow))]
 [InjectInterface(typeof(BuyableVehicle))]
+[InjectInterface(typeof(FootstepSurface))]
 public interface IDawnObject
 {
     object DawnInfo { get; set; }

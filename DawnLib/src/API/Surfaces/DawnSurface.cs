@@ -1,6 +1,3 @@
-using System;
-using Dawn.Internal;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn.Utils;
@@ -14,7 +11,7 @@ public class DawnSurface : MonoBehaviour
     public NamespacedKey NamespacedKey { get; private set; }
     public int SurfaceIndex { get; private set; } = -1;
 
-    /* public void Start()
+    public void Start()
     {
         if (!LethalContent.Surfaces.TryGetValue(NamespacedKey, out DawnSurfaceInfo surfaceInfo))
         {
@@ -27,5 +24,7 @@ public class DawnSurface : MonoBehaviour
             DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' has no footstep surface defined.");
             return;
         }
-    } */
+
+        SurfaceIndex = surfaceInfo.SurfaceIndex;
+    }
 }

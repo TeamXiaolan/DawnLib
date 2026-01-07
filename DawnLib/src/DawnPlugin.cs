@@ -60,6 +60,7 @@ public class DawnPlugin : BaseUnityPlugin
         PersistentDataHandler.Init();
         NetworkVariableInitalizer.Init();
 
+        SurfaceRegistrationHandler.Init();
         StoryLogRegistrationHandler.Init();
         MoonRegistrationHandler.Init();
         DungeonRegistrationHandler.Init();
