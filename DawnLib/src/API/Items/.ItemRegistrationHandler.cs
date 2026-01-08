@@ -179,7 +179,7 @@ static class ItemRegistrationHandler
             TerminalNode? requestNode = null;
             TerminalNode receiptNode = null!;
 
-            string simplifiedItemName = buyableItem.itemName.Replace(" ", "-").ToLowerInvariant();
+            string simplifiedItemName = buyableItem.itemName.ToLowerInvariant();
 
             requestNode = TerminalRefs.BuyKeyword.compatibleNouns.Where(noun => noun.result.buyItemIndex == i).Select(noun => noun.result).FirstOrDefault();
             if (requestNode == null)
@@ -354,7 +354,7 @@ static class ItemRegistrationHandler
 
         List<Item> newBuyableList = TerminalRefs.Instance.buyableItemsList.ToList();
 
-        string simplifiedItemName = itemInfo.Item.itemName.Replace(" ", "-").ToLowerInvariant();
+        string simplifiedItemName = itemInfo.Item.itemName.ToLowerInvariant();
 
         newBuyableList.Add(itemInfo.Item);
 
