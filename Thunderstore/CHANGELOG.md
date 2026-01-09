@@ -4,6 +4,7 @@
 - Refined interior registration a bit more internally.
 - Set the parent of unlockables on purchasing rather than just on lobby load.
 - Removed the overriding of all terminal keywords to be a specific format.
+- Updated Editor.dll to have holograms for SpawnSyncedObject and SpawnSyncedDawnLibObject and DawnLibTemplate unity package!
 
 ## v0.5.16
 
