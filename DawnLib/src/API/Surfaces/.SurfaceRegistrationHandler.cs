@@ -4,6 +4,7 @@ using Dawn.Internal;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn;
@@ -13,19 +14,16 @@ static class SurfaceRegistrationHandler
 {
     internal static void Init()
     {
-        On.StartOfRound.Awake += CollectVanillaSurfaces;
-        On.StartOfRound.Start += RegisterDawnSurfaces;
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.StartOfRound.Awake += RegisterDawnSurfaces;
+        }
     }
 
-    private static void RegisterDawnSurfaces(On.StartOfRound.orig_Start orig, StartOfRound self)
+    private static void RegisterDawnSurfaces(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
-        orig(self);
-        if (LethalContent.Surfaces.IsFrozen)
-        {
-            return;
-        }
-
-        List<FootstepSurface?> newSurfaces = [.. StartOfRoundRefs.Instance.footstepSurfaces];
+        CollectVanillaSurfaces(self);
+        List<FootstepSurface?> newSurfaces = [.. self.footstepSurfaces];
         foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
         {
             if (surfaceInfo.ShouldSkipIgnoreOverride())
@@ -34,21 +32,19 @@ static class SurfaceRegistrationHandler
             surfaceInfo.SurfaceIndex = newSurfaces.Count;
             newSurfaces.Add(surfaceInfo.Surface);
         }
-        StartOfRoundRefs.Instance.footstepSurfaces = newSurfaces.ToArray();
-        LethalContent.Surfaces.Freeze();
+        self.footstepSurfaces = newSurfaces.ToArray();
+        orig(self);
     }
 
-    private static void CollectVanillaSurfaces(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    private static void CollectVanillaSurfaces(StartOfRound startOfRound)
     {
-        orig(self);
         if (LethalContent.Surfaces.IsFrozen)
         {
             return;
         }
-
-        for (int i = 0; i < StartOfRoundRefs.Instance.footstepSurfaces.Length; i++)
+        for (int i = 0; i < startOfRound.footstepSurfaces.Length; i++)
         {
-            FootstepSurface? surface = StartOfRoundRefs.Instance.footstepSurfaces[i];
+            FootstepSurface? surface = startOfRound.footstepSurfaces[i];
 
             if (surface == null || surface.HasDawnInfo())
                 continue;
@@ -73,6 +69,7 @@ static class SurfaceRegistrationHandler
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.SetDawnInfo(surfaceInfo);
         }
+        LethalContent.Surfaces.Freeze();
     }
 
     [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.GetCurrentMaterialStandingOn)), HarmonyTranspiler]
@@ -102,7 +99,7 @@ static class SurfaceRegistrationHandler
     {
         return new CodeMatcher(instructions, generator).MatchForward(useEnd: false,
                 new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
+                new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.enemyRayHit))),
                 new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
                 new(OpCodes.Call, AccessTools.Method(typeof(StartOfRound), "get_Instance")),
                 new(OpCodes.Ldfld, AccessTools.Field(typeof(StartOfRound), nameof(StartOfRound.footstepSurfaces))))
