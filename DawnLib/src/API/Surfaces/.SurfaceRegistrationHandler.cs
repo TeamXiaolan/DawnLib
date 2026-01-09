@@ -116,25 +116,6 @@ static class SurfaceRegistrationHandler
             .InstructionEnumeration();
     }
 
-    /* [HarmonyPatch(typeof(Shovel), nameof(Shovel.HitShovel)), HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> HitShovel(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        CodeMatcher codeMatcher = new CodeMatcher(instructions, generator)
-            .MatchForward(useEnd: false,
-                new(OpCodes.Ldc_I4_1),
-                new(OpCodes.Ldc_I4_1),
-                new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldfld, AccessTools.Field(typeof(Shovel), nameof(Shovel.objectsHitByShovelList))))
-            .Advance(2)
-            .CreateLabel(out Label vanillaSurface)
-            .Insert(
-                new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldfld, AccessTools.Field(typeof(Shovel), nameof(Shovel.objectsHitByShovelList))),
-                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
-                new(OpCodes.Ldloc_S));
-        return codeMatcher.InstructionEnumeration();
-    } */
-
     private static bool TryGetAndSetDawnSurfaceIndex(Collider collider, ref int currentFootstepSurfaceIndex)
     {
         if (collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
@@ -145,5 +126,83 @@ static class SurfaceRegistrationHandler
         }
 
         return false; // Vanilla surface, do nothin'.
+    }
+
+    [HarmonyPatch(typeof(Shovel), nameof(Shovel.HitShovel)), HarmonyTranspiler]
+    private static IEnumerable<CodeInstruction> HitShovel(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        CodeMatcher codeMatcher = new CodeMatcher(instructions, generator).End()
+            .MatchBack(useEnd: true,
+                new(OpCodes.Ldc_I4_1),
+                new(OpCodes.Stloc_0),
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(Shovel), nameof(Shovel.objectsHitByShovelList))),
+                new(OpCodes.Ldloc_S));
+
+        object objectHitByShovelIndex = codeMatcher.Operand; // Current collider index (`V_7`).
+        int position = codeMatcher.Pos - 2; // Start of the block to insert instructions before.
+
+        object continueLocation = codeMatcher.MatchForward(useEnd: true, // Instruction to jump to if a DawnSurface is found (acts as `continue`).
+            new(OpCodes.Stloc_3),
+            new(OpCodes.Br)).Operand;
+
+        return codeMatcher.Advance(position - codeMatcher.Pos) // Return to prior position.
+            .CreateLabel(out Label vanillaFootstep)
+            .Insert(
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(Shovel), nameof(Shovel.objectsHitByShovelList))),
+                new(OpCodes.Ldloc_S, objectHitByShovelIndex),
+                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(GetDawnSurfaceIndex))),
+                new(OpCodes.Stloc_3),
+                new(OpCodes.Ldloc_3),
+                new(OpCodes.Ldc_I4_M1),
+                new(OpCodes.Beq_S, vanillaFootstep), // Continue as a vanilla footstep if current index is `-1`.
+                new(OpCodes.Br_S, continueLocation)) // Skip to next loop cycle if a DawnSurface was found.
+            .InstructionEnumeration();
+    }
+
+    [HarmonyPatch(typeof(KnifeItem), nameof(KnifeItem.HitKnife)), HarmonyTranspiler]
+    private static IEnumerable<CodeInstruction> HitKnife(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    {
+        CodeMatcher codeMatcher = new CodeMatcher(instructions, generator).End()
+            .MatchBack(useEnd: true,
+                new(OpCodes.Ldc_I4_1),
+                new(OpCodes.Stloc_0),
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(KnifeItem), nameof(KnifeItem.objectsHitByKnifeList))),
+                new(OpCodes.Ldloc_S));
+
+        object objectHitByKnifeIndex = codeMatcher.Operand; // Current collider index (`V_7`).
+        int position = codeMatcher.Pos - 2; // Start of the block to insert instructions before.
+
+        object continueLocation = codeMatcher.MatchForward(useEnd: true, // Instruction to jump to if a DawnSurface is found (acts as `continue`).
+            new(OpCodes.Stloc_2),
+            new(OpCodes.Br)).Operand;
+
+        return codeMatcher.Advance(position - codeMatcher.Pos) // Return to prior position.
+            .CreateLabel(out Label vanillaFootstep)
+            .Insert(
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(typeof(KnifeItem), nameof(KnifeItem.objectsHitByKnifeList))),
+                new(OpCodes.Ldloc_S, objectHitByKnifeIndex),
+                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(GetDawnSurfaceIndex))),
+                new(OpCodes.Stloc_2),
+                new(OpCodes.Ldloc_2),
+                new(OpCodes.Ldc_I4_M1),
+                new(OpCodes.Beq_S, vanillaFootstep), // Continue as a vanilla footstep if current index is `-1`.
+                new(OpCodes.Br_S, continueLocation)) // Skip to next loop cycle if a DawnSurface was found.
+            .InstructionEnumeration();
+    }
+
+    private static int GetDawnSurfaceIndex(List<RaycastHit> objectsHitList, int objectHitIndex)
+    {
+        Collider? surfaceCollider = objectsHitList[objectHitIndex].collider;
+
+        if (surfaceCollider != null && surfaceCollider.TryGetComponent(out DawnSurface surface))
+        {
+            return surface.SurfaceIndex; // DawnSurface found, return surface index!
+        }
+
+        return -1; // Vanilla surface, return no index.
     }
 }
