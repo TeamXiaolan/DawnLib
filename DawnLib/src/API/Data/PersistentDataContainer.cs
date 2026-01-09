@@ -57,12 +57,12 @@ public class PersistentDataContainer : DataContainer
             return;
         }
 
-        /*if (dictionary == null)
+        if (dictionary == null)
         {
             DawnPlugin.Logger.LogFatal($"Failure when loading from persistent data container ({Path.GetFileName(_filePath)}), file likely corrupted, please delete.");
             HasCorruptedData.Add(this);
             return;
-        }*/
+        }
 
         foreach (object dictionaryValue in dictionary.Values)
         {
