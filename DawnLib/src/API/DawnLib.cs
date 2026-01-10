@@ -86,6 +86,16 @@ public static class DawnLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
+    public static DawnSurfaceInfo DefineSurface(NamespacedKey<DawnSurfaceInfo> key, FootstepSurface surface, Action<SurfaceInfoBuilder> callback)
+    {
+        SurfaceInfoBuilder builder = new(key, surface);
+        callback(builder);
+        DawnSurfaceInfo surfaceInfo = builder.Build();
+        surface.SetDawnInfo(surfaceInfo);
+        LethalContent.Surfaces.Register(surfaceInfo);
+        return surfaceInfo;
+    }
+
     public static DawnStoryLogInfo DefineStoryLog(NamespacedKey<DawnStoryLogInfo> key, GameObject storyLogGameObject, Action<StoryLogInfoBuilder> callback)
     {
         StoryLogInfoBuilder builder = new(key, storyLogGameObject);

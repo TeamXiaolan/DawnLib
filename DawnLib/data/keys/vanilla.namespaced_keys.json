@@ -258,5 +258,20 @@
     "DesmondOctNine": "lethal_company:desmond__oct_nine",
     "TeamSynergyOctOneZero": "lethal_company:team_synergy__oct_onezero",
     "LetterOfResignationOctOneThree": "lethal_company:letter_of_resignation__oct_onethree"
+  },
+  "SurfaceKeys": {
+    "__type": "DawnSurfaceInfo",
+    "Concrete": "lethal_company:concrete",
+    "Gravel": "lethal_company:gravel",
+    "Catwalk": "lethal_company:catwalk",
+    "Aluminum": "lethal_company:aluminum",
+    "Grass": "lethal_company:grass",
+    "Rock": "lethal_company:rock",
+    "Puddle": "lethal_company:puddle",
+    "Tiles": "lethal_company:tiles",
+    "Snow": "lethal_company:snow",
+    "Carpet": "lethal_company:carpet",
+    "Untagged": "lethal_company:untagged",
+    "Wood": "lethal_company:wood"
   }
 }
