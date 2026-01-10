@@ -83,4 +83,6 @@ public class DuskDiscoveryAchievement : DuskAchievementDefinition, IProgress
             UndiscoverProgress(id);
         }
     }
+
+    public override void TryNetworkRegisterAssets() { }
 }

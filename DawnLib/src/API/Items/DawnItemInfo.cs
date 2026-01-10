@@ -13,6 +13,6 @@ public sealed class DawnItemInfo : DawnBaseInfo<DawnItemInfo>
     }
 
     public Item Item { get; }
-    public DawnScrapItemInfo? ScrapInfo { get; }
-    public DawnShopItemInfo? ShopInfo { get; }
+    public DawnScrapItemInfo? ScrapInfo { get; private set; }
+    public DawnShopItemInfo? ShopInfo { get; private set; }
 }

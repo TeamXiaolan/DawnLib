@@ -27,7 +27,7 @@ public abstract class DuskMapObjectReplacementDefinition<T> : DuskMapObjectRepla
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            if (string.IsNullOrEmpty(gameObjectAddon.PathToGameObject))
+            if (string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject))
             {
                 continue;
             }

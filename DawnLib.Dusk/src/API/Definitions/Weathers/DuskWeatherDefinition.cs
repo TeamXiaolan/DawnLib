@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -91,6 +92,19 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
         DawnWeatherEffectInfo weatherEffectInfo = new(TypedKey, tags, newImprovedWeatherEffect.VanillaWeatherEffect, null);
         newImprovedWeatherEffect.VanillaWeatherEffect.SetDawnInfo(weatherEffectInfo);
         LethalContent.Weathers.Register(weatherEffectInfo);
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (TemporaryEffectObject != null && TemporaryEffectObject.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(TemporaryEffectObject);
+        }
+
+        if (PermanentEffectObject != null && PermanentEffectObject.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(PermanentEffectObject);
+        }
     }
 
     protected override string EntityNameReference => WeatherName;

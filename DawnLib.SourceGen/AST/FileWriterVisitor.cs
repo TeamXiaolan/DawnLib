@@ -33,7 +33,7 @@ public class FileWriterVisitor : ISymbolVisitor
         AppendAttributes(@class);
 
         definition.Append(string.Join(" ", @class.Signature()));
-        if (!string.IsNullOrEmpty(@class.DefaultConstructor))
+        if (!string.IsNullOrWhiteSpace(@class.DefaultConstructor))
             definition.Append($"({@class.DefaultConstructor})");
 
         if (@class.Implements.Count > 0)
@@ -93,7 +93,7 @@ public class FileWriterVisitor : ISymbolVisitor
             _builder.AppendLine($"using {@using};");
         }
 
-        if (!string.IsNullOrEmpty(codeFile.Namespace))
+        if (!string.IsNullOrWhiteSpace(codeFile.Namespace))
             _builder.AppendLine($"namespace {codeFile.Namespace};");
 
         foreach (ITopLevelSymbol symbol in codeFile.Symbols)

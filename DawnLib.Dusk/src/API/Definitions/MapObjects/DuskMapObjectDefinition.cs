@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -30,7 +33,12 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
     public bool CreateInsideHazardConfig { get; private set; }
 
     [field: SerializeField]
-    public string DefaultInsideCurveSpawnWeights { get; private set; }
+    public List<NamespacedKeyWithAnimationCurve> InsideMoonCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public List<NamespacedKeyWithAnimationCurve> InsideInteriorCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public bool InsidePrioritiseMoonConfig { get; private set; } = true;
+
     [field: SerializeField]
     public bool CreateInsideCurveSpawnWeightsConfig { get; private set; }
 
@@ -41,9 +49,24 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
     public bool CreateOutsideHazardConfig { get; private set; } = true;
 
     [field: SerializeField]
-    public string DefaultOutsideCurveSpawnWeights { get; private set; }
+    public List<NamespacedKeyWithAnimationCurve> OutsideMoonCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public List<NamespacedKeyWithAnimationCurve> OutsideInteriorCurveSpawnWeights { get; private set; } = new();
+    [field: SerializeField]
+    public bool OutsidePrioritiseMoonConfig { get; private set; } = true;
+
     [field: SerializeField]
     public bool CreateOutsideCurveSpawnWeightsConfig { get; private set; } = true;
+
+    [field: Header("Obsolete")]
+    [field: SerializeField]
+    [field: DontDrawIfEmpty]
+    [Obsolete]
+    public string DefaultOutsideCurveSpawnWeights { get; private set; }
+    [field: SerializeField]
+    [field: DontDrawIfEmpty]
+    [Obsolete]
+    public string DefaultInsideCurveSpawnWeights { get; private set; }
 
     public MapObjectConfig Config { get; private set; }
 
@@ -57,7 +80,31 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
         {
             if (Config.InsideHazard?.Value ?? IsInsideHazard)
             {
-                MapObjectSpawnMechanics InsideSpawnMechanics = new(Config.InsideCurveSpawnWeights?.Value ?? DefaultInsideCurveSpawnWeights);
+                string moonStringToUse = Config.InsideMoonCurveSpawnWeights?.Value ?? DefaultInsideCurveSpawnWeights;
+                if (string.IsNullOrWhiteSpace(moonStringToUse))
+                {
+                    foreach (NamespacedKeyWithAnimationCurve curve in InsideMoonCurveSpawnWeights)
+                    {
+                        moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    }
+                    if (!string.IsNullOrWhiteSpace(moonStringToUse))
+                    {
+                        moonStringToUse = moonStringToUse[..^3];
+                    }
+                }
+                string interiorStringToUse = Config.InsideInteriorCurveSpawnWeights?.Value ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(interiorStringToUse))
+                {
+                    foreach (NamespacedKeyWithAnimationCurve curve in InsideInteriorCurveSpawnWeights)
+                    {
+                        interiorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    }
+                    if (!string.IsNullOrWhiteSpace(interiorStringToUse))
+                    {
+                        interiorStringToUse = interiorStringToUse[..^3];
+                    }
+                }
+                MapObjectSpawnMechanics InsideSpawnMechanics = new(moonStringToUse, interiorStringToUse, Config.InsidePrioritiseMoon?.Value ?? InsidePrioritiseMoonConfig);
                 builder.DefineInside(insideBuilder =>
                 {
                     insideBuilder.OverrideSpawnFacingWall(InsideMapObjectSettings.spawnFacingWall);
@@ -73,15 +120,47 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                 });
             }
 
-            builder.DefineOutside(outsideBuilder =>
+            if (Config.OutsideHazard?.Value ?? IsOutsideHazard)
             {
-                MapObjectSpawnMechanics OutsideSpawnMechanics = new(Config.OutsideCurveSpawnWeights?.Value ?? DefaultOutsideCurveSpawnWeights);
-                outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
-                outsideBuilder.SetWeights(weightBuilder =>
+                string moonStringToUse = Config.OutsideMoonCurveSpawnWeights?.Value ?? DefaultOutsideCurveSpawnWeights;
+                if (string.IsNullOrWhiteSpace(moonStringToUse))
                 {
-                    weightBuilder.SetGlobalCurve(OutsideSpawnMechanics);
+                    foreach (NamespacedKeyWithAnimationCurve curve in OutsideMoonCurveSpawnWeights)
+                    {
+                        moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    }
+                    if (!string.IsNullOrWhiteSpace(moonStringToUse))
+                    {
+                        moonStringToUse = moonStringToUse[..^3];
+                    }
+                }
+                string interiorStringToUse = Config.OutsideInteriorCurveSpawnWeights?.Value ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(interiorStringToUse))
+                {
+                    foreach (NamespacedKeyWithAnimationCurve curve in OutsideInteriorCurveSpawnWeights)
+                    {
+                        interiorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    }
+                    if (!string.IsNullOrWhiteSpace(interiorStringToUse))
+                    {
+                        interiorStringToUse = interiorStringToUse[..^3];
+                    }
+                }
+                MapObjectSpawnMechanics OutsideSpawnMechanics = new(moonStringToUse, interiorStringToUse, Config.OutsidePrioritiseMoon?.Value ?? OutsidePrioritiseMoonConfig);
+                builder.DefineOutside(outsideBuilder =>
+                {
+                    outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
+                    outsideBuilder.OverrideMinimumNodeSpawnRequirement(OutsideMapObjectSettings.MinimumAINodeSpawnRequirement);
+                    outsideBuilder.OverrideObjectWidth(OutsideMapObjectSettings.ObjectWidth);
+                    outsideBuilder.OverrideRotationOffset(OutsideMapObjectSettings.RotationOffset);
+                    outsideBuilder.OverrideSpawnFacingAwayFromWall(OutsideMapObjectSettings.SpawnFacingAwayFromWall);
+                    outsideBuilder.OverrideSpawnableFloorTags(OutsideMapObjectSettings.SpawnableFloorTags);
+                    outsideBuilder.SetWeights(weightBuilder =>
+                    {
+                        weightBuilder.SetGlobalCurve(OutsideSpawnMechanics);
+                    });
                 });
-            });
+            }
 
             ApplyTagsTo(builder);
         });
@@ -89,8 +168,8 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 
     public MapObjectConfig CreateMapObjectConfig(ConfigContext section)
     {
-        ConfigEntry<bool>? insideHazard = null, outsideHazard = null;
-        ConfigEntry<string>? insideCurves = null, outsideCurves = null;
+        ConfigEntry<bool>? insideHazard = null, outsideHazard = null, insidePrioritiseMoon = null, outsidePrioritiseMoon = null;
+        ConfigEntry<string>? insideMoonCurves = null, insideInteriorCurves = null, outsideMoonCurves = null, outsideInteriorCurves = null;
         if (CreateInsideHazardConfig)
         {
             insideHazard = section.Bind($"{EntityNameReference} | Is Inside Hazard", $"Whether {EntityNameReference} is an inside hazard", IsInsideHazard);
@@ -103,21 +182,86 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 
         if ((insideHazard?.Value ?? IsInsideHazard) && CreateInsideCurveSpawnWeightsConfig)
         {
-            insideCurves = section.Bind($"{EntityNameReference} | Inside Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside.", DefaultInsideCurveSpawnWeights);
+            insidePrioritiseMoon = section.Bind($"{EntityNameReference} | Inside Spawn Prioritise Moon", $"Whether {EntityNameReference} should prioritise moon curves rather than interior curves when spawning inside.", InsidePrioritiseMoonConfig);
+            string moonStringToUse = DefaultInsideCurveSpawnWeights;
+            if (string.IsNullOrWhiteSpace(moonStringToUse))
+            {
+                foreach (NamespacedKeyWithAnimationCurve curve in InsideMoonCurveSpawnWeights)
+                {
+                    moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                }
+                if (!string.IsNullOrWhiteSpace(moonStringToUse))
+                {
+                    moonStringToUse = moonStringToUse[..^3];
+                }
+            }
+            string interiorStringToUse = string.Empty;
+            if (string.IsNullOrWhiteSpace(interiorStringToUse))
+            {
+                foreach (NamespacedKeyWithAnimationCurve curve in InsideInteriorCurveSpawnWeights)
+                {
+                    interiorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                }
+                if (!string.IsNullOrWhiteSpace(interiorStringToUse))
+                {
+                    interiorStringToUse = interiorStringToUse[..^3];
+                }
+            }
+
+            insideMoonCurves = section.Bind($"{EntityNameReference} | Inside Moon Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside using Moon weights.", moonStringToUse);
+            insideInteriorCurves = section.Bind($"{EntityNameReference} | Inside Interior Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside using Interior weights.", interiorStringToUse);
         }
 
         if ((outsideHazard?.Value ?? IsOutsideHazard) && CreateOutsideCurveSpawnWeightsConfig)
         {
-            outsideCurves = section.Bind($"{EntityNameReference} | Outside Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside.", DefaultOutsideCurveSpawnWeights);
+            outsidePrioritiseMoon = section.Bind($"{EntityNameReference} | Outside Spawn Prioritise Moon", $"Whether {EntityNameReference} should prioritise moon curves rather than interior curves when spawning outside.", OutsidePrioritiseMoonConfig);
+            string moonStringToUse = DefaultOutsideCurveSpawnWeights;
+            if (string.IsNullOrWhiteSpace(moonStringToUse))
+            {
+                foreach (NamespacedKeyWithAnimationCurve curve in OutsideMoonCurveSpawnWeights)
+                {
+                    moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                }
+                if (!string.IsNullOrWhiteSpace(moonStringToUse))
+                {
+                    moonStringToUse = moonStringToUse[..^3];
+                }
+            }
+            string interiorStringToUse = string.Empty;
+            if (string.IsNullOrWhiteSpace(interiorStringToUse))
+            {
+                foreach (NamespacedKeyWithAnimationCurve curve in OutsideInteriorCurveSpawnWeights)
+                {
+                    interiorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                }
+                if (!string.IsNullOrWhiteSpace(interiorStringToUse))
+                {
+                    interiorStringToUse = interiorStringToUse[..^3];
+                }
+            }
+            outsideMoonCurves = section.Bind($"{EntityNameReference} | Outside Moon Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside using Moon weights.", moonStringToUse);
+            outsideInteriorCurves = section.Bind($"{EntityNameReference} | Outside Interior Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside using Interior weights.", interiorStringToUse);
         }
 
         return new MapObjectConfig
         {
             InsideHazard = insideHazard,
             OutsideHazard = outsideHazard,
-            InsideCurveSpawnWeights = insideCurves,
-            OutsideCurveSpawnWeights = outsideCurves,
+            InsideMoonCurveSpawnWeights = insideMoonCurves,
+            InsideInteriorCurveSpawnWeights = insideInteriorCurves,
+            OutsideMoonCurveSpawnWeights = outsideMoonCurves,
+            OutsideInteriorCurveSpawnWeights = outsideInteriorCurves,
+            InsidePrioritiseMoon = insidePrioritiseMoon,
+            OutsidePrioritiseMoon = outsidePrioritiseMoon
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (!GameObject.TryGetComponent(out NetworkObject _))
+            return;
+
+        DawnLib.RegisterNetworkPrefab(GameObject);
     }
 
     protected override string EntityNameReference => MapObjectName;

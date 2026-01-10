@@ -55,12 +55,12 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
         }
     }
 
-    internal bool ShouldSkipIgnoreOverride()
+    public bool ShouldSkipIgnoreOverride()
     {
         return Key.IsVanilla() || HasTag(DawnLibTags.IsExternal) || HasTag(Tags.Unimplemented);
     }
 
-    internal bool ShouldSkipRespectOverride()
+    public bool ShouldSkipRespectOverride()
     {
         return ShouldSkipIgnoreOverride() && !HasTag(DawnLibTags.LunarConfig);
     }

@@ -21,7 +21,7 @@ public class GameObjectEditorAction : Hierarchy
     public override IEnumerator Apply(Transform rootTransform)
     {
         yield return null;
-        GameObject gameObject = !string.IsNullOrEmpty(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
+        GameObject gameObject = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
         if (DeleteGameObject)
         {
             if (gameObject.TryGetComponent(out NetworkObject networkObject) && NetworkManager.Singleton.IsServer)

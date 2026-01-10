@@ -37,14 +37,14 @@ public class PersistentDataContainer : DataContainer
             _container.MarkDirty();
         }
     }
-    
+
     public PersistentDataContainer(string filePath)
     {
         Debuggers.PersistentDataContainer?.Log($"new PersistentDataContainer: {Path.GetFileName(filePath)}");
         _filePath = filePath;
-        if (!File.Exists(filePath)) 
+        if (!File.Exists(filePath))
             return;
-        
+
         Debuggers.PersistentDataContainer?.Log("loading existing file");
         try
         {
@@ -57,16 +57,23 @@ public class PersistentDataContainer : DataContainer
             return;
         }
 
+        if (dictionary == null)
+        {
+            DawnPlugin.Logger.LogFatal($"Failure when loading from persistent data container ({Path.GetFileName(_filePath)}), file likely corrupted, please delete.");
+            HasCorruptedData.Add(this);
+            return;
+        }
+
         foreach (object dictionaryValue in dictionary.Values)
         {
             if (dictionaryValue is ChildPersistentDataContainer child)
             {
                 Debuggers.PersistentDataContainer?.Log($"updated parent for a loaded persistent data container. count = {child.Count}: {string.Join(", ", child.Keys.Select(it => it.ToString()))}");
-                
+
                 child.Internal_SetParent(this);
             }
         }
-        
+
         Debuggers.PersistentDataContainer?.Log($"loaded {dictionary.Count} entries.");
     }
 
@@ -81,24 +88,30 @@ public class PersistentDataContainer : DataContainer
         {
             throw new NotSupportedException($"{key} is a child persistent data container being added to '{FileName}' when it belongs to '{child.Parent.FileName}'.");
         }
-        
+
         base.Set(key, value);
         if (AutoSave)
+        {
             Task.Run(SaveAsync);
+        }
     }
 
     public override void Clear()
     {
         base.Clear();
         if (AutoSave)
+        {
             MarkDirty();
+        }
     }
 
     public override void Remove(NamespacedKey key)
     {
         base.Remove(key);
         if (AutoSave)
+        {
             MarkDirty();
+        }
     }
 
     [Obsolete("Use CreateEditContext()")]
@@ -158,11 +171,13 @@ public class ChildPersistentDataContainer : DataContainer
     {
         Parent = parent;
     }
-    
+
     public override void MarkDirty()
     {
-        if(Parent.AutoSave)
+        if (Parent.AutoSave)
+        {
             Parent.MarkDirty();
+        }
     }
 
     public override IDisposable CreateEditContext() => Parent.CreateEditContext();

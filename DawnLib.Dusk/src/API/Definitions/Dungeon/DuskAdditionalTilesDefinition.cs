@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn;
 using DunGen;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -33,6 +35,7 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
+
         foreach (GameObjectChance chance in TilesToAdd.TileWeights.Weights)
         {
             DawnLib.FixDoorwaySockets(chance.Value);
@@ -61,5 +64,15 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
         };
     }
 
+    public override void TryNetworkRegisterAssets()
+    {
+        foreach (GameObject gameObject in TilesToAdd.TileWeights.Weights.Select(x => x.Value))
+        {
+            if (!gameObject.TryGetComponent(out NetworkObject _))
+                continue;
+
+            DawnLib.RegisterNetworkPrefab(gameObject);
+        }
+    }
     protected override string EntityNameReference => TilesToAdd?.name ?? string.Empty;
 }

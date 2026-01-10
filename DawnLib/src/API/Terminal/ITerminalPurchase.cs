@@ -30,6 +30,10 @@ internal class LethalLevelLoaderTerminalPredicate(object extendedLevelObject) : 
     private TerminalNode? _failNode = null;
     public TerminalPurchaseResult CanPurchase()
     {
+        if (extendedLevelObject is SelectableLevel selectableLevel)
+        {
+            extendedLevelObject = LethalLevelLoader.LevelManager.GetExtendedLevel(selectableLevel);
+        }
         LethalLevelLoader.ExtendedLevel extendedLevel = (LethalLevelLoader.ExtendedLevel)extendedLevelObject;
         if (extendedLevel.IsRouteLocked && extendedLevel.IsRouteHidden)
         {

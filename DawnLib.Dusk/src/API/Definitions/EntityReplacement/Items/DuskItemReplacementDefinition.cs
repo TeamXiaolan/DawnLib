@@ -21,19 +21,19 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
 
     [field: SerializeField]
     public float VerticalOffset { get; private set; }
-    
+
     [field: SerializeField]
     public int FloorYOffset { get; private set; }
 
     [field: SerializeField]
     public Vector3 RestingRotation { get; private set; } = new Vector3(0f, 0f, 90f);
-    
+
     [field: SerializeField]
     public Vector3 RotationOffset { get; private set; }
-    
+
     [field: SerializeField]
     public Vector3 PositionOffset { get; private set; }
-    
+
     public override IEnumerator Apply(GrabbableObject ai)
     {
         yield break;
@@ -54,7 +54,7 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            GameObject gameObject = !string.IsNullOrEmpty(gameObjectAddon.PathToGameObject) ? grabbableObject.transform.Find(gameObjectAddon.PathToGameObject).gameObject : grabbableObject.gameObject;
+            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? grabbableObject.transform.Find(gameObjectAddon.PathToGameObject).gameObject : grabbableObject.gameObject;
             if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
                 continue;
 

@@ -5,67 +5,35 @@ using Dawn;
 using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
+
 [Serializable]
 public class InteriorWeightTransformer : WeightTransformer
 {
-    public InteriorWeightTransformer(string interiorConfig)
+    public InteriorWeightTransformer(List<NamespacedConfigWeight> interiorConfig)
     {
-        if (string.IsNullOrEmpty(interiorConfig))
+        if (interiorConfig.Count <= 0)
             return;
 
-        FromConfigString(interiorConfig);
+        _dungeonConfig = interiorConfig;
+        foreach (NamespacedConfigWeight configWeight in interiorConfig)
+        {
+            MatchingInteriorsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
+        }
+
+        LethalContent.Dungeons.OnFreeze += ReregisterDungeonConfig;
     }
 
-    public Dictionary<NamespacedKey, string> MatchingInteriorsWithWeightAndOperationDict = new();
-
-    public override string ToConfigString()
-    {
-        if (MatchingInteriorsWithWeightAndOperationDict.Count == 0)
-            return string.Empty;
-
-        string MatchingInteriorWithWeight = string.Join(",", MatchingInteriorsWithWeightAndOperationDict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-        Debuggers.Weights?.Log($"MatchingInteriorWithWeight: {MatchingInteriorWithWeight}");
-        return $"{MatchingInteriorWithWeight}";
-    }
-
-    public override void FromConfigString(string config)
+    private List<NamespacedConfigWeight> _dungeonConfig = new();
+    private void ReregisterDungeonConfig()
     {
         MatchingInteriorsWithWeightAndOperationDict.Clear();
-        List<string> configEntries = new();
-        foreach (string entry in config.ToLowerInvariant().Split(',', StringSplitOptions.RemoveEmptyEntries))
+        foreach (NamespacedConfigWeight configWeight in _dungeonConfig)
         {
-            configEntries.Add(entry.Trim().Replace(" ", "_"));
-        }
-        List<string[]> interiorWithWeightEntries = configEntries.Select(kvp => kvp.Split('=', StringSplitOptions.RemoveEmptyEntries)).ToList();
-        if (interiorWithWeightEntries.Count == 0)
-        {
-            DuskPlugin.Logger.LogWarning($"Invalid interior weight config: {config}");
-            DuskPlugin.Logger.LogWarning($"Expected Format: <Namespace>:<Key>=<Operation><Value> | i.e. magic_wesleysmod:museuminteriorflow=+20");
-            return;
-        }
-
-        foreach (string[] interiorWithWeightEntry in interiorWithWeightEntries)
-        {
-            if (interiorWithWeightEntry.Length != 2)
-            {
-                DuskPlugin.Logger.LogWarning($"Invalid interior weight entry: {string.Join(",", interiorWithWeightEntry)} from config: {config}");
-                DuskPlugin.Logger.LogWarning($"Expected Format: <Namespace>:<Key>=<Operation><Value> | i.e. magic_wesleysmod:museuminteriorflow=+20");
-                continue;
-            }
-
-            NamespacedKey interiorNamespacedKey = NamespacedKey.ForceParse(interiorWithWeightEntry[0].Trim());
-
-            string weightFactor = interiorWithWeightEntry[1].Trim();
-            if (string.IsNullOrEmpty(weightFactor))
-            {
-                DuskPlugin.Logger.LogWarning($"Invalid moon weight entry: {string.Join(",", interiorWithWeightEntry)} from config: {config}");
-                DuskPlugin.Logger.LogWarning($"Entry did not have a provided weight factor, defaulting to 0.");
-                weightFactor = "+0";
-            }
-
-            MatchingInteriorsWithWeightAndOperationDict.Add(interiorNamespacedKey, weightFactor);
+            MatchingInteriorsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
         }
     }
+
+    public Dictionary<NamespacedKey, (MathOperation operation, float weight)> MatchingInteriorsWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight)
     {
@@ -73,23 +41,34 @@ public class InteriorWeightTransformer : WeightTransformer
         if (!RoundManager.Instance.dungeonGenerator) return currentWeight;
         if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return currentWeight;
         DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight))
+        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out (MathOperation operation, float weight) operationWithWeight))
         {
+            Debuggers.Weights?.Log($"NamespacedKey: {dungeonInfo.Key}");
             return DoOperation(currentWeight, operationWithWeight);
         }
 
         List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
+        HashSet<string> processedKeys = new();
+
         foreach (NamespacedKey tagNamespacedKey in dungeonInfo.AllTags())
         {
-            if (MatchingInteriorsWithWeightAndOperationDict.ContainsKey(tagNamespacedKey))
+            if (!processedKeys.Add(tagNamespacedKey.Key))
+                continue;
+
+            foreach (NamespacedKey moonNamespacedKey in MatchingInteriorsWithWeightAndOperationDict.Keys)
             {
-                orderedAndValidTagNamespacedKeys.Add(tagNamespacedKey);
+                if (moonNamespacedKey.Key == tagNamespacedKey.Key)
+                {
+                    orderedAndValidTagNamespacedKeys.Add(moonNamespacedKey);
+                    break;
+                }
             }
         }
 
-        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => Operation(MatchingInteriorsWithWeightAndOperationDict[x]) == "+" || Operation(MatchingInteriorsWithWeightAndOperationDict[x]) == "-").ToList();
+        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => MatchingInteriorsWithWeightAndOperationDict[x].operation == MathOperation.Additive || MatchingInteriorsWithWeightAndOperationDict[x].operation == MathOperation.Subtractive).ToList();
         foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
         {
+            Debuggers.Weights?.Log($"NamespacedKey: {namespacedKey}");
             operationWithWeight = MatchingInteriorsWithWeightAndOperationDict[namespacedKey];
             currentWeight = DoOperation(currentWeight, operationWithWeight);
         }
@@ -97,14 +76,14 @@ public class InteriorWeightTransformer : WeightTransformer
         return currentWeight;
     }
 
-    public override string GetOperation()
+    public override MathOperation GetOperation()
     {
-        if (!RoundManager.Instance) return string.Empty;
-        if (!RoundManager.Instance.dungeonGenerator) return string.Empty;
-        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return string.Empty;
+        if (!RoundManager.Instance) return MathOperation.Additive;
+        if (!RoundManager.Instance.dungeonGenerator) return MathOperation.Additive;
+        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return MathOperation.Additive;
         DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-        if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out string operationWithWeight)) return string.Empty;
+        if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out (MathOperation operation, float weight) operationWithWeight)) return MathOperation.Additive;
 
-        return Operation(operationWithWeight[0..1]);
+        return operationWithWeight.operation;
     }
 }

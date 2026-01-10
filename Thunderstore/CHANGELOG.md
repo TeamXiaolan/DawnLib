@@ -1,4 +1,157 @@
-# v0.4.4
+# v0.5.17
+
+- Added more null checking because of mods deleting AINodes mid round.
+- Refined interior registration a bit more internally.
+- Set the parent of unlockables on purchasing rather than just on lobby load.
+- Removed the overriding of all terminal keywords to be a specific format.
+- Updated Editor.dll to have holograms for SpawnSyncedObject and SpawnSyncedDawnLibObject and DawnLibTemplate unity package!
+
+## v0.5.16
+
+- Fixed not grabbing of non-DawnLib moon Confirmation nodes.
+
+## v0.5.15
+
+- Added dependency of MonkeyInjectionLibrary to let it handle the preloader shenanigans.
+
+## v0.5.14
+
+- Adjusted a rare scenario where a 0 weight enemy would spawn due to vanilla game infestations.
+- Fixed UnlockProgressiveObject breaking for some odd reason, not sure why.
+- Fixed an issue with not grabbing the correct rotation offset and settings of vanilla outside objects.
+
+## v0.5.13
+
+- Backported a fix for ClientNetworkTransform's that used to work but didn't after the `Netcode for GameObjects` update.
+- Added the `WeightedOutcomeScript`, which allows you to roll a select/random amounts of weighted events.
+
+## v0.5.12
+
+- Fixed DuskUnlockable not going to every UnlockableItem as it should be (the non-modded ones).
+
+## v0.5.11
+
+- Fixed DawnLib items and unlockables not making the purchased sound on buying.
+- Fixed soft dependency issue caused by linq.
+
+## v0.5.10
+
+- Dungeon blank references uses network prefabs list.
+- Added more null checks.
+- Started supporting Vector3 and Vector2 for network variables.
+
+## v0.5.9
+
+- Added compatibility with LLL clamping.
+- Added interior clamping.
+- Added a null check in the map objects.
+- Fixed a small issue with smart matching not always working.
+- Fixed an issue where a config with no additive or substractive weights would work
+
+## v0.5.8
+
+- Fixed vanilla story logs not being registered because zeekerss never actually made prefabs for them.
+- Added a config to give LLL control over vanilla moon visibility whether they're locked or hidden, defaulted to false.
+- Made it cleaner to add storylogs' text.
+
+## v0.5.7
+
+- Fixed another minor issue with DatePredicate in some edge cases.
+
+## v0.5.6
+
+- Added a fallback for unity being weird about assets not being picked up sometimes.
+
+## v0.5.5
+
+- Fixed a null ref with some story log mods that add story logs late.
+
+## v0.5.4
+
+- Added Storylog registration.
+- Added `DawnStoryLogSpawner` component to utils addcomponent menu.
+- Properly implemented smart matching.
+- Fixed an obsolete editor oopsie with interior and moon weights for entity replacements.
+- Fixed interior mapobjects blanks not being replaced.
+- Created `StoryLogKeys` for vanilla story logs.
+- Moved where most registries freeze to be after a harmony patch of startofround.start prefix for more compat with more mods that add items etc late.
+- Publicised a few internal methods.
+- Updated wiki to adding a new page on how to make the editor look more like base-game thanks to help by `Scoops`.
+- Fixed a bunch of issues relating to entity replacements not working properly in some edge cases.
+
+## v0.5.3
+
+- Not sure how I missed this issue when testing: fixed not being able to play?
+- Created a migrator for the new saving.
+
+## v0.5.2
+
+- Reverted save system to what it was before temporarily to create a migration system.
+
+## v0.5.1
+
+- Optimised saving system a lot more, it should be a lot faster.
+- If you have a current ongoing save, disable the saving system so it does not delete every item and unlockable in that save, then re-enable it when you make a new save.
+- Made editor experience cleaner again
+
+## v0.5.0
+
+- Optimised the save system even more.
+- Interior hotloading is real.
+- Added more options for outside object conditions like ground tag, ship and entrance positions, AI node count, etc.
+- Added NamespacedKey smart matching, so you should be able to do stuff like `oxyde` without typing in `code_rebirth:oxyde`, needs more testing but should work.
+
+## v0.4.12
+
+- Made weight configs more user friendly to avoid unexpected issues.
+
+## v0.4.11
+
+- Polished vehicle stuff on the station side a bit more.
+- Hotfix for shop items breaking on lobby reload.
+
+## v0.4.10
+
+- Fixed an issue where the DatePredicate would not run for the entity replacements.
+- Improved the Editor UI for spawn weight related options in the different definitions, i.e. enemies, items, etc.
+- Updated Editor dll for better readability in some cases.
+- Improved vehicle registration, it should technically work now?
+- Internally added a `TryRegisterItemToShop` method for non DawnLib items
+- Internally edited some fields to be private rather than read-only.
+
+## v0.4.9
+
+- Cleaned up credits a bit more.
+- Fixed an issue where depending on the pc's locale (country I think?) some configs would get generated incorrectly.
+- Added more logging for the preloader issue that some people rarely have.
+
+## v0.4.8
+
+- Added more null checks just incase.
+- Actually added the GiantKiwi fix what.
+- Fixed an issue with some interior stuff being null.
+
+## v0.4.7
+
+- Fixed issue with GiantKiwi just lying to me about what it has in-game.
+
+## v0.4.6
+
+- Fixed issues relating to joining multiplayer and landing on a moon.
+Not entirely sure how those happened but they did ig.
+
+## v0.4.5
+
+- Edited MapObjects in the editor to be much easier to add onto.
+- Added Interior priority onto MapObject SpawnWeights.
+- Fixed issue with interior registration weights.
+- Added blank reference replacing with interior SpawnSyncedObjects, butlerbees, enemy ai nests, haunted mask, sapsucker, lungprop script.
+- Fixed another issue with unlockables when saving.
+- Gave DawnLib Interiors SpawnWeight configs.
+- Gave DawnLib Moons a lot more configs.
+- Did more work onto documentation and made the editor experience cleaner.
+
+## v0.4.4
 
 - Fixed a small bug with an oversight in storing unlockables.
 - Fixed some editor side tinks and made it a bit cleaner to create content related to moons.

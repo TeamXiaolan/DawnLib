@@ -96,13 +96,34 @@ static class VehicleRegistrationPatch
 
     private static void DeliverDuskVehicleOnServer(ILContext il)
     {
+        /*
+            shipTimer = 0f;
+        +   if (self.terminalScript.buyableVehicles[self.terminalScript.orderedVehicleFromTerminal].TryGetDuskDefinition(out DuskVehicleDefinition? vehicleDefinition))
+        +   {
+        +       HandleSpawningDuskVehicle(vehicleDefinition);
+        +   }
+        +   else
+        +   {
+                Object.Instantiate(terminalScript.buyableVehicles[terminalScript.orderedVehicleFromTerminal].vehiclePrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn();
+                if (terminalScript.buyableVehicles[terminalScript.orderedVehicleFromTerminal].secondaryPrefab != null)
+                {
+                    Object.Instantiate(terminalScript.buyableVehicles[terminalScript.orderedVehicleFromTerminal].secondaryPrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn();
+                }
+        +   }
+            terminalScript.orderedVehicleFromTerminal = -1;
+            terminalScript.vehicleInDropship = false;
+            untetheredVehicle = false;
+            deliveringVehicle = true;
+            deliveringOrder = true;
+            DeliverVehicleClientRpc();
+        */
         ILCursor c = new ILCursor(il);
         c.GotoNext(
             i => i.MatchLdarg(0),
             i => i.MatchLdfld<ItemDropship>(nameof(ItemDropship.terminalScript)),
             i => i.MatchLdcI4(-1)
         );
-        int targetIndex = c.Index;
+        Instruction targetInstruction = c.Instrs[c.Index];
 
         c.Index = 0;
         c.GotoNext(
@@ -123,12 +144,13 @@ static class VehicleRegistrationPatch
             }
             return true;
         });
-        c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
+        c.Emit(OpCodes.Brfalse, targetInstruction);
     }
 
     private static void HandleSpawningDuskVehicle(DuskVehicleDefinition vehicleDefinition)
     {
-        Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.VehiclePrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn(false);
+        GameObject vehicle = Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.VehiclePrefab, RoundManager.Instance.VehiclesContainer);
+        vehicle.GetComponent<NetworkObject>().Spawn(false);
         if (vehicleDefinition.BuyableVehiclePreset.SecondaryPrefab != null)
         {
             Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.SecondaryPrefab, RoundManager.Instance.VehiclesContainer).GetComponent<NetworkObject>().Spawn(false);
@@ -136,16 +158,27 @@ static class VehicleRegistrationPatch
 
         if (vehicleDefinition.BuyableVehiclePreset.StationPrefab != null)
         {
-            GameObject station = Object.Instantiate(vehicleDefinition.BuyableVehiclePreset.StationPrefab, StartOfRound.Instance.elevatorTransform.position, Quaternion.identity, null);
-            station.GetComponent<NetworkObject>().Spawn(false);
-            if (station.TryGetComponent(out AutoParentToShip autoParentToShip))
+            for (int i = 0; i < StartOfRoundRefs.Instance.unlockablesList.unlockables.Count; i++)
             {
-                autoParentToShip.unlockableID = -1;
+                if (StartOfRoundRefs.Instance.unlockablesList.unlockables[i].prefabObject == vehicleDefinition.BuyableVehiclePreset.StationPrefab)
+                {
+                    if (!StartOfRoundRefs.Instance.SpawnedShipUnlockables.ContainsKey(i))
+                    {
+                        StartOfRound.Instance.SpawnUnlockable(i, false);
+                    }
+                    break;
+                }
             }
         }
         else
         {
             // assume it uses magnet somehow?
+        }
+
+        if (vehicle.TryGetComponent(out VehicleBase vehicleBase))
+        {
+            vehicleBase.InDropShipAnimation = true;
+            DuskNetworker.Instance?.SyncVehicleIntoDropShipAnimationServerRpc(new NetworkObjectReference(vehicleBase.NetworkObject));
         }
     }
 
@@ -182,7 +215,7 @@ static class VehicleRegistrationPatch
                 continue;
 
             TerminalKeyword buyDuskKeyword = new TerminalKeywordBuilder($"{vehicleDefinition.name}BuyKeyword")
-                .SetWord(!string.IsNullOrEmpty(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}")
+                .SetWord(!string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}")
                 .SetDefaultVerb(buyKeyword)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.BuyKeyword = buyDuskKeyword;
@@ -194,6 +227,7 @@ static class VehicleRegistrationPatch
                 .SetMaxCharactersToType(35)
                 .SetBuyVehicleIndex(currentVehicleIndex)
                 .SetItemCost(vehicleDefinition.Config.Cost.Value)
+                .SetPlaySyncedClip(0)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode = confirmDuskNode;
 
@@ -211,7 +245,7 @@ static class VehicleRegistrationPatch
                 },
             ];
             TerminalNode buyDuskNode = new TerminalNodeBuilder($"{vehicleDefinition.name}BuyNode")
-                .SetDisplayText(!string.IsNullOrEmpty(vehicleDefinition.BuyableVehiclePreset.DisplayNodeText) ? vehicleDefinition.BuyableVehiclePreset.DisplayNodeText : $"You have requested to order the {vehicleDefinition.VehicleDisplayName}.\n[warranty] Total cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\n")
+                .SetDisplayText(!string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.DisplayNodeText) ? vehicleDefinition.BuyableVehiclePreset.DisplayNodeText : $"You have requested to order the {vehicleDefinition.VehicleDisplayName}.\n[warranty] Total cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(15)
                 .SetIsConfirmationNode(true)

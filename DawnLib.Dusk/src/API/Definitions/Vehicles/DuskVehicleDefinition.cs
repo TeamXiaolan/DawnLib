@@ -1,5 +1,7 @@
 using System.Linq;
 using Dawn;
+using Dawn.Internal;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -37,6 +39,44 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
 
     public override void Register(DuskMod mod)
     {
+        if (BuyableVehiclePreset.StationPrefab != null)
+        {
+            if (BuyableVehiclePreset.StationPrefab.GetComponent<AutoParentToShip>() == null)
+            {
+                DuskPlugin.Logger.LogError($"The vehicle: {BuyableVehiclePreset.StationPrefab.name} has no {nameof(AutoParentToShip)} component.");
+                return;
+            }
+
+            if (BuyableVehiclePreset.StationPrefab.GetComponentsInChildren<PlaceableShipObject>() == null)
+            {
+                DuskPlugin.Logger.LogError($"The vehicle: {BuyableVehiclePreset.StationPrefab.name} has no {nameof(PlaceableShipObject)} component.");
+                return;
+            }
+
+            NamespacedKey stationKey = BuyableVehiclePreset.StationPrefab.GetComponent<StationBase>().StationKey;
+            UnlockableItem unlockableItem = new UnlockableItem()
+            {
+                unlockableName = $"{stationKey.Key} (Station)",
+                prefabObject = BuyableVehiclePreset.StationPrefab,
+                unlockableType = 1,
+                alwaysInStock = true,
+                IsPlaceable = true
+            };
+            DawnLib.DefineUnlockable(stationKey.AsTyped<DawnUnlockableItemInfo>(), unlockableItem, builder =>
+            {
+                builder.SetCost(99999);
+
+                builder.DefinePlaceableObject(shopBuilder =>
+                {
+                    Debuggers.Unlockables?.Log($"Making {unlockableItem.unlockableName} a Ship Upgrade");
+                    shopBuilder.SetShipUpgrade();
+                });
+
+                ITerminalPurchasePredicate purchasePredicate = ITerminalPurchasePredicate.AlwaysHide();
+                builder.SetPurchasePredicate(purchasePredicate);
+            });
+        }
+
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateVehicleConfig(section);
@@ -64,6 +104,24 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
             DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
             Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
         };
+    }
+
+    public override void TryNetworkRegisterAssets()
+    {
+        if (BuyableVehiclePreset.VehiclePrefab != null && BuyableVehiclePreset.VehiclePrefab.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(BuyableVehiclePreset.VehiclePrefab);
+        }
+
+        if (BuyableVehiclePreset.SecondaryPrefab != null && BuyableVehiclePreset.SecondaryPrefab.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(BuyableVehiclePreset.SecondaryPrefab);
+        }
+
+        if (BuyableVehiclePreset.StationPrefab != null && BuyableVehiclePreset.StationPrefab.TryGetComponent(out NetworkObject _))
+        {
+            DawnLib.RegisterNetworkPrefab(BuyableVehiclePreset.StationPrefab);
+        }
     }
 
     protected override string EntityNameReference => VehicleDisplayName;

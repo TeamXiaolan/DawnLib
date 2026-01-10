@@ -16,7 +16,7 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
         public DawnMoonNetworker.BundleState State;
         public Color Color;
     }
-    
+
     [Header("Progress Bar")]
     [field: SerializeField]
     private TMP_Text _routingToText;
@@ -32,11 +32,11 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
 
     [field: SerializeField]
     private List<BundleStateColour> _colours;
-    
+
     private Dictionary<PlayerControllerB, PlayerNameplateUI> _nameplates = new();
     private float _targetProgress;
     private List<Image> imagesToBeRedOrBlue = new();
-    
+
     void Start()
     {
         foreach (Image image in _progressSlider.GetComponentsInChildren<Image>())

@@ -56,7 +56,7 @@ public static class DawnLib
         _profileContainer ??= new PersistentDataContainer(Path.Combine(Paths.BepInExRootPath, "DawnLib.dawndata"));
         return _profileContainer;
     }
-    
+
     public static void RegisterNetworkPrefab(GameObject prefab)
     {
         if (!prefab)
@@ -86,8 +86,32 @@ public static class DawnLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
-    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, DungeonFlow dungeonFlow, Action<DungeonFlowInfoBuilder> callback)
+    public static DawnSurfaceInfo DefineSurface(NamespacedKey<DawnSurfaceInfo> key, FootstepSurface surface, Action<SurfaceInfoBuilder> callback)
     {
+        SurfaceInfoBuilder builder = new(key, surface);
+        callback(builder);
+        DawnSurfaceInfo surfaceInfo = builder.Build();
+        surface.SetDawnInfo(surfaceInfo);
+        LethalContent.Surfaces.Register(surfaceInfo);
+        return surfaceInfo;
+    }
+
+    public static DawnStoryLogInfo DefineStoryLog(NamespacedKey<DawnStoryLogInfo> key, GameObject storyLogGameObject, Action<StoryLogInfoBuilder> callback)
+    {
+        StoryLogInfoBuilder builder = new(key, storyLogGameObject);
+        callback(builder);
+        DawnStoryLogInfo storyLogInfo = builder.Build();
+        DawnStoryLogNamespacedKeyContainer container = storyLogGameObject.AddComponent<DawnStoryLogNamespacedKeyContainer>();
+        container.Value = storyLogInfo.TypedKey;
+
+        LethalContent.StoryLogs.Register(storyLogInfo);
+        return storyLogInfo;
+    }
+
+    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, string flowName, Action<DungeonFlowInfoBuilder> callback)
+    {
+        DungeonFlow dungeonFlow = ScriptableObject.CreateInstance<DungeonFlow>();
+        dungeonFlow.name = flowName;
         DungeonFlowInfoBuilder builder = new(key, dungeonFlow);
         callback(builder);
         DawnDungeonInfo dungeonFlowInfo = builder.Build();

@@ -2,11 +2,11 @@
 
 ## Xu
 
+- Autoscroll feature.
+- Moon day speed multiplier patcher patch.
 - DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool.
 - Dead body additions.
-- Handling vehicle spawning when already bought on loading a lobby, also always have the station spawn at the start of the lobby.
 - Handling vehicle no station equaling magnet station.
-- Make stuff in duskmoondefinition more configurable.
 
 less important:
 
@@ -31,6 +31,3 @@ less important:
 - switch to using composition over inheritance (e.g. ItemUpgradeScrap, MoonUnlockScrap whatever)
 
 ## Needs to be done eventually
-
-- Make a lot of the dusk stuff add-able via code.
-- Take a look into the terminals mooncataloguelist and see if i need to edit that?

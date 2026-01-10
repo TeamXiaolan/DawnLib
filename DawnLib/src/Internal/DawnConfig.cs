@@ -14,6 +14,8 @@ static class DawnConfig
 
     public static bool DisableAchievementsButton;
 
+    public static bool AllowLLLToOverrideVanillaStatus;
+
     internal static void Bind(ConfigFile file)
     {
         LethalConfigCompatibility = file.Bind(
@@ -49,6 +51,13 @@ static class DawnConfig
             "Disable Achievements Button",
             false,
             "Disable the Achievements Button from showing up in the main menu"
+        ).Value;
+
+        AllowLLLToOverrideVanillaStatus = file.Bind(
+            "Compatibility",
+            "Allow LLL to Override Vanilla Moon Locked/Hidden Status",
+            false,
+            "Allow LLL to override the vanilla status of unlockables"
         ).Value;
     }
 }

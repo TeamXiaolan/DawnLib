@@ -1,15 +1,106 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
+using Dawn.Utils;
 using DunGen.Graph;
+using HarmonyLib;
 using LethalLevelLoader;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
+using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn.Internal;
 
 static class LethalLevelLoaderCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(Plugin.ModGUID);
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void ScrewWithLLLDynamicDungeonRarity()
+    {
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalLevelLoader.LevelMatchingProperties), "GetDynamicRarity"), EnsureCorrectDawnDungeonDynamicRarity));
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void LetLLLHandleGeneration()
+    {
+        LethalLevelLoader.Patches.InjectHostDungeonSizeSelection(RoundManager.Instance);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static BoundedRange GetDungeonClamp(DungeonFlow dungeonFlow)
+    {
+        BoundedRange dungeonRangeClamp;
+        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
+        {
+            if (extendedDungeonFlow.IsDynamicDungeonSizeRestrictionEnabled)
+            {
+                dungeonRangeClamp = new BoundedRange(extendedDungeonFlow.DynamicDungeonSizeMinMax.x, extendedDungeonFlow.DynamicDungeonSizeMinMax.y);
+                return dungeonRangeClamp;
+            }
+            return new BoundedRange(0, 0);
+        }
+        return new BoundedRange(0, 0);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static List<IntWithRarity> GetCustomDungeonsWithRarities(SelectableLevel selectableLevel)
+    {
+        List<ExtendedDungeonFlow> availableFlows = PatchedContent.CustomExtendedDungeonFlows;
+        List<IntWithRarity> intsWithRarity = new();
+        foreach (ExtendedDungeonFlow extendedDungeonFlow in availableFlows)
+        {
+            if (extendedDungeonFlow.LevelMatchingProperties == null)
+                continue;
+
+            ExtendedLevel? extendedLevel = LevelManager.GetExtendedLevel(selectableLevel);
+            if (extendedLevel == null)
+                continue;
+
+            int rarity = extendedDungeonFlow.LevelMatchingProperties.GetDynamicRarity(extendedLevel);
+            IntWithRarity intWithRarity = new IntWithRarity();
+            for (int i = 0; i < RoundManagerRefs.Instance.dungeonFlowTypes.Length; i++)
+            {
+                if (RoundManagerRefs.Instance.dungeonFlowTypes[i].dungeonFlow == extendedDungeonFlow.DungeonFlow)
+                {
+                    intWithRarity.id = i;
+                    intWithRarity.rarity = rarity;
+                    break;
+                }
+            }
+            intsWithRarity.Add(intWithRarity);
+        }
+        return intsWithRarity;
+    }
+
+    private static int EnsureCorrectDawnDungeonDynamicRarity(RuntimeILReferenceBag.FastDelegateInvokers.Func<LevelMatchingProperties, ExtendedLevel, int> orig, LevelMatchingProperties self, ExtendedLevel extendedLevel)
+    {
+        ExtendedDungeonFlow? extendedDungeonFlowOfInterest = null;
+        foreach (ExtendedDungeonFlow extendedDungeonFlow in LethalLevelLoader.PatchedContent.ExtendedDungeonFlows)
+        {
+            if (extendedDungeonFlow.LevelMatchingProperties.Equals(self))
+            {
+                extendedDungeonFlowOfInterest = extendedDungeonFlow;
+                break;
+            }
+        }
+        DungeonFlow? dungeonFlow = extendedDungeonFlowOfInterest?.DungeonFlow;
+        if (dungeonFlow != null && dungeonFlow.HasDawnInfo() && !dungeonFlow.GetDawnInfo().ShouldSkipRespectOverride())
+        {
+            return dungeonFlow.GetDawnInfo().Weights.GetFor(extendedLevel.SelectableLevel.GetDawnInfo()) ?? 0;
+        }
+        return orig(self, extendedLevel);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void TryRemoveLLLDungeonTranspiler()
+    {
+        MethodBase originalMethod = typeof(RoundManager).GetMethod(nameof(RoundManager.GenerateNewFloor));
+        DawnPlugin._harmony.Unpatch(originalMethod, HarmonyLib.HarmonyPatchType.Transpiler, LethalLevelLoader.Plugin.ModGUID);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static bool TryGetExtendedLevelModName(SelectableLevel level, out string modName)

@@ -89,30 +89,30 @@ static class EntityReplacementRegistrationPatch
 
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
-        
+
         DuskPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceItemProperties', this transpiler runs on a lot of functions, so this may take a second!");
-        
+
         IL.DepositItemsDesk.PlaceItemOnCounter += DynamicallyReplaceItemProperties;
         IL.GameNetcodeStuff.PlayerControllerB.LateUpdate += DynamicallyReplaceItemProperties;
         IL.PlaceableObjectsSurface.itemPlacementPosition += DynamicallyReplaceItemProperties;
         IL.HUDManager.DisplayNewScrapFound += DynamicallyReplaceItemProperties;
-        
+
         // IL.RoundManager.SpawnScrapInLevel += DynamicallyReplaceItemProperties; - this does a lot of work on the raw item scriptable object, so it will need special attention
         // IL.HUDManager.CreateToolAdModel += DynamicallyReplaceAudioClips; - works on raw scriptable object
-        
+
         IL.GrabbableObject.FallToGround += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.GetItemFloorPosition += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.GetPhysicsRegionOfDroppedObject += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.FallWithCurve += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.Update += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.LateUpdate += DynamicallyReplaceItemProperties;
-        
+
         IL.CaveDwellerPhysicsProp.Update += DynamicallyReplaceItemProperties;
         IL.CaveDwellerPhysicsProp.LateUpdate += DynamicallyReplaceItemProperties;
-        
+
         IL.SoccerBallProp.FallWithCurve += DynamicallyReplaceItemProperties;
         IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
-        
+
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
     }
 
@@ -134,6 +134,17 @@ static class EntityReplacementRegistrationPatch
 
             unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<DuskUnlockable>();
         }
+
+        foreach (UnlockableItem unlockableItem in StartOfRoundRefs.Instance.unlockablesList.unlockables)
+        {
+            if (unlockableItem.prefabObject == null)
+                continue;
+
+            if (unlockableItem.prefabObject.GetComponent<DuskUnlockable>())
+                continue;
+
+            unlockableItem.prefabObject.AddComponent<DuskUnlockable>();
+        }
         orig(self);
     }
 
@@ -144,7 +155,7 @@ static class EntityReplacementRegistrationPatch
         { nameof(Item.rotationOffset), GenerateOffsetReplacer(it => it.RotationOffset) },
         { nameof(Item.positionOffset), GenerateOffsetReplacer(it => it.PositionOffset) }
     };
-    
+
     private static void DynamicallyReplaceItemProperties(ILContext il)
     {
         Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceItemProperties)}. il count {il.Body.Instructions.Count}");
@@ -172,7 +183,7 @@ static class EntityReplacementRegistrationPatch
                 });
                 continue;
             }
-            
+
             if (c.Next.MatchLdfld<Item>(nameof(Item.floorYOffset)))
             {
                 c.Index--;
@@ -189,7 +200,7 @@ static class EntityReplacementRegistrationPatch
                 });
                 continue;
             }
-            
+
             foreach ((string name, var replacer) in offsetReplacerFunctions)
             {
                 if (!c.Next.MatchLdfld<Item>(name))
@@ -302,27 +313,29 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
+        if (self.HasGrabbableObjectReplacement())
+        {
+            orig(self);
+            return;
+        }
+
         if (!self.itemProperties.GetDawnInfo().CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? replacements))
         {
             orig(self);
             return;
         }
 
-        foreach (DuskItemReplacementDefinition replacement in replacements.ToArray())
+        List<DuskItemReplacementDefinition> newReplacements = new List<DuskItemReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
+            DuskItemReplacementDefinition replacement = newReplacements[i];
             if (replacement.DatePredicate == null)
                 continue;
 
             if (!replacement.DatePredicate.Evaluate())
             {
-                replacements.Remove(replacement);
+                newReplacements.RemoveAt(i);
             }
-        }
-
-        if (self.HasGrabbableObjectReplacement())
-        {
-            orig(self);
-            return;
         }
 
         // todo: save the current skin and try to restore it if this runs in orbit
@@ -334,7 +347,7 @@ static class EntityReplacementRegistrationPatch
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
             orig(self);
@@ -344,7 +357,7 @@ static class EntityReplacementRegistrationPatch
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
-        foreach (DuskItemReplacementDefinition replacement in replacements)
+        foreach (DuskItemReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
             if (chosenWeight > 0)
@@ -434,7 +447,7 @@ static class EntityReplacementRegistrationPatch
             return replacedClip;
         };
     }
-    
+
     static Func<GrabbableObject, Vector3, Vector3> GenerateOffsetReplacer(Func<DuskItemReplacementDefinition, Vector3> generator)
     {
         return (self, existing) =>
@@ -539,9 +552,22 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
+        List<DuskEnemyReplacementDefinition> newReplacements = new List<DuskEnemyReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
+        {
+            DuskEnemyReplacementDefinition replacement = newReplacements[i];
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                newReplacements.RemoveAt(i);
+            }
+        }
+
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon));
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
         if (totalWeight == null)
         {
             return;
@@ -550,7 +576,7 @@ static class EntityReplacementRegistrationPatch
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
-        foreach (DuskEnemyReplacementDefinition replacement in replacements)
+        foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
             if (chosenWeight > 0)

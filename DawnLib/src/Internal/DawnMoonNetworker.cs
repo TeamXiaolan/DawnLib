@@ -28,7 +28,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private NamespacedKey<IMoonSceneInfo> _currentSceneKey;
 
     internal bool allPlayersDone { get; private set; }
-    
+
     private string? _previousDisabledTooltip = null;
 
     public enum BundleState
@@ -65,7 +65,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     internal void HostDecide(DawnMoonInfo moonInfo)
     {
-        int totalWeight = moonInfo.Scenes.Sum(it => it.Weight.Provide());
+        int totalWeight = moonInfo.Scenes.Sum(it => it.Weight.GetFor(moonInfo) ?? 0);
 
         System.Random sceneRandom = new(StartOfRoundRefs.Instance.randomMapSeed + 502 + 0);
         int chosenWeight = sceneRandom.Next(0, totalWeight);
@@ -74,7 +74,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         for (int i = 0; i < moonInfo.Scenes.Count; i++)
         {
             sceneInfo = moonInfo.Scenes[i];
-            chosenWeight -= sceneInfo.Weight.Provide();
+            chosenWeight -= sceneInfo.Weight.GetFor(moonInfo) ?? 0;
             if (chosenWeight <= 0)
             {
                 break;
@@ -173,7 +173,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 yield return request;
 
                 bool hasError = CheckMoonBundleFailed(customMoon, request);
-                
+
                 // todo: more graceful error handling?
                 if (hasError)
                 {
@@ -247,11 +247,11 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
     private void CheckReadyAndUpdateUI()
     {
         RouteProgressUI.Instance.Refresh(_playerStates);
-        
+
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
 
-        Debuggers.Moons?.Log($"{nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
+        Debuggers.Moons?.Log($"Moon {nameof(CheckReadyAndUpdateUI)}. failed: {anyFailedPlayers}, remaining: {remainingPlayers}");
         Debuggers.Moons?.Log($"connected players amount: {_playerStates.Count}. done players = {_playerStates.Count(it => it.Value == BundleState.Done)}");
 
         if (remainingPlayers <= 0)

@@ -8,10 +8,11 @@ description = "A modern API for Lethal Company content and all sizes of mods"
 websiteUrl = "https://github.com/TeamXiaolan/DawnLib"
 containsNsfwContent = false
 [package.dependencies]
-BepInEx-BepInExPack = "5.4.2100"
-Hamunii-AutoHookGenPatcher = "1.0.8"
+BepInEx-BepInExPack = "5.4.2304"
+Hamunii-AutoHookGenPatcher = "1.0.9"
 Evaisa-FixPluginTypesSerialization = "1.1.4"
 Zaggy1024-PathfindingLib = "2.4.0"
+mattymatty-MonkeyInjectionLibrary = "1.0.1"
 
 [build]
 icon = "./icon.png"
@@ -29,10 +30,6 @@ target = "BepInEx/plugins/DawnLib/"
 [[build.copy]]
 source = "../DawnLib.Compatibility/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.compatibility.dll"
 target = "BepInEx/plugins/DawnLib/"
-
-[[build.copy]]
-source = "../DawnLib.Preloader/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.preloader.dll"
-target = "BepInEx/patchers/"
 
 [[build.copy]]
 source = "../DawnLib.Interfaces/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.interfaces.dll"

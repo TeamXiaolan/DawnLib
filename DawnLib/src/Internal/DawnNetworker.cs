@@ -32,7 +32,8 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
     internal static PersistentDataContainer CreateSaveContainer(string id)
     {
-        return new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Save{id}"));
+        PersistentDataContainer dataContainer = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Save{id}"));
+        return dataContainer;
     }
 
     internal static PersistentDataContainer CreateContractContainer(string id)
@@ -63,7 +64,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         {
             if (!entrance.FindExitPoint())
             {
-                DawnPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation is installed)");
+                DawnPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation or LethalPerformance is installed)");
             }
         }
     }

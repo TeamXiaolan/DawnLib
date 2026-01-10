@@ -17,4 +17,6 @@ public class DuskInstantAchievement : DuskAchievementDefinition
         }
         return TryCompleteAchievement();
     }
+
+    public override void TryNetworkRegisterAssets() { }
 }

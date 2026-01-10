@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using Dawn.Internal;
 using Dawn.Utils;
+using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn;
 
+[HarmonyPatch]
 static class MoonRegistrationHandler
 {
     private static IMoonGroupAlgorithm _groupAlgorithm = new RankGroupAlgorithm();
@@ -165,6 +167,11 @@ static class MoonRegistrationHandler
         TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
         orig(self);
+    }
+
+    [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyPriority(-999)]
+    private static void FreezeMoonRegistry()
+    {
         LethalContent.Moons.Freeze();
     }
 
@@ -303,7 +310,7 @@ static class MoonRegistrationHandler
         {
             builder.AppendLine("");
 
-            if (!string.IsNullOrEmpty(group.GroupName))
+            if (!string.IsNullOrWhiteSpace(group.GroupName))
             {
                 builder.AppendLine(group.GroupName);
             }
@@ -437,12 +444,14 @@ static class MoonRegistrationHandler
             CollectLLLTags(level, tags);
 
             TerminalNode? routeNode = null;
+            TerminalNode? receiptNode = null;
             TerminalKeyword? nameKeyword = null;
             foreach (CompatibleNoun compatibleNoun in TerminalRefs.RouteKeyword.compatibleNouns)
             {
                 if (compatibleNoun.result.displayPlanetInfo == level.levelID)
                 {
                     routeNode = compatibleNoun.result;
+                    if (routeNode.terminalOptions.Length > 1) receiptNode = routeNode.terminalOptions[1].result;
                     nameKeyword = compatibleNoun.noun;
                     break;
                 }
@@ -453,12 +462,16 @@ static class MoonRegistrationHandler
             {
                 predicate = new LethalLevelLoaderTerminalPredicate(extendedLevel);
             }
+            else if (LethalLevelLoaderCompat.Enabled && DawnConfig.AllowLLLToOverrideVanillaStatus && key.Namespace == NamespacedKey.VanillaNamespace)
+            {
+                predicate = new LethalLevelLoaderTerminalPredicate(level);
+            }
             else if (Equals(key, MoonKeys.Embrion) || Equals(key, MoonKeys.Artifice))
             {
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, null, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }

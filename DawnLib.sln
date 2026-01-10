@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib", "DawnLib\DawnLib.csproj", "{C4F54072-A24E-46EB-A2DA-B44FC777F84F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.Preloader", "DawnLib.Preloader\DawnLib.Preloader.csproj", "{68672AE6-5606-46C1-835E-5E1D28BEBC10}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.SourceGen", "DawnLib.SourceGen\DawnLib.SourceGen.csproj", "{527E09BF-B4C9-42A3-9C54-D37B05774D02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DawnLib.Dusk", "DawnLib.Dusk\DawnLib.Dusk.csproj", "{6B5E018C-7FA9-450B-96B7-ACB734470380}"
@@ -22,10 +20,6 @@ Global
 		{C4F54072-A24E-46EB-A2DA-B44FC777F84F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4F54072-A24E-46EB-A2DA-B44FC777F84F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4F54072-A24E-46EB-A2DA-B44FC777F84F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68672AE6-5606-46C1-835E-5E1D28BEBC10}.Release|Any CPU.Build.0 = Release|Any CPU
 		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{527E09BF-B4C9-42A3-9C54-D37B05774D02}.Release|Any CPU.ActiveCfg = Release|Any CPU

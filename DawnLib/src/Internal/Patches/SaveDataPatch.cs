@@ -1,4 +1,5 @@
 
+using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
@@ -34,6 +35,13 @@ static class SaveDataPatch
     {
         UnlockableSaveDataHandler.placeableShipObjects.Add(self);
         orig(self);
+        self.parentObject.NetworkObject.OnSpawn(() =>
+        {
+            if (!self.parentObject.NetworkObject.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject, true))
+            {
+                DawnPlugin.Logger.LogError($"Parenting of object: {self.parentObject.gameObject.name} failed.");
+            }
+        });
     }
 
     private static void OnPlaceableShipObjectOnDestroy(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlaceableShipObject> orig, PlaceableShipObject self)
@@ -62,12 +70,12 @@ static class SaveDataPatch
         {
             return true;
         }
-        
+
         contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         ItemSaveDataHandler.LoadSavedItems(contractContainer);
         return false;
     }
-    
+
     private static void SaveData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);
@@ -95,10 +103,10 @@ static class SaveDataPatch
     private static void ResetSaveFile(On.DeleteFileButton.orig_DeleteFile orig, DeleteFileButton self)
     {
         orig(self);
-        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete+1}");
+        PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer($"LCSaveFile{self.fileToDelete + 1}");
         contractContainer.Clear();
 
-        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete+1}");
+        PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer($"LCSaveFile{self.fileToDelete + 1}");
         saveContainer.Clear();
     }
 }

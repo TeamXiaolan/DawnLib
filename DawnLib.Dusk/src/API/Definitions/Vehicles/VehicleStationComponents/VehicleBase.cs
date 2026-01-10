@@ -28,14 +28,12 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
 
     NamespacedKey IVehicle.VehicleKey => VehicleKey;
 
-    protected bool InDropShipAnimation { get; private set; } = false;
+    public bool InDropShipAnimation { get; internal set; } = false;
     public int RealLength { get; private set; } = 4;
     public Collider[] VehicleColliders { get; private set; }
 
     public virtual void Awake()
     {
-        _ = TerminalRefs.Instance;
-        InDropShipAnimation = !StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle;
         VehicleColliders = GetComponentsInChildren<Collider>();
         int vehicleLayer = LayerMask.NameToLayer("Vehicle");
         foreach (VehicleBase vehicleBase in FindObjectsOfType<VehicleBase>())
@@ -82,7 +80,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
     {
         if (InDropShipAnimation)
         {
-            for (int i = RealLength; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 RopeAttachmentEndPoints[i].position = ItemDropshipRefs.Instance.ropes[i].transform.position;
             }
@@ -94,6 +92,7 @@ public abstract class VehicleBase : NetworkBehaviour, IVehicle
         if (InDropShipAnimation)
         {
             this.transform.position = ItemDropshipRefs.Instance.deliverVehiclePoint.position;
+            this.transform.rotation = ItemDropshipRefs.Instance.deliverVehiclePoint.rotation;
             InDropShipAnimation = !StartOfRoundRefs.Instance.inShipPhase && TerminalRefs.LastVehicleDelivered == DuskModContent.Vehicles[VehicleKey].DawnVehicleInfo.BuyNode.buyVehicleIndex && ItemDropshipRefs.Instance.deliveringVehicle && !ItemDropshipRefs.Instance.untetheredVehicle;
         }
     }

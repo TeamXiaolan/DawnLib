@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Dawn.Utils;
 using UnityEngine;
 
 namespace Dawn;
@@ -23,7 +24,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
 
     public MoonInfoBuilder CreateNameKeyword(string wordOverride)
     {
-        if (string.IsNullOrEmpty(wordOverride))
+        if (string.IsNullOrWhiteSpace(wordOverride))
         {
             wordOverride = value.PlanetName.ToLowerInvariant().Replace(' ', '-');
         }
@@ -37,9 +38,9 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         return this;
     }
 
-    public MoonInfoBuilder AddScene(NamespacedKey<IMoonSceneInfo> sceneKey, AnimationClip shipLandingOverrideAnimation, AnimationClip shipTakeoffOverrideAnimation, int weight, string assetBundlePath, string scenePath)
+    public MoonInfoBuilder AddScene(NamespacedKey<IMoonSceneInfo> sceneKey, AnimationClip shipLandingOverrideAnimation, AnimationClip shipTakeoffOverrideAnimation, ProviderTable<int?, DawnMoonInfo> weight, string assetBundlePath, string scenePath)
     {
-        _scenes.Add(new CustomMoonSceneInfo(sceneKey, shipLandingOverrideAnimation, shipTakeoffOverrideAnimation, new SimpleProvider<int>(weight), assetBundlePath, scenePath));
+        _scenes.Add(new CustomMoonSceneInfo(sceneKey, shipLandingOverrideAnimation, shipTakeoffOverrideAnimation, weight, assetBundlePath, scenePath));
         return this;
     }
 
@@ -61,6 +62,43 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     public MoonInfoBuilder OverrideCost(int cost)
     {
         return OverrideCost(new SimpleProvider<int>(cost));
+    }
+
+    public MoonInfoBuilder OverrideTimeMultiplier(float multiplier)
+    {
+        value.DaySpeedMultiplier = multiplier;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideMinMaxScrap(BoundedRange range)
+    {
+        value.minScrap = (int)range.Min;
+        value.maxScrap = (int)range.Max;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideEnemyPowerCount(int maxInsidePowerCount, int maxOutsidePowerCount, int maxDaytimePowerCount)
+    {
+        value.maxEnemyPowerCount = maxInsidePowerCount;
+        value.maxOutsideEnemyPowerCount = maxOutsidePowerCount;
+        value.maxDaytimeEnemyPowerCount = maxDaytimePowerCount;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideEnemySpawnCurves(AnimationCurve insideAnimationCurve, AnimationCurve outsideAnimationCurve, AnimationCurve daytimeAnimationCurve)
+    {
+        value.enemySpawnChanceThroughoutDay = insideAnimationCurve;
+        value.outsideEnemySpawnChanceThroughDay = outsideAnimationCurve;
+        value.daytimeEnemySpawnChanceThroughDay = daytimeAnimationCurve;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideEnemySpawnRanges(float insideSpawnRange, float outsideSpawnRange, float daytimeSpawnRange)
+    {
+        value.spawnProbabilityRange = insideSpawnRange;
+        // value.outsideEnemiesProbabilityRange = outsideSpawnRange;
+        value.daytimeEnemiesProbabilityRange = daytimeSpawnRange;
+        return this;
     }
 
     public MoonInfoBuilder OverrideCost(IProvider<int> cost)

@@ -43,7 +43,7 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
         {
             yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(nest.transform));
         }
-        
+
         nest.SetNestReplacement(this);
     }
 }
@@ -62,7 +62,7 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            GameObject gameObject = !string.IsNullOrEmpty(gameObjectAddon.PathToGameObject) ? enemyAI.transform.Find(gameObjectAddon.PathToGameObject).gameObject : enemyAI.gameObject;
+            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? enemyAI.transform.Find(gameObjectAddon.PathToGameObject).gameObject : enemyAI.gameObject;
             if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
                 continue;
 

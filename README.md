@@ -120,9 +120,25 @@ The DuskMod API is more opinionated, but automatically handles:
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord or github for help.
 
-### Credits
+### Credits - Maintainers
 
-- Bongo Xiaolan (Code)
-- Xu Xiaolan (Code)
-- Fumo (Code)
+- Bongo Xiaolan
+- Xu Xiaolan
+- Fumo
+
+### Credits - Misc
+
 - Slayer (Achievement UI)
+- Monty (Hotloading UI Feedback)
+- IAmBatby (UI+General Feedback)
+- Zaggy (Advice + other stuff I forgor)
+- Matty (Preloader stuff)
+- Scoops (Unity Editor support + their goated base game shader work)
+
+### Credits - Testers
+
+- Pacoito
+- SkittyMuffins
+- Kiszony
+- TheCheeseXD
+- Boom Hen

@@ -6,16 +6,11 @@ namespace Dawn;
 [Serializable]
 public class OutsideMapObjectSettings
 {
-    [HideInInspector]
-    public bool SpawnFacingAwayFromWall;
-    [HideInInspector]
-    public int ObjectWidth;
-    [HideInInspector]
-    public string[] SpawnableFloorTags;
-    [HideInInspector]
-    public Vector3 RotationOffset;
-    [HideInInspector]
-    public AnimationCurve VanillaAnimationCurve;
+    public bool SpawnFacingAwayFromWall = false;
+    public int ObjectWidth = 6;
+    public Vector3 RotationOffset = Vector3.zero;
+    public string[] SpawnableFloorTags = [];
 
-    public bool AlignWithTerrain;
+    public int MinimumAINodeSpawnRequirement = 0;
+    public bool AlignWithTerrain = false;
 }

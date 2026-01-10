@@ -23,6 +23,7 @@ public class DawnPlugin : BaseUnityPlugin
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
     internal static readonly List<Hook> Hooks = new();
+    internal static readonly Harmony _harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
     private void Awake()
     {
@@ -59,6 +60,8 @@ public class DawnPlugin : BaseUnityPlugin
         PersistentDataHandler.Init();
         NetworkVariableInitalizer.Init();
 
+        SurfaceRegistrationHandler.Init();
+        StoryLogRegistrationHandler.Init();
         MoonRegistrationHandler.Init();
         DungeonRegistrationHandler.Init();
         ItemRegistrationHandler.Init();
@@ -75,8 +78,8 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
 
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
-        
+        _harmony.PatchAll(Assembly.GetExecutingAssembly());
+
         DawnNetworkSceneManager.Init();
 
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
@@ -88,6 +91,8 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Tile Sets", LethalContent.TileSets, tileInfo => tileInfo.TileSet.name);
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
+        DebugPrintRegistryResult("Story Logs", LethalContent.StoryLogs, storyLogInfo => storyLogInfo.StoryLogTerminalNode.creatureName);
+        DebugPrintRegistryResult("Surfaces", LethalContent.Surfaces, surfaceInfo => surfaceInfo.Surface.surfaceTag);
 
         PersistentData = this.GetPersistentDataContainer();
         PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);

@@ -1,9 +1,11 @@
-using Dawn.Preloader;
+using InjectionLibrary.Attributes;
 using Newtonsoft.Json.Linq;
+
+[assembly: RequiresInjections]
 
 namespace Dawn.Interfaces;
 
-[InjectInterface("GrabbableObject")]
+[InjectInterface(typeof(GrabbableObject))]
 public interface IDawnSaveData
 {
     public virtual JToken GetDawnDataToSave()

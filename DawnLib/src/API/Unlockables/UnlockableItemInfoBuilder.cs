@@ -137,7 +137,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
         }
 
         TerminalNode? infoNode = null;
-        if (!string.IsNullOrEmpty(_infoNodeText))
+        if (!string.IsNullOrWhiteSpace(_infoNodeText))
         {
             infoNode = new TerminalNodeBuilder($"{value.unlockableName}Info")
                 .SetDisplayText(_infoNodeText)

@@ -17,7 +17,7 @@ public sealed class DawnMapObjectInfo : DawnBaseInfo<DawnMapObjectInfo>
     }
 
     public GameObject MapObject { get; }
-    public DawnInsideMapObjectInfo? InsideInfo { get; }
-    public DawnOutsideMapObjectInfo? OutsideInfo { get; }
+    public DawnInsideMapObjectInfo? InsideInfo { get; private set; }
+    public DawnOutsideMapObjectInfo? OutsideInfo { get; private set; }
     public bool HasNetworkObject { get; }
 }

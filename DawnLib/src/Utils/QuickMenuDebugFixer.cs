@@ -13,7 +13,7 @@ public class TMPDropDownFixer : MonoBehaviour
         scrollRect = dropdown.m_Dropdown.GetComponent<ScrollRect>();
         scrollRect.SetNormalizedPosition(normalizedScrollPosition, 1);
     }
-    
+
     internal void OnCloseDropdown()
     {
         if (scrollRect == null)

@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace Dawn;
 
@@ -79,9 +78,9 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
 
     public EnemyInfoBuilder CreateNameKeyword(string wordOverride)
     {
-        if (string.IsNullOrEmpty(wordOverride))
+        if (string.IsNullOrWhiteSpace(wordOverride))
         {
-            wordOverride = value.enemyName.ToLowerInvariant().Replace(' ', '-');
+            wordOverride = value.enemyName.ToLowerInvariant();
         }
 
         _nameKeyword = new TerminalKeywordBuilder($"{value.enemyName}NameKeyword")

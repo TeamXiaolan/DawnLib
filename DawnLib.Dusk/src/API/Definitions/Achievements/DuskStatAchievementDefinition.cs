@@ -52,4 +52,6 @@ public class DuskStatAchievement : DuskAchievementDefinition, IProgress
             CurrentProgress = 0f;
         }
     }
+
+    public override void TryNetworkRegisterAssets() { }
 }
