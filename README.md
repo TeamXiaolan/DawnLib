@@ -120,10 +120,11 @@ The DuskMod API is more opinionated, but automatically handles:
 
 And finally, for any troubles in setting anything up, contact `@xuxiaolan` on discord or github for help.
 
-### Credits - Maintainers
+### Credits - Maintainers/Main Contributors
 
 - Bongo Xiaolan
 - Xu Xiaolan
+- Pacoito
 - Fumo
 
 ### Credits - Misc
@@ -137,7 +138,6 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 ### Credits - Testers
 
-- Pacoito
 - SkittyMuffins
 - Kiszony
 - TheCheeseXD

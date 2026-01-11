@@ -1,4 +1,11 @@
-# v0.5.17
+# v0.6.0
+
+- Added custom footsteps controlled through the component DawnSurface.
+  - You need to register a custom DawnFootstepSurface and then use the component DawnSurface to set a collider to be a specific Surface.
+  - You can also use a DawnSurface to do something like, making Quicksand terrain sink you with cement sounds (use the cement DawnSurface with the appropriate quicksand tags on the terrain!).
+- Adjusted AnimationCurveConverter.ConvertToString to give atleast 10 keys minimum to avoid tangent-related issues.
+
+## v0.5.17
 
 - Added more null checking because of mods deleting AINodes mid round.
 - Refined interior registration a bit more internally.

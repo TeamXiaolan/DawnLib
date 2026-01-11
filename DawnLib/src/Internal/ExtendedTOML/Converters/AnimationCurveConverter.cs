@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using UnityEngine;
@@ -8,12 +9,24 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)
     {
-        string[] pairs = new string[value.keys.Length];
-        for (int i = 0; i < value.keys.Length; i++)
+        const int minSamples = 10;
+
+        Keyframe[] keys = value.keys;
+        float startTime = keys[0].time;
+        float endTime = keys[^1].time;
+
+        int sampleCount = Math.Max(minSamples, keys.Length);
+
+        string[] pairs = new string[sampleCount];
+
+        for (int i = 0; i < sampleCount; i++)
         {
-            Keyframe keyframe = value.keys[i];
-            string timeStr = keyframe.time.ToString("0.00", CultureInfo.InvariantCulture);
-            string valueStr = keyframe.value.ToString("0.00", CultureInfo.InvariantCulture);
+            float delta = i / (sampleCount - 1f);
+            float t = Mathf.Lerp(startTime, endTime, delta);
+            float v = value.Evaluate(t);
+
+            string timeStr = t.ToString("0.00", CultureInfo.InvariantCulture);
+            string valueStr = v.ToString("0.00", CultureInfo.InvariantCulture);
 
             pairs[i] = $"{timeStr}, {valueStr}";
         }
