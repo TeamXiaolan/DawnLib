@@ -23,7 +23,7 @@ public class NamespacedConfigWeight
     [field: Range(-9999, 9999)]
     public float Weight = 0;
 
-    internal static string ConvertToString(NamespacedConfigWeight input)
+    public static string ConvertToString(NamespacedConfigWeight input)
     {
         // End Result: {NamespacedKey}={Operation}{Weight}
         if (input == null || input.NamespacedKey == null || string.IsNullOrWhiteSpace(input.NamespacedKey.Namespace) || string.IsNullOrWhiteSpace(input.NamespacedKey.Key))
@@ -45,7 +45,7 @@ public class NamespacedConfigWeight
         return result;
     }
 
-    internal static string ConvertManyToString(List<NamespacedConfigWeight> input)
+    public static string ConvertManyToString(List<NamespacedConfigWeight> input)
     {
         string result = string.Empty;
         foreach (NamespacedConfigWeight item in input)
@@ -57,7 +57,7 @@ public class NamespacedConfigWeight
         return result;
     }
 
-    internal static NamespacedConfigWeight ConvertFromString(string input)
+    public static NamespacedConfigWeight ConvertFromString(string input)
     {
         string[] parts = input.Split('=', StringSplitOptions.RemoveEmptyEntries);
         Debuggers.Weights?.Log($"Converting NamespacedConfigWeight from string: {input}");
@@ -90,7 +90,7 @@ public class NamespacedConfigWeight
         return result;
     }
 
-    internal static List<NamespacedConfigWeight> ConvertManyFromStringList(List<string> input)
+    public static List<NamespacedConfigWeight> ConvertManyFromStringList(List<string> input)
     {
         List<NamespacedConfigWeight> result = new(input.Count);
         foreach (string item in input)
@@ -101,7 +101,7 @@ public class NamespacedConfigWeight
     }
 
     private static Regex _splitRegex = new(@"\s+");
-    internal static List<NamespacedConfigWeight> ConvertManyFromString(string input)
+    public static List<NamespacedConfigWeight> ConvertManyFromString(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
             return new List<NamespacedConfigWeight>();

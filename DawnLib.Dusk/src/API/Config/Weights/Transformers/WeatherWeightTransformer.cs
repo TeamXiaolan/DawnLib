@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Dawn;
 using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 
 [Serializable]
-public class WeatherWeightTransformer : WeightTransformer
+public class WeatherWeightTransformer : WeightTransformer<DawnWeatherEffectInfo?>
 {
     public WeatherWeightTransformer(List<NamespacedConfigWeight> weatherConfig)
     {
@@ -15,15 +14,12 @@ public class WeatherWeightTransformer : WeightTransformer
             return;
 
         _weatherConfig = weatherConfig;
-        foreach (NamespacedConfigWeight configWeight in weatherConfig)
-        {
-            MatchingWeathersWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
-        }
-
+        ReregisterWeatherConfig();
         LethalContent.Weathers.OnFreeze += ReregisterWeatherConfig;
     }
 
     private List<NamespacedConfigWeight> _weatherConfig = new();
+
     private void ReregisterWeatherConfig()
     {
         MatchingWeathersWithWeightAndOperationDict.Clear();
@@ -35,85 +31,29 @@ public class WeatherWeightTransformer : WeightTransformer
 
     public Dictionary<NamespacedKey, (MathOperation operation, float weight)> MatchingWeathersWithWeightAndOperationDict = new();
 
-    public override float GetNewWeight(float currentWeight)
+    public override float GetNewWeight(float currentWeight, DawnWeatherEffectInfo? weatherInfo)
     {
-        if (!TimeOfDay.Instance) return currentWeight;
-        if (!TimeOfDay.Instance.currentLevel) return currentWeight;
+        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo?.TypedKey ?? NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
+        IEnumerable<NamespacedKey> tags = weatherInfo?.AllTags() ?? Array.Empty<NamespacedKey>();
 
-        NamespacedKey currentWeatherNamespacedKey = NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
-        IEnumerable<NamespacedKey> allTags = [];
-        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None)
-        {
-            DawnWeatherEffectInfo? weatherInfo = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].GetDawnInfo();
-            if (weatherInfo == null)
-            {
-                DawnPlugin.Logger.LogError($"Could not find weather info for {TimeOfDay.Instance.currentLevel.currentWeather},");
-                return currentWeight;
-            }
-            currentWeatherNamespacedKey = weatherInfo.TypedKey;
-            allTags = weatherInfo.AllTags();
-        }
-
-        if (MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out (MathOperation operation, float weight) operationWithWeight))
-        {
-            Debuggers.Weights?.Log($"NamespacedKey: {currentWeatherNamespacedKey}");
-            return DoOperation(currentWeight, operationWithWeight);
-        }
-
-        List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
-        HashSet<string> processedKeys = new();
-
-        foreach (NamespacedKey tagNamespacedKey in allTags)
-        {
-            if (!processedKeys.Add(tagNamespacedKey.Key))
-                continue;
-
-            foreach (NamespacedKey moonNamespacedKey in MatchingWeathersWithWeightAndOperationDict.Keys)
-            {
-                if (moonNamespacedKey.Key == tagNamespacedKey.Key)
-                {
-                    orderedAndValidTagNamespacedKeys.Add(moonNamespacedKey);
-                    break;
-                }
-            }
-        }
-
-        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => MatchingWeathersWithWeightAndOperationDict[x].operation == MathOperation.Additive || MatchingWeathersWithWeightAndOperationDict[x].operation == MathOperation.Subtractive).ToList();
-        foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
-        {
-            Debuggers.Weights?.Log($"NamespacedKey: {namespacedKey}");
-            operationWithWeight = MatchingWeathersWithWeightAndOperationDict[namespacedKey];
-            currentWeight = DoOperation(currentWeight, operationWithWeight);
-        }
-
-        if (orderedAndValidTagNamespacedKeys.Count == 0)
-        {
-            return currentWeight;
-        }
-
-        currentWeight /= orderedAndValidTagNamespacedKeys.Count;
-        return currentWeight;
+        return WeightTransformerTagLogic.ApplyByKeyOrTags(
+            currentWeight,
+            typedKey,
+            tags,
+            MatchingWeathersWithWeightAndOperationDict,
+            DoOperation,
+            Debuggers.Weights
+        );
     }
 
-    public override MathOperation GetOperation()
+    public override MathOperation GetOperation(DawnWeatherEffectInfo? weatherInfo)
     {
-        if (!TimeOfDay.Instance) return MathOperation.Additive;
-        if (!TimeOfDay.Instance.currentLevel) return MathOperation.Additive;
-
-        NamespacedKey currentWeatherNamespacedKey = NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
-        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None)
+        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo?.TypedKey ?? NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
+        if (MatchingWeathersWithWeightAndOperationDict.TryGetValue(typedKey, out var opWithWeight))
         {
-            DawnWeatherEffectInfo? weatherInfo = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].GetDawnInfo();
-            if (weatherInfo == null)
-            {
-                DawnPlugin.Logger.LogError($"Could not find weather info for {TimeOfDay.Instance.currentLevel.currentWeather},");
-                return MathOperation.Additive;
-            }
-            currentWeatherNamespacedKey = weatherInfo.TypedKey;
+            return opWithWeight.operation;
         }
 
-        if (!MatchingWeathersWithWeightAndOperationDict.TryGetValue(currentWeatherNamespacedKey, out (MathOperation operation, float weight) operationWithWeight)) return MathOperation.Additive;
-
-        return operationWithWeight.operation;
+        return MathOperation.Additive;
     }
 }

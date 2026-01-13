@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Dawn;
 using Dawn.Internal;
 
 namespace Dusk.Weights.Transformers;
 
 [Serializable]
-public class InteriorWeightTransformer : WeightTransformer
+public class InteriorWeightTransformer : WeightTransformer<DawnDungeonInfo>
 {
     public InteriorWeightTransformer(List<NamespacedConfigWeight> interiorConfig)
     {
@@ -15,15 +14,12 @@ public class InteriorWeightTransformer : WeightTransformer
             return;
 
         _dungeonConfig = interiorConfig;
-        foreach (NamespacedConfigWeight configWeight in interiorConfig)
-        {
-            MatchingInteriorsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
-        }
-
+        ReregisterDungeonConfig();
         LethalContent.Dungeons.OnFreeze += ReregisterDungeonConfig;
     }
 
     private List<NamespacedConfigWeight> _dungeonConfig = new();
+
     private void ReregisterDungeonConfig()
     {
         MatchingInteriorsWithWeightAndOperationDict.Clear();
@@ -35,61 +31,25 @@ public class InteriorWeightTransformer : WeightTransformer
 
     public Dictionary<NamespacedKey, (MathOperation operation, float weight)> MatchingInteriorsWithWeightAndOperationDict = new();
 
-    public override float GetNewWeight(float currentWeight)
+    public override float GetNewWeight(float currentWeight, DawnDungeonInfo dungeonInfo)
     {
-        if (!RoundManager.Instance) return currentWeight;
-        if (!RoundManager.Instance.dungeonGenerator) return currentWeight;
-        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return currentWeight;
-        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out (MathOperation operation, float weight) operationWithWeight))
-        {
-            Debuggers.Weights?.Log($"NamespacedKey: {dungeonInfo.Key}");
-            return DoOperation(currentWeight, operationWithWeight);
-        }
-
-        List<NamespacedKey> orderedAndValidTagNamespacedKeys = new();
-        HashSet<string> processedKeys = new();
-
-        foreach (NamespacedKey tagNamespacedKey in dungeonInfo.AllTags())
-        {
-            if (!processedKeys.Add(tagNamespacedKey.Key))
-                continue;
-
-            foreach (NamespacedKey moonNamespacedKey in MatchingInteriorsWithWeightAndOperationDict.Keys)
-            {
-                if (moonNamespacedKey.Key == tagNamespacedKey.Key)
-                {
-                    orderedAndValidTagNamespacedKeys.Add(moonNamespacedKey);
-                    break;
-                }
-            }
-        }
-
-        orderedAndValidTagNamespacedKeys = orderedAndValidTagNamespacedKeys.OrderBy(x => MatchingInteriorsWithWeightAndOperationDict[x].operation == MathOperation.Additive || MatchingInteriorsWithWeightAndOperationDict[x].operation == MathOperation.Subtractive).ToList();
-        foreach (NamespacedKey namespacedKey in orderedAndValidTagNamespacedKeys)
-        {
-            Debuggers.Weights?.Log($"NamespacedKey: {namespacedKey}");
-            operationWithWeight = MatchingInteriorsWithWeightAndOperationDict[namespacedKey];
-            currentWeight = DoOperation(currentWeight, operationWithWeight);
-        }
-
-        if (orderedAndValidTagNamespacedKeys.Count == 0)
-        {
-            return currentWeight;
-        }
-
-        currentWeight /= orderedAndValidTagNamespacedKeys.Count;
-        return currentWeight;
+        return WeightTransformerTagLogic.ApplyByKeyOrTags(
+            currentWeight,
+            dungeonInfo.TypedKey,
+            dungeonInfo.AllTags(),
+            MatchingInteriorsWithWeightAndOperationDict,
+            DoOperation,
+            Debuggers.Weights
+        );
     }
 
-    public override MathOperation GetOperation()
+    public override MathOperation GetOperation(DawnDungeonInfo dungeonInfo)
     {
-        if (!RoundManager.Instance) return MathOperation.Additive;
-        if (!RoundManager.Instance.dungeonGenerator) return MathOperation.Additive;
-        if (!RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow) return MathOperation.Additive;
-        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-        if (!MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out (MathOperation operation, float weight) operationWithWeight)) return MathOperation.Additive;
+        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out var opWithWeight))
+        {
+            return opWithWeight.operation;
+        }
 
-        return operationWithWeight.operation;
+        return MathOperation.Additive;
     }
 }

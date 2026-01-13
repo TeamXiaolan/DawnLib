@@ -7,6 +7,9 @@
 - Adjusted AnimationCurveConverter.ConvertToString to give atleast 10 keys minimum to avoid tangent-related issues.
 - Added more logging to look into invalid furnitures.
 - Fixed an issue with tag weights not averaging.
+- Publicised some functions in NamespacedConfigWeight.
+- Rewrote SpawnWeightsPreset a bit to be cleaner (no breaking changes I hope).
+- AnimationCurveConverter returns a constant 0 curve when provided with null or 0 key curve.
 
 ## v0.5.17
 

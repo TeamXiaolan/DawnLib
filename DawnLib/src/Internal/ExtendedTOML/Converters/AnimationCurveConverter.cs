@@ -9,6 +9,11 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)
     {
+        if (value == null || value.keys.Length == 0)
+        {
+            return ConvertToString(AnimationCurve.Constant(0, 1, 0));
+        }
+
         const int minSamples = 10;
 
         Keyframe[] keys = value.keys;
