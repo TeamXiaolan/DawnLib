@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace Dawn.Utils;
 public class TMPDropDownFixer : MonoBehaviour
 {
-    private float normalizedScrollPosition = 0f;
+    private float normalizedScrollPosition = 1;
     private ScrollRect? scrollRect = null;
 
     internal void OnOpenDropdown(TMP_Dropdown dropdown)

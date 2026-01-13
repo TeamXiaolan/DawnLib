@@ -86,6 +86,12 @@ public class WeatherWeightTransformer : WeightTransformer
             currentWeight = DoOperation(currentWeight, operationWithWeight);
         }
 
+        if (orderedAndValidTagNamespacedKeys.Count == 0)
+        {
+            return currentWeight;
+        }
+
+        currentWeight /= orderedAndValidTagNamespacedKeys.Count;
         return currentWeight;
     }
 

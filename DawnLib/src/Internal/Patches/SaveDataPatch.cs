@@ -35,6 +35,18 @@ static class SaveDataPatch
     {
         UnlockableSaveDataHandler.placeableShipObjects.Add(self);
         orig(self);
+        if (self.parentObject == null)
+        {
+            DawnPlugin.Logger.LogError($"Parent object is null for object: {self.gameObject.name}");
+            return;
+        }
+
+        if (self.parentObject.NetworkObject == null)
+        {
+            DawnPlugin.Logger.LogError($"Network object is null for object: {self.parentObject.gameObject.name}");
+            return;
+        }
+
         self.parentObject.NetworkObject.OnSpawn(() =>
         {
             if (!self.parentObject.NetworkObject.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject, true))

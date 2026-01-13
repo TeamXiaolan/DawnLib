@@ -2,8 +2,11 @@
 
 - Added custom footsteps controlled through the component DawnSurface.
   - You need to register a custom DawnFootstepSurface and then use the component DawnSurface to set a collider to be a specific Surface.
+  - Allows you to also emit particles based on the surface you're setting on incase you'd like to emit sand from the player's footsteps while they're walking on sand.
   - You can also use a DawnSurface to do something like, making Quicksand terrain sink you with cement sounds (use the cement DawnSurface with the appropriate quicksand tags on the terrain!).
 - Adjusted AnimationCurveConverter.ConvertToString to give atleast 10 keys minimum to avoid tangent-related issues.
+- Added more logging to look into invalid furnitures.
+- Fixed an issue with tag weights not averaging.
 
 ## v0.5.17
 
