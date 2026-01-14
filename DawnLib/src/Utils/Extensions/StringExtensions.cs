@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace Dawn.Utils;
@@ -36,5 +37,35 @@ public static class StringExtensions
         }
 
         return returnString;
+    }
+
+    public static bool CompareStringsInvariant(this string input, string str2, bool ignoreCase = true)
+    {
+        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase
+                                    : StringComparison.InvariantCulture;
+
+        return input.Equals(str2, comparison);
+    }
+
+    public static bool StringStartsWithInvariant(this string input, char ch, bool ignoreCase = true)
+    {
+        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase
+                                    : StringComparison.InvariantCulture;
+
+        return input.StartsWith($"{ch}", comparison);
+    }
+
+    public static bool StringStartsWithInvariant(this string input, string str, bool ignoreCase = true)
+    {
+        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase
+                                    : StringComparison.InvariantCulture;
+        return input.StartsWith(str, comparison);
+    }
+
+    public static bool StringContainsInvariant(this string input, string query, bool ignoreCase = true)
+    {
+        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase
+                                    : StringComparison.InvariantCulture;
+        return input.Contains(query, comparison);
     }
 }

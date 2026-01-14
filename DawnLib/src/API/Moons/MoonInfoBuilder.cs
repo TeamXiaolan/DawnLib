@@ -29,8 +29,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
             wordOverride = value.PlanetName.ToLowerInvariant().Replace(' ', '-');
         }
 
-        _nameKeyword = new TerminalKeywordBuilder($"{value.PlanetName}NameKeyword")
-            .SetWord(wordOverride)
+        _nameKeyword = new TerminalKeywordBuilder($"{value.PlanetName}NameKeyword", wordOverride, ITerminalKeyword.DawnKeywordType.Moons)
             .Build();
 
         _nameKeyword.compatibleNouns = [];

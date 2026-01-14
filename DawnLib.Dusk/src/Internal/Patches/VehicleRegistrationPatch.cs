@@ -214,8 +214,7 @@ static class VehicleRegistrationPatch
             if (DuskModContent.Vehicles.IsFrozen)
                 continue;
 
-            TerminalKeyword buyDuskKeyword = new TerminalKeywordBuilder($"{vehicleDefinition.name}BuyKeyword")
-                .SetWord(!string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}")
+            TerminalKeyword buyDuskKeyword = new TerminalKeywordBuilder($"{vehicleDefinition.name}BuyKeyword", !string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.BuyKeywordText) ? vehicleDefinition.BuyableVehiclePreset.BuyKeywordText : $"{vehicleDefinition.VehicleDisplayName.ToLowerInvariant()}", ITerminalKeyword.DawnKeywordType.Vehicles)
                 .SetDefaultVerb(buyKeyword)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.BuyKeyword = buyDuskKeyword;
