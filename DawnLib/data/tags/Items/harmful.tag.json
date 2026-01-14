@@ -1,0 +1,17 @@
+{
+  "tag": "lethal_company:harmful",
+  "values": [
+    "lethal_company:tragedy",
+    "lethal_company:comedy",
+    "lethal_company:zap_gun",
+    "lethal_company:yield_sign",
+    "lethal_company:stop_sign",
+    "lethal_company:shotgun",
+    "lethal_company:shovel",
+    "lethal_company:kitchen_knife",
+    "lethal_company:jetpack",
+    "lethal_company:hive",
+    "lethal_company:extension_ladder",
+    "lethal_company:homemade_flashbang"
+  ]
+}

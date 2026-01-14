@@ -1,0 +1,10 @@
+{
+  "tag": "lethal_company:neutral",
+  "values": [
+    "lethal_company:red_locust_bees",
+    "lethal_company:puffer",
+    "lethal_company:hoarding_bug",
+    "lethal_company:baboon_hawk",
+    "lethal_company:bunker_spider"
+  ]
+}

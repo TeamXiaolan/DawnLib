@@ -1,0 +1,6 @@
+bin/
+obj/
+Packages/
+DawnLib.Editor/deps/*
+*.user
+/.vs

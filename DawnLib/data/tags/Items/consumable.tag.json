@@ -1,0 +1,13 @@
+{
+  "tag": "lethal_company:consumable",
+  "values": [
+    "lethal_company:homemade_flashbang",
+    "lethal_company:easter_egg",
+    "lethal_company:ammo",
+    "lethal_company:key",
+    "lethal_company:spray_paint",
+    "lethal_company:stun_grenade",
+    "lethal_company:tzpinhalant",
+    "lethal_company:weed_killer"
+  ]
+}

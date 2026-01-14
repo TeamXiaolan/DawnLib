@@ -1,0 +1,13 @@
+﻿using System.Linq;
+
+namespace Dawn.SourceGen.Extensions;
+public static class StringExtensions
+{
+    public static string ToCapitalized(this string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return string.Empty;
+
+        return input.First().ToString().ToUpper() + string.Join("", input.Skip(1));
+    }
+}

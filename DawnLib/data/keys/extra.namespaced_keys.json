@@ -1,0 +1,10 @@
+{
+  "MoonKeys": {
+    "__type": "DawnMoonInfo",
+    "Test": "lethal_company:test"
+  },
+  "WeatherKeys": {
+    "__type": "DawnWeatherEffectInfo",
+    "None": "lethal_company:none"
+  }
+}

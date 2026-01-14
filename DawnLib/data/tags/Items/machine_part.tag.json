@@ -1,0 +1,10 @@
+{
+  "tag": "lethal_company:machine_part",
+  "values": [
+    "lethal_company:vtype_engine",
+    "lethal_company:steering_wheel",
+    "lethal_company:large_axle",
+    "lethal_company:apparatus",
+    "lethal_company:big_bolt"
+  ]
+}

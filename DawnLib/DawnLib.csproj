@@ -1,0 +1,99 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- BepInEx Properties -->
+    <PropertyGroup>
+        <AssemblyName>com.github.teamxiaolan.dawnlib</AssemblyName>
+        <Product>DawnLib</Product>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>Dawn</RootNamespace>
+    </PropertyGroup>
+    
+    <!-- NuGet Packaging -->
+    <PropertyGroup>
+        <PackageId>TeamXiaolan.DawnLib</PackageId>
+        <Description>A modern API for Lethal Company content and all sizes of mods.</Description>
+        
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <!-- Embed Debug Symbols for Easier Debugging -->
+    <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <!--
+        Trim the project path to prevent players from potentially
+        viewing Private Information in stack traces.
+        -->
+        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+    </PropertyGroup>
+
+    <!-- Primary Package References -->
+    <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
+        <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" Publicize="true" />
+        <PackageReference Include="IAmBatby.LethalLevelLoader" Publicize="true" Version="1.4.0" PrivateAssets="all" />
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" PrivateAssets="all" Publicize="true"/>
+        <PackageReference Include="mrov-TerminalFormatter" Version="0.2.29" PrivateAssets="all"/>
+        <PackageReference Include="Pooble-LCBetterSaves" Version="1.7.3" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Interfaces\DawnLib.Interfaces.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.SourceGen\DawnLib.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+    
+    <!-- Other mod dependencies -->
+    <ItemGroup>
+        <PackageReference Include="Evaisa.LethalLib" Publicize="true" Version="1.*" />
+        <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="0.7.1" PrivateAssets="all" />
+        <PackageReference Include="mrov.MrovLib" Publicize="true" Version="*" PrivateAssets="all" />
+
+        <PackageReference Include="Alice-DungeonGenerationPlus" Publicize="true" Version="1.4.1" PrivateAssets="all" />
+        <PackageReference Include="AudioKnight-StarlancerAIFix" Publicize="true" Version="3.11.1" PrivateAssets="all" />
+        <PackageReference Include="BananaPuncher714-LethalQuantities" Version="1.2.9" PrivateAssets="all" Publicize="true" />
+        <PackageReference Include="TestAccount666-GoodItemScan" Version="1.14.0" PrivateAssets="all" Publicize="true" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
+    </ItemGroup>
+
+    <!-- Netcode Patcher Post-Build Event -->
+    <Sdk Name="Evaisa.NetcodePatcher.MSBuild" Version="4.4.1" />
+    <ItemGroup>
+        <NetcodePatch Include="$(TargetPath)" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="MMHOOK_Unity.TextMeshPro.dll" Publicize="true">
+        <HintPath>deps\MMHOOK_Unity.TextMeshPro.dll</HintPath>
+      </Reference>
+      <Reference Include="LethalConfig" Publicize="true">
+        <HintPath>deps\LethalConfig.dll</HintPath>
+      </Reference>
+      <Reference Include="MMHOOK_Assembly-CSharp">
+        <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
+      </Reference>
+        <Reference Include="MMHOOK_BepInEx">
+            <HintPath>deps\MMHOOK_BepInEx.dll</HintPath>
+        </Reference>
+        <Reference Include="MMHOOK_BepInEx.Preloader">
+            <HintPath>deps\MMHOOK_BepInEx.Preloader.dll</HintPath>
+        </Reference>
+        <Reference Include="MMHOOK_Unity.Netcode.Runtime">
+            <HintPath>deps\MMHOOK_Unity.Netcode.Runtime.dll</HintPath>
+        </Reference>
+      <Reference Include="PathfindingLib">
+        <HintPath>deps\PathfindingLib.dll</HintPath>
+      </Reference>
+        
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="data\**\*.json" />
+        <AdditionalFiles Include="data\**\*.json" />
+    </ItemGroup>
+
+    <Target Name="PublishThunderstore">
+    </Target>
+</Project>

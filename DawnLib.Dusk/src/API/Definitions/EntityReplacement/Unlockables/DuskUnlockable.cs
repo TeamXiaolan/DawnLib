@@ -1,0 +1,121 @@
+using System.Collections.Generic;
+using System.Linq;
+using Dawn;
+using Dawn.Internal;
+using Dawn.Interfaces;
+using Dusk.Internal;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+namespace Dusk;
+
+public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSaveData
+{
+    public object? CurrentEntityReplacement { get; set; }
+
+    public AutoParentToShip AutoParentToShip { get; private set; }
+    public PlaceableShipObject PlaceableShipObject { get; private set; }
+
+    public DuskUnlockableReplacementDefinition? GetUnlockableReplacement()
+    {
+        DuskUnlockableReplacementDefinition? unlockableReplacementDefinition = (DuskUnlockableReplacementDefinition?)CurrentEntityReplacement;
+        return unlockableReplacementDefinition;
+    }
+
+    internal bool HasUnlockableReplacement()
+    {
+        return GetUnlockableReplacement() != null;
+    }
+
+    internal void SetUnlockableReplacement(DuskUnlockableReplacementDefinition unlockableReplacementDefinition)
+    {
+        CurrentEntityReplacement = unlockableReplacementDefinition;
+    }
+
+    public void Awake()
+    {
+        AutoParentToShip = GetComponentInChildren<AutoParentToShip>();
+        PlaceableShipObject = GetComponentInChildren<PlaceableShipObject>();
+    }
+
+    public void Start()
+    {
+        Debuggers.Unlockables?.Log($"{this.gameObject.name} dusk unlockable starting...");
+        if (PlaceableShipObject == null)
+        {
+            return;
+        }
+        UnlockableItem unlockableItem = StartOfRoundRefs.Instance.unlockablesList.unlockables[PlaceableShipObject.unlockableID];
+        if (!unlockableItem.spawnPrefab && unlockableItem.prefabObject == null)
+        {
+            DuskPlugin.Logger.LogWarning($"Unlockable: {unlockableItem.unlockableName} doesn't have a prefab nor does it spawn as one, this means that you cannot replace this unlockable.");
+            return;
+        }
+
+        if (!unlockableItem.HasDawnInfo())
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to replace unlockable entity for '{unlockableItem.unlockableName}', it doesn't have a dawn info! (there may be other problems)");
+            return;
+        }
+
+        if (!unlockableItem.GetDawnInfo().CustomData.TryGet(EntityReplacementRegistrationPatch.Key, out List<DuskUnlockableReplacementDefinition>? replacements))
+        {
+            Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no replacements!");
+            return;
+        }
+
+        if (HasUnlockableReplacement())
+        {
+            return;
+        }
+
+        List<DuskUnlockableReplacementDefinition> newReplacements = new List<DuskUnlockableReplacementDefinition>(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
+        {
+            DuskUnlockableReplacementDefinition replacement = newReplacements[i];
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                newReplacements.RemoveAt(i);
+            }
+        }
+
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon));
+        if (totalWeight == null)
+        {
+            return;
+        }
+
+        EntityReplacementRegistrationPatch.replacementRandom ??= new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
+
+        int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value);
+        foreach (DuskUnlockableReplacementDefinition replacement in newReplacements)
+        {
+            chosenWeight -= replacement.Weights.GetFor(currentMoon) ?? 0;
+            if (chosenWeight > 0)
+                continue;
+
+            if (replacement.IsDefault)
+                break;
+
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(this));
+            break;
+        }
+    }
+
+    public void OnDestroy() { }
+
+    public virtual JToken GetDawnDataToSave()
+    {
+        return JToken.FromObject(0);
+    }
+
+    public virtual void LoadDawnSaveData(JToken saveData)
+    {
+
+    }
+}

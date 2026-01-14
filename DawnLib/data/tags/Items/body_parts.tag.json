@@ -1,0 +1,13 @@
+﻿{
+  "tag": "lethal_company:body_parts",
+  "values": [
+    "lethal_company:hand",
+    "lethal_company:bone",
+    "lethal_company:ribcage",
+    "lethal_company:ear",
+    "lethal_company:knee",
+    "lethal_company:heart",
+    "lethal_company:tongue",
+    "lethal_company:foot"
+  ]
+}
