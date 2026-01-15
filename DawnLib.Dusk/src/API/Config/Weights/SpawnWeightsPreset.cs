@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace Dusk.Weights;
 
-public readonly struct SpawnWeightContext(DawnMoonInfo moon, DawnDungeonInfo dungeon, DawnWeatherEffectInfo? weather)
+public readonly struct SpawnWeightContext(DawnMoonInfo moon, DawnDungeonInfo? dungeon, DawnWeatherEffectInfo? weather)
 {
-    public readonly DawnMoonInfo Moon = moon;
-    public readonly DawnDungeonInfo Dungeon = dungeon;
+    public readonly DawnMoonInfo? Moon = moon;
+    public readonly DawnDungeonInfo? Dungeon = dungeon;
     public readonly DawnWeatherEffectInfo? Weather = weather;
 }
 
@@ -34,16 +34,25 @@ public class SpawnWeightsPreset : IWeighted
     {
         float weight = 0;
 
-        var transformers = new List<(int priority, System.Func<float, float> apply)>()
+        var transformers = new List<(int priority, System.Func<float, float> apply)>();
+        if (ctx.Moon != null)
         {
-            (Priority(MoonSpawnWeightsTransformer.GetOperation(ctx.Moon)), currentWeight => MoonSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Moon)),
-
-            (Priority(InteriorSpawnWeightsTransformer.GetOperation(ctx.Dungeon)), currentWeight => InteriorSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Dungeon)),
-
-            (Priority(WeatherSpawnWeightsTransformer.GetOperation(ctx.Weather)), currentWeight => WeatherSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Weather)),
+            transformers.Add((Priority(MoonSpawnWeightsTransformer.GetOperation(ctx.Moon)), currentWeight => MoonSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Moon)));
         }
-        .OrderByDescending(x => x.priority)
-        .ToList();
+
+        if (ctx.Dungeon != null)
+        {
+            transformers.Add((Priority(InteriorSpawnWeightsTransformer.GetOperation(ctx.Dungeon)), currentWeight => InteriorSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Dungeon)));
+        }
+
+        if (ctx.Weather != null)
+        {
+            transformers.Add((Priority(WeatherSpawnWeightsTransformer.GetOperation(ctx.Weather)), currentWeight => WeatherSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Weather)));
+        }
+
+        transformers = transformers
+                            .OrderByDescending(x => x.priority)
+                            .ToList();
 
         foreach (var (priority, apply) in transformers)
         {
@@ -58,10 +67,6 @@ public class SpawnWeightsPreset : IWeighted
     public int GetWeight()
     {
         SpawnWeightContext ctx = SpawnWeightContextFactory.FromCurrentGame();
-        if (ctx.Moon == null && ctx.Dungeon == null && ctx.Weather == null)
-        {
-            return 0;
-        }
         return GetWeight(ctx);
     }
 
@@ -72,14 +77,9 @@ public static class SpawnWeightContextFactory
 {
     public static SpawnWeightContext FromCurrentGame()
     {
-        if (!RoundManager.Instance || RoundManager.Instance.currentLevel == null || RoundManager.Instance.dungeonGenerator == null || RoundManager.Instance.dungeonGenerator.Generator == null || RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow == null || TimeOfDay.Instance == null || TimeOfDay.Instance.currentLevel == null)
-        {
-            return new SpawnWeightContext(null, null, null);
-        }
+        DawnMoonInfo? moon = RoundManager.Instance?.currentLevel?.GetDawnInfo();
 
-        DawnMoonInfo moon = RoundManager.Instance.currentLevel.GetDawnInfo();
-
-        DawnDungeonInfo dungeon = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+        DawnDungeonInfo? dungeon = RoundManager.Instance?.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
 
         DawnWeatherEffectInfo? weather = null;
         if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None)

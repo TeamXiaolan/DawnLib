@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
@@ -10,7 +9,6 @@ using HarmonyLib;
 using LethalLevelLoader;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
-using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn.Internal;
 

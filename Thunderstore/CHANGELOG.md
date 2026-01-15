@@ -1,4 +1,8 @@
-# v0.6.0
+# v0.6.1
+
+- Fixed rare scenario of some weights not working right if grabbed at the wrong timing (would mostly break dawn interior weights).
+
+## v0.6.0
 
 - Added custom footsteps controlled through the component DawnSurface.
   - You need to register a custom DawnFootstepSurface and then use the component DawnSurface to set a collider to be a specific Surface.
