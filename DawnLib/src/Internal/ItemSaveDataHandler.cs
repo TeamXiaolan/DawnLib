@@ -45,7 +45,10 @@ public static class ItemSaveDataHandler
             DawnItemInfo? itemInfo = item.itemProperties.GetDawnInfo();
             if (itemInfo == null)
             {
-                DawnPlugin.Logger.LogError($"Item: {item.name} doesn't have a DawnItemInfo; cannot save. " + "Contact the developer of this item.");
+                if (item.NetworkObject.IsSceneObject == null || !item.NetworkObject.IsSceneObject.Value)
+                {
+                    DawnPlugin.Logger.LogError($"Item: {item.name} doesn't have a DawnItemInfo; cannot save. " + "Contact the developer of this item.");
+                }
                 continue;
             }
 

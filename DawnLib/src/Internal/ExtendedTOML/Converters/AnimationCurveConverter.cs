@@ -40,7 +40,6 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 
     protected override AnimationCurve ConvertToObject(string keyValuePairs)
     {
-        // Split the input string into individual key-value pairs
         string[] pairs = keyValuePairs.Split(';').Select(s => s.Trim()).ToArray();
         if (pairs.Length == 0)
         {
@@ -53,7 +52,6 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
         }
         List<Keyframe> keyframes = new();
 
-        // Iterate over each pair and parse the key and value to create keyframes
         foreach (string pair in pairs)
         {
             string[] splitPair = pair.Split(',').Select(s => s.Trim()).ToArray();
@@ -66,11 +64,12 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
             else
             {
                 // this maybe shouldn't be an exception, but i don't really care.
-                throw new MalformedAnimationCurveConfigException(pair);
+                MalformedAnimationCurveConfigException malformedAnimationCurveConfigException = new MalformedAnimationCurveConfigException(pair);
+                malformedAnimationCurveConfigException.LogNicely(DawnPlugin.Logger);
+                throw malformedAnimationCurveConfigException;
             }
         }
 
-        // Create the animation curve with the generated keyframes and apply smoothing
         AnimationCurve curve = new(keyframes.ToArray());
         /*for (int i = 0; i < keyframes.Count; i++)
         {

@@ -1,4 +1,10 @@
-# v0.6.1
+# v0.6.2
+
+- Added more logging for incorrect curve config formats.
+- Fixed an edge-case of registered pre-unlocked furniture.
+- Removed erroring
+
+## v0.6.1
 
 - Fixed rare scenario of some weights not working right if grabbed at the wrong timing (would mostly break dawn interior weights).
 

@@ -74,7 +74,15 @@ static class UnlockableRegistrationHandler
 
             StartOfRoundRefs.Instance.unlockablesList.unlockables.Add(unlockableInfo.UnlockableItem);
             if (unlockableInfo.UnlockableItem.alreadyUnlocked || unlockableInfo.RequestNode == null)
+            {
+                PlaceableShipObject? alreadyUnlockedPlaceableShipObject = unlockableInfo.UnlockableItem.prefabObject?.GetComponentInChildren<PlaceableShipObject>();
+                if (alreadyUnlockedPlaceableShipObject == null)
+                    continue;
+
+                alreadyUnlockedPlaceableShipObject.parentObject.unlockableID = StartOfRoundRefs.Instance.unlockablesList.unlockables.Count;
+                alreadyUnlockedPlaceableShipObject.unlockableID = StartOfRoundRefs.Instance.unlockablesList.unlockables.Count;
                 continue;
+            }
 
             unlockableInfo.RequestNode.shipUnlockableID = latestUnlockableID;
             latestUnlockableID++;
@@ -112,7 +120,7 @@ static class UnlockableRegistrationHandler
             });
 
 
-            PlaceableShipObject placeableShipObject = unlockableInfo.UnlockableItem.prefabObject.GetComponentInChildren<PlaceableShipObject>();
+            PlaceableShipObject? placeableShipObject = unlockableInfo.UnlockableItem.prefabObject?.GetComponentInChildren<PlaceableShipObject>();
             if (placeableShipObject != null)
             {
                 placeableShipObject.parentObject.unlockableID = unlockableInfo.RequestNode.shipUnlockableID;
