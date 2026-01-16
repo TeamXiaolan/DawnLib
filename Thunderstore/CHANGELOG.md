@@ -4,6 +4,9 @@
 - Fixed an edge-case of registered pre-unlocked furniture.
 - Removed erroring from vanilla items that can't be put into the save file (clipboard etc).
 - Fixed a vanilla issue where the same item would be added to a moon spawn list twice.
+- Updated wiki slightly too.
+- Added crafty and darmuh to credits.
+- Next major update is planned to grant a lot of terminal functionality in terms of creating terminal pages, commands, etc.
 
 ## v0.6.1
 

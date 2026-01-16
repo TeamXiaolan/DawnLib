@@ -35,10 +35,10 @@ This is because of the way DawnLib supports dynamically updating weights and the
 ## DawnLib (All C#)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.4.*" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.6.*" />
 
 <!-- Optional Source Generation, mostly for when using the DuskMod API -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.4.*" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.6.*" />
 ```
 
 DawnLib is a hands-off way to register your content. The code to switch from LethalLib to DawnLib is very similar and will require minimal refactoring.
@@ -124,11 +124,13 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 - Bongo Xiaolan
 - Xu Xiaolan
+- Darmuh
 - Pacoito
 - Fumo
 
 ### Credits - Misc
 
+- Crafty (Making LunarConfig exposed a few places that needed improvement in implementation).
 - Slayer (Achievement UI)
 - Monty (Hotloading UI Feedback)
 - IAmBatby (UI+General Feedback)
@@ -138,6 +140,7 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 ### Credits - Testers
 
+- Crafty
 - SkittyMuffins
 - Kiszony
 - TheCheeseXD
