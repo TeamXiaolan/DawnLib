@@ -22,7 +22,7 @@ public class TerminalKeywordBuilder
                 _keyword = ScriptableObject.CreateInstance<TerminalKeyword>();
                 _keyword.name = name;
                 _keyword.SetKeywordPriority(_priority);
-                SetWord(word + _keyword.GetHashCode());
+                OverrideWord(word + _keyword.GetHashCode());
                 DawnPlugin.Logger.LogWarning($"TerminalKeyword word set to {_keyword.word}");
                 return;
             }
@@ -38,10 +38,10 @@ public class TerminalKeywordBuilder
         _keyword = ScriptableObject.CreateInstance<TerminalKeyword>();
         _keyword.name = name;
         _keyword.SetKeywordPriority(_priority);
-        SetWord(word);
+        OverrideWord(word);
     }
 
-    public TerminalKeywordBuilder SetWord(string word)
+    public TerminalKeywordBuilder OverrideWord(string word)
     {
         _keyword.word = word;
         return this;
