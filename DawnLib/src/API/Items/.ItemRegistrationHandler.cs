@@ -151,16 +151,30 @@ static class ItemRegistrationHandler
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
-
-            foreach (SpawnableItemWithRarity itemWithRarity in level.spawnableScrap)
+            Dictionary<Item, SpawnableItemWithRarity> nonRepeatSpawnableScrapDict = new();
+            for (int i = level.spawnableScrap.Count - 1; i >= 0; i--)
             {
-                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                SpawnableItemWithRarity itemWithRarity = level.spawnableScrap[i];
+                if (nonRepeatSpawnableScrapDict.ContainsKey(itemWithRarity.spawnableItem))
+                {
+                    DawnPlugin.Logger.LogWarning($"Duplicate item found in level {level.PlanetName} with name {itemWithRarity.spawnableItem.name}, adding weight to previous entry to avoid issues.");
+                    level.spawnableScrap.Remove(itemWithRarity);
+                    nonRepeatSpawnableScrapDict[itemWithRarity.spawnableItem].rarity += itemWithRarity.rarity;
+                    continue;
+                }
+
+                nonRepeatSpawnableScrapDict[itemWithRarity.spawnableItem] = itemWithRarity;
+            }
+
+            foreach ((Item item, SpawnableItemWithRarity spawnableItemWithRarity) in nonRepeatSpawnableScrapDict)
+            {
+                if (!itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
                 {
                     weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    itemWeightBuilder[itemWithRarity.spawnableItem.name] = weightTableBuilder;
+                    itemWeightBuilder[item.name] = weightTableBuilder;
                 }
-                Debuggers.Items?.Log($"Adding weight {itemWithRarity.rarity} to {itemWithRarity.spawnableItem.name} on level {level.PlanetName}");
-                weightTableBuilder.AddWeight(moonInfo.TypedKey, itemWithRarity.rarity);
+                Debuggers.Items?.Log($"Adding weight {spawnableItemWithRarity.rarity} to {item.name} on level {level.PlanetName}");
+                weightTableBuilder.AddWeight(moonInfo.TypedKey, spawnableItemWithRarity.rarity);
             }
         }
 

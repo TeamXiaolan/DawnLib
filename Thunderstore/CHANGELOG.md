@@ -2,7 +2,8 @@
 
 - Added more logging for incorrect curve config formats.
 - Fixed an edge-case of registered pre-unlocked furniture.
-- Removed erroring
+- Removed erroring from vanilla items that can't be put into the save file (clipboard etc).
+- Fixed a vanilla issue where the same item would be added to a moon spawn list twice.
 
 ## v0.6.1
 
