@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Dawn;
 public class TerminalNodeBuilder
@@ -86,6 +87,12 @@ public class TerminalNodeBuilder
     public TerminalNodeBuilder SetPlaySyncedClip(int clipIndex)
     {
         _node.playSyncedClip = clipIndex;
+        return this;
+    }
+
+    public TerminalNodeBuilder AddNodeFunction(Func<string> _function)
+    {
+        _node.SetNodeFunction(_function);
         return this;
     }
 

@@ -78,6 +78,9 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
 
+        //Testing
+        //DawnTesting.TestCommands();
+
         _harmony.PatchAll(Assembly.GetExecutingAssembly());
 
         DawnNetworkSceneManager.Init();
