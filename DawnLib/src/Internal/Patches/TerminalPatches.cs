@@ -214,7 +214,7 @@ static class TerminalPatches
                 orig(self, node);
                 return;
             }
-            DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
+            DawnUnlockableItemInfo info = unlockableItem.GetDawnInfo();
             purchase = info.DawnPurchaseInfo;
         }
 
@@ -234,13 +234,13 @@ static class TerminalPatches
             {
                 Debuggers.Patching?.Log($"predicate fail");
 
-                orig(self, failedResult.ReasonNode);
+                self.LoadNewNode(failedResult.ReasonNode);
                 return;
             }
 
             if (result is TerminalPurchaseResult.HiddenPurchaseResult hiddenResult && hiddenResult.IsFailure)
             {
-                Debuggers.Patching?.Log($"predicate hidden");
+                Debuggers.Patching?.Log($"predicate hidden failure");
 
                 self.LoadNewNode(hiddenResult.ReasonNode);
                 return; // skip orig

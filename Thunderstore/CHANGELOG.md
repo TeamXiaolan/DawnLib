@@ -1,4 +1,8 @@
-# v0.6.3
+# v0.6.4
+
+- Fixed issue where FailedResult predicates would end up using up credits still.
+
+## v0.6.3
 
 - Moved Networkers spawning to be much earlier to avoid a few save-related issues I've noticed.
 - AnimationCurveConverter ignores empty entries now.
