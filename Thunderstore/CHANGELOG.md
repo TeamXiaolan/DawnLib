@@ -1,4 +1,9 @@
-# v0.6.2
+# v0.6.3
+
+- Moved Networkers spawning to be much earlier to avoid a few save-related issues I've noticed.
+- AnimationCurveConverter ignores empty entries now.
+
+## v0.6.2
 
 - Added more logging for incorrect curve config formats.
 - Fixed an edge-case of registered pre-unlocked furniture.

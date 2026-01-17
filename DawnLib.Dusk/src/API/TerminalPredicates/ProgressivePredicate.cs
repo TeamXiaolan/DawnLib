@@ -34,6 +34,8 @@ public class ProgressivePredicate : DuskTerminalPredicate
             _failNode = CreateDefaultProgressiveDenyNode();
         }
         _namespacedKey = namespacedKey;
+        AllProgressiveItems.Add(this);
+        Debuggers.Progressive?.Log($"Registering unlockable: {_namespacedKey}.");
     }
 
     public override TerminalPurchaseResult CanPurchase()
@@ -86,6 +88,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     internal static void LoadAll(IDataContainer dataContainer)
     {
+        Debuggers.Progressive?.Log("Loading all unlockables");
         foreach (ProgressivePredicate unlockData in AllProgressiveItems)
         {
             unlockData.Load(dataContainer);
@@ -94,6 +97,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     internal static void SaveAll(IDataContainer dataContainer)
     {
+        Debuggers.Progressive?.Log("Saving all unlockables");
         foreach (ProgressivePredicate unlockData in AllProgressiveItems)
         {
             unlockData.Save(dataContainer);

@@ -14,7 +14,8 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
     {
         yield return new WaitUntil(() => NetworkObject.IsSpawned);
         yield return new WaitUntil(() => GameNetworkManager.Instance.localPlayerController != null);
-        DawnNetworker.Instance!.OnSave += SaveData;
+        DawnPlugin.Logger.LogDebug($"{nameof(DuskNetworker)} started.");
+        DawnNetworker.Instance.OnSave += SaveData;
 
         if (IsHost || IsServer)
         {

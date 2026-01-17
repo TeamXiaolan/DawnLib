@@ -40,7 +40,7 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 
     protected override AnimationCurve ConvertToObject(string keyValuePairs)
     {
-        string[] pairs = keyValuePairs.Split(';').Select(s => s.Trim()).ToArray();
+        string[] pairs = keyValuePairs.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
         if (pairs.Length == 0)
         {
             if (int.TryParse(keyValuePairs, out int result))

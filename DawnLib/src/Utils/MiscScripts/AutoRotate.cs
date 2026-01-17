@@ -14,11 +14,15 @@ public class AutoRotate : MonoBehaviour
 
     private Vector3 _rotation = Vector3.zero;
 
+    private static int instances = 0;
+
     private void Start()
     {
-        float _rotationSpeedX = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
-        float _rotationSpeedY = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
-        float _rotationSpeedZ = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
+        System.Random random = new System.Random(StartOfRound.Instance.randomMapSeed + instances);
+        instances++;
+        float _rotationSpeedX = random.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
+        float _rotationSpeedY = random.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
+        float _rotationSpeedZ = random.NextFloat(_rotationSpeedMin, _rotationSpeedMax);
         _rotation = new Vector3(_rotationSpeedX, _rotationSpeedY, _rotationSpeedZ);
     }
 

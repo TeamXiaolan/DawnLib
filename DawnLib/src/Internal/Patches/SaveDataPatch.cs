@@ -97,11 +97,11 @@ static class SaveDataPatch
     [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SaveItemsInShip)), HarmonyPrefix]
     static bool SaveData()
     {
+        DawnNetworker.Instance?.SaveData();
         if (DawnConfig.DisableDawnItemSaving)
         {
             return true;
         }
-        DawnNetworker.Instance?.SaveData();
         return false;
     }
 
