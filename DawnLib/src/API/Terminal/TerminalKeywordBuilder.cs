@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Dawn.Internal;
 
@@ -45,6 +44,12 @@ public class TerminalKeywordBuilder
     {
         _keyword.word = word;
         return this;
+    }
+
+    [Obsolete("Use OverrideWord()")]
+    public TerminalKeywordBuilder SetWord(string word)
+    {
+        return OverrideWord(word);
     }
 
     public TerminalKeywordBuilder SetIsVerb(bool isVerb)
