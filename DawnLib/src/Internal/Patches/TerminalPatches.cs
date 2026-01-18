@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn.Utils;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -7,12 +8,110 @@ using MonoMod.Cil;
 namespace Dawn.Internal;
 static class TerminalPatches
 {
+    internal static event Action OnTerminalAwake = delegate { };
+    internal static event Action OnTerminalDisable = delegate { };
     internal static void Init()
     {
+        On.Terminal.Awake += TerminalAwakeHook;
+        On.Terminal.Start += TerminalStartHook;
+        On.Terminal.OnDisable += TerminalDisableHook;
+        On.Terminal.ParsePlayerSentence += HandleDawnCommand;
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         On.Terminal.TextPostProcess += UpdateItemPrices;
         IL.Terminal.TextPostProcess += HideResults;
         IL.Terminal.TextPostProcess += UseFailedNameResults;
+    }
+
+    private static void TerminalDisableHook(On.Terminal.orig_OnDisable orig, Terminal self)
+    {
+        //All commands use this event to destroy themselves between lobby loads
+        OnTerminalDisable.Invoke();
+
+        //still need to run the method
+        orig(self);
+    }
+
+    private static void TerminalStartHook(On.Terminal.orig_Start orig, Terminal self)
+    {
+        orig(self);
+
+        //assign priorities to any remaining keywords that have not received a value yet
+        //also assign descriptions/category if unassigned
+        //doing this in start to give time after Terminal.Awake where commands are created
+        foreach (var keyword in self.terminalNodes.allKeywords)
+        {
+            keyword.TryAssignType();
+            if (String.IsNullOrEmpty(keyword.GetKeywordCategory()))
+                keyword.SetKeywordCategory(keyword.GetKeywordPriority().ToString());
+
+            if (String.IsNullOrEmpty(keyword.GetKeywordDescription()))
+            {
+                if (keyword.TryGetKeywordInfoText(out string result))
+                    keyword.SetKeywordDescription(result.Trim());
+                else
+                    keyword.SetKeywordDescription($"No information on the terminal keyword [ {keyword.word} ]");
+            }
+        }
+    }
+
+    private static void TerminalAwakeHook(On.Terminal.orig_Awake orig, Terminal self)
+    {
+        orig(self);
+        //below will have many terminal commands begin building on the below invoke
+        //only commands with a custom defined build event will not use this event
+        OnTerminalAwake.Invoke();
+    }
+
+    private static TerminalNode HandleDawnCommand(On.Terminal.orig_ParsePlayerSentence orig, Terminal self)
+    {
+        //Get vanilla result
+        TerminalNode terminalNode = orig(self);
+
+        //reset LastCommand value, this will not be set for EVERY command for the time being
+        //IL patch could be used in the future to set this for every time a keyword is selected for it's node.
+        //Cannot be set based on terminalNode as nodes can have multiple keywords
+        self.SetLastCommand(string.Empty);
+
+        //The below will check if the terminal input is a keyword that accepts text following the command's keyword
+        //If a match is found, the LastCommand variable will be updated from an empty string to help with parsing the input
+        if (ParseFailed(terminalNode, self))
+        {
+            string input = self.screenText.text[^self.textAdded..];
+            //below only grabs keywords that accept additional input
+            var terminalKeyword = self.terminalNodes.allKeywords.FirstOrDefault(x => input.StringStartsWithInvariant(x.word) && x.GetKeywordAcceptInput());
+            if (terminalKeyword != null)
+            {
+                terminalNode = terminalKeyword.specialKeywordResult; //only set node if a matching keyword is found
+                self.SetLastCommand(terminalKeyword.word); //this value is useful for input-based commands to parse out the command keyword
+            }
+        }
+
+        //updates the node's displaytext based on it's NodeFunction Func<string> that was injected (if not null)
+        if (terminalNode.HasCommandFunction())
+            terminalNode.displayText = terminalNode.GetCommandFunction().Invoke();
+
+        return terminalNode;
+    }
+
+    private static bool ParseFailed(TerminalNode terminalNode, Terminal self)
+    {
+        //ParserError1
+        if (terminalNode == self.terminalNodes.specialNodes[10])
+            return true;
+        //ParserError2
+        if (terminalNode == self.terminalNodes.specialNodes[11])
+            return true;
+        //ParserError3
+        if (terminalNode == self.terminalNodes.specialNodes[12])
+            return true;
+
+        //for some reason more than 5 items in the input array returns a null terminalNode in vanilla
+        //we will try to parse for input-based commands in this scenario as well
+        if (terminalNode == null)
+            return true;
+
+        return false;
+
     }
 
     // this is currently a separate function because this is very specific to vanilla

@@ -97,8 +97,7 @@ static class UnlockableRegistrationHandler
             unlockableInfo.RequestNode.terminalOptions[1].noun = denyPurchaseKeyword;
             unlockableInfo.RequestNode.terminalOptions[1].result = cancelPurchaseNode;
 
-            unlockableInfo.BuyKeyword = new TerminalKeywordBuilder($"Buy{unlockableInfo.UnlockableItem.unlockableName}")
-                .SetWord($"{unlockableInfo.UnlockableItem.unlockableName.ToLowerInvariant()}")
+            unlockableInfo.BuyKeyword = new TerminalKeywordBuilder($"Buy{unlockableInfo.UnlockableItem.unlockableName}", $"{unlockableInfo.UnlockableItem.unlockableName.ToLowerInvariant()}", ITerminalKeyword.DawnKeywordType.Store)
                 .SetDefaultVerb(buyKeyword)
                 .Build();
 
