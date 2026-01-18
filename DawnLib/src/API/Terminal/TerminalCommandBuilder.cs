@@ -43,24 +43,30 @@ public class TerminalCommandBuilder
 
             terminalWords.Remove(_validKeywords[i]);
 
-            DawnPlugin.Logger.LogDebug($"Deleting command (keyword, compatible nouns, and related terminal nodes): {_validKeywords[i].name}");
+            Debuggers.Terminal?.Log($"Deleting command (keyword, compatible nouns, and related terminal nodes): {_validKeywords[i].name}");
 
-            //destroy nouns first
+            //destroy results and nouns first
             if (_validKeywords[i].compatibleNouns != null && _validKeywords[i].compatibleNouns.Length > 0)
             {
                 for (int c = _validKeywords[i].compatibleNouns.Length - 1; c >= 0; c--)
                 {
                     if (_validKeywords[i].compatibleNouns[c].result != null)
+                    {
                         UnityEngine.Object.Destroy(_validKeywords[i].compatibleNouns[c].result);
+                    }
 
                     if (_validKeywords[i].compatibleNouns[c].noun != null)
+                    {
                         UnityEngine.Object.Destroy(_validKeywords[i].compatibleNouns[c].noun);
+                    }
                 }
             }
 
-            //then result node
+            //then special result node
             if (_validKeywords[i].specialKeywordResult != null)
+            {
                 UnityEngine.Object.Destroy(_validKeywords[i].specialKeywordResult);
+            }
 
             //then keyword itself
             UnityEngine.Object.Destroy(_validKeywords[i]);
@@ -72,7 +78,9 @@ public class TerminalCommandBuilder
     public TerminalCommandBuilder AddKeyword(TerminalKeyword word)
     {
         if (!_validKeywords.Contains(word))
+        {
             _validKeywords.Add(word);
+        }
 
         return this;
     }
@@ -108,31 +116,37 @@ public class TerminalCommandBuilder
     public TerminalCommandBuilder SetContinueWord(string word)
     {
         if (_continueWord != null)
+        {
             UnityEngine.Object.Destroy(_continueWord);
+        }
 
         _continueWord = ScriptableObject.CreateInstance<TerminalKeyword>();
         _continueWord.word = word;
-
         return this;
     }
 
     public TerminalCommandBuilder SetCancelWord(string word)
     {
         if (_cancelWord != null)
+        {
             UnityEngine.Object.Destroy(_cancelWord);
+        }
 
         _cancelWord = ScriptableObject.CreateInstance<TerminalKeyword>();
         _cancelWord.word = word;
-
         return this;
     }
 
     public TerminalCommandBuilder AddResultAction(Func<string> _func)
     {
         if (_resultNode != null)
+        {
             _resultNode.SetNodeFunction(_func);
+        }
         else
+        {
             DawnPlugin.Logger.LogWarning("Unable to set result action for null TerminalNode!");
+        }
 
         return this;
     }
@@ -140,9 +154,13 @@ public class TerminalCommandBuilder
     public TerminalCommandBuilder AddQueryAction(Func<string> _func)
     {
         if (_queryNode != null)
+        {
             _queryNode.SetNodeFunction(_func);
+        }
         else
+        {
             DawnPlugin.Logger.LogWarning("Unable to set query action for null TerminalNode!");
+        }
 
         return this;
     }
@@ -150,9 +168,13 @@ public class TerminalCommandBuilder
     public TerminalCommandBuilder AddCancelAction(Func<string> _func)
     {
         if (_cancelNode != null)
+        {
             _cancelNode.SetNodeFunction(_func);
+        }
         else
+        {
             DawnPlugin.Logger.LogWarning("Unable to set cancel action for null TerminalNode!");
+        }
 
         return this;
     }
@@ -168,12 +190,12 @@ public class TerminalCommandBuilder
         if (!IsQueryCommand())
         {
             AssignKeywordsToResultNode();
-            DawnPlugin.Logger.LogDebug($"Creating standard command [{_commandName}]");
+            Debuggers.Terminal?.Log($"Creating standard command [{_commandName}]");
         }
         else
         {
             AssignKeywordsToQueryNode();
-            DawnPlugin.Logger.LogDebug($"Creating query-style command [{_commandName}]");
+            Debuggers.Terminal?.Log($"Creating query-style command [{_commandName}]");
         }
 
         List<TerminalKeyword> listing = [.. TerminalRefs.Instance.terminalNodes.allKeywords];
@@ -198,6 +220,7 @@ public class TerminalCommandBuilder
             DawnPlugin.Logger.LogWarning($"Unable to assign keywords for [{_commandName}] to a NULL QueryNode!");
             return this;
         }
+
         foreach (TerminalKeyword keyword in _validKeywords)
         {
             keyword.specialKeywordResult = _queryNode;
@@ -223,7 +246,9 @@ public class TerminalCommandBuilder
     private bool ContinueBuild()
     {
         if (_resultNode == null || _validKeywords.Count == 0)
+        {
             return false;
+        }
 
         return true;
     }

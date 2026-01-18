@@ -38,18 +38,24 @@ static class TerminalPatches
         //assign priorities to any remaining keywords that have not received a value yet
         //also assign descriptions/category if unassigned
         //doing this in start to give time after Terminal.Awake where commands are created
-        foreach (var keyword in self.terminalNodes.allKeywords)
+        foreach (TerminalKeyword keyword in self.terminalNodes.allKeywords)
         {
             keyword.TryAssignType();
-            if (String.IsNullOrEmpty(keyword.GetKeywordCategory()))
+            if (string.IsNullOrEmpty(keyword.GetKeywordCategory()))
+            {
                 keyword.SetKeywordCategory(keyword.GetKeywordPriority().ToString());
+            }
 
-            if (String.IsNullOrEmpty(keyword.GetKeywordDescription()))
+            if (string.IsNullOrEmpty(keyword.GetKeywordDescription()))
             {
                 if (keyword.TryGetKeywordInfoText(out string result))
+                {
                     keyword.SetKeywordDescription(result.Trim());
+                }
                 else
+                {
                     keyword.SetKeywordDescription($"No information on the terminal keyword [ {keyword.word} ]");
+                }
             }
         }
     }
@@ -78,7 +84,7 @@ static class TerminalPatches
         {
             string input = self.screenText.text[^self.textAdded..];
             //below only grabs keywords that accept additional input
-            var terminalKeyword = self.terminalNodes.allKeywords.FirstOrDefault(x => input.StringStartsWithInvariant(x.word) && x.GetKeywordAcceptInput());
+            TerminalKeyword? terminalKeyword = self.terminalNodes.allKeywords.FirstOrDefault(x => input.StringStartsWithInvariant(x.word) && x.GetKeywordAcceptInput());
             if (terminalKeyword != null)
             {
                 terminalNode = terminalKeyword.specialKeywordResult; //only set node if a matching keyword is found
@@ -88,7 +94,9 @@ static class TerminalPatches
 
         //updates the node's displaytext based on it's NodeFunction Func<string> that was injected (if not null)
         if (terminalNode.HasCommandFunction())
+        {
             terminalNode.displayText = terminalNode.GetCommandFunction().Invoke();
+        }
 
         return terminalNode;
     }
@@ -98,9 +106,11 @@ static class TerminalPatches
         //ParserError1
         if (terminalNode == self.terminalNodes.specialNodes[10])
             return true;
+
         //ParserError2
         if (terminalNode == self.terminalNodes.specialNodes[11])
             return true;
+
         //ParserError3
         if (terminalNode == self.terminalNodes.specialNodes[12])
             return true;

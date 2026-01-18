@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Dawn.Internal;
 using UnityEngine.Events;
 using static Dawn.TerminalCommandRegistration;
@@ -48,7 +49,7 @@ public class TerminalCommandRegistration
 
 public class TerminalCommandRegistrationBuilder(string CommandName, Func<string> mainFunction)
 {
-    private TerminalCommandRegistration register = new(CommandName)
+    private readonly TerminalCommandRegistration register = new(CommandName)
     {
         ResultFunction = mainFunction
     };
@@ -129,7 +130,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, Func<string>
 
     private void Build()
     {
-        DawnPlugin.Logger.LogDebug($"Attempting to build command [{register.Name}]");
+        Debuggers.Terminal?.Log($"Attempting to build command [{register.Name}]");
 
         if (!ShouldBuild())
         {
@@ -144,12 +145,14 @@ public class TerminalCommandRegistrationBuilder(string CommandName, Func<string>
         List<TerminalKeyword> keywords = [];
         List<string> words = register.KeywordList.Provide();
 
-        foreach (var word in words)
+        foreach (string word in words)
         {
-            DawnPlugin.Logger.LogDebug($"Creating keyword [ {word} ] for command [ {register.Name} ]");
-            TerminalKeywordBuilder addWord = new($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand);
-            addWord.SetAcceptInput(register.AcceptAdditionalText);
-            keywords.Add(addWord.Build());
+            Debuggers.Terminal?.Log($"Creating keyword [ {word} ] for command [ {register.Name} ]");
+            TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                .SetAcceptInput(register.AcceptAdditionalText)
+                .Build();
+
+            keywords.Add(addKeyword);
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
@@ -159,22 +162,24 @@ public class TerminalCommandRegistrationBuilder(string CommandName, Func<string>
 
         if (IsQueryCommand())
         {
-            TerminalNodeBuilder queryBuilder = new($"{register.Name}_Query");
-            queryBuilder.SetDisplayText($"{register.Name} Query");
-            queryBuilder.SetClearPreviousText(register.ClearTextOn.HasFlag(ClearText.Query));
-            var queryNode = queryBuilder.Build();
+            TerminalNode queryNode = new TerminalNodeBuilder($"{register.Name}_Query")
+                .SetDisplayText($"{register.Name} Query")
+                .SetClearPreviousText(register.ClearTextOn.HasFlag(ClearText.Query))
+                .Build();
+
             commandbuilder.SetQueryNode(queryNode);
 
-            TerminalNodeBuilder cancelBuilder = new($"{register.Name}_Cancel");
-            cancelBuilder.SetDisplayText($"{register.Name} Cancel");
-            cancelBuilder.SetClearPreviousText(register.ClearTextOn.HasFlag(ClearText.Cancel));
-            var cancelNode = cancelBuilder.Build();
-            commandbuilder.SetCancelNode(cancelBuilder.Build());
+            TerminalNode cancelNode = new TerminalNodeBuilder($"{register.Name}_Cancel")
+                .SetDisplayText($"{register.Name} Cancel")
+                .SetClearPreviousText(register.ClearTextOn.HasFlag(ClearText.Cancel))
+                .Build();
 
-            commandbuilder.SetCancelWord(register.CancelWord!);
-            commandbuilder.SetContinueWord(register.ContinueWord!);
-            commandbuilder.AddCancelAction(register.CancelFunction!);
-            commandbuilder.AddQueryAction(register.QueryFunction!);
+            commandbuilder.SetCancelNode(cancelNode);
+
+            commandbuilder.SetCancelWord(register.CancelWord);
+            commandbuilder.SetContinueWord(register.ContinueWord);
+            commandbuilder.AddCancelAction(register.CancelFunction);
+            commandbuilder.AddQueryAction(register.QueryFunction);
         }
 
         commandbuilder.FinishBuild();
@@ -184,9 +189,14 @@ public class TerminalCommandRegistrationBuilder(string CommandName, Func<string>
     private bool ShouldBuild()
     {
         if (!register.IsEnabled.Provide())
+        {
             return false;
+        }
 
-        if (register.KeywordList.Provide().Count == 0) return false;
+        if (register.KeywordList.Provide().Count == 0)
+        {
+            return false;
+        }
 
         return true;
     }

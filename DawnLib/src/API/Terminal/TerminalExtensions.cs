@@ -15,7 +15,11 @@ public static class TerminalExtensions
 
     internal static bool HasCommandFunction(this TerminalNode node)
     {
-        if (node == null) return false;
+        if (node == null)
+        {
+            return false;
+        }
+
         return node.GetCommandFunction() != null;
     }
 
@@ -67,11 +71,13 @@ public static class TerminalExtensions
     public static bool TryGetKeywordInfoText(this TerminalKeyword word, out string text)
     {
         text = string.Empty;
-        var match = TerminalRefs.InfoKeyword.compatibleNouns.FirstOrDefault(x => x.noun.word == word.word);
-        if (match == null)
+        CompatibleNoun matchedCompatibleNoun = TerminalRefs.InfoKeyword.compatibleNouns.FirstOrDefault(x => x.noun.word == word.word);
+        if (matchedCompatibleNoun == null)
+        {
             return false;
+        }
 
-        text = match.result.displayText;
+        text = matchedCompatibleNoun.result.displayText;
         return true;
     }
 
@@ -95,7 +101,6 @@ public static class TerminalExtensions
 
     internal static void TryAssignType(this TerminalKeyword terminalKeyword)
     {
-        //don't try to reset priorities that have already been assigned
         if (terminalKeyword.GetKeywordPriority() != 0)
             return;
 
@@ -119,16 +124,18 @@ public static class TerminalExtensions
 
         if (terminalKeyword.defaultVerb != null)
         {
-            var match = terminalKeyword.defaultVerb.compatibleNouns.FirstOrDefault(x => x.noun.word.CompareStringsInvariant(terminalKeyword.word));
-            if (match != null)
+            CompatibleNoun matchedCompatibleNoun = terminalKeyword.defaultVerb.compatibleNouns.FirstOrDefault(x => x.noun.word.CompareStringsInvariant(terminalKeyword.word));
+            if (matchedCompatibleNoun != null)
             {
-                var priority = match.result.TryGetTerminalNodeType();
+                ITerminalKeyword.DawnKeywordType priority = matchedCompatibleNoun.result.TryGetTerminalNodeType();
                 terminalKeyword.SetKeywordPriority(priority);
-                DawnPlugin.Logger.LogDebug($"{terminalKeyword.word} priority set to {priority}");
+                Debuggers.Terminal?.Log($"{terminalKeyword.word} priority set to {priority}");
                 return;
             }
             else
-                DawnPlugin.Logger.LogDebug($"Unable to determine keyword type for word: [ {terminalKeyword.word} ]\nKeywordPriority is set to other!");
+            {
+                Debuggers.Terminal?.Log($"Unable to determine keyword type for word: [ {terminalKeyword.word} ]\nKeywordPriority is set to other!");
+            }
         }
 
         terminalKeyword.SetKeywordPriority(ITerminalKeyword.DawnKeywordType.Other);
@@ -140,38 +147,52 @@ public static class TerminalExtensions
     {
         if (node == null)
         {
-            DawnPlugin.Logger.LogDebug("Null TerminalNode provided to TryGetTerminalNodeType, returning lowest priority");
+            Debuggers.Terminal?.Log("Null TerminalNode provided to TryGetTerminalNodeType, returning lowest priority");
             return ITerminalKeyword.DawnKeywordType.Other;
         }
 
         //just assuming any node with a terminal event string is a core gameplay element
         //vanilla examples are eject & switch
         if (!string.IsNullOrEmpty(node.terminalEvent))
+        {
             return ITerminalKeyword.DawnKeywordType.Core;
+        }
 
         //moon keywords
         if (node.buyRerouteToMoon > -1 || node.displayPlanetInfo > -1)
+        {
             return ITerminalKeyword.DawnKeywordType.Moons;
+        }
 
         //vehicle keywords
         if (node.buyVehicleIndex > -1)
+        {
             return ITerminalKeyword.DawnKeywordType.Vehicles;
+        }
 
         //shop keywords
         if (node.shipUnlockableID > -1 || node.buyItemIndex > -1)
+        {
             return ITerminalKeyword.DawnKeywordType.Store;
+        }
 
         //bestiary keywords
         if (node.creatureFileID > -1)
+        {
             return ITerminalKeyword.DawnKeywordType.Bestiary;
+        }
 
         //log keywords
         if (node.storyLogFileID > -1)
+        {
             return ITerminalKeyword.DawnKeywordType.SigurdLog;
+        }
 
         //command keywords
         if (node.HasCommandFunction())
+        {
             return ITerminalKeyword.DawnKeywordType.DawnCommand;
+        }
 
         //no matching types
         return ITerminalKeyword.DawnKeywordType.Other;

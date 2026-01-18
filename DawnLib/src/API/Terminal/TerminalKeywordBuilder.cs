@@ -12,7 +12,7 @@ public class TerminalKeywordBuilder
     {
         if (TerminalRefs.Instance.TryGetKeyword(word, out _keyword))
         {
-            var existingPriority = _keyword.GetKeywordPriority();
+            ITerminalKeyword.DawnKeywordType existingPriority = _keyword.GetKeywordPriority();
             if (existingPriority <= _priority)
             {
                 DawnPlugin.Logger.LogWarning($"'{word}' already has an existing TerminalKeyword with a higher priority [ {existingPriority} ]");
