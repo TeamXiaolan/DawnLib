@@ -50,7 +50,7 @@ public class TerminalCommandBuilder
             {
                 for (int c = _validKeywords[i].compatibleNouns.Length - 1; c >= 0; c--)
                 {
-                    if (_validKeywords[i].compatibleNouns[c].result != null)
+                    if (_validKeywords[i].compatibleNouns[c].result != null && _validKeywords[i].compatibleNouns[c].result != _resultNode)
                     {
                         UnityEngine.Object.Destroy(_validKeywords[i].compatibleNouns[c].result);
                     }
@@ -63,7 +63,7 @@ public class TerminalCommandBuilder
             }
 
             //then special result node
-            if (_validKeywords[i].specialKeywordResult != null)
+            if (_validKeywords[i].specialKeywordResult != null && _validKeywords[i].specialKeywordResult != _resultNode)
             {
                 UnityEngine.Object.Destroy(_validKeywords[i].specialKeywordResult);
             }
@@ -201,6 +201,26 @@ public class TerminalCommandBuilder
         List<TerminalKeyword> listing = [.. TerminalRefs.Instance.terminalNodes.allKeywords];
         listing.AddRange(_validKeywords);
         TerminalRefs.Instance.terminalNodes.allKeywords = [.. listing];
+        if (!_resultNode.HasDawnInfo())
+        {
+            DawnPlugin.Logger.LogError($"No DawnInfo found on result node for command: {_commandName}!");
+            return;
+        }
+
+        DawnTerminalCommandInfo commandInfo = _resultNode.GetDawnInfo();
+        commandInfo.KeywordList = _validKeywords;
+
+        if (commandInfo.QueryCommandInfo != null)
+        {
+            if (_queryNode == null || _cancelNode == null)
+            {
+                DawnPlugin.Logger.LogError($"No query node found for command: {_commandName} despite expecting it!");
+                return;
+            }
+
+            commandInfo.QueryCommandInfo.QueryNode = _queryNode;
+            commandInfo.QueryCommandInfo.CancelNode = _cancelNode;
+        }
     }
 
     internal TerminalCommandBuilder AssignKeywordsToResultNode()

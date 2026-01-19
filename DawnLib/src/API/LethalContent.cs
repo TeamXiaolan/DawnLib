@@ -14,6 +14,7 @@ public static class LethalContent
     public static Registry<DawnArchetypeInfo> Archetypes = new();
     public static Registry<DawnStoryLogInfo> StoryLogs = new();
     public static Registry<DawnSurfaceInfo> Surfaces = new();
+    public static Registry<DawnTerminalCommandInfo> TerminalCommands = new();
 }
 
 public static class DawnLibTags

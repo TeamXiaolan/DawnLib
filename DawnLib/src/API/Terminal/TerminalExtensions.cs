@@ -68,10 +68,10 @@ public static class TerminalExtensions
         return ((ITerminal)terminal).DawnLastCommand;
     }
 
-    public static bool TryGetKeywordInfoText(this TerminalKeyword word, out string text)
+    public static bool TryGetKeywordInfoText(this TerminalKeyword terminalKeyword, out string text)
     {
         text = string.Empty;
-        CompatibleNoun matchedCompatibleNoun = TerminalRefs.InfoKeyword.compatibleNouns.FirstOrDefault(x => x.noun.word == word.word);
+        CompatibleNoun matchedCompatibleNoun = TerminalRefs.InfoKeyword.compatibleNouns.FirstOrDefault(x => x.noun.word == terminalKeyword.word);
         if (matchedCompatibleNoun == null)
         {
             return false;
@@ -143,9 +143,9 @@ public static class TerminalExtensions
 
     //vanilla keywords that should probably not be replaced unless the API user is intending to overwrite a core function of the game
     private static readonly List<string> VanillaWords = ["company", "moons", "store", "help", "other", "bestiary", "storage", "scan", "upgrades", "decor", "sigurd"];
-    public static ITerminalKeyword.DawnKeywordType TryGetTerminalNodeType(this TerminalNode node)
+    public static ITerminalKeyword.DawnKeywordType TryGetTerminalNodeType(this TerminalNode terminalNode)
     {
-        if (node == null)
+        if (terminalNode == null)
         {
             Debuggers.Terminal?.Log("Null TerminalNode provided to TryGetTerminalNodeType, returning lowest priority");
             return ITerminalKeyword.DawnKeywordType.Other;
@@ -153,43 +153,43 @@ public static class TerminalExtensions
 
         //just assuming any node with a terminal event string is a core gameplay element
         //vanilla examples are eject & switch
-        if (!string.IsNullOrEmpty(node.terminalEvent))
+        if (!string.IsNullOrEmpty(terminalNode.terminalEvent))
         {
             return ITerminalKeyword.DawnKeywordType.Core;
         }
 
         //moon keywords
-        if (node.buyRerouteToMoon > -1 || node.displayPlanetInfo > -1)
+        if (terminalNode.buyRerouteToMoon > -1 || terminalNode.displayPlanetInfo > -1)
         {
             return ITerminalKeyword.DawnKeywordType.Moons;
         }
 
         //vehicle keywords
-        if (node.buyVehicleIndex > -1)
+        if (terminalNode.buyVehicleIndex > -1)
         {
             return ITerminalKeyword.DawnKeywordType.Vehicles;
         }
 
         //shop keywords
-        if (node.shipUnlockableID > -1 || node.buyItemIndex > -1)
+        if (terminalNode.shipUnlockableID > -1 || terminalNode.buyItemIndex > -1)
         {
             return ITerminalKeyword.DawnKeywordType.Store;
         }
 
         //bestiary keywords
-        if (node.creatureFileID > -1)
+        if (terminalNode.creatureFileID > -1)
         {
             return ITerminalKeyword.DawnKeywordType.Bestiary;
         }
 
         //log keywords
-        if (node.storyLogFileID > -1)
+        if (terminalNode.storyLogFileID > -1)
         {
             return ITerminalKeyword.DawnKeywordType.SigurdLog;
         }
 
         //command keywords
-        if (node.HasCommandFunction())
+        if (terminalNode.HasCommandFunction())
         {
             return ITerminalKeyword.DawnKeywordType.DawnCommand;
         }
@@ -198,14 +198,13 @@ public static class TerminalExtensions
         return ITerminalKeyword.DawnKeywordType.Other;
     }
 
-    public static ITerminalKeyword.DawnKeywordType GetKeywordPriority(this TerminalKeyword word)
+    public static ITerminalKeyword.DawnKeywordType GetKeywordPriority(this TerminalKeyword terminalKeyword)
     {
-        return ((ITerminalKeyword)word).DawnKeywordPriority;
+        return ((ITerminalKeyword)terminalKeyword).DawnKeywordPriority;
     }
 
-    public static void SetKeywordPriority(this TerminalKeyword word, ITerminalKeyword.DawnKeywordType value)
+    public static void SetKeywordPriority(this TerminalKeyword terminalKeyword, ITerminalKeyword.DawnKeywordType keywordType)
     {
-        ((ITerminalKeyword)word).DawnKeywordPriority = value;
+        ((ITerminalKeyword)terminalKeyword).DawnKeywordPriority = keywordType;
     }
-
 }

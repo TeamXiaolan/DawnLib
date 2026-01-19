@@ -54,7 +54,7 @@ public class StoryLogInfoBuilder : BaseInfoBuilder<DawnStoryLogInfo, GameObject,
         }
 
         TerminalKeyword storyLogTerminalKeyword = new TerminalKeywordBuilder($"{key}TerminalKeyword", _storyLogKeyword, ITerminalKeyword.DawnKeywordType.SigurdLog)
-                                    .Build();
+            .Build();
 
         return new DawnStoryLogInfo(key, tags, value, _storyLogTerminalNode, storyLogTerminalKeyword, customData);
     }

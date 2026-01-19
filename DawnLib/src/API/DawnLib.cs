@@ -86,6 +86,20 @@ public static class DawnLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
+    public static DawnTerminalCommandInfo DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo> key, string commandName, Action<TerminalCommandInfoBuilder> callback)
+    {
+        TerminalNode resultNode = new TerminalNodeBuilder($"{commandName}{key}_node")
+            .SetDisplayText($"{commandName}{key} command")
+            .Build();
+
+        TerminalCommandInfoBuilder builder = new(key, commandName, resultNode);
+        callback(builder);
+        DawnTerminalCommandInfo commandInfo = builder.Build();
+        resultNode.SetDawnInfo(commandInfo);
+        LethalContent.TerminalCommands.Register(commandInfo);
+        return commandInfo;
+    }
+
     public static DawnSurfaceInfo DefineSurface(NamespacedKey<DawnSurfaceInfo> key, FootstepSurface surface, Action<SurfaceInfoBuilder> callback)
     {
         SurfaceInfoBuilder builder = new(key, surface);
@@ -108,7 +122,7 @@ public static class DawnLib
         return storyLogInfo;
     }
 
-    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, string flowName, Action<DungeonFlowInfoBuilder> callback)
+    public static DawnDungeonInfo DefineDungeon(NamespacedKey<DawnDungeonInfo> key, string flowName, Action<DungeonFlowInfoBuilder> callback) // Should i be changing this instead of flowName to key.Namespace?
     {
         DungeonFlow dungeonFlow = ScriptableObject.CreateInstance<DungeonFlow>();
         dungeonFlow.name = flowName;

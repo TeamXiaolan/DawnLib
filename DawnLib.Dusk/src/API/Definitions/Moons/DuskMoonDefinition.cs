@@ -143,6 +143,8 @@ public class DuskMoonSceneData
 
     [field: Header("Configs | Obsolete")]
     [field: SerializeField]
+    [field: DontDrawIfEmpty]
+    [Obsolete]
     public string WeatherWeights { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();

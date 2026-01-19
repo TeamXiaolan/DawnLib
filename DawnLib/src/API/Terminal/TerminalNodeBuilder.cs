@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dawn;
 public class TerminalNodeBuilder
 {
+    internal static List<TerminalNode> _terminalNodes = new();
     private TerminalNode _node;
 
     internal TerminalNodeBuilder(string name)
     {
         _node = ScriptableObject.CreateInstance<TerminalNode>();
         _node.name = name;
+
+        _terminalNodes.Add(_node);
     }
 
     public TerminalNodeBuilder SetBuyItemIndex(int index)

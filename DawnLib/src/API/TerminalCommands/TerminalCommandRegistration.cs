@@ -47,12 +47,13 @@ public class TerminalCommandRegistration
     }
 }
 
-public class TerminalCommandRegistrationBuilder(string CommandName, Func<string> mainFunction)
+public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode resultNode, Func<string> mainFunction)
 {
     private readonly TerminalCommandRegistration register = new(CommandName)
     {
         ResultFunction = mainFunction
     };
+
 
     public TerminalCommandRegistrationBuilder SetKeywords(IProvider<List<string>> keywords)
     {
@@ -138,10 +139,6 @@ public class TerminalCommandRegistrationBuilder(string CommandName, Func<string>
             return;
         }
 
-        TerminalNodeBuilder resultbuilder = new($"{register.Name}_node");
-        resultbuilder.SetDisplayText($"{register.Name} command");
-        resultbuilder.SetClearPreviousText(register.ClearTextOn.HasFlag(ClearText.Result));
-        TerminalNode resultNode = resultbuilder.Build();
         List<TerminalKeyword> keywords = [];
         List<string> words = register.KeywordList.Provide();
 
@@ -176,10 +173,10 @@ public class TerminalCommandRegistrationBuilder(string CommandName, Func<string>
 
             commandbuilder.SetCancelNode(cancelNode);
 
-            commandbuilder.SetCancelWord(register.CancelWord);
-            commandbuilder.SetContinueWord(register.ContinueWord);
-            commandbuilder.AddCancelAction(register.CancelFunction);
-            commandbuilder.AddQueryAction(register.QueryFunction);
+            commandbuilder.SetCancelWord(register.CancelWord!);
+            commandbuilder.SetContinueWord(register.ContinueWord!);
+            commandbuilder.AddCancelAction(register.CancelFunction!);
+            commandbuilder.AddQueryAction(register.QueryFunction!);
         }
 
         commandbuilder.FinishBuild();

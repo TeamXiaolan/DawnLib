@@ -385,14 +385,12 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
 
-        TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-        buyItemKeyword.name = simplifiedItemName;
-        buyItemKeyword.word = simplifiedItemName;
-        buyItemKeyword.isVerb = false;
-        buyItemKeyword.compatibleNouns = null;
-        buyItemKeyword.specialKeywordResult = null;
-        buyItemKeyword.defaultVerb = buyKeyword;
-        buyItemKeyword.accessTerminalObjects = false;
+        TerminalKeyword buyItemKeyword = new TerminalKeywordBuilder(simplifiedItemName, simplifiedItemName, ITerminalKeyword.DawnKeywordType.Store)
+            .SetIsVerb(false)
+            .SetDefaultVerb(buyKeyword)
+            .SetAccessTerminalObjects(false)
+            .Build();
+
         newTerminalKeywords.Add(buyItemKeyword);
 
         TerminalNode receiptNode = shopInfo.ReceiptNode;

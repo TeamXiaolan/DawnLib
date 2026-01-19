@@ -142,6 +142,10 @@ static class UnlockableRegistrationHandler
             // example: "* Loud horn    //    Price: $150"
             foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
             {
+                if (unlockableItemInfo.ShouldSkipRespectOverride())
+                    continue;
+
+                UpdateUnlockablePrices(unlockableItemInfo);
                 if (unlockableItemInfo.ShouldSkipIgnoreOverride())
                     continue;
 
@@ -158,8 +162,6 @@ static class UnlockableRegistrationHandler
                     }
                     unlockableName = failedResult.OverrideName;
                 }
-
-                UpdateUnlockablePrices(unlockableItemInfo);
 
                 string newLine = $"\n* {unlockableName ?? string.Empty}    //    Price: ${unlockableItemInfo.RequestNode?.itemCost ?? 0}";
 

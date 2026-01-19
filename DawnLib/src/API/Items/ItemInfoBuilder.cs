@@ -132,6 +132,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
         _shopInfo = builder.Build();
         return this;
     }
+
     public ItemInfoBuilder DefineScrap(Action<ScrapBuilder> callback)
     {
         ScrapBuilder builder = new(this);

@@ -1,4 +1,11 @@
-# v0.6.4
+# v0.7.0
+
+- Added DuskTerminalCommandDefinition, allowing you to define commands for the terminal.
+  - Commands can either be one off commands, i.e. `version` to display something like current version of your mod's version (this is just an example setup).
+  - Commands can also be Query commands with a confirm and a cancel.
+- Non-DawnLib registered UnlockableShopItem price can now be affected by stuff like LunarConfig.
+
+## v0.6.4
 
 - Fixed issue where FailedResult predicates would end up using up credits still.
 

@@ -12,6 +12,10 @@ public static class TerminalRefs
             if (_instance == null)
             {
                 _instance = UnityEngine.Object.FindFirstObjectByType<Terminal>();
+                if (_instance == null)
+                {
+                    return null;
+                }
                 BuyKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
                 InfoKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
                 RouteKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "route");
