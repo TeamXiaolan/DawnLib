@@ -273,11 +273,11 @@ static class TerminalPatches
                 TerminalPurchaseResult result = info.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
-                    if (failedResult.OverrideName != null)
+                    if (!string.IsNullOrEmpty(failedResult.OverrideName))
                     {
                         Debuggers.Unlockables?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
+                        return failedResult.OverrideName;
                     }
-                    return failedResult.OverrideName;
                 }
 
                 return unlockable.unlockableName;
