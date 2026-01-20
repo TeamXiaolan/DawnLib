@@ -8,6 +8,8 @@ DawnLib is a modern API for Lethal Company content and all sizes of mods. It con
   - Moons
   - Weathers
   - Interiors
+  - Terminal Commands
+  - FootstepSurfaces
   - Enemies
   - Items
   - Map Objects (Inside and Outside hazards)
