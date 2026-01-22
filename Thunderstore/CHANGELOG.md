@@ -1,4 +1,10 @@
-# v0.7.0
+# v0.7.1
+
+- Compeletely rebuilt the ship upgrades part instead of only adding dawnlib ship upgrades.
+- Added a script to help with weather overrides (Dawn`VanillaWeatherName`Override).
+- Added a time speed patch so that moon speed can be sped up or slowed down without introducing new bugs into the game.
+
+## v0.7.0
 
 - Added DuskTerminalCommandDefinition, allowing you to define commands for the terminal.
   - Commands can either be one off commands, i.e. `version` to display something like current version of your mod's version (this is just an example setup).

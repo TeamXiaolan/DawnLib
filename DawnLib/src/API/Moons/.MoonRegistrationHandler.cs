@@ -5,6 +5,8 @@ using System.Text;
 using Dawn.Internal;
 using Dawn.Utils;
 using HarmonyLib;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
@@ -46,6 +48,30 @@ static class MoonRegistrationHandler
         On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+
+        On.TimeOfDay.MoveGlobalTime += ApplyDaytimeSpeedMultiplier;
+        IL.TimeOfDay.CalculatePlanetTime += IgnoreDaySpeedMultiplier;
+        IL.TimeOfDay.Update += IgnoreDaySpeedMultiplier;
+    }
+
+    private static void IgnoreDaySpeedMultiplier(ILContext il)
+    {
+        ILCursor c = new(il);
+        if (!c.TryGotoNext(MoveType.After,
+            i => i.MatchLdfld<SelectableLevel>("DaySpeedMultiplier")))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply TimeOfDay.Update patch");
+            return;
+        }
+
+        c.Emit(OpCodes.Pop);
+        c.Emit(OpCodes.Ldc_R4, 1f);
+    }
+
+    private static void ApplyDaytimeSpeedMultiplier(On.TimeOfDay.orig_MoveGlobalTime orig, TimeOfDay self)
+    {
+        self.globalTimeSpeedMultiplier = StartOfRound.Instance.currentLevel.DaySpeedMultiplier;
+        orig(self);
     }
 
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -294,7 +320,7 @@ static class MoonRegistrationHandler
     // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
-        if (node != TerminalRefs.MoonCatalogueNode)
+        if (node != TerminalRefs.MoonCatalogueNode || LethalLevelLoaderCompat.Enabled)
         {
             return orig(self, modifieddisplaytext, node);
         }

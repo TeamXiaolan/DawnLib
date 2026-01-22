@@ -135,11 +135,9 @@ static class UnlockableRegistrationHandler
         orig(self);
     }
 
-    private static readonly Regex UpgradeLineRegex =
-        new(@"(?m)^\* (?<name>.+?)(?<tail>\s+//\s+Price:\s+\$\d+.*)$", RegexOptions.Compiled);
+    private static readonly Regex UpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)(?<tail>\s+//\s+Price:\s+\$\d+.*)$", RegexOptions.Compiled);
 
-    private static readonly Regex AnyUpgradeLineRegex =
-        new(@"(?m)^\* .+?\s+//\s+Price:\s+\$\d+.*$", RegexOptions.Compiled);
+    private static readonly Regex AnyUpgradeLineRegex = new(@"(?m)^\* .+?\s+//\s+Price:\s+\$\d+.*$", RegexOptions.Compiled);
 
     private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
@@ -172,9 +170,6 @@ static class UnlockableRegistrationHandler
 
         foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
         {
-            if (info.ShouldSkipRespectOverride())
-                continue;
-
             UpdateUnlockablePrices(info);
 
             string vanillaName = info.UnlockableItem.unlockableName ?? string.Empty;
@@ -188,7 +183,7 @@ static class UnlockableRegistrationHandler
             if (!info.UnlockableItem.alwaysInStock)
                 continue;
 
-            string displayName = nameOverrides.TryGetValue(vanillaName, out var ov) ? ov : vanillaName;
+            string displayName = nameOverrides.TryGetValue(vanillaName, out string @override) ? @override : vanillaName;
 
             if (block.Contains($"* {displayName}", StringComparison.OrdinalIgnoreCase))
                 continue;
