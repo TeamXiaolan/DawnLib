@@ -3,6 +3,9 @@
 - Compeletely rebuilt the ship upgrades part instead of only adding dawnlib ship upgrades.
 - Added a script to help with weather overrides (Dawn`VanillaWeatherName`Override).
 - Added a time speed patch so that moon speed can be sped up or slowed down without introducing new bugs into the game.
+- Finished implementing stingers into dawn interiors, allowing you to have stingers that play more than once, set a custom chance for how frequent a stinger will run.
+- Finished implementing giving dawn moons the ability to modify the outside spawn probability range (vanilla hardcodes every moon to have a range of + and - 3).
+- Added Dawn`VanillaWeatherName`Overrides script that allow you to override the vanilla weather with your own prefab version of it.
 
 ## v0.7.0
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dawn.Internal;
@@ -45,6 +46,8 @@ static class DungeonRegistrationHandler
             orig(self);
         };
         LethalContent.Dungeons.BeforeFreeze += CleanDawnDungeonReferences;
+
+        On.EntranceTeleport.TeleportPlayer += HandleStingerAudio;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
             self.GenerateOnStart = false;
@@ -57,6 +60,46 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static readonly NamespacedKey StingerPlayedKey = NamespacedKey.From("dawn_lib", "played_stinger_once_before");
+    private static void HandleStingerAudio(On.EntranceTeleport.orig_TeleportPlayer orig, EntranceTeleport self)
+    {
+        if (!self.checkedForFirstTime)
+        {
+            self.checkedForFirstTime = true;
+            DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+            if (dungeonInfo.FirstTimeAudio == null)
+            {
+                orig(self);
+                return;
+            }
+
+            if (!dungeonInfo.CustomData.TryGet(StingerPlayedKey, out bool hasPlayedStingerBefore))
+            {
+                DawnPlugin.Logger.LogError($"Failed to get {StingerPlayedKey} from dungeon: {dungeonInfo.Key}.");
+                orig(self);
+                return;
+            }
+
+            if (hasPlayedStingerBefore && !dungeonInfo.StingerPlaysMoreThanOnce)
+            {
+                orig(self);
+                return;
+            }
+
+            float chanceRoll = UnityEngine.Random.Range(0f, 100f);
+            if (chanceRoll > dungeonInfo.StingerPlayChance)
+            {
+                orig(self);
+                return;
+            }
+
+            Debuggers.Dungeons?.Log($"Playing dungeon stinger for dungeon {dungeonInfo.Key}, alreadyPlayed: {hasPlayedStingerBefore} (Chance Roll: {chanceRoll} <= {dungeonInfo.StingerPlayChance})");
+            dungeonInfo.CustomData.Set(StingerPlayedKey, true);
+            self.StartCoroutine(self.playMusicOnDelay());
+        }
+        orig(self);
     }
 
     private static void FixRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
@@ -379,7 +422,12 @@ static class DungeonRegistrationHandler
             dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
             weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo>();
 
-            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, string.Empty, dungeonRangeClamp, null);
+            PersistentDataContainer customData = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{key.Namespace}_{key.Key}"));
+            if (!customData.Has(StingerPlayedKey))
+            {
+                customData.Set(StingerPlayedKey, false);
+            }
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, false, 100f, string.Empty, dungeonRangeClamp, customData);
             indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }
