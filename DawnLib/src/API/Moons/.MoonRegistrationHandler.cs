@@ -49,9 +49,26 @@ static class MoonRegistrationHandler
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
 
-        On.TimeOfDay.MoveGlobalTime += ApplyDaytimeSpeedMultiplier;
+        IL.TimeOfDay.MoveGlobalTime += MultiplyGlobalTimeMultiplierToDaySpeedMultiplier;
         IL.TimeOfDay.CalculatePlanetTime += IgnoreDaySpeedMultiplier;
         IL.TimeOfDay.Update += IgnoreDaySpeedMultiplier;
+    }
+
+    private static void MultiplyGlobalTimeMultiplierToDaySpeedMultiplier(ILContext il)
+    {
+        ILCursor c = new(il);
+        if (!c.TryGotoNext(MoveType.After,
+            i => i.MatchLdarg(0),
+            i => i.MatchLdfld<TimeOfDay>("globalTimeSpeedMultiplier")))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply TimeOfDay.MoveGlobalTime patch");
+            return;
+        }
+
+        c.Emit(OpCodes.Mul);
+        c.Emit(OpCodes.Ldarg_0);
+        c.Emit(OpCodes.Ldfld, typeof(TimeOfDay).GetField(nameof(TimeOfDay.currentLevel)));
+        c.Emit(OpCodes.Ldfld, typeof(SelectableLevel).GetField(nameof(SelectableLevel.DaySpeedMultiplier)));
     }
 
     private static void IgnoreDaySpeedMultiplier(ILContext il)
@@ -66,12 +83,6 @@ static class MoonRegistrationHandler
 
         c.Emit(OpCodes.Pop);
         c.Emit(OpCodes.Ldc_R4, 1f);
-    }
-
-    private static void ApplyDaytimeSpeedMultiplier(On.TimeOfDay.orig_MoveGlobalTime orig, TimeOfDay self)
-    {
-        self.globalTimeSpeedMultiplier = StartOfRound.Instance.currentLevel.DaySpeedMultiplier;
-        orig(self);
     }
 
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
