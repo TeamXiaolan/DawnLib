@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,9 +50,44 @@ static class MoonRegistrationHandler
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
 
+        IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
+
         IL.TimeOfDay.MoveGlobalTime += MultiplyGlobalTimeMultiplierToDaySpeedMultiplier;
         IL.TimeOfDay.CalculatePlanetTime += IgnoreDaySpeedMultiplier;
         IL.TimeOfDay.Update += IgnoreDaySpeedMultiplier;
+    }
+
+    private static void ReplaceStaticOutsideEnemyProbabilityRange(ILContext il)
+    {
+        ILCursor c = new(il);
+        if (!c.TryGotoNext(MoveType.After,
+            i => i.MatchLdloc(8),
+            i => i.MatchLdloc(5),
+            i => i.MatchLdcR4(3f)))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch");
+            return;
+        }
+
+        c.Emit(OpCodes.Pop);
+        c.Emit(OpCodes.Call, typeof(MoonRegistrationHandler).GetMethod(nameof(GetMoonOutsideEnemyProbabilitySpawnRange), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+
+        if (!c.TryGotoNext(MoveType.After,
+            i => i.MatchConvI4(),
+            i => i.MatchLdloc(4),
+            i => i.MatchLdcR4(3f)))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch (2)");
+            return;
+        }
+
+        c.Emit(OpCodes.Pop);
+        c.Emit(OpCodes.Call, typeof(MoonRegistrationHandler).GetMethod(nameof(GetMoonOutsideEnemyProbabilitySpawnRange), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+    }
+
+    private static float GetMoonOutsideEnemyProbabilitySpawnRange()
+    {
+        return StartOfRound.Instance?.currentLevel?.GetDawnInfo()?.OutsideEnemiesProbabilityRange ?? 3f;
     }
 
     private static void MultiplyGlobalTimeMultiplierToDaySpeedMultiplier(ILContext il)
@@ -65,10 +101,10 @@ static class MoonRegistrationHandler
             return;
         }
 
-        c.Emit(OpCodes.Mul);
         c.Emit(OpCodes.Ldarg_0);
         c.Emit(OpCodes.Ldfld, typeof(TimeOfDay).GetField(nameof(TimeOfDay.currentLevel)));
         c.Emit(OpCodes.Ldfld, typeof(SelectableLevel).GetField(nameof(SelectableLevel.DaySpeedMultiplier)));
+        c.Emit(OpCodes.Mul);
     }
 
     private static void IgnoreDaySpeedMultiplier(ILContext il)
@@ -87,7 +123,7 @@ static class MoonRegistrationHandler
 
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
-        Object.Instantiate(RouteProgressUIPrefab, self.radarCanvas.transform);
+        UnityEngine.Object.Instantiate(RouteProgressUIPrefab, self.radarCanvas.transform);
         orig(self);
     }
 
@@ -508,7 +544,7 @@ static class MoonRegistrationHandler
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -522,7 +558,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);

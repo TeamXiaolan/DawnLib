@@ -11,6 +11,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
 
     private IProvider<int>? _costOverride;
     private ITerminalPurchasePredicate? _purchasePredicate;
+    private float _outsideEnemiesProbabilityRange = 3f;
 
     public MoonInfoBuilder(NamespacedKey<DawnMoonInfo> key, SelectableLevel value) : base(key, value)
     {
@@ -95,7 +96,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     public MoonInfoBuilder OverrideEnemySpawnRanges(float insideSpawnRange, float outsideSpawnRange, float daytimeSpawnRange)
     {
         value.spawnProbabilityRange = insideSpawnRange;
-        // value.outsideEnemiesProbabilityRange = outsideSpawnRange;
+        _outsideEnemiesProbabilityRange = outsideSpawnRange;
         value.daytimeEnemiesProbabilityRange = daytimeSpawnRange;
         return this;
     }
@@ -145,7 +146,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
 
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _scenes, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _outsideEnemiesProbabilityRange, _scenes, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
         return info;
     }
 }
