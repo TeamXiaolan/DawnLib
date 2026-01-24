@@ -85,6 +85,12 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         return this;
     }
 
+    public TerminalCommandInfoBuilder SetCustomDestroyEvent(UnityEvent customDestroyEvent)
+    {
+        _customDestroyEvent = customDestroyEvent;
+        return this;
+    }
+
     public TerminalCommandInfoBuilder SetMainText(Func<string> mainText)
     {
         _mainText = mainText;

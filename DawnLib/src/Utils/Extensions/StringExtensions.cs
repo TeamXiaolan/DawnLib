@@ -90,6 +90,32 @@ public static class StringExtensions
         return value;
     }
 
+    public static string GetExactMatch(this string input, string query, bool ignoreCase = true)
+    {
+        string result = string.Empty;
+        if (ignoreCase)
+        {
+            input = input.ToLowerInvariant();
+            query = query.ToLowerInvariant();
+        }
+
+        input = input.Trim();
+        query = query.Trim();
+
+        for(int i = 0; i < input.Length; i++)
+        {
+            if(query.Length <= i)
+                continue;
+
+            if (input[i].Equals(query[i]))
+                result += input[i];
+            else
+                break;
+        }
+
+        return result;
+    }
+
     public static string BepinFriendlyString(this string input)
     {
         char[] invalidChars = ['\'', '\n', '\t', '\\', '"', '[', ']'];

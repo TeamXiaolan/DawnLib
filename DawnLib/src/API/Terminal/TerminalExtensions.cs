@@ -213,11 +213,30 @@ public static class TerminalExtensions
         ((ITerminalKeyword)terminalKeyword).DawnKeywordPriority = keywordType;
     }
 
+    public static void UpdateLastKeywordParsed(this Terminal self, TerminalKeyword terminalKeyword)
+    {
+        if (self == null || terminalKeyword == null) return;
+
+        if (terminalKeyword.isVerb)
+        {
+            //used to get only compatible nouns of this verb
+            self.SetLastVerb(terminalKeyword);
+        }
+        else
+        {
+            //usually contains a reference to the result node
+            self.SetLastNoun(terminalKeyword);
+        }
+    }
+
     private static bool MatchInputKeyword(string input, out List<TerminalKeyword> words)
     {
         //get first word only
         if (input.Contains(' '))
+        {
             input = input.Split(' ')[0];
+        }
+            
         words = TerminalKeywordBuilder.WordsThatAcceptInput.FindAll(x => x.word.StringContainsInvariant(input));
         return words.Count != 0;
     }
@@ -285,10 +304,9 @@ public static class TerminalExtensions
         return word;
     }
 
-    public static bool DawnTryResolveKeyword(this Terminal terminal, string input, out TerminalKeyword word, out bool acceptsInput)
+    public static bool DawnTryResolveKeyword(this Terminal terminal, string input, out TerminalKeyword word)
     {
         word = null!;
-        acceptsInput = false;
 
         //empty input, return false
         if (string.IsNullOrWhiteSpace(input)) return false;
@@ -296,7 +314,6 @@ public static class TerminalExtensions
         //returns a non-zero list of matching keywords that accept additional input
         if(MatchInputKeyword(input, out List<TerminalKeyword> inputWords))
         {
-            acceptsInput = true;
             //return the singular matching keyword
             if(inputWords.Count == 1)
             {

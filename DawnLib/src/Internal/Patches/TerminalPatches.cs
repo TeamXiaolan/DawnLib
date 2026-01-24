@@ -32,66 +32,37 @@ static class TerminalPatches
         self.SetLastVerb(null!);
         self.SetLastNoun(null!);
 
-        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult, out bool acceptsInput))
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
         {
-            if (acceptsInput)
-            {
-                self.SetLastCommand(NonNullResult.word);
-            }
-            else
-            {
-                self.SetLastCommand(playerWord);
-            }
-
-            //in this patch in particular, these values should not matter but will set them anyway
-            if (NonNullResult.isVerb)
-            {
-                //used to get only compatible nouns of this verb
-                self.SetLastVerb(NonNullResult);
-            }
-            else
-            {
-                //usually contains a reference to the result node
-                self.SetLastNoun(NonNullResult);
-            }
-
+            self.UpdateLastKeywordParsed(NonNullResult);
+            self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
             return NonNullResult;
         }
         else
         {
             //run original
-            return orig(self, playerWord);
+            TerminalKeyword vanillaResult = orig(self, playerWord);
+            self.UpdateLastKeywordParsed(vanillaResult);
+            self.SetLastCommand(playerWord);
+            return vanillaResult;
         }
             
     }
 
     private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)
     {
-        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult, out bool acceptsInput))
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
         {
-            //when checking individual words we should probably not update this as much, since it runs on each word of an array
-            if (acceptsInput)
-            {
-                self.SetLastCommand(NonNullResult.word);
-            }
-
-            if (NonNullResult.isVerb)
-            {
-                //used to get only compatible nouns of this verb
-                self.SetLastVerb(NonNullResult);
-            }  
-            else
-            {
-                //usually contains a reference to the result node
-                self.SetLastNoun(NonNullResult);
-            }
-
+            self.UpdateLastKeywordParsed(NonNullResult);
+            self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
             return NonNullResult;
         }
         else
         {
             //run original
-            return orig(self, playerWord, specificityRequired);
+            TerminalKeyword vanillaResult = orig(self, playerWord, specificityRequired);
+            self.UpdateLastKeywordParsed(vanillaResult);
+            return vanillaResult;
         }
             
     }
