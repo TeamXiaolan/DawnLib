@@ -1,5 +1,6 @@
 using BepInEx.Configuration;
 using Dawn.Utils;
+using static Dawn.Utils.BepinexUtils;
 
 namespace Dawn.Internal;
 static class DawnConfig
@@ -15,6 +16,9 @@ static class DawnConfig
     public static bool DisableAchievementsButton;
 
     public static bool AllowLLLToOverrideVanillaStatus;
+
+    public static ConfigEntry<bool> TerminalKeywordResolution;
+    public static ConfigEntry<int> TerminalKeywordSpecificity;
 
     internal static void Bind(ConfigFile file)
     {
@@ -59,5 +63,19 @@ static class DawnConfig
             false,
             "Allow LLL to override the vanilla status of unlockables"
         ).Value;
+
+        //example of CreateConfigItem usage that uses generics and accepts min/max values automatically
+        TerminalKeywordResolution = CreateConfigItem(file,
+            "Terminal",
+            "Keyword Resolution",
+            true,
+            "Dawnlib's terminal keyword resolution sytem to better handle conflicting keywords.");
+        TerminalKeywordSpecificity = CreateConfigItem(file,
+            "Terminal",
+            "Keyword Specificity",
+            3,
+            "When Keyword Resolution is enabled, how many characters must match for a keyword to be considered a result for a given input in the terminal.",
+            0, //min value
+            5); //max value
     }
 }

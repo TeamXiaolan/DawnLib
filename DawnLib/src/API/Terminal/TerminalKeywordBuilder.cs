@@ -7,13 +7,53 @@ using Dawn.Utils;
 namespace Dawn;
 public class TerminalKeywordBuilder
 {
-    internal static List<TerminalKeyword> _terminalKeywords = new List<TerminalKeyword>();
+    private static List<TerminalKeyword> _keywordsAdded = [];
+    internal static List<TerminalKeyword> AllTerminalKeywords
+    {
+        get
+        {
+            //get initial existing keywords
+            if(_keywordsAdded.Count == 0)
+            {
+                _keywordsAdded = [.. Resources.FindObjectsOfTypeAll<TerminalKeyword>()];
+            }
+            
+            return _keywordsAdded;
+        }
+        private set
+        {
+            _keywordsAdded = value;
+        }
+    }
+    internal static List<TerminalKeyword> WordsThatAcceptInput { get; private set; } = [];
     private TerminalKeyword _keyword;
+
+    private static bool WordAlreadyExists(string word, out TerminalKeyword existingKeyword)
+    {
+        if(TerminalRefs.Instance == null)
+        {
+            existingKeyword = null!;
+            foreach (TerminalKeyword keyword in AllTerminalKeywords)
+            {
+                if (word.CompareStringsInvariant(keyword.word))
+                {
+                    //Loggers.LogDebug($"Keyword: [{keyWord}] found!");
+                    existingKeyword = keyword;
+                }
+            }
+
+            return existingKeyword != null;
+        }
+        else
+        {
+            TerminalRefs.Instance.TryGetKeyword(word, out existingKeyword);
+            return existingKeyword != null;
+        }
+    }
 
     internal TerminalKeywordBuilder(string name, string word, ITerminalKeyword.DawnKeywordType keywordPriority)
     {
-        bool terminalExists = TerminalRefs.Instance != null;
-        if ((terminalExists && TerminalRefs.Instance!.TryGetKeyword(word, out TerminalKeyword existingKeywordWithSameWord)) || (!terminalExists && NoTerminalTryGetKeyword(word, out existingKeywordWithSameWord)))
+        if (WordAlreadyExists(word, out TerminalKeyword existingKeywordWithSameWord))
         {
             ITerminalKeyword.DawnKeywordType existingPriority = existingKeywordWithSameWord.GetKeywordPriority();
             if (existingPriority <= keywordPriority)
@@ -25,6 +65,7 @@ public class TerminalKeywordBuilder
                 _keyword.name = name;
                 _keyword.SetKeywordPriority(keywordPriority);
                 OverrideWord(word + _keyword.GetHashCode());
+                AllTerminalKeywords.Add(_keyword);
                 DawnPlugin.Logger.LogWarning($"TerminalKeyword word set to {_keyword.word}");
                 return;
             }
@@ -42,6 +83,7 @@ public class TerminalKeywordBuilder
         _keyword.name = name;
         _keyword.SetKeywordPriority(keywordPriority);
         OverrideWord(word);
+        AllTerminalKeywords.Add(_keyword);
     }
 
     public TerminalKeywordBuilder OverrideWord(string word)
@@ -94,9 +136,17 @@ public class TerminalKeywordBuilder
         return this;
     }
 
-    //only need to use this to set the value to true, default is false
     public TerminalKeywordBuilder SetAcceptInput(bool value)
     {
+        if (value)
+        {
+            WordsThatAcceptInput.Add(_keyword);
+        }
+        else
+        {
+            WordsThatAcceptInput.Remove(_keyword);
+        }
+
         _keyword.SetKeywordAcceptInput(value);
         return this;
     }
@@ -104,21 +154,5 @@ public class TerminalKeywordBuilder
     public TerminalKeyword Build()
     {
         return _keyword;
-    }
-
-    public static bool NoTerminalTryGetKeyword(string keyWord, out TerminalKeyword terminalKeyword)
-    {
-        foreach (TerminalKeyword keyword in _terminalKeywords)
-        {
-            if (keyWord.CompareStringsInvariant(keyword.word))
-            {
-                //Loggers.LogDebug($"Keyword: [{keyWord}] found!");
-                terminalKeyword = keyword;
-                return true;
-            }
-        }
-
-        terminalKeyword = null!;
-        return false;
     }
 }
