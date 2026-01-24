@@ -81,7 +81,7 @@ public static class StringExtensions
         for (int i = 0; i < input.Length; i++)
         {
             if (query.Length <= i)
-                continue;
+                break;
 
             if (input[i].Equals(query[i]))
                 value++;
@@ -105,7 +105,7 @@ public static class StringExtensions
         for(int i = 0; i < input.Length; i++)
         {
             if(query.Length <= i)
-                continue;
+                break;
 
             if (input[i].Equals(query[i]))
                 result += input[i];
