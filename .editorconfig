@@ -6,6 +6,9 @@ indent_style = space
 indent_size = 4
 tab_width = 4
 
+# IDE0160: Convert to block scoped namespace
+csharp_style_namespace_declarations = file_scoped
+
 [*]
 
 # Microsoft .NET properties
@@ -69,3 +72,6 @@ resharper_space_before_while_parentheses = true
 resharper_trailing_comma_in_multiline_lists = true
 resharper_wrap_list_pattern = chop_if_long
 resharper_wrap_object_and_collection_initializer_style = chop_always
+
+# IDE0130: Namespace does not match folder structure
+dotnet_style_namespace_match_folder = false
