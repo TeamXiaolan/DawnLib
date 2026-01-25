@@ -1,6 +1,7 @@
 # v0.7.3
 
 - Cleaned up code, removed a few files around.
+- Added `AllowStingerToPlay` to set custom conditions for whether a stinger should play, i.e. current interior.
 
 ## v0.7.2
 

@@ -15,6 +15,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     private BoundedRange _dungeonRangeClamp = new BoundedRange(0, 0);
     private bool _stingerPlaysMoreThanOnce = false;
     private float _stingerPlayChance = 100f;
+    private FuncProvider<bool> _allowStingerToPlay = new FuncProvider<bool>(() => true);
 
     internal DungeonFlowInfoBuilder(NamespacedKey<DawnDungeonInfo> key, DungeonFlow value) : base(key, value)
     {
@@ -120,13 +121,13 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
-    public DungeonFlowInfoBuilder SetStingerPlaysMoreThanOnce(bool stingerPlaysMoreThanOnce)
+    public DungeonFlowInfoBuilder OverrideStingerPlaysMoreThanOnce(bool stingerPlaysMoreThanOnce)
     {
         _stingerPlaysMoreThanOnce = stingerPlaysMoreThanOnce;
         return this;
     }
 
-    public DungeonFlowInfoBuilder SetStingerPlayChance(float stingerPlayChance)
+    public DungeonFlowInfoBuilder OverrideStingerPlayChance(float stingerPlayChance)
     {
         _stingerPlayChance = stingerPlayChance;
         return this;
@@ -146,6 +147,12 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
+    public DungeonFlowInfoBuilder OverrideAllowStingerToPlay(FuncProvider<bool> allowStingerToPlay)
+    {
+        _allowStingerToPlay = allowStingerToPlay;
+        return this;
+    }
+
     override internal DawnDungeonInfo Build()
     {
         if (_weights == null)
@@ -153,6 +160,8 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
             DawnPlugin.Logger.LogWarning($"DungeonFlow '{key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
             _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
         }
-        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, _firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _assetBundlePath, _dungeonRangeClamp, customData);
+
+        DawnStingerDetail stingerDetail = new DawnStingerDetail(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
+        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, customData);
     }
 }
