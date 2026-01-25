@@ -6,6 +6,8 @@
 - Finished implementing stingers into dawn interiors, allowing you to have stingers that play more than once, set a custom chance for how frequent a stinger will run.
 - Finished implementing giving dawn moons the ability to modify the outside spawn probability range (vanilla hardcodes every moon to have a range of + and - 3).
 - Added Dawn`VanillaWeatherName`Overrides script that allow you to override the vanilla weather with your own prefab version of it.
+- Added a native TerminalConflictFix to fix the terminal conflicts issue with similar keywords.
+  - Added two configs to toggle this off/on and increase/decrease accuracy of the terminal's preciseness of keyword matching.
 
 ## v0.7.0
 
