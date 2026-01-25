@@ -140,13 +140,14 @@ static class ItemRegistrationHandler
                 };
                 level.spawnableScrap.Add(spawnableItemWithRarity);
             }
-            spawnableItemWithRarity.rarity = scrapInfo.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+            SpawnWeightContext ctx = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+            spawnableItemWithRarity.rarity = scrapInfo.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
         }
     }
 
     private static void FreezeItemContent()
     {
-        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> itemWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> itemWeightBuilder = new();
         Dictionary<string, DawnShopItemInfo> itemsWithShopInfo = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -168,9 +169,9 @@ static class ItemRegistrationHandler
 
             foreach ((Item item, SpawnableItemWithRarity spawnableItemWithRarity) in nonRepeatSpawnableScrapDict)
             {
-                if (!itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
                     itemWeightBuilder[item.name] = weightTableBuilder;
                 }
                 Debuggers.Items?.Log($"Adding weight {spawnableItemWithRarity.rarity} to {item.name} on level {level.PlanetName}");
@@ -276,7 +277,7 @@ static class ItemRegistrationHandler
                 item.SetDawnInfo(LethalContent.Items[key]);
                 continue;
             }
-            itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
+            itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
             DawnScrapItemInfo? scrapInfo = null;
             itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);
 

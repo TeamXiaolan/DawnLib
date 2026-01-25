@@ -320,7 +320,8 @@ static class DungeonRegistrationHandler
             if (dungeonInfo.ShouldSkipRespectOverride())
                 continue;
 
-            intWithRarity.rarity = dungeonInfo.Weights?.GetFor(level.GetDawnInfo()) ?? 0;
+            SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+            intWithRarity.rarity = dungeonInfo.Weights?.GetFor(ctx.Moon!, ctx) ?? 0;
         }
     }
 
@@ -368,7 +369,7 @@ static class DungeonRegistrationHandler
 
     private static void CollectNonDawnDungeons()
     {
-        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> dungeonWeightBuilder = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
@@ -381,9 +382,9 @@ static class DungeonRegistrationHandler
             foreach (IntWithRarity intWithRarity in intsWithRarity)
             {
                 DungeonFlow dungeonFlow = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow;
-                if (!dungeonWeightBuilder.TryGetValue(dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!dungeonWeightBuilder.TryGetValue(dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
                     dungeonWeightBuilder[dungeonFlow.name] = weightTableBuilder;
                 }
                 Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonFlow.name} on level {level.PlanetName}");
@@ -425,8 +426,8 @@ static class DungeonRegistrationHandler
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(indoorMapType.dungeonFlow, tags);
 
-            dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
-            weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo>();
+            dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
+            weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
 
             PersistentDataContainer customData = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{key.Namespace}_{key.Key}"));
             if (!customData.Has(StingerPlayedKey))

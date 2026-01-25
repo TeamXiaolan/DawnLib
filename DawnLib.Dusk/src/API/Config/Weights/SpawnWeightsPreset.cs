@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Dawn;
 using Dawn.Internal;
 using Dusk.Weights.Transformers;
@@ -7,20 +6,15 @@ using UnityEngine;
 
 namespace Dusk.Weights;
 
-public readonly struct SpawnWeightContext(DawnMoonInfo moon, DawnDungeonInfo? dungeon, DawnWeatherEffectInfo? weather)
+public class SpawnWeightsPreset : IWeighted, IContextualWeighted<SpawnWeightContext>
 {
-    public readonly DawnMoonInfo? Moon = moon;
-    public readonly DawnDungeonInfo? Dungeon = dungeon;
-    public readonly DawnWeatherEffectInfo? Weather = weather;
-}
+    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = null!;
+    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = null!;
+    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = null!;
 
-public class SpawnWeightsPreset : IWeighted
-{
-    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; }
-    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; }
-    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; }
-
-    private int _baseWeightIncrease = 0;
+    private readonly List<ISpawnWeightRule> _rules = new();
+    private int _baseWeightIncrease;
+    private bool _isSetup;
 
     public void SetupSpawnWeightsPreset(List<NamespacedConfigWeight> moonConfig, List<NamespacedConfigWeight> interiorConfig, List<NamespacedConfigWeight> weatherConfig, int baseWeightIncrease = 0)
     {
@@ -28,36 +22,52 @@ public class SpawnWeightsPreset : IWeighted
         InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
         WeatherSpawnWeightsTransformer = new WeatherWeightTransformer(weatherConfig);
         _baseWeightIncrease = baseWeightIncrease;
+
+        _rules.Clear();
+        _rules.Add(new MoonRule(MoonSpawnWeightsTransformer));
+        _rules.Add(new InteriorRule(InteriorSpawnWeightsTransformer));
+        _rules.Add(new WeatherRule(WeatherSpawnWeightsTransformer));
+
+        _isSetup = true;
+    }
+
+    public SpawnWeightsPreset AddRule(ISpawnWeightRule rule)
+    {
+        _rules.Add(rule);
+        return this;
     }
 
     public int GetWeight(SpawnWeightContext ctx)
     {
-        float weight = 0;
-
-        var transformers = new List<(int priority, System.Func<float, float> apply)>();
-        if (ctx.Moon != null)
+        if (!_isSetup)
         {
-            transformers.Add((Priority(MoonSpawnWeightsTransformer.GetOperation(ctx.Moon)), currentWeight => MoonSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Moon)));
+            return _baseWeightIncrease;
         }
 
-        if (ctx.Dungeon != null)
+        float weight = 0f;
+
+        var applicable = new List<(int priority, int index, ISpawnWeightRule rule)>(_rules.Count);
+
+        for (int i = 0; i < _rules.Count; i++)
         {
-            transformers.Add((Priority(InteriorSpawnWeightsTransformer.GetOperation(ctx.Dungeon)), currentWeight => InteriorSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Dungeon)));
+            var rule = _rules[i];
+            if (!rule.CanApply(ctx))
+                continue;
+
+            int priority = Priority(rule.GetOperation(ctx));
+            applicable.Add((priority, i, rule));
         }
 
-        if (ctx.Weather != null)
+        applicable.Sort(static (a, b) =>
         {
-            transformers.Add((Priority(WeatherSpawnWeightsTransformer.GetOperation(ctx.Weather)), currentWeight => WeatherSpawnWeightsTransformer.GetNewWeight(currentWeight, ctx.Weather)));
-        }
+            int p = b.priority.CompareTo(a.priority);
+            return p != 0 ? p : a.index.CompareTo(b.index);
+        });
 
-        transformers = transformers
-                            .OrderByDescending(x => x.priority)
-                            .ToList();
-
-        foreach (var (priority, apply) in transformers)
+        foreach (var (priority, _, rule) in applicable)
         {
             Debuggers.Weights?.Log($"Old Weight: {weight}");
-            weight = apply(weight);
+            weight = rule.Apply(weight, ctx);
             Debuggers.Weights?.Log($"New Weight: {weight}");
         }
 
@@ -66,27 +76,10 @@ public class SpawnWeightsPreset : IWeighted
 
     public int GetWeight()
     {
+        DawnPlugin.Logger.LogFatal($"Using non-contextual GetWeight on SpawnWeightsPreset! This is likely a mistake.");
         SpawnWeightContext ctx = SpawnWeightContextFactory.FromCurrentGame();
         return GetWeight(ctx);
     }
 
     private static int Priority(MathOperation operation) => (operation == MathOperation.Additive || operation == MathOperation.Subtractive) ? 1 : 0;
-}
-
-public static class SpawnWeightContextFactory
-{
-    public static SpawnWeightContext FromCurrentGame()
-    {
-        DawnMoonInfo? moon = RoundManager.Instance?.currentLevel?.GetDawnInfo();
-
-        DawnDungeonInfo? dungeon = RoundManager.Instance?.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
-
-        DawnWeatherEffectInfo? weather = null;
-        if (TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None)
-        {
-            weather = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].GetDawnInfo();
-        }
-
-        return new SpawnWeightContext(moon, dungeon, weather);
-    }
 }

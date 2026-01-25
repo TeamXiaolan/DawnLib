@@ -2,6 +2,7 @@
 
 - Cleaned up code, removed a few files around.
 - Added `AllowStingerToPlay` to set custom conditions for whether a stinger should play, i.e. current interior.
+- Massively rewrote `SpawnWeightsPreset` class for future maintainability, this is a breaking change with LunarConfig until they update to latest DawnLib (which is soon).
 
 ## v0.7.2
 

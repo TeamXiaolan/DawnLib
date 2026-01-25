@@ -10,7 +10,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
 {
     private float _mapTileSize = 0f;
     private AudioClip? _firstTimeAudio = null;
-    private ProviderTable<int?, DawnMoonInfo> _weights;
+    private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> _weights;
     private string _assetBundlePath = string.Empty;
     private BoundedRange _dungeonRangeClamp = new BoundedRange(0, 0);
     private bool _stingerPlaysMoreThanOnce = false;
@@ -133,9 +133,9 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
-    public DungeonFlowInfoBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo>> callback)
+    public DungeonFlowInfoBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
     {
-        WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
+        WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
         callback(builder);
         _weights = builder.Build();
         return this;
@@ -158,7 +158,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         if (_weights == null)
         {
             DawnPlugin.Logger.LogWarning($"DungeonFlow '{key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-            _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
+            _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
         }
 
         DawnStingerDetail stingerDetail = new DawnStingerDetail(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);

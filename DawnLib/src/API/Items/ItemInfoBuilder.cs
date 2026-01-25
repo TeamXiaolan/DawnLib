@@ -7,16 +7,16 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
     {
         private ItemInfoBuilder _parentBuilder;
 
-        private ProviderTable<int?, DawnMoonInfo>? _weights;
+        private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>? _weights;
 
         internal ScrapBuilder(ItemInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
-        public ScrapBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo>> callback)
+        public ScrapBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
         {
-            WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
+            WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
             callback(builder);
             _weights = builder.Build();
             return this;
@@ -27,7 +27,7 @@ public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuild
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"Scrap item '{_parentBuilder.value.itemName}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
+                _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
             }
             return new DawnScrapItemInfo(_weights);
         }
