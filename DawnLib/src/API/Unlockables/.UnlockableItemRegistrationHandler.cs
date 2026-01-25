@@ -162,7 +162,7 @@ static class UnlockableRegistrationHandler
 
         string before = text[..blockStart];
         string block = text[blockStart..blockEnd];
-        string after  = text[blockEnd..];
+        string after = text[blockEnd..];
 
         Dictionary<string, string> nameOverrides = new(StringComparer.OrdinalIgnoreCase);
 

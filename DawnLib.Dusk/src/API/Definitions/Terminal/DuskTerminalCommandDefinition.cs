@@ -93,7 +93,7 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
 
     public override void TryNetworkRegisterAssets()
     {
-        
+
     }
 
     protected override string EntityNameReference => CommandName ?? string.Empty;

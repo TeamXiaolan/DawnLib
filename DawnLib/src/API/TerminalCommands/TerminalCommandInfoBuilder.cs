@@ -160,7 +160,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         }
 
         //will destroy on terminaldisable if not specified
-        if(_customDestroyEvent != null)
+        if (_customDestroyEvent != null)
         {
             commandRegistrationBuilder.SetCustomDestroyEvent(_customDestroyEvent);
         }

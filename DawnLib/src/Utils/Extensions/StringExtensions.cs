@@ -102,9 +102,9 @@ public static class StringExtensions
         input = input.Trim();
         query = query.Trim();
 
-        for(int i = 0; i < input.Length; i++)
+        for (int i = 0; i < input.Length; i++)
         {
-            if(query.Length <= i)
+            if (query.Length <= i)
                 break;
 
             if (input[i].Equals(query[i]))

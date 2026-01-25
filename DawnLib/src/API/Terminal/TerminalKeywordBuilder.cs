@@ -13,11 +13,11 @@ public class TerminalKeywordBuilder
         get
         {
             //get initial existing keywords
-            if(_keywordsAdded.Count == 0)
+            if (_keywordsAdded.Count == 0)
             {
                 _keywordsAdded = [.. Resources.FindObjectsOfTypeAll<TerminalKeyword>()];
             }
-            
+
             return _keywordsAdded;
         }
         private set
@@ -30,7 +30,7 @@ public class TerminalKeywordBuilder
 
     private static bool WordAlreadyExists(string word, out TerminalKeyword existingKeyword)
     {
-        if(TerminalRefs.Instance == null)
+        if (TerminalRefs.Instance == null)
         {
             existingKeyword = null!;
             foreach (TerminalKeyword keyword in AllTerminalKeywords)

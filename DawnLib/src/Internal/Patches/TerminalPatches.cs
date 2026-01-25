@@ -23,7 +23,7 @@ static class TerminalPatches
         IL.Terminal.TextPostProcess += UseFailedNameResults;
     }
 
-    
+
     private static TerminalKeyword CheckForExactSentencesPrefix(On.Terminal.orig_CheckForExactSentences orig, Terminal self, string playerWord)
     {
         //reset last command values to be empty/null
@@ -46,7 +46,7 @@ static class TerminalPatches
             self.SetLastCommand(playerWord);
             return vanillaResult;
         }
-            
+
     }
 
     private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)
@@ -64,7 +64,7 @@ static class TerminalPatches
             self.UpdateLastKeywordParsed(vanillaResult);
             return vanillaResult;
         }
-            
+
     }
 
     private static void TerminalDisableHook(On.Terminal.orig_OnDisable orig, Terminal self)
@@ -117,7 +117,7 @@ static class TerminalPatches
     {
         //Get vanilla result
         TerminalNode terminalNode = orig(self);
-        
+
         //updates the node's displaytext based on it's NodeFunction Func<string> that was injected (if not null)
         if (terminalNode.HasCommandFunction())
         {

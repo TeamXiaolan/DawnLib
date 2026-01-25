@@ -8,7 +8,7 @@ namespace Dawn;
 
 public static class TerminalExtensions
 {
-    
+
     public static bool GetKeywordAcceptInput(this TerminalKeyword word)
     {
         return ((ITerminalKeyword)word).DawnAcceptAdditionalText;
@@ -236,7 +236,7 @@ public static class TerminalExtensions
         {
             input = input.Split(' ')[0];
         }
-            
+
         words = TerminalKeywordBuilder.WordsThatAcceptInput.FindAll(x => x.word.StringContainsInvariant(input));
         return words.Count != 0;
     }
@@ -298,7 +298,7 @@ public static class TerminalExtensions
             DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has not found a word matching the required specificity! ({DawnConfig.TerminalKeywordSpecificity.Value})");
             return null!;
         }
-            
+
 
         DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has found match with highest priority of {word.word} ({word.GetKeywordPriority()})");
         return word;
@@ -312,10 +312,10 @@ public static class TerminalExtensions
         if (string.IsNullOrWhiteSpace(input)) return false;
 
         //returns a non-zero list of matching keywords that accept additional input
-        if(MatchInputKeyword(input, out List<TerminalKeyword> inputWords))
+        if (MatchInputKeyword(input, out List<TerminalKeyword> inputWords))
         {
             //return the singular matching keyword
-            if(inputWords.Count == 1)
+            if (inputWords.Count == 1)
             {
                 word = inputWords[0];
                 return word != null;
@@ -338,7 +338,7 @@ public static class TerminalExtensions
         {
             //only get words that are compatible nouns to the current verb
             keywordList = [.. terminal.GetLastVerb().compatibleNouns.Select(x => x.noun)];
-            
+
             //filter for our input
             keywordList = [.. keywordList.FindAll(x => x.word.StringStartsWithInvariant(input))];
         }

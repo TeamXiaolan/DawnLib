@@ -159,7 +159,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
-        if(register.DestroyEvent != null)
+        if (register.DestroyEvent != null)
         {
             //removes terminaldisable destroy event for specified event
             commandbuilder.SetCustomDestroyEvent(register.DestroyEvent);
