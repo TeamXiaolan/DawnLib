@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Dawn.Internal;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Dawn;
 
@@ -24,6 +25,12 @@ public class TerminalCommandBuilder
     {
         _commandName = name;
         TerminalPatches.OnTerminalDisable += Destroy;
+    }
+
+    internal void SetCustomDestroyEvent(UnityEvent destroyEvent)
+    {
+        TerminalPatches.OnTerminalDisable -= Destroy;
+        destroyEvent.AddListener(Destroy);
     }
 
     //Destroy created commands before next TerminalAwake

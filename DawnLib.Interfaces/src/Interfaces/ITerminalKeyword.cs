@@ -17,6 +17,7 @@ public interface ITerminalKeyword
         Store,
         Bestiary,
         SigurdLog,
+        TerminalEvent, //Will contain commands created by LLL, WeatherRegistry, etc.
         DawnCommand, //Standard DawnLib-made commands
         Other
     }

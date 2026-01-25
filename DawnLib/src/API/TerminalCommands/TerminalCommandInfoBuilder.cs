@@ -63,6 +63,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     private IProvider<List<string>> _validKeywords;
     private Func<string> _mainText;
     private UnityEvent? _customBuildEvent = null;
+    private UnityEvent? _customDestroyEvent = null;
     private string _commandName, _categoryName, _description;
     private bool _acceptInput;
     private ClearText _clearTextFlags;
@@ -81,6 +82,12 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     public TerminalCommandInfoBuilder SetCustomBuildEvent(UnityEvent customBuildEvent)
     {
         _customBuildEvent = customBuildEvent;
+        return this;
+    }
+
+    public TerminalCommandInfoBuilder SetCustomDestroyEvent(UnityEvent customDestroyEvent)
+    {
+        _customDestroyEvent = customDestroyEvent;
         return this;
     }
 
@@ -151,6 +158,13 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         {
             commandRegistrationBuilder.BuildOnTerminalAwake();
         }
+
+        //will destroy on terminaldisable if not specified
+        if(_customDestroyEvent != null)
+        {
+            commandRegistrationBuilder.SetCustomDestroyEvent(_customDestroyEvent);
+        }
+
         DawnTerminalCommandInfo info = new DawnTerminalCommandInfo(key, tags, value, _queryCommandInfo, customData);
         return info;
     }

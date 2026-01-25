@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Dawn.Internal;
 using UnityEngine.Events;
 using static Dawn.TerminalCommandRegistration;
@@ -20,6 +19,7 @@ public class TerminalCommandRegistration
     //--- Optional Values
     public string? Category;
     public string? Description;
+    public UnityEvent? DestroyEvent;
 
     //Query-Style
     public Func<string>? QueryFunction;
@@ -99,6 +99,12 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         return this;
     }
 
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
+    {
+        register.DestroyEvent = destroyEvent;
+        return this;
+    }
+
     public TerminalCommandRegistrationBuilder SetDescription(string description)
     {
         register.Description = description;
@@ -153,6 +159,11 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
+        if(register.DestroyEvent != null)
+        {
+            //removes terminaldisable destroy event for specified event
+            commandbuilder.SetCustomDestroyEvent(register.DestroyEvent);
+        }
         commandbuilder.SetResultNode(resultNode);
         commandbuilder.AddResultAction(register.ResultFunction);
         commandbuilder.AddKeyword(keywords);

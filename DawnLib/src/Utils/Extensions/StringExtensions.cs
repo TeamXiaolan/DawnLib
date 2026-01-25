@@ -68,4 +68,69 @@ public static class StringExtensions
                                     : StringComparison.InvariantCulture;
         return input.Contains(query, comparison);
     }
+
+    public static int StringMatchScore(this string input, string query, bool ignoreCase = true)
+    {
+        int value = 0;
+        if (ignoreCase)
+        {
+            input = input.ToLowerInvariant();
+            query = query.ToLowerInvariant();
+        }
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            if (query.Length <= i)
+                break;
+
+            if (input[i].Equals(query[i]))
+                value++;
+        }
+
+        return value;
+    }
+
+    public static string GetExactMatch(this string input, string query, bool ignoreCase = true)
+    {
+        string result = string.Empty;
+        if (ignoreCase)
+        {
+            input = input.ToLowerInvariant();
+            query = query.ToLowerInvariant();
+        }
+
+        input = input.Trim();
+        query = query.Trim();
+
+        for(int i = 0; i < input.Length; i++)
+        {
+            if(query.Length <= i)
+                break;
+
+            if (input[i].Equals(query[i]))
+                result += input[i];
+            else
+                break;
+        }
+
+        return result;
+    }
+
+    public static string BepinFriendlyString(this string input)
+    {
+        char[] invalidChars = ['\'', '\n', '\t', '\\', '"', '[', ']'];
+        string result = "";
+
+        input = input.Trim();
+
+        foreach (char c in input)
+        {
+            if (!invalidChars.Contains(c))
+                result += c;
+            else
+                continue;
+        }
+
+        return result;
+    }
 }

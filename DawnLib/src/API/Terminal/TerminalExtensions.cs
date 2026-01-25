@@ -8,26 +8,7 @@ namespace Dawn;
 
 public static class TerminalExtensions
 {
-    public static Func<string> GetCommandFunction(this TerminalNode node)
-    {
-        return ((ITerminalNode)node).DawnNodeFunction;
-    }
-
-    internal static bool HasCommandFunction(this TerminalNode node)
-    {
-        if (node == null)
-        {
-            return false;
-        }
-
-        return node.GetCommandFunction() != null;
-    }
-
-    internal static void SetNodeFunction(this TerminalNode node, Func<string> NodeFunc)
-    {
-        ((ITerminalNode)node).DawnNodeFunction = NodeFunc;
-    }
-
+    
     public static bool GetKeywordAcceptInput(this TerminalKeyword word)
     {
         return ((ITerminalKeyword)word).DawnAcceptAdditionalText;
@@ -66,6 +47,26 @@ public static class TerminalExtensions
     public static string GetLastCommand(this Terminal terminal)
     {
         return ((ITerminal)terminal).DawnLastCommand;
+    }
+
+    internal static void SetLastNoun(this Terminal terminal, TerminalKeyword value)
+    {
+        ((ITerminal)terminal).DawnLastNoun = value;
+    }
+
+    public static TerminalKeyword GetLastNoun(this Terminal terminal)
+    {
+        return ((ITerminal)terminal).DawnLastNoun;
+    }
+
+    internal static void SetLastVerb(this Terminal terminal, TerminalKeyword value)
+    {
+        ((ITerminal)terminal).DawnLastVerb = value;
+    }
+
+    public static TerminalKeyword GetLastVerb(this Terminal terminal)
+    {
+        return ((ITerminal)terminal).DawnLastVerb;
     }
 
     public static bool TryGetKeywordInfoText(this TerminalKeyword terminalKeyword, out string text)
@@ -141,6 +142,7 @@ public static class TerminalExtensions
         terminalKeyword.SetKeywordPriority(ITerminalKeyword.DawnKeywordType.Other);
     }
 
+    private static readonly List<string> VanillaEvents = ["setUpTerminal", "cheat_ResetCredits", "switchCamera", "ejectPlayers"];
     //vanilla keywords that should probably not be replaced unless the API user is intending to overwrite a core function of the game
     private static readonly List<string> VanillaWords = ["company", "moons", "store", "help", "other", "bestiary", "storage", "scan", "upgrades", "decor", "sigurd"];
     public static ITerminalKeyword.DawnKeywordType TryGetTerminalNodeType(this TerminalNode terminalNode)
@@ -151,11 +153,14 @@ public static class TerminalExtensions
             return ITerminalKeyword.DawnKeywordType.Other;
         }
 
-        //just assuming any node with a terminal event string is a core gameplay element
-        //vanilla examples are eject & switch
+        //vanilla terminalevents are core gameplay elements
+        //modded terminalevents are usually used for custom commands, ie. LLL's simulate and WeatherRegistry's forecast
         if (!string.IsNullOrEmpty(terminalNode.terminalEvent))
         {
-            return ITerminalKeyword.DawnKeywordType.Core;
+            if (VanillaEvents.Any(x => x.CompareStringsInvariant(terminalNode.terminalEvent)))
+                return ITerminalKeyword.DawnKeywordType.Core;
+            else
+                return ITerminalKeyword.DawnKeywordType.TerminalEvent;
         }
 
         //moon keywords
@@ -206,5 +211,154 @@ public static class TerminalExtensions
     public static void SetKeywordPriority(this TerminalKeyword terminalKeyword, ITerminalKeyword.DawnKeywordType keywordType)
     {
         ((ITerminalKeyword)terminalKeyword).DawnKeywordPriority = keywordType;
+    }
+
+    public static void UpdateLastKeywordParsed(this Terminal self, TerminalKeyword terminalKeyword)
+    {
+        if (self == null || terminalKeyword == null) return;
+
+        if (terminalKeyword.isVerb)
+        {
+            //used to get only compatible nouns of this verb
+            self.SetLastVerb(terminalKeyword);
+        }
+        else
+        {
+            //usually contains a reference to the result node
+            self.SetLastNoun(terminalKeyword);
+        }
+    }
+
+    private static bool MatchInputKeyword(string input, out List<TerminalKeyword> words)
+    {
+        //get first word only
+        if (input.Contains(' '))
+        {
+            input = input.Split(' ')[0];
+        }
+            
+        words = TerminalKeywordBuilder.WordsThatAcceptInput.FindAll(x => x.word.StringContainsInvariant(input));
+        return words.Count != 0;
+    }
+
+    private static TerminalKeyword GetBestMatchFromList(string input, List<TerminalKeyword> keywordList)
+    {
+        TerminalKeyword word = null!;
+        int maxScore = 0;
+
+        //return null result from 0 matches
+        if (keywordList.Count == 0)
+            return word;
+
+        //assign match scores for the multiple matching words
+        Dictionary<TerminalKeyword, int> wordScores = [];
+        foreach (TerminalKeyword keyword in keywordList)
+        {
+            var score = keyword.word.StringMatchScore(input);
+            wordScores.TryAdd(keyword, score);
+        }
+
+        //compare each match to find the best score with the highest keyword priority
+        foreach (var match in wordScores)
+        {
+            if (match.Key == null) continue; //skip null terminalkeywords (just in case)
+            if (word == null || maxScore == 0)
+            {
+                word = match.Key;
+                maxScore = match.Value;
+                continue;
+            }
+
+            //skip since this partial match has a lower score
+            if (maxScore > match.Value)
+                continue;
+
+            //this match has the same amount of matching characters
+            //resolve conflict by checking keyword priority (lower number = higher priority)
+            if (maxScore == match.Value)
+            {
+                //checks if the current match has a keyword priority value lower than the match assigned to the word variable (working match)
+                //a lower keyword priority value indicates a higher priority keyword
+                DawnPlugin.Logger.LogDebug($"Attempting to resolve conflict between matching results [{word.word}] & [{match.Key.word}] by comparing keyword priorities!");
+                int target = (int)word.GetKeywordPriority();
+                int current = (int)match.Key.GetKeywordPriority();
+
+                if (current < target)
+                {
+                    word = match.Key; //only need to update the word
+                    continue;
+                }
+            }
+
+            DawnPlugin.Logger.LogDebug($"Skipping partial match [{match.Key.word}] with match score {match.Value} due to better match existing with a higher priority");
+        }
+
+        if (maxScore < DawnConfig.TerminalKeywordSpecificity.Value)
+        {
+            DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has not found a word matching the required specificity! ({DawnConfig.TerminalKeywordSpecificity.Value})");
+            return null!;
+        }
+            
+
+        DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has found match with highest priority of {word.word} ({word.GetKeywordPriority()})");
+        return word;
+    }
+
+    public static bool DawnTryResolveKeyword(this Terminal terminal, string input, out TerminalKeyword word)
+    {
+        word = null!;
+
+        //empty input, return false
+        if (string.IsNullOrWhiteSpace(input)) return false;
+
+        //returns a non-zero list of matching keywords that accept additional input
+        if(MatchInputKeyword(input, out List<TerminalKeyword> inputWords))
+        {
+            //return the singular matching keyword
+            if(inputWords.Count == 1)
+            {
+                word = inputWords[0];
+                return word != null;
+            }
+            else
+            {
+                //returns the best match from the list of matching keywords
+                word = GetBestMatchFromList(input, inputWords);
+                return word != null;
+            }
+        }
+
+        //for all non-input keywords, run the vanilla method for getting a keyword
+        if (!DawnConfig.TerminalKeywordResolution.Value)
+            return false;
+
+        //Now that we've checked words that accept input, check all other keywords
+        List<TerminalKeyword> keywordList;
+        if (terminal.GetLastVerb() != null)
+        {
+            //only get words that are compatible nouns to the current verb
+            keywordList = [.. terminal.GetLastVerb().compatibleNouns.Select(x => x.noun)];
+            
+            //filter for our input
+            keywordList = [.. keywordList.FindAll(x => x.word.StringStartsWithInvariant(input))];
+        }
+        else
+        {
+            //only get words that start with our input
+            keywordList = [.. terminal.terminalNodes.allKeywords.Where(x => x.word.StringStartsWithInvariant(input))];
+        }
+
+        //if only one match exists, return it immediately
+        if (keywordList.Count == 1)
+        {
+            word = keywordList[0];
+            return word != null;
+        }
+        else
+        {
+            //returns the best match from the list of matching keywords
+            word = GetBestMatchFromList(input, keywordList);
+            return word != null;
+        }
     }
 }
