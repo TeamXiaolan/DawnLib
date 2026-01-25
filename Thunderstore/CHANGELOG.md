@@ -1,4 +1,8 @@
-# v0.7.2
+# v0.7.3
+
+- Cleaned up code, removed a few files around.
+
+## v0.7.2
 
 - Added compatibility with MoonDaySpeedMultiplierPatcher lol, almost forgot immediately.
 - Prettied finding the components for the Dawn`VanillaWeatherName`Overrides.

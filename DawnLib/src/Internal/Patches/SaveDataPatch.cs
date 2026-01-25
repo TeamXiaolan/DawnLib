@@ -65,7 +65,7 @@ static class SaveDataPatch
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.LoadUnlockables)), HarmonyPrefix]
     static bool LoadUnlockables()
     {
-        if (DawnConfig.DisableDawnUnlockableSaving)
+        if (DawnConfig.DisableDawnUnlockableSaving.Value)
         {
             return true;
         }
@@ -78,7 +78,7 @@ static class SaveDataPatch
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.LoadShipGrabbableItems)), HarmonyPrefix]
     static bool LoadShipGrabbableItems()
     {
-        if (DawnConfig.DisableDawnItemSaving)
+        if (DawnConfig.DisableDawnItemSaving.Value)
         {
             return true;
         }
@@ -98,7 +98,7 @@ static class SaveDataPatch
     static bool SaveData()
     {
         DawnNetworker.Instance?.SaveData();
-        if (DawnConfig.DisableDawnItemSaving)
+        if (DawnConfig.DisableDawnItemSaving.Value)
         {
             return true;
         }

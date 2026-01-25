@@ -32,7 +32,7 @@ public class DawnPlugin : BaseUnityPlugin
         Debuggers.Bind(Config);
         DawnConfig.Bind(Config);
 
-        if (DawnConfig.CreateTagExport)
+        if (DawnConfig.CreateTagExport.Value)
         {
             TagExporter.Init();
         }
@@ -79,7 +79,7 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
 
-        //Testing
+        // Testing
         // DawnTesting.TestCommands();
 
         _harmony.PatchAll(Assembly.GetExecutingAssembly());

@@ -45,12 +45,12 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         if (!NetworkManager.Singleton.IsHost)
             return;
 
-        if (!DawnConfig.DisableDawnItemSaving)
+        if (!DawnConfig.DisableDawnItemSaving.Value)
         {
             ItemSaveDataHandler.SaveAllItems(DawnLib.GetCurrentContract()!);
         }
 
-        if (!DawnConfig.DisableDawnUnlockableSaving)
+        if (!DawnConfig.DisableDawnUnlockableSaving.Value)
         {
             UnlockableSaveDataHandler.SaveAllUnlockables(DawnLib.GetCurrentContract()!);
         }

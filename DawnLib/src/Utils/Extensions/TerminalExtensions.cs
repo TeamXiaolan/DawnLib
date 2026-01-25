@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
-using Dawn.Utils;
 
-namespace Dawn;
+namespace Dawn.Utils;
 
 public static class TerminalExtensions
 {
@@ -158,9 +156,13 @@ public static class TerminalExtensions
         if (!string.IsNullOrEmpty(terminalNode.terminalEvent))
         {
             if (VanillaEvents.Any(x => x.CompareStringsInvariant(terminalNode.terminalEvent)))
+            {
                 return ITerminalKeyword.DawnKeywordType.Core;
+            }
             else
+            {
                 return ITerminalKeyword.DawnKeywordType.TerminalEvent;
+            }
         }
 
         //moon keywords
@@ -215,7 +217,10 @@ public static class TerminalExtensions
 
     public static void UpdateLastKeywordParsed(this Terminal self, TerminalKeyword terminalKeyword)
     {
-        if (self == null || terminalKeyword == null) return;
+        if (self == null || terminalKeyword == null)
+        {
+            return;
+        }
 
         if (terminalKeyword.isVerb)
         {
@@ -248,20 +253,24 @@ public static class TerminalExtensions
 
         //return null result from 0 matches
         if (keywordList.Count == 0)
+        {
             return word;
+        }
 
         //assign match scores for the multiple matching words
         Dictionary<TerminalKeyword, int> wordScores = [];
         foreach (TerminalKeyword keyword in keywordList)
         {
-            var score = keyword.word.StringMatchScore(input);
+            int score = keyword.word.StringMatchScore(input);
             wordScores.TryAdd(keyword, score);
         }
 
         //compare each match to find the best score with the highest keyword priority
-        foreach (var match in wordScores)
+        foreach (KeyValuePair<TerminalKeyword, int> match in wordScores)
         {
-            if (match.Key == null) continue; //skip null terminalkeywords (just in case)
+            if (match.Key == null)
+                continue; //skip null terminalkeywords (just in case)
+
             if (word == null || maxScore == 0)
             {
                 word = match.Key;
@@ -279,7 +288,7 @@ public static class TerminalExtensions
             {
                 //checks if the current match has a keyword priority value lower than the match assigned to the word variable (working match)
                 //a lower keyword priority value indicates a higher priority keyword
-                DawnPlugin.Logger.LogDebug($"Attempting to resolve conflict between matching results [{word.word}] & [{match.Key.word}] by comparing keyword priorities!");
+                Debuggers.Terminal?.Log($"Attempting to resolve conflict between matching results [{word.word}] & [{match.Key.word}] by comparing keyword priorities!");
                 int target = (int)word.GetKeywordPriority();
                 int current = (int)match.Key.GetKeywordPriority();
 
@@ -290,7 +299,7 @@ public static class TerminalExtensions
                 }
             }
 
-            DawnPlugin.Logger.LogDebug($"Skipping partial match [{match.Key.word}] with match score {match.Value} due to better match existing with a higher priority");
+            Debuggers.Terminal?.Log($"Skipping partial match [{match.Key.word}] with match score {match.Value} due to better match existing with a higher priority");
         }
 
         if (maxScore < DawnConfig.TerminalKeywordSpecificity.Value)
@@ -309,7 +318,10 @@ public static class TerminalExtensions
         word = null!;
 
         //empty input, return false
-        if (string.IsNullOrWhiteSpace(input)) return false;
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return false;
+        }
 
         //returns a non-zero list of matching keywords that accept additional input
         if (MatchInputKeyword(input, out List<TerminalKeyword> inputWords))
