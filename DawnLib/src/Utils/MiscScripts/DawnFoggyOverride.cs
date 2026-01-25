@@ -3,6 +3,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.MoonUtils}/Foggy Override")]
 public class DawnFoggyOverride : MonoBehaviour
 {
     [field: SerializeField]

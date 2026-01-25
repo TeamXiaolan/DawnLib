@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.MoonUtils}/Rainy Override")]
 public class DawnRainyOverride : MonoBehaviour
 {
     [field: SerializeField]

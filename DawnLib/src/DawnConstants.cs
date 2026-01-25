@@ -9,6 +9,7 @@ static class DawnConstants
     internal const string Networking = $"{MenuName}/Networking";
     internal const string MiscUtils = $"{MenuName}/Misc Utilities";
     internal const string Triggers = $"{MenuName}/Triggers";
+    internal const string MoonUtils = $"{MenuName}/Moon Utils";
 
     internal const string UI = $"{MenuName}/UI";
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace Dawn.Utils;
-
+[AddComponentMenu($"{DawnConstants.MoonUtils}/Eclipsed Override")]
 public class DawnEclipsedOverride : MonoBehaviour
 {
     [field: SerializeField]

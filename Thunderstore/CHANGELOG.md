@@ -1,4 +1,9 @@
-# v0.7.1
+# v0.7.2
+
+- Added compatibility with MoonDaySpeedMultiplierPatcher lol, almost forgot immediately.
+- Prettied finding the components for the Dawn`VanillaWeatherName`Overrides.
+
+## v0.7.1
 
 - Compeletely rebuilt the ship upgrades part instead of only adding dawnlib ship upgrades.
 - Added a script to help with weather overrides (Dawn`VanillaWeatherName`Override).

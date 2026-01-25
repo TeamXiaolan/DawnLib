@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.MoonUtils}/Flooded Override")]
 public class DawnFloodedOverride : MonoBehaviour
 {
     [field: SerializeField]

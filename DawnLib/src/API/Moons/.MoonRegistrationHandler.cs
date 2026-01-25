@@ -52,9 +52,12 @@ static class MoonRegistrationHandler
 
         IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
 
-        IL.TimeOfDay.MoveGlobalTime += MultiplyGlobalTimeMultiplierToDaySpeedMultiplier;
-        IL.TimeOfDay.CalculatePlanetTime += IgnoreDaySpeedMultiplier;
-        IL.TimeOfDay.Update += IgnoreDaySpeedMultiplier;
+        if (!MoonDaySpeedMultiplierPatcherCompat.Enabled)
+        {
+            IL.TimeOfDay.MoveGlobalTime += MultiplyGlobalTimeMultiplierToDaySpeedMultiplier;
+            IL.TimeOfDay.CalculatePlanetTime += IgnoreDaySpeedMultiplier;
+            IL.TimeOfDay.Update += IgnoreDaySpeedMultiplier;
+        }
     }
 
     private static void ReplaceStaticOutsideEnemyProbabilityRange(ILContext il)
