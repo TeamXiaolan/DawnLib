@@ -346,7 +346,7 @@ public static class TerminalExtensions
 
         //Now that we've checked words that accept input, check all other keywords
         List<TerminalKeyword> keywordList;
-        if (terminal.GetLastVerb() != null)
+        if (terminal.GetLastVerb() != null && terminal.GetLastVerb().compatibleNouns != null && terminal.GetLastVerb().compatibleNouns.Length > 0)
         {
             //only get words that are compatible nouns to the current verb
             keywordList = [.. terminal.GetLastVerb().compatibleNouns.Select(x => x.noun)];

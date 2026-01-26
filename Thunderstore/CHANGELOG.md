@@ -1,4 +1,8 @@
-# v0.7.3
+# v0.7.4
+
+- Added some null checks to fix compat with experimental WeatherRegistry;
+
+## v0.7.3
 
 - Cleaned up code, removed a few files around.
 - Added `AllowStingerToPlay` to set custom conditions for whether a stinger should play, i.e. current interior.
