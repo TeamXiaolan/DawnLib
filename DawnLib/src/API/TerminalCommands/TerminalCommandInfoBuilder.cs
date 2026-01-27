@@ -67,6 +67,8 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     private string _commandName, _categoryName, _description;
     private bool _acceptInput;
     private ClearText _clearTextFlags;
+    private bool _overrideKeywords = false;
+    private ITerminalKeyword.DawnKeywordType _overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
 
     public TerminalCommandInfoBuilder(NamespacedKey<DawnTerminalCommandInfo> key, string commandName, TerminalNode value) : base(key, value)
     {
@@ -128,6 +130,16 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         return this;
     }
 
+    // WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
+    // You do not need to set this to false if you have not changed the default value
+    // Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload
+    public TerminalCommandInfoBuilder SetOverrideKeywords(bool value, ITerminalKeyword.DawnKeywordType overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
+    {
+        _overrideKeywords = value;
+        _overridePriority = overridePriority;
+        return this;
+    }
+
     override internal DawnTerminalCommandInfo Build()
     {
         TerminalCommandRegistrationBuilder commandRegistrationBuilder = new TerminalCommandRegistrationBuilder(_commandName, value, _mainText);
@@ -141,6 +153,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         commandRegistrationBuilder.SetKeywords(_validKeywords);
         commandRegistrationBuilder.SetClearText(_clearTextFlags);
         commandRegistrationBuilder.SetAcceptInput(_acceptInput);
+        commandRegistrationBuilder.SetOverrideExistingKeywords(_overrideKeywords, _overridePriority);
 
         if (_queryCommandInfo != null)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dawn.Internal;
+using Dawn.Utils;
 using UnityEngine.Events;
 using static Dawn.TerminalCommandRegistration;
 
@@ -31,6 +32,10 @@ public class TerminalCommandRegistration
     //will apply to keyword via interface
     public bool AcceptAdditionalText = false;
 
+    //allow user to ignore checking for existing keywords and overwrite them at build
+    public bool OverrideExistingKeywords = false;
+    public ITerminalKeyword.DawnKeywordType OverridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
+
     internal TerminalCommandRegistration(string commandName)
     {
         Name = commandName;
@@ -58,6 +63,16 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
     public TerminalCommandRegistrationBuilder SetKeywords(IProvider<List<string>> keywords)
     {
         register.KeywordList = keywords;
+        return this;
+    }
+
+    // WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
+    // You do not need to set this to false if you have not changed the default value
+    // Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload
+    public TerminalCommandRegistrationBuilder SetOverrideExistingKeywords(bool value, ITerminalKeyword.DawnKeywordType KeywordPriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
+    {
+        register.OverrideExistingKeywords = value;
+        register.OverridePriority = KeywordPriority;
         return this;
     }
 
@@ -151,11 +166,24 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         foreach (string word in words)
         {
             Debuggers.Terminal?.Log($"Creating keyword [ {word} ] for command [ {register.Name} ]");
-            TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
-                .SetAcceptInput(register.AcceptAdditionalText)
-                .Build();
 
-            keywords.Add(addKeyword);
+            if (register.OverrideExistingKeywords)
+            {
+                TerminalKeyword overrideKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word)
+                    .SetAcceptInput(register.AcceptAdditionalText)
+                    .Build();
+
+                overrideKeyword.SetKeywordPriority(register.OverridePriority);
+                keywords.Add(overrideKeyword);
+            }
+            else
+            {
+                TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                    .SetAcceptInput(register.AcceptAdditionalText)
+                    .Build();
+
+                keywords.Add(addKeyword);
+            }
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);

@@ -25,6 +25,7 @@ internal class DawnTesting
             builder.SetEnabled(new SimpleProvider<bool>(true));
             builder.SetMainText(BasicLightsCommand);
             builder.SetKeywords(new FuncProvider<List<string>>(LightsKeywords));
+            builder.SetOverrideKeywords(true);
             builder.SetCategoryName("Test");
             builder.SetDescription("Toggles the lights in the ship.");
             builder.SetCustomBuildEvent(test);
