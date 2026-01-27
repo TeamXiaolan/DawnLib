@@ -1,4 +1,9 @@
-# v0.7.4
+# v0.7.5
+
+- Fixed multiplayer connection issues.
+- Fixed renaming terminal entries causing duplicates.
+
+## v0.7.4
 
 - Added some null checks to fix compat with experimental WeatherRegistry;
 

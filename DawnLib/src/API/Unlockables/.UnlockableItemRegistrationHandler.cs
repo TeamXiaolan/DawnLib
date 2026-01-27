@@ -137,14 +137,11 @@ static class UnlockableRegistrationHandler
 
     private static readonly Regex UpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)(?<tail>\s+//\s+Price:\s+\$\d+.*)$", RegexOptions.Compiled);
 
-    private static readonly Regex AnyUpgradeLineRegex = new(@"(?m)^\* .+?\s+//\s+Price:\s+\$\d+.*$", RegexOptions.Compiled);
+    private static readonly Regex AnyUpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)\s+//\s+Price:\s+\$\d+.*$", RegexOptions.Compiled);
 
     private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
         string text = orig(self, modifiedDisplayText, node);
-
-        if (!text.Contains("Ship upgrades", StringComparison.OrdinalIgnoreCase))
-            return text;
 
         int headerIdx = text.IndexOf("Ship upgrades", StringComparison.OrdinalIgnoreCase);
         if (headerIdx < 0)
@@ -164,56 +161,82 @@ static class UnlockableRegistrationHandler
         string block = text[blockStart..blockEnd];
         string after = text[blockEnd..];
 
-        Dictionary<string, string> nameOverrides = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, string> overrides = new(StringComparer.OrdinalIgnoreCase);
 
-        List<string> customLinesToAdd = new();
-
-        foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
-            UpdateUnlockablePrices(info);
+            UpdateUnlockablePrices(unlockableInfo);
 
-            string vanillaName = info.UnlockableItem.unlockableName ?? string.Empty;
+            string vanillaName = unlockableInfo.UnlockableItem.unlockableName ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(vanillaName))
+                continue;
 
-            TerminalPurchaseResult result = info.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
+            TerminalPurchaseResult result = unlockableInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.FailedPurchaseResult failed && !string.IsNullOrWhiteSpace(failed.OverrideName))
             {
-                nameOverrides[vanillaName] = failed.OverrideName!;
+                overrides[vanillaName] = failed.OverrideName!;
             }
-
-            if (!info.UnlockableItem.alwaysInStock)
-                continue;
-
-            string displayName = nameOverrides.TryGetValue(vanillaName, out string @override) ? @override : vanillaName;
-
-            if (block.Contains($"* {displayName}", StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            int cost = info.RequestNode?.itemCost ?? 0;
-            customLinesToAdd.Add($"\n* {displayName}    //    Price: ${cost}");
         }
 
-        block = UpgradeLineRegex.Replace(block, m =>
+        HashSet<string> existingNames = new(StringComparer.OrdinalIgnoreCase);
+        foreach (Match match in AnyUpgradeLineRegex.Matches(block))
         {
-            string currentName = m.Groups["name"].Value.Trim();
-            if (nameOverrides.TryGetValue(currentName, out string newName))
+            string name = match.Groups["name"].Value.Trim();
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                return $"* {newName}{m.Groups["tail"].Value}";
+                existingNames.Add(name);
             }
-            return m.Value;
-        });
+        }
 
-        if (customLinesToAdd.Count > 0)
+        List<string> linesToAdd = new();
+
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
         {
+            if (!unlockableInfo.UnlockableItem.alwaysInStock)
+                continue;
+
+            string vanillaName = unlockableInfo.UnlockableItem.unlockableName ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(vanillaName))
+                continue;
+
+            string displayName = overrides.TryGetValue(vanillaName, out string overridden) ? overridden : vanillaName;
+
+            if (existingNames.Contains(vanillaName) || existingNames.Contains(displayName))
+                continue;
+
+            int cost = unlockableInfo.RequestNode?.itemCost ?? 0;
+            linesToAdd.Add($"* {displayName}    //    Price: ${cost}");
+            existingNames.Add(displayName);
+        }
+
+        if (overrides.Count > 0)
+        {
+            block = UpgradeLineRegex.Replace(block, m =>
+            {
+                string currentName = m.Groups["name"].Value.Trim();
+                if (overrides.TryGetValue(currentName, out string newName))
+                {
+                    return $"* {newName}{m.Groups["tail"].Value}";
+                }
+
+                return m.Value;
+            });
+        }
+
+        if (linesToAdd.Count > 0)
+        {
+            string insertion = "\n" + string.Join("\n", linesToAdd);
+
             MatchCollection matches = AnyUpgradeLineRegex.Matches(block);
             if (matches.Count > 0)
             {
                 Match last = matches[^1];
                 int insertPos = last.Index + last.Length;
-                block = block.Insert(insertPos, string.Concat(customLinesToAdd));
+                block = block.Insert(insertPos, insertion);
             }
             else
             {
-                block += string.Concat(customLinesToAdd);
+                block += insertion;
             }
         }
 

@@ -69,7 +69,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
-        SpawnWeightContext ctx = new(currentMoon, RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo());
+        SpawnWeightContext ctx = new(currentMoon, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo());
         int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon, ctx));
         if (totalWeight == null)
         {

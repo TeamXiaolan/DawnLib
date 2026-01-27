@@ -3,6 +3,7 @@ using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using Unity.Netcode;
 
 namespace Dawn.Internal;
 
@@ -70,8 +71,12 @@ static class SaveDataPatch
             return true;
         }
 
-        contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
-        UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
+        if (NetworkManager.Singleton.IsServer)
+        {
+            contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+            UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
+        }
+
         return false;
     }
 
