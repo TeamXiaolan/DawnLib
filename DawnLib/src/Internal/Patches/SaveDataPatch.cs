@@ -10,8 +10,6 @@ namespace Dawn.Internal;
 [HarmonyPatch]
 static class SaveDataPatch
 {
-    internal static PersistentDataContainer? contractContainer;
-
     internal static void Init()
     {
         On.MenuManager.Start += LCBetterSaveInit;
@@ -73,7 +71,7 @@ static class SaveDataPatch
 
         if (NetworkManager.Singleton.IsServer)
         {
-            contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+            PersistentDataContainer contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
             UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
         }
 
@@ -88,7 +86,7 @@ static class SaveDataPatch
             return true;
         }
 
-        contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        PersistentDataContainer contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         ItemSaveDataHandler.LoadSavedItems(contractContainer);
         return false;
     }

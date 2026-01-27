@@ -25,7 +25,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
         string saveId = GameNetworkManager.Instance.currentSaveFileName;
         SaveContainer = CreateSaveContainer(saveId);
-        ContractContainer = SaveDataPatch.contractContainer ?? CreateContractContainer(saveId);
+        ContractContainer = CreateContractContainer(saveId);
     }
 
     internal static PersistentDataContainer CreateSaveContainer(string id)

@@ -1,4 +1,8 @@
-# v0.7.5
+# v0.7.6
+
+- Fixed a rare issue where a save's items would be seen in another save.
+
+## v0.7.5
 
 - Fixed multiplayer connection issues.
 - Fixed renaming terminal entries causing duplicates.
