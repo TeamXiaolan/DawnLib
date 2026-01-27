@@ -33,7 +33,7 @@ public class WeatherWeightTransformer : WeightTransformer<DawnWeatherEffectInfo?
 
     public override float GetNewWeight(float currentWeight, DawnWeatherEffectInfo? weatherInfo)
     {
-        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo?.TypedKey ?? NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
+        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo?.TypedKey ?? WeatherKeys.None;
         IEnumerable<NamespacedKey> tags = weatherInfo?.AllTags() ?? Array.Empty<NamespacedKey>();
 
         return WeightTransformerTagLogic.ApplyByKeyOrTags(

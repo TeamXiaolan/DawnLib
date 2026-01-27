@@ -1,4 +1,8 @@
-# v0.7.6
+# v0.7.7
+
+- Fixed an issue where the None weather simply doth not exist.
+
+## v0.7.6
 
 - Fixed a rare issue where a save's items would be seen in another save.
 
