@@ -2,6 +2,7 @@
 
 - Fixed multiplayer connection issues.
 - Fixed renaming terminal entries causing duplicates.
+- Allowed NamespacedKeys to convert digits like `1` into the matching words `one`, this is technically a breaking change in some logic but I doubt anyone will have to adjust anything currently, except maybe me.
 
 ## v0.7.4
 

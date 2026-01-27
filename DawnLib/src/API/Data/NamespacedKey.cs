@@ -55,6 +55,7 @@ public class NamespacedKey : INetworkSerializable
     /// Normalises input into a key / namespace friendly form.
     /// CSharpName = true -> PascalCase (for C# identifiers).
     /// CSharpName = false -> lower_snake_case (for keys / namespaces).
+    /// Digits are converted to words (e.g., '1' -> "one") using NumberWords.
     /// </summary>
     internal static string NormalizeStringForNamespacedKey(string input, bool CSharpName)
     {
@@ -63,27 +64,23 @@ public class NamespacedKey : INetworkSerializable
 
         string cleanedString = NamespacedKeyRegex.Replace(input, string.Empty);
 
-        StringBuilder cleanBuilder = new StringBuilder(cleanedString.Length);
-        bool foundNonLeading = false;
-        foreach (char character in cleanedString)
+        int start = 0;
+        while (start < cleanedString.Length && (cleanedString[start] == ' ' || cleanedString[start] == '_'))
         {
-            if (!foundNonLeading && (char.IsDigit(character) || character == ' '))
-                continue;
-
-            foundNonLeading = true;
-            cleanBuilder.Append(character);
+            start++;
         }
 
-        StringBuilder actualWordBuilder = new StringBuilder(cleanBuilder.Length);
-        foreach (char character in cleanBuilder.ToString())
+        StringBuilder actualWordBuilder = new(cleanedString.Length * 4);
+        for (int i = start; i < cleanedString.Length; i++)
         {
-            if (NumberWords.TryGetValue(character, out var word))
+            char c = cleanedString[i];
+            if (NumberWords.TryGetValue(c, out string word))
             {
                 actualWordBuilder.Append(word);
             }
             else
             {
-                actualWordBuilder.Append(character);
+                actualWordBuilder.Append(c);
             }
         }
 
@@ -91,9 +88,7 @@ public class NamespacedKey : INetworkSerializable
 
         if (CSharpName)
         {
-            result = result.Replace(" ", string.Empty);
-            result = result.Replace("_", string.Empty);
-            result = result.ToCapitalized();
+            result = result.Replace(" ", string.Empty).Replace("_", string.Empty).ToCapitalized();
         }
         else
         {
