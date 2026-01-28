@@ -34,11 +34,11 @@
     <!-- Primary Package References -->
     <ItemGroup>
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
-        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
+        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" Publicize="true" />
         <PackageReference Include="IAmBatby.LethalLevelLoader" Publicize="true" Version="1.4.0" PrivateAssets="all" />
-        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" PrivateAssets="all" Publicize="true"/>
-        <PackageReference Include="mrov-TerminalFormatter" Version="0.2.29" PrivateAssets="all"/>
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="73.0.0-ngd.0" PrivateAssets="all" Publicize="true" />
+        <PackageReference Include="mrov-TerminalFormatter" Version="0.2.29" PrivateAssets="all" />
         <PackageReference Include="Pooble-LCBetterSaves" Version="1.7.3" PrivateAssets="all" />
         <ProjectReference Include="..\DawnLib.Interfaces\DawnLib.Interfaces.csproj" PrivateAssets="all" />
         <ProjectReference Include="..\DawnLib.SourceGen\DawnLib.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -57,7 +57,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
     </ItemGroup>
 
     <!-- Netcode Patcher Post-Build Event -->

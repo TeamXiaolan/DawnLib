@@ -13,6 +13,7 @@ public interface ITerminalKeyword
         Core, //core vanilla keywords that overwriting could severely affect gameplay
         Code, //doors, turrets, etc.
         Moons,
+        Ships,
         Vehicles,
         Store,
         Bestiary,

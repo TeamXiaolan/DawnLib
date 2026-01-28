@@ -38,7 +38,7 @@ static class ShipRegistrationPatch
         modifiedDisplayText = orig(self,modifiedDisplayText, node);
 
         StringBuilder stringBuilder = new StringBuilder();
-        foreach (BuyableShip ship in (List<BuyableShip>)((ITerminalBuyableShips)self).buyableShips)
+        foreach (BuyableShipPreset ship in (List<BuyableShipPreset>)((ITerminalBuyableShips)self).buyableShips)
             stringBuilder.Append("\n* " + ship.ShipName + "  //  Price: $" + ship.Cost);
 
         modifiedDisplayText = modifiedDisplayText.Replace("[buyableShipsList]", stringBuilder.ToString());
@@ -60,28 +60,27 @@ static class ShipRegistrationPatch
 
         //List<BuyableShip> buyableShips = (List<BuyableShip>)((ITerminalBuyableShips)self).buyableShips; //wtf
         //i forgot that this list is not vanila and never initialised
-        List<BuyableShip> buyableShips = new List<BuyableShip>();
+        List <BuyableShipPreset> buyableShips = new List<BuyableShipPreset>();
         int currentShipIndex = 0;
 
         foreach (DuskShipDefinition shipDefinition in DuskModContent.Ships.Values)
         {
-            buyableShips.Add(shipDefinition.Ship);
+            buyableShips.Add(shipDefinition.BuyableShipPreset);
 
             if (DuskModContent.Ships.IsFrozen)
                 continue;
 
-            TerminalKeyword buyDuskShipKeyword = new TerminalKeywordBuilder($"{shipDefinition.Ship.ShipName}BuyKeyword")
-                .SetWord(shipDefinition.Ship.ShipName.ToLowerInvariant())
+            TerminalKeyword buyDuskShipKeyword = new TerminalKeywordBuilder($"{shipDefinition.BuyableShipPreset.ShipName}BuyKeyword", !string.IsNullOrWhiteSpace(shipDefinition.BuyableShipPreset.BuyKeywordText) ? shipDefinition.BuyableShipPreset.BuyKeywordText : $"{shipDefinition.BuyableShipPreset.ShipName.ToLowerInvariant()}", ITerminalKeyword.DawnKeywordType.Ships)
                 .SetDefaultVerb(buyKeyword)
                 .Build();
 
             allKeywordsList.Add(buyDuskShipKeyword);
 
-            TerminalNode confirmDuskNode = new TerminalNodeBuilder($"{shipDefinition.Ship.ShipName}ConfirmPurchaseNode")
-                .SetDisplayText($"Ordered the {shipDefinition.Ship.ShipName}. Your new balance is [playerCredits].\n\nWe are so confident in the quality of this product, it comes with a life-time warranty! If your {shipDefinition.Ship.ShipName} is lost or destroyed, you can get one free replacement.\n")
+            TerminalNode confirmDuskNode = new TerminalNodeBuilder($"{shipDefinition.BuyableShipPreset.ShipName}ConfirmPurchaseNode")
+                .SetDisplayText($"Ordered the {shipDefinition.BuyableShipPreset.ShipName}. Your new balance is [playerCredits].\n\nWe are so confident in the quality of this product, it comes with a life-time warranty! If your {shipDefinition.BuyableShipPreset.ShipName} is lost or destroyed, you can get one free replacement.\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(35)
-                .SetItemCost(shipDefinition.Ship.Cost)
+                .SetItemCost(shipDefinition.BuyableShipPreset.Cost)
                 .SetIsConfirmationNode(true)
                 .Build();
 
@@ -99,11 +98,11 @@ static class ShipRegistrationPatch
                     },
                 ];
 
-            TerminalNode buyDuskNode = new TerminalNodeBuilder($"{shipDefinition.Ship.ShipName}BuyNode")
-                .SetDisplayText($"You have requested to order the {shipDefinition.Ship.ShipName}\n")
+            TerminalNode buyDuskNode = new TerminalNodeBuilder($"{shipDefinition.BuyableShipPreset.ShipName}BuyNode")
+                .SetDisplayText($"You have requested to order the {shipDefinition.BuyableShipPreset.ShipName}\n")
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(15)
-                .SetItemCost(shipDefinition.Ship.Cost)
+                .SetItemCost(shipDefinition.BuyableShipPreset.Cost)
                 .SetOverrideOptions(true)
                 .SetTerminalOptions(buyNodeNouns)
                 .SetTerminalEvent("shipPurchase")

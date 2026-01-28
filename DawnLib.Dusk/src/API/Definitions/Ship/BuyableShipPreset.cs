@@ -6,15 +6,21 @@ using UnityEngine;
 namespace Dusk;
 
 [Serializable]
-public class BuyableShip
+public class BuyableShipPreset
 {
     [field: SerializeField]
     public string ShipName { get; private set; }
+
     [field: SerializeField]
     public GameObject ShipPrefab { get; private set; }
     [field: SerializeField]
     public GameObject NavmeshPrefab { get; private set; }
-    [field: SerializeField]
-    public int Cost { get; private set; }
+
+    public int Cost;
+
+    [TextArea(2, 20)]
+    public string DisplayNodeText;
+
+    public string BuyKeywordText;
 }
 

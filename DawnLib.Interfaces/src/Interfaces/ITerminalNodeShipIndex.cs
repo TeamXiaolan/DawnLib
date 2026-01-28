@@ -1,9 +1,9 @@
-﻿using Dawn.Preloader;
+﻿using InjectionLibrary.Attributes;
 
 namespace Dawn.Interfaces;
 
-[InjectInterface("TerminalNode")]
+[InjectInterface(typeof(Terminal))]
 public interface ITerminalNodeShipIndex
 {
-    public object buyShipIndex { get; set; }
+    public int buyShipIndex { get; set; }
 }
