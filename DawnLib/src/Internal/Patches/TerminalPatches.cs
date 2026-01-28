@@ -7,12 +7,124 @@ using MonoMod.Cil;
 namespace Dawn.Internal;
 static class TerminalPatches
 {
+    internal static event Action OnTerminalAwake = delegate { };
+    internal static event Action OnTerminalDisable = delegate { };
     internal static void Init()
     {
+        On.Terminal.Awake += TerminalAwakeHook;
+        On.Terminal.Start += TerminalStartHook;
+        On.Terminal.OnDisable += TerminalDisableHook;
+        On.Terminal.CheckForExactSentences += CheckForExactSentencesPrefix;
+        On.Terminal.ParseWord += ParseWordPrefix;
+        On.Terminal.ParsePlayerSentence += HandleDawnCommand;
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         On.Terminal.TextPostProcess += UpdateItemPrices;
         IL.Terminal.TextPostProcess += HideResults;
         IL.Terminal.TextPostProcess += UseFailedNameResults;
+    }
+
+
+    private static TerminalKeyword CheckForExactSentencesPrefix(On.Terminal.orig_CheckForExactSentences orig, Terminal self, string playerWord)
+    {
+        //reset last command values to be empty/null
+        //this runs before ParseWordPrefix
+        self.SetLastCommand(string.Empty);
+        self.SetLastVerb(null!);
+        self.SetLastNoun(null!);
+
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
+        {
+            self.UpdateLastKeywordParsed(NonNullResult);
+            self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
+            return NonNullResult;
+        }
+        else
+        {
+            //run original
+            TerminalKeyword vanillaResult = orig(self, playerWord);
+            self.UpdateLastKeywordParsed(vanillaResult);
+            self.SetLastCommand(playerWord);
+            return vanillaResult;
+        }
+
+    }
+
+    private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)
+    {
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
+        {
+            self.UpdateLastKeywordParsed(NonNullResult);
+            self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
+            return NonNullResult;
+        }
+        else
+        {
+            //run original
+            TerminalKeyword vanillaResult = orig(self, playerWord, specificityRequired);
+            self.UpdateLastKeywordParsed(vanillaResult);
+            return vanillaResult;
+        }
+
+    }
+
+    private static void TerminalDisableHook(On.Terminal.orig_OnDisable orig, Terminal self)
+    {
+        //All commands use this event to destroy themselves between lobby loads
+        OnTerminalDisable.Invoke();
+
+        //still need to run the method
+        orig(self);
+    }
+
+    private static void TerminalStartHook(On.Terminal.orig_Start orig, Terminal self)
+    {
+        orig(self);
+
+        //assign priorities to any remaining keywords that have not received a value yet
+        //also assign descriptions/category if unassigned
+        //doing this in start to give time after Terminal.Awake where commands are created
+        foreach (TerminalKeyword keyword in self.terminalNodes.allKeywords)
+        {
+            keyword.TryAssignType();
+            if (string.IsNullOrEmpty(keyword.GetKeywordCategory()))
+            {
+                keyword.SetKeywordCategory(keyword.GetKeywordPriority().ToString());
+            }
+
+            if (string.IsNullOrEmpty(keyword.GetKeywordDescription()))
+            {
+                if (keyword.TryGetKeywordInfoText(out string result))
+                {
+                    keyword.SetKeywordDescription(result.Trim());
+                }
+                else
+                {
+                    keyword.SetKeywordDescription($"No information on the terminal keyword [ {keyword.word} ]");
+                }
+            }
+        }
+    }
+
+    private static void TerminalAwakeHook(On.Terminal.orig_Awake orig, Terminal self)
+    {
+        orig(self);
+        //below will have many terminal commands begin building on the below invoke
+        //only commands with a custom defined build event will not use this event
+        OnTerminalAwake.Invoke();
+    }
+
+    private static TerminalNode HandleDawnCommand(On.Terminal.orig_ParsePlayerSentence orig, Terminal self)
+    {
+        //Get vanilla result
+        TerminalNode terminalNode = orig(self);
+
+        //updates the node's displaytext based on it's NodeFunction Func<string> that was injected (if not null)
+        if (terminalNode.HasCommandFunction())
+        {
+            terminalNode.displayText = terminalNode.GetCommandFunction().Invoke();
+        }
+
+        return terminalNode;
     }
 
     // this is currently a separate function because this is very specific to vanilla
@@ -164,11 +276,11 @@ static class TerminalPatches
                 TerminalPurchaseResult result = info.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
-                    if (failedResult.OverrideName != null)
+                    if (!string.IsNullOrEmpty(failedResult.OverrideName))
                     {
                         Debuggers.Unlockables?.Log($"Overriding name of {info.Key} with {failedResult.OverrideName}");
+                        return failedResult.OverrideName;
                     }
-                    return failedResult.OverrideName;
                 }
 
                 return unlockable.unlockableName;
@@ -214,7 +326,7 @@ static class TerminalPatches
                 orig(self, node);
                 return;
             }
-            DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
+            DawnUnlockableItemInfo info = unlockableItem.GetDawnInfo();
             purchase = info.DawnPurchaseInfo;
         }
 
@@ -234,13 +346,13 @@ static class TerminalPatches
             {
                 Debuggers.Patching?.Log($"predicate fail");
 
-                orig(self, failedResult.ReasonNode);
+                self.LoadNewNode(failedResult.ReasonNode);
                 return;
             }
 
             if (result is TerminalPurchaseResult.HiddenPurchaseResult hiddenResult && hiddenResult.IsFailure)
             {
-                Debuggers.Patching?.Log($"predicate hidden");
+                Debuggers.Patching?.Log($"predicate hidden failure");
 
                 self.LoadNewNode(hiddenResult.ReasonNode);
                 return; // skip orig

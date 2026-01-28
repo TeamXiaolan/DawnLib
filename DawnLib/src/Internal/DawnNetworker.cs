@@ -12,7 +12,6 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal static EntranceTeleport[] _entrancePoints = [];
     public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
 
-    internal System.Random DawnLibRandom = new();
     internal event Action OnSave = delegate { };
     internal PersistentDataContainer SaveContainer { get; private set; }
     internal PersistentDataContainer ContractContainer { get; private set; }
@@ -22,12 +21,11 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         if (StartOfRound.Instance == null)
             return;
 
-        DawnLibRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 6969);
         StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
 
         string saveId = GameNetworkManager.Instance.currentSaveFileName;
         SaveContainer = CreateSaveContainer(saveId);
-        ContractContainer = SaveDataPatch.contractContainer ?? CreateContractContainer(saveId);
+        ContractContainer = CreateContractContainer(saveId);
     }
 
     internal static PersistentDataContainer CreateSaveContainer(string id)
@@ -47,11 +45,12 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         if (!NetworkManager.Singleton.IsHost)
             return;
 
-        if (!DawnConfig.DisableDawnItemSaving)
+        if (!DawnConfig.DisableDawnItemSaving.Value)
         {
             ItemSaveDataHandler.SaveAllItems(DawnLib.GetCurrentContract()!);
         }
-        if (!DawnConfig.DisableDawnUnlockableSaving)
+
+        if (!DawnConfig.DisableDawnUnlockableSaving.Value)
         {
             UnlockableSaveDataHandler.SaveAllUnlockables(DawnLib.GetCurrentContract()!);
         }

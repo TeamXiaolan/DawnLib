@@ -10,11 +10,11 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
 
     public class EnemyLocationBuilder
     {
-        private ProviderTable<int?, DawnMoonInfo>? _weights;
+        private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>? _weights;
         private EnemyInfoBuilder _parent;
-        public EnemyLocationBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo>> callback)
+        public EnemyLocationBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
         {
-            WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
+            WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
             callback(builder);
             _weights = builder.Build();
             return this;
@@ -30,7 +30,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"Enemy '{_parent.key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
+                _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
             }
             return new DawnEnemyLocationInfo(_weights);
         }
@@ -83,8 +83,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
             wordOverride = value.enemyName.ToLowerInvariant();
         }
 
-        _nameKeyword = new TerminalKeywordBuilder($"{value.enemyName}NameKeyword")
-            .SetWord(wordOverride)
+        _nameKeyword = new TerminalKeywordBuilder($"{value.enemyName}NameKeyword", wordOverride, ITerminalKeyword.DawnKeywordType.Bestiary)
             .Build();
 
         return this;

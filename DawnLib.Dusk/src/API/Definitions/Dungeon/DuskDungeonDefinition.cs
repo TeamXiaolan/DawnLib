@@ -70,6 +70,8 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             builder.SetAssetBundlePath(mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             builder.SetFirstTimeAudio(StingerAudio);
+            builder.OverrideStingerPlaysMoreThanOnce(StingerPlaysMoreThanOnce);
+            builder.OverrideStingerPlayChance(StingerPlayChance);
             builder.SetDungeonRangeClamp(DungeonRangeClamp);
             builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
             ApplyTagsTo(builder);

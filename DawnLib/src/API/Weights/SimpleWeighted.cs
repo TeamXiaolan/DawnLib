@@ -4,9 +4,22 @@ public class SimpleWeighted(int weight) : IWeighted
     public int GetWeight() => weight;
 }
 
-public class SimpleWeightContextualProvider<TBase>(IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
+public interface IContextualWeighted<in TContext>
 {
-    public int? Provide(TBase info) => weight.GetWeight();
+    int GetWeight(TContext ctx);
+}
+
+public static class WeightedExtensions
+{
+    public static int GetWeight<TContext>(this IWeighted weighted, in TContext ctx)
+    {
+        if (weighted is IContextualWeighted<TContext> contextual)
+        {
+            return contextual.GetWeight(ctx);
+        }
+
+        return weighted.GetWeight();
+    }
 }
 
 public class SimpleContextualProvider<T, TBase>(T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
@@ -32,20 +45,23 @@ public class HasTagContextualProvider<T, TBase>(NamespacedKey tag, T value) : IC
     }
 }
 
-public class MatchingKeyWeightContextualProvider<TBase>(NamespacedKey<TBase> targetKey, IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
+public sealed class MatchingKeyWeightContextualProvider<TBase, TContext>(NamespacedKey<TBase> targetKey, IWeighted weight) : IContextualProvider<int?, TBase, TContext> where TBase : INamespaced<TBase>
 {
-    public int? Provide(TBase info)
+    public int? Provide(TBase info, TContext ctx) => Equals(info.Key, targetKey) ? weight.GetWeight(ctx) : null;
+}
+
+public sealed class HasTagWeightContextualProvider<TBase, TContext>(NamespacedKey tag, IWeighted weight) : IContextualProvider<int?, TBase, TContext> where TBase : INamespaced<TBase>, ITaggable
+{
+    public int? Provide(TBase info, TContext ctx)
     {
-        return Equals(info.Key, targetKey) ? weight.GetWeight() : null;
+        if (!info.HasTag(tag))
+            return null;
+
+        return weight.GetWeight(ctx);
     }
 }
 
-public class HasTagWeightContextualProvider<TBase>(NamespacedKey tag, IWeighted weight) : IContextualProvider<int?, TBase> where TBase : INamespaced<TBase>
+public sealed class SimpleWeightContextualProvider<TBase, TContext>(IWeighted weight) : IContextualProvider<int?, TBase, TContext> where TBase : INamespaced<TBase>
 {
-    public int? Provide(TBase info)
-    {
-        if (info is not ITaggable taggable) return null;
-        if (!taggable.HasTag(tag)) return null;
-        return weight.GetWeight();
-    }
+    public int? Provide(TBase info, TContext ctx) => weight.GetWeight(ctx);
 }

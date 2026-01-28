@@ -18,6 +18,7 @@ namespace Dawn;
 [BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 [BepInDependency(TerminalFormatter.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.github.WhiteSpike.MoonDaySpeedMultiplierPatcher", BepInDependency.DependencyFlags.SoftDependency)]
 public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
@@ -31,7 +32,7 @@ public class DawnPlugin : BaseUnityPlugin
         Debuggers.Bind(Config);
         DawnConfig.Bind(Config);
 
-        if (DawnConfig.CreateTagExport)
+        if (DawnConfig.CreateTagExport.Value)
         {
             TagExporter.Init();
         }
@@ -78,6 +79,9 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
 
+        // Testing
+        // DawnTesting.TestCommands();
+
         _harmony.PatchAll(Assembly.GetExecutingAssembly());
 
         DawnNetworkSceneManager.Init();
@@ -93,6 +97,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
         DebugPrintRegistryResult("Story Logs", LethalContent.StoryLogs, storyLogInfo => storyLogInfo.StoryLogTerminalNode.creatureName);
         DebugPrintRegistryResult("Surfaces", LethalContent.Surfaces, surfaceInfo => surfaceInfo.Surface.surfaceTag);
+        DebugPrintRegistryResult("Terminal Commands", LethalContent.TerminalCommands, commandInfo => commandInfo.ResultNode.name);
 
         PersistentData = this.GetPersistentDataContainer();
         PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);

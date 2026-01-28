@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Dawn.Internal;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -42,6 +41,7 @@ static class SurfaceRegistrationHandler
         {
             return;
         }
+
         for (int i = 0; i < startOfRound.footstepSurfaces.Length; i++)
         {
             FootstepSurface? surface = startOfRound.footstepSurfaces[i];
@@ -65,7 +65,7 @@ static class SurfaceRegistrationHandler
                 continue;
             }
 
-            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, i, null);
+            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.SetDawnInfo(surfaceInfo);
         }
@@ -85,7 +85,6 @@ static class SurfaceRegistrationHandler
             .Insert(
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
-                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex))),
                 new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndex))),
@@ -107,7 +106,6 @@ static class SurfaceRegistrationHandler
             .Insert(
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.enemyRayHit))),
-                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.currentFootstepSurfaceIndex))),
                 new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndex))),
@@ -116,12 +114,16 @@ static class SurfaceRegistrationHandler
             .InstructionEnumeration();
     }
 
-    private static bool TryGetAndSetDawnSurfaceIndex(Collider collider, ref int currentFootstepSurfaceIndex)
+    private static bool TryGetAndSetDawnSurfaceIndex(ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
     {
-        if (collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
+        if (hit.collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
         {
             currentFootstepSurfaceIndex = surface.SurfaceIndex;
-
+            DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
+            if (surfaceInfo.SurfaceVFXPrefab != null)
+            {
+                FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
+            }
             return true; // DawnSurface found, return early!
         }
 

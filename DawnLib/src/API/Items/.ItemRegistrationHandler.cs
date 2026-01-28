@@ -140,27 +140,42 @@ static class ItemRegistrationHandler
                 };
                 level.spawnableScrap.Add(spawnableItemWithRarity);
             }
-            spawnableItemWithRarity.rarity = scrapInfo.Weights.GetFor(level.GetDawnInfo()) ?? 0;
+            SpawnWeightContext ctx = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo() ??  null);
+            spawnableItemWithRarity.rarity = scrapInfo.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
         }
     }
 
     private static void FreezeItemContent()
     {
-        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> itemWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> itemWeightBuilder = new();
         Dictionary<string, DawnShopItemInfo> itemsWithShopInfo = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
-
-            foreach (SpawnableItemWithRarity itemWithRarity in level.spawnableScrap)
+            Dictionary<Item, SpawnableItemWithRarity> nonRepeatSpawnableScrapDict = new();
+            for (int i = level.spawnableScrap.Count - 1; i >= 0; i--)
             {
-                if (!itemWeightBuilder.TryGetValue(itemWithRarity.spawnableItem.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                SpawnableItemWithRarity itemWithRarity = level.spawnableScrap[i];
+                if (nonRepeatSpawnableScrapDict.ContainsKey(itemWithRarity.spawnableItem))
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
-                    itemWeightBuilder[itemWithRarity.spawnableItem.name] = weightTableBuilder;
+                    DawnPlugin.Logger.LogWarning($"Duplicate item found in level {level.PlanetName} with name {itemWithRarity.spawnableItem.name}, adding weight to previous entry to avoid issues.");
+                    level.spawnableScrap.Remove(itemWithRarity);
+                    nonRepeatSpawnableScrapDict[itemWithRarity.spawnableItem].rarity += itemWithRarity.rarity;
+                    continue;
                 }
-                Debuggers.Items?.Log($"Adding weight {itemWithRarity.rarity} to {itemWithRarity.spawnableItem.name} on level {level.PlanetName}");
-                weightTableBuilder.AddWeight(moonInfo.TypedKey, itemWithRarity.rarity);
+
+                nonRepeatSpawnableScrapDict[itemWithRarity.spawnableItem] = itemWithRarity;
+            }
+
+            foreach ((Item item, SpawnableItemWithRarity spawnableItemWithRarity) in nonRepeatSpawnableScrapDict)
+            {
+                if (!itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
+                {
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+                    itemWeightBuilder[item.name] = weightTableBuilder;
+                }
+                Debuggers.Items?.Log($"Adding weight {spawnableItemWithRarity.rarity} to {item.name} on level {level.PlanetName}");
+                weightTableBuilder.AddWeight(moonInfo.TypedKey, spawnableItemWithRarity.rarity);
             }
         }
 
@@ -262,7 +277,7 @@ static class ItemRegistrationHandler
                 item.SetDawnInfo(LethalContent.Items[key]);
                 continue;
             }
-            itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
+            itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
             DawnScrapItemInfo? scrapInfo = null;
             itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);
 
@@ -371,14 +386,12 @@ static class ItemRegistrationHandler
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
 
-        TerminalKeyword buyItemKeyword = ScriptableObject.CreateInstance<TerminalKeyword>();
-        buyItemKeyword.name = simplifiedItemName;
-        buyItemKeyword.word = simplifiedItemName;
-        buyItemKeyword.isVerb = false;
-        buyItemKeyword.compatibleNouns = null;
-        buyItemKeyword.specialKeywordResult = null;
-        buyItemKeyword.defaultVerb = buyKeyword;
-        buyItemKeyword.accessTerminalObjects = false;
+        TerminalKeyword buyItemKeyword = new TerminalKeywordBuilder(simplifiedItemName, simplifiedItemName, ITerminalKeyword.DawnKeywordType.Store)
+            .SetIsVerb(false)
+            .SetDefaultVerb(buyKeyword)
+            .SetAccessTerminalObjects(false)
+            .Build();
+
         newTerminalKeywords.Add(buyItemKeyword);
 
         TerminalNode receiptNode = shopInfo.ReceiptNode;

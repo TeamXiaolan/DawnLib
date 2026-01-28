@@ -7,9 +7,12 @@ namespace Dawn;
 
 public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
+
+        OutsideEnemiesProbabilityRange = outsideEnemiesProbabilityRange;
+
         Scenes.AddRange(scenes);
 
         RouteNode = routeNode;
@@ -23,6 +26,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     public TerminalNode? RouteNode { get; }
     public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
+    public float OutsideEnemiesProbabilityRange { get; private set; }
 
     public List<IMoonSceneInfo> Scenes { get; } = [];
 
@@ -48,7 +52,9 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
         string newName = StripSpecialCharacters(Level.PlanetName);
         // -> Example
         if (!newName.EndsWith("Level", true, CultureInfo.InvariantCulture))
+        {
             newName += "Level";
+        }
         // -> ExampleLevel
         newName = newName.ToLowerInvariant();
         // -> examplelevel

@@ -6,6 +6,7 @@ public enum CompatibilityBool
     Never,
     Always,
     IfVersionMatches,
+    IfMajorVersionMatches,
 }
 
 public static class CompatibilityBoolExtensions
@@ -16,7 +17,8 @@ public static class CompatibilityBoolExtensions
         {
             CompatibilityBool.Never => false,
             CompatibilityBool.Always => true,
-            CompatibilityBool.IfVersionMatches => Version.Parse(compatibilityVersion) == currentModVersion, // todo: support doing like 2.*
+            CompatibilityBool.IfVersionMatches => Version.Parse(compatibilityVersion) == currentModVersion,
+            CompatibilityBool.IfMajorVersionMatches => Version.Parse(compatibilityVersion).Major == currentModVersion.Major,
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }

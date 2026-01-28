@@ -4,34 +4,28 @@ namespace Dawn;
 
 public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurface, SurfaceInfoBuilder>
 {
-    /* private string _surfaceTag;
-    private AudioClip[]? _surfaceClips = null;
-    private AudioClip? _hitSurfaceSFX = null; */
+    private GameObject? _surfaceVFXPrefab = null;
+    private Vector3 _surfaceVFXOffset = Vector3.zero;
 
     internal SurfaceInfoBuilder(NamespacedKey<DawnSurfaceInfo> key, FootstepSurface value) : base(key, value)
     {
     }
 
-    /* public SurfaceInfoBuilder SetSurfaceTag(string surfaceTag)
+    public SurfaceInfoBuilder SetSurfaceVFXPrefab(GameObject surfaceVFXPrefab)
     {
-        _surfaceTag = surfaceTag;
+        _surfaceVFXPrefab = surfaceVFXPrefab;
         return this;
     }
 
-    public SurfaceInfoBuilder SetSurfaceClips(params AudioClip[] surfaceClips)
+    public SurfaceInfoBuilder OverrideSurfaceVFXOffset(Vector3 surfaceVFXOffset)
     {
-        _surfaceClips = [.. surfaceClips];
+        _surfaceVFXOffset = surfaceVFXOffset;
         return this;
     }
-
-    public SurfaceInfoBuilder SetHitSurfaceSFX(AudioClip hitSurfaceSFX)
-    {
-        _hitSurfaceSFX = hitSurfaceSFX;
-        return this;
-    } */
 
     override internal DawnSurfaceInfo Build()
     {
-        return new DawnSurfaceInfo(key, [], value, -1, customData);
+        value.surfaceTag = "AnomalyObject";
+        return new DawnSurfaceInfo(key, [], value, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
     }
 }

@@ -16,12 +16,12 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     internal List<SpawnSyncedObject> spawnSyncedObjects = new();
     internal List<Tile> tiles = new();
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo> weights, float mapTileSize, AudioClip? firstTimeAudio, string assetBundlePath, BoundedRange dungeonClampRange, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weights, float mapTileSize, DawnStingerDetail stingerDetail, string assetBundlePath, BoundedRange dungeonClampRange, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         Weights = weights;
         MapTileSize = mapTileSize;
-        FirstTimeAudio = firstTimeAudio;
+        StingerDetail = stingerDetail;
         AssetBundlePath = assetBundlePath;
         DungeonClampRange = dungeonClampRange;
 
@@ -84,9 +84,9 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 
     public DungeonFlow DungeonFlow { get; }
     public string AssetBundlePath { get; }
-    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
+    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weights { get; private set; }
     public float MapTileSize { get; private set; }
-    public AudioClip? FirstTimeAudio { get; }
+    public DawnStingerDetail StingerDetail { get; private set; }
     public BoundedRange DungeonClampRange { get; private set; }
 
     public IReadOnlyList<Tile> Tiles => tiles.AsReadOnly();

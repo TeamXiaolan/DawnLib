@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using UnityEngine;
@@ -8,12 +9,29 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)
     {
-        string[] pairs = new string[value.keys.Length];
-        for (int i = 0; i < value.keys.Length; i++)
+        if (value == null || value.keys.Length == 0)
         {
-            Keyframe keyframe = value.keys[i];
-            string timeStr = keyframe.time.ToString("0.00", CultureInfo.InvariantCulture);
-            string valueStr = keyframe.value.ToString("0.00", CultureInfo.InvariantCulture);
+            return ConvertToString(AnimationCurve.Constant(0, 1, 0));
+        }
+
+        const int minSamples = 10;
+
+        Keyframe[] keys = value.keys;
+        float startTime = keys[0].time;
+        float endTime = keys[^1].time;
+
+        int sampleCount = Math.Max(minSamples, keys.Length);
+
+        string[] pairs = new string[sampleCount];
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float delta = i / (sampleCount - 1f);
+            float t = Mathf.Lerp(startTime, endTime, delta);
+            float v = value.Evaluate(t);
+
+            string timeStr = t.ToString("0.00", CultureInfo.InvariantCulture);
+            string valueStr = v.ToString("0.00", CultureInfo.InvariantCulture);
 
             pairs[i] = $"{timeStr}, {valueStr}";
         }
@@ -22,8 +40,7 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 
     protected override AnimationCurve ConvertToObject(string keyValuePairs)
     {
-        // Split the input string into individual key-value pairs
-        string[] pairs = keyValuePairs.Split(';').Select(s => s.Trim()).ToArray();
+        string[] pairs = keyValuePairs.Split(';', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToArray();
         if (pairs.Length == 0)
         {
             if (int.TryParse(keyValuePairs, out int result))
@@ -35,7 +52,6 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
         }
         List<Keyframe> keyframes = new();
 
-        // Iterate over each pair and parse the key and value to create keyframes
         foreach (string pair in pairs)
         {
             string[] splitPair = pair.Split(',').Select(s => s.Trim()).ToArray();
@@ -48,11 +64,12 @@ class AnimationCurveConverter : TOMLConverter<AnimationCurve>
             else
             {
                 // this maybe shouldn't be an exception, but i don't really care.
-                throw new MalformedAnimationCurveConfigException(pair);
+                MalformedAnimationCurveConfigException malformedAnimationCurveConfigException = new MalformedAnimationCurveConfigException(pair);
+                malformedAnimationCurveConfigException.LogNicely(DawnPlugin.Logger);
+                throw malformedAnimationCurveConfigException;
             }
         }
 
-        // Create the animation curve with the generated keyframes and apply smoothing
         AnimationCurve curve = new(keyframes.ToArray());
         /*for (int i = 0; i < keyframes.Count; i++)
         {

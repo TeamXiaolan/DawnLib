@@ -10,9 +10,12 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
 {
     private float _mapTileSize = 0f;
     private AudioClip? _firstTimeAudio = null;
-    private ProviderTable<int?, DawnMoonInfo> _weights;
+    private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> _weights;
     private string _assetBundlePath = string.Empty;
     private BoundedRange _dungeonRangeClamp = new BoundedRange(0, 0);
+    private bool _stingerPlaysMoreThanOnce = false;
+    private float _stingerPlayChance = 100f;
+    private FuncProvider<bool> _allowStingerToPlay = new FuncProvider<bool>(() => true);
 
     internal DungeonFlowInfoBuilder(NamespacedKey<DawnDungeonInfo> key, DungeonFlow value) : base(key, value)
     {
@@ -118,9 +121,21 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
-    public DungeonFlowInfoBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo>> callback)
+    public DungeonFlowInfoBuilder OverrideStingerPlaysMoreThanOnce(bool stingerPlaysMoreThanOnce)
     {
-        WeightTableBuilder<DawnMoonInfo> builder = new WeightTableBuilder<DawnMoonInfo>();
+        _stingerPlaysMoreThanOnce = stingerPlaysMoreThanOnce;
+        return this;
+    }
+
+    public DungeonFlowInfoBuilder OverrideStingerPlayChance(float stingerPlayChance)
+    {
+        _stingerPlayChance = stingerPlayChance;
+        return this;
+    }
+
+    public DungeonFlowInfoBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
+    {
+        WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
         callback(builder);
         _weights = builder.Build();
         return this;
@@ -132,13 +147,21 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
+    public DungeonFlowInfoBuilder OverrideAllowStingerToPlay(FuncProvider<bool> allowStingerToPlay)
+    {
+        _allowStingerToPlay = allowStingerToPlay;
+        return this;
+    }
+
     override internal DawnDungeonInfo Build()
     {
         if (_weights == null)
         {
             DawnPlugin.Logger.LogWarning($"DungeonFlow '{key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-            _weights = ProviderTable<int?, DawnMoonInfo>.Empty();
+            _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
         }
-        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, _firstTimeAudio, _assetBundlePath, _dungeonRangeClamp, customData);
+
+        DawnStingerDetail stingerDetail = new DawnStingerDetail(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
+        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, customData);
     }
 }

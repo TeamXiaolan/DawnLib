@@ -1,14 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Dawn;
 public class TerminalNodeBuilder
 {
+    internal static List<TerminalNode> _terminalNodes = new();
     private TerminalNode _node;
 
     internal TerminalNodeBuilder(string name)
     {
         _node = ScriptableObject.CreateInstance<TerminalNode>();
         _node.name = name;
+
+        _terminalNodes.Add(_node);
     }
 
     public TerminalNodeBuilder SetTerminalEvent(string eventName)
@@ -92,6 +97,12 @@ public class TerminalNodeBuilder
     public TerminalNodeBuilder SetPlaySyncedClip(int clipIndex)
     {
         _node.playSyncedClip = clipIndex;
+        return this;
+    }
+
+    public TerminalNodeBuilder AddNodeFunction(Func<string> _function)
+    {
+        _node.SetNodeFunction(_function);
         return this;
     }
 

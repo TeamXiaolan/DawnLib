@@ -53,9 +53,8 @@ public class StoryLogInfoBuilder : BaseInfoBuilder<DawnStoryLogInfo, GameObject,
             DawnPlugin.Logger.LogWarning($"StoryLog: '{key}' didn't set keyword, please call .SetKeyword on the builder.");
         }
 
-        TerminalKeyword storyLogTerminalKeyword = new TerminalKeywordBuilder($"{key}TerminalKeyword")
-                                    .SetWord(_storyLogKeyword)
-                                    .Build();
+        TerminalKeyword storyLogTerminalKeyword = new TerminalKeywordBuilder($"{key}TerminalKeyword", _storyLogKeyword, ITerminalKeyword.DawnKeywordType.SigurdLog)
+            .Build();
 
         return new DawnStoryLogInfo(key, tags, value, _storyLogTerminalNode, storyLogTerminalKeyword, customData);
     }

@@ -3,10 +3,10 @@
 ## Xu
 
 - Autoscroll feature.
-- Moon day speed multiplier patcher patch.
 - DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool.
 - Dead body additions.
 - Handling vehicle no station equaling magnet station.
+- Move vehicle registration to Dawn from dusk.
 
 less important:
 

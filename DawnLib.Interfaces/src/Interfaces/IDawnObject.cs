@@ -14,6 +14,7 @@ namespace Dawn.Interfaces;
 [InjectInterface(typeof(DunGen.Graph.DungeonFlow))]
 [InjectInterface(typeof(BuyableVehicle))]
 [InjectInterface(typeof(FootstepSurface))]
+[InjectInterface(typeof(TerminalNode))]
 public interface IDawnObject
 {
     object DawnInfo { get; set; }

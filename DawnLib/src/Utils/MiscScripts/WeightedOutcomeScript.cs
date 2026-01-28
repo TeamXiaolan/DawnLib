@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Dawn.Utils;
 [DefaultExecutionOrder(-999)]
-[AddComponentMenu("Dawn/Misc Utils/Synced Weighted Outcomes")]
+[AddComponentMenu($"{DawnConstants.AudioComponents}/Synced Weighted Outcomes")]
 public class WeightedOutcomeScript : NetworkBehaviour
 {
     [Serializable]

@@ -1,4 +1,3 @@
-using Dawn.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,10 +19,15 @@ public class AmbientNoisePlayer : MonoBehaviour
 
     private bool _canPlaySounds = true;
     private float _idleTimer = 0f;
+    private System.Random random;
+
+    private static int instances = 0;
 
     public void Start()
     {
-        _idleTimer = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
+        random = new System.Random(StartOfRound.Instance.randomMapSeed + instances);
+        instances++;
+        _idleTimer = random.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
         if (!_playOnStart)
             return;
 
@@ -47,8 +51,8 @@ public class AmbientNoisePlayer : MonoBehaviour
         if (_idleAudioClips.audioClips.Length <= 0)
             return;
 
-        _idleTimer = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
-        _ambientAudioSource.PlayOneShot(_idleAudioClips.audioClips[DawnNetworker.Instance!.DawnLibRandom.Next(_idleAudioClips.audioClips.Length)]);
+        _idleTimer = random.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
+        _ambientAudioSource.PlayOneShot(_idleAudioClips.audioClips[random.Next(_idleAudioClips.audioClips.Length)]);
         _onAmbientSoundPlayed.Invoke();
     }
 
@@ -59,7 +63,7 @@ public class AmbientNoisePlayer : MonoBehaviour
 
     public void ResetAmbientTimer()
     {
-        _idleTimer = DawnNetworker.Instance!.DawnLibRandom.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
+        _idleTimer = random.NextFloat(_idleAudioClips.minTime, _idleAudioClips.maxTime);
     }
 
     public void ForcePlayAmbientSound()

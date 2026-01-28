@@ -3,14 +3,13 @@ using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using Unity.Netcode;
 
 namespace Dawn.Internal;
 
 [HarmonyPatch]
 static class SaveDataPatch
 {
-    internal static PersistentDataContainer? contractContainer;
-
     internal static void Init()
     {
         On.MenuManager.Start += LCBetterSaveInit;
@@ -35,6 +34,18 @@ static class SaveDataPatch
     {
         UnlockableSaveDataHandler.placeableShipObjects.Add(self);
         orig(self);
+        if (self.parentObject == null)
+        {
+            DawnPlugin.Logger.LogError($"Parent object is null for object: {self.gameObject.name}");
+            return;
+        }
+
+        if (self.parentObject.NetworkObject == null)
+        {
+            DawnPlugin.Logger.LogError($"Network object is null for object: {self.parentObject.gameObject.name}");
+            return;
+        }
+
         self.parentObject.NetworkObject.OnSpawn(() =>
         {
             if (!self.parentObject.NetworkObject.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject, true))
@@ -53,25 +64,29 @@ static class SaveDataPatch
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.LoadUnlockables)), HarmonyPrefix]
     static bool LoadUnlockables()
     {
-        if (DawnConfig.DisableDawnUnlockableSaving)
+        if (DawnConfig.DisableDawnUnlockableSaving.Value)
         {
             return true;
         }
 
-        contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
-        UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
+        if (NetworkManager.Singleton.IsServer)
+        {
+            PersistentDataContainer contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+            UnlockableSaveDataHandler.LoadSavedUnlockables(contractContainer);
+        }
+
         return false;
     }
 
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.LoadShipGrabbableItems)), HarmonyPrefix]
     static bool LoadShipGrabbableItems()
     {
-        if (DawnConfig.DisableDawnItemSaving)
+        if (DawnConfig.DisableDawnItemSaving.Value)
         {
             return true;
         }
 
-        contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
+        PersistentDataContainer contractContainer = DawnLib.GetCurrentContract() ?? DawnNetworker.CreateContractContainer(GameNetworkManager.Instance.currentSaveFileName);
         ItemSaveDataHandler.LoadSavedItems(contractContainer);
         return false;
     }
@@ -85,11 +100,11 @@ static class SaveDataPatch
     [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SaveItemsInShip)), HarmonyPrefix]
     static bool SaveData()
     {
-        if (DawnConfig.DisableDawnItemSaving)
+        DawnNetworker.Instance?.SaveData();
+        if (DawnConfig.DisableDawnItemSaving.Value)
         {
             return true;
         }
-        DawnNetworker.Instance?.SaveData();
         return false;
     }
 

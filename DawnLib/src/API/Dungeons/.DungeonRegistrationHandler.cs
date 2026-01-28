@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dawn.Internal;
@@ -45,6 +46,8 @@ static class DungeonRegistrationHandler
             orig(self);
         };
         LethalContent.Dungeons.BeforeFreeze += CleanDawnDungeonReferences;
+
+        On.EntranceTeleport.TeleportPlayer += HandleStingerAudio;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>
         {
             self.GenerateOnStart = false;
@@ -57,6 +60,52 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static readonly NamespacedKey StingerPlayedKey = NamespacedKey.From("dawn_lib", "played_stinger_once_before");
+    private static void HandleStingerAudio(On.EntranceTeleport.orig_TeleportPlayer orig, EntranceTeleport self)
+    {
+        if (!self.checkedForFirstTime)
+        {
+            self.checkedForFirstTime = true;
+            DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+            if (dungeonInfo.StingerDetail.FirstTimeAudio == null)
+            {
+                orig(self);
+                return;
+            }
+
+            if (!dungeonInfo.StingerDetail.AllowStingerToPlay.Provide())
+            {
+                orig(self);
+                return;
+            }
+
+            if (!dungeonInfo.CustomData.TryGet(StingerPlayedKey, out bool hasPlayedStingerBefore))
+            {
+                DawnPlugin.Logger.LogError($"Failed to get {StingerPlayedKey} from dungeon: {dungeonInfo.Key}.");
+                orig(self);
+                return;
+            }
+
+            if (hasPlayedStingerBefore && !dungeonInfo.StingerDetail.PlaysMoreThanOnce)
+            {
+                orig(self);
+                return;
+            }
+
+            float chanceRoll = UnityEngine.Random.Range(0f, 100f);
+            if (chanceRoll > dungeonInfo.StingerDetail.PlayChance)
+            {
+                orig(self);
+                return;
+            }
+
+            Debuggers.Dungeons?.Log($"Playing dungeon stinger for dungeon {dungeonInfo.Key}, alreadyPlayed: {hasPlayedStingerBefore} (Chance Roll: {chanceRoll} <= {dungeonInfo.StingerDetail.PlayChance})");
+            dungeonInfo.CustomData.Set(StingerPlayedKey, true);
+            self.StartCoroutine(self.playMusicOnDelay());
+        }
+        orig(self);
     }
 
     private static void FixRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
@@ -271,7 +320,8 @@ static class DungeonRegistrationHandler
             if (dungeonInfo.ShouldSkipRespectOverride())
                 continue;
 
-            intWithRarity.rarity = dungeonInfo.Weights?.GetFor(level.GetDawnInfo()) ?? 0;
+            SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+            intWithRarity.rarity = dungeonInfo.Weights?.GetFor(ctx.Moon!, ctx) ?? 0;
         }
     }
 
@@ -309,7 +359,7 @@ static class DungeonRegistrationHandler
             {
                 dungeonFlow = dungeonInfo.DungeonFlow,
                 MapTileSize = dungeonInfo.MapTileSize,
-                firstTimeAudio = dungeonInfo.FirstTimeAudio,
+                firstTimeAudio = dungeonInfo.StingerDetail.FirstTimeAudio,
             };
             newIndoorMapTypes.Add(indoorMapType);
         }
@@ -319,7 +369,7 @@ static class DungeonRegistrationHandler
 
     private static void CollectNonDawnDungeons()
     {
-        Dictionary<string, WeightTableBuilder<DawnMoonInfo>> dungeonWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> dungeonWeightBuilder = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
@@ -332,9 +382,9 @@ static class DungeonRegistrationHandler
             foreach (IntWithRarity intWithRarity in intsWithRarity)
             {
                 DungeonFlow dungeonFlow = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow;
-                if (!dungeonWeightBuilder.TryGetValue(dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo> weightTableBuilder))
+                if (!dungeonWeightBuilder.TryGetValue(dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo>();
+                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
                     dungeonWeightBuilder[dungeonFlow.name] = weightTableBuilder;
                 }
                 Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonFlow.name} on level {level.PlanetName}");
@@ -376,10 +426,17 @@ static class DungeonRegistrationHandler
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(indoorMapType.dungeonFlow, tags);
 
-            dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo>? weightTableBuilder);
-            weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo>();
+            dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
+            weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
 
-            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, indoorMapType.firstTimeAudio, string.Empty, dungeonRangeClamp, null);
+            PersistentDataContainer customData = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{key.Namespace}_{key.Key}"));
+            if (!customData.Has(StingerPlayedKey))
+            {
+                customData.Set(StingerPlayedKey, false);
+            }
+
+            DawnStingerDetail stingerDetail = new DawnStingerDetail(indoorMapType.firstTimeAudio, false, 100f, new FuncProvider<bool>(() => true));
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, stingerDetail, string.Empty, dungeonRangeClamp, customData);
             indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }

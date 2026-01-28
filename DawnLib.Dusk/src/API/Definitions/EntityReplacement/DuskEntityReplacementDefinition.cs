@@ -63,7 +63,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public string WeatherSpawnWeights { get; private set; }
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
-    public ProviderTable<int?, DawnMoonInfo> Weights { get; private set; }
+    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weights { get; private set; }
     public EntityReplacementConfig Config { get; private set; }
 
     public override void TryNetworkRegisterAssets()
@@ -81,7 +81,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     {
         if (IsDefault)
         {
-            Weights = new WeightTableBuilder<DawnMoonInfo>().SetGlobalWeight(100).Build();
+            Weights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
             return;
         }
 
@@ -95,7 +95,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
         SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, Interiors.Count > 0 ? Interiors : InteriorSpawnWeightsConfig, Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
 
-        Weights = new WeightTableBuilder<DawnMoonInfo>()
+        Weights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>()
             .SetGlobalWeight(SpawnWeights)
             .Build();
 
