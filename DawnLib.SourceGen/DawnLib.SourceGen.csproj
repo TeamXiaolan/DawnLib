@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="bin\$(Configuration)\netstandard2.0\DawnLib.SourceGen.dll"
+        <None Include="bin\$(Configuration)\netstandard2.1\DawnLib.SourceGen.dll"
             Pack="true"
             PackagePath="analyzers/dotnet/cs"
             Visible="false" />
