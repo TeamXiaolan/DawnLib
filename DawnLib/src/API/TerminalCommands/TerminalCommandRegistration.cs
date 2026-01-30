@@ -106,14 +106,16 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         return this;
     }
 
-
-    //NOTE: The event in this param must invoke AFTER Terminal Awake in order to work
+    // <summary>Override standard build event (TerminalAwake) for a custom UnityEvent to invoke TerminalCommand Build</summary>
+    // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
     public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent buildEvent)
     {
         buildEvent.AddListener(Build);
         return this;
     }
 
+    // <summary>Override standard destroy event (TerminalDisable) for a custom UnityEvent to invoke TerminalCommand Destroy</summary>
+    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
     public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
     {
         register.DestroyEvent = destroyEvent;

@@ -130,9 +130,13 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         return this;
     }
 
-    // WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
-    // You do not need to set this to false if you have not changed the default value
-    // Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload
+    // <summary>Override any existing keywords and manually set the keyword's priority</summary>
+    /* <remarks>
+        WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
+        You do not need to set this to false if you have not changed the default value
+        Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload.
+      </remarks> */
+
     public TerminalCommandInfoBuilder SetOverrideKeywords(bool value, ITerminalKeyword.DawnKeywordType overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
     {
         _overrideKeywords = value;
