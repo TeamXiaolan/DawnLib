@@ -19,7 +19,8 @@ public class TerminalCommandRegistration
     //--- Optional Values
     public string? Category;
     public string? Description;
-    public UnityEvent? DestroyEvent;
+    public UnityEvent? UnityDestroyEvent;
+    public DawnEvent? DawnDestroyEvent;
 
     //Query-Style
     public Func<string>? QueryFunction;
@@ -92,16 +93,31 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
     }
 
 
-    //NOTE: The event in this param must invoke AFTER Terminal Awake in order to work
-    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent buildEvent)
+    //NOTE: If using a custom event, it must invoke AFTER Terminal Awake in order to properly build the command
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent unityBuildEvent)
     {
-        buildEvent.AddListener(Build);
+        unityBuildEvent?.AddListener(Build);
         return this;
     }
 
-    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
+    //override for custom dawnevents rather than unityevents
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
     {
-        register.DestroyEvent = destroyEvent;
+        dawnBuildEvent?.AddListener(Build);
+        return this;
+    }
+
+    //NOTE: The destroy event will not be listened to until the command has been built via the build event.
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent unityDestroyEvent)
+    {
+        register.UnityDestroyEvent = unityDestroyEvent;
+        return this;
+    }
+
+    //another override for DawnEvents
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
+    {
+        register.DawnDestroyEvent = dawnDestroyEvent;
         return this;
     }
 
@@ -159,11 +175,8 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
-        if (register.DestroyEvent != null)
-        {
-            //removes terminaldisable destroy event for specified event
-            commandbuilder.SetCustomDestroyEvent(register.DestroyEvent);
-        }
+
+        commandbuilder.TrySetDestroyEvents(register);
         commandbuilder.SetResultNode(resultNode);
         commandbuilder.AddResultAction(register.ResultFunction);
         commandbuilder.AddKeyword(keywords);
