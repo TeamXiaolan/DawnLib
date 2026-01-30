@@ -88,7 +88,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
 
     public TerminalCommandRegistrationBuilder BuildOnTerminalAwake()
     {
-        TerminalPatches.OnTerminalAwake += Build;
+        TerminalPatches.OnTerminalAwake.OnInvoke += Build;
         return this;
     }
 
@@ -103,7 +103,11 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
     //override for custom dawnevents rather than unityevents
     public TerminalCommandRegistrationBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
     {
-        dawnBuildEvent?.AddListener(Build);
+        if (dawnBuildEvent != null)
+        {
+            dawnBuildEvent.OnInvoke += Build;
+        }
+            
         return this;
     }
 
