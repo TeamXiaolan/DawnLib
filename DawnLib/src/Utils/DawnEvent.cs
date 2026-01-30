@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public abstract class DawnEventBase
 {
-    public List<object> Listeners = [];
+    private readonly List<object> Listeners = [];
     public bool HasListeners()
     {
         return GetListenerCount() != 0;
@@ -24,7 +24,7 @@ public abstract class DawnEventBase
     }
 
     //safely cast object list to remove any unexpected types
-    public List<T> CastListenersTo<T>()
+    internal List<T> CastListenersTo<T>()
     {
         List<T> result = [];
 
