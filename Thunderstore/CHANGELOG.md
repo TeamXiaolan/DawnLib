@@ -1,4 +1,10 @@
-# v0.7.7
+# v0.7.8
+
+- Added a compat thing for LunarConfig to convert the weird names i.e. `Sevenfour_adamance` into the old names it had, `Adamance` (Crafty will update when he gets the chance).
+- Cleaned up some code, Added more safeguards around.
+- Terminal commands can now override other commands like vanilla commands (thanks to darmuh).
+
+## v0.7.7
 
 - Fixed an issue where the None weather simply doth not exist.
 

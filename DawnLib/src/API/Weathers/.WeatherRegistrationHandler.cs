@@ -34,15 +34,15 @@ static class WeatherRegistrationHandler
             NamespacedKey<DawnWeatherEffectInfo>? key = WeatherKeys.GetByReflection(name);
             if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetWeatherEffectFromLethalLib(weatherEffect.name, out string lethalLibModName))
             {
-                key = NamespacedKey<DawnWeatherEffectInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+                key = NamespacedKey<DawnWeatherEffectInfo>.From(lethalLibModName, weatherEffect.name);
             }
             else if (key == null && WeatherRegistryCompat.Enabled && WeatherRegistryCompat.TryGetWeatherFromWeatherRegistry(weatherEffect.name, out string weatherRegistryModName))
             {
-                key = NamespacedKey<DawnWeatherEffectInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(weatherRegistryModName, false), NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+                key = NamespacedKey<DawnWeatherEffectInfo>.From(weatherRegistryModName, weatherEffect.name);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnWeatherEffectInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, false));
+                key = NamespacedKey<DawnWeatherEffectInfo>.From("unknown_lib", weatherEffect.name);
             }
 
             if (LethalContent.Weathers.ContainsKey(key))

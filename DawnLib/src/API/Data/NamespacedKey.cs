@@ -64,23 +64,54 @@ public class NamespacedKey : INetworkSerializable
 
         string cleanedString = NamespacedKeyRegex.Replace(input, string.Empty);
 
-        int start = 0;
-        while (start < cleanedString.Length && (cleanedString[start] == ' ' || cleanedString[start] == '_'))
+        StringBuilder cleanBuilder = new(cleanedString.Length);
+        bool started = false;
+
+        foreach (char character in cleanedString)
         {
-            start++;
+            if (!started)
+            {
+                if (CSharpName)
+                {
+                    if (!char.IsLetter(character))
+                        continue;
+                }
+                else
+                {
+                    if (!char.IsLetterOrDigit(character))
+                        continue;
+                }
+
+                started = true;
+            }
+
+            cleanBuilder.Append(character);
+
+            if (CSharpName)
+            {
+                if (cleanBuilder.Length < 3 || cleanBuilder.Length > 5)
+                    continue;
+
+                foreach (string word in NumberWords.Values)
+                {
+                    if (cleanBuilder.ToString().StartsWith(word, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cleanBuilder.Remove(0, word.Length);
+                    }
+                }
+            }
         }
 
-        StringBuilder actualWordBuilder = new(cleanedString.Length * 4);
-        for (int i = start; i < cleanedString.Length; i++)
+        StringBuilder actualWordBuilder = new(cleanBuilder.Length);
+        foreach (char character in cleanBuilder.ToString())
         {
-            char c = cleanedString[i];
-            if (NumberWords.TryGetValue(c, out string word))
+            if (NumberWords.TryGetValue(character, out string word))
             {
                 actualWordBuilder.Append(word);
             }
             else
             {
-                actualWordBuilder.Append(c);
+                actualWordBuilder.Append(character);
             }
         }
 

@@ -54,7 +54,7 @@ static class SurfaceRegistrationHandler
 
             if (key == null)
             {
-                key = NamespacedKey<DawnSurfaceInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(surface.surfaceTag, false));
+                key = NamespacedKey<DawnSurfaceInfo>.From("unknown_lib", surface.surfaceTag);
             }
 
             if (LethalContent.Surfaces.ContainsKey(key))

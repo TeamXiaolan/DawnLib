@@ -278,11 +278,11 @@ static class MapObjectRegistrationHandler
             NamespacedKey<DawnMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
             if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetMapObjectFromLethalLib(mapObject, out string lethalLibModName))
             {
-                key = NamespacedKey<DawnMapObjectInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+                key = NamespacedKey<DawnMapObjectInfo>.From(lethalLibModName, mapObject.name);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnMapObjectInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, false));
+                key = NamespacedKey<DawnMapObjectInfo>.From("unknown_lib", mapObject.name);
             }
 
             if (LethalContent.MapObjects.ContainsKey(key))

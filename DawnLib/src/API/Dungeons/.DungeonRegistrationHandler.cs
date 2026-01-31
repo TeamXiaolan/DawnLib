@@ -408,12 +408,12 @@ static class DungeonRegistrationHandler
             BoundedRange dungeonRangeClamp = new(0, 0);
             if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedDungeonModName(indoorMapType.dungeonFlow, out string dungeonModName))
             {
-                key = NamespacedKey<DawnDungeonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(dungeonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(indoorMapType.dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From(dungeonModName, indoorMapType.dungeonFlow.name);
                 dungeonRangeClamp = LethalLevelLoaderCompat.GetDungeonClamp(indoorMapType.dungeonFlow);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(indoorMapType.dungeonFlow.name, false));
+                key = NamespacedKey<DawnDungeonInfo>.From("unknown_modded", indoorMapType.dungeonFlow.name);
             }
 
             if (LethalContent.Dungeons.ContainsKey(key))
@@ -465,7 +465,7 @@ static class DungeonRegistrationHandler
                 }
                 else
                 {
-                    archetypeKey = NamespacedKey<DawnArchetypeInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(dungeonArchetype.name, false));
+                    archetypeKey = NamespacedKey<DawnArchetypeInfo>.From(dungeonInfo.Key.Namespace, dungeonArchetype.name);
                 }
 
                 if (LethalContent.Archetypes.ContainsKey(archetypeKey))
@@ -502,7 +502,7 @@ static class DungeonRegistrationHandler
                     }
                     else
                     {
-                        tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, NamespacedKey.NormalizeStringForNamespacedKey(tileSet.name, false));
+                        tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, tileSet.name);
                     }
 
                     if (LethalContent.TileSets.ContainsKey(tileSetKey))

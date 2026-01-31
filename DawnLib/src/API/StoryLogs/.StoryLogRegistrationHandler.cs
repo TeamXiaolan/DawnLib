@@ -62,7 +62,7 @@ static class StoryLogRegistrationHandler
             NamespacedKey<DawnStoryLogInfo>? key = StoryLogKeys.GetByReflection(name);
             if (key == null)
             {
-                key = NamespacedKey<DawnStoryLogInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(compatibleNoun.result.creatureName, false));
+                key = NamespacedKey<DawnStoryLogInfo>.From("unknown_lib", compatibleNoun.result.creatureName);
             }
 
             if (LethalContent.StoryLogs.ContainsKey(key))

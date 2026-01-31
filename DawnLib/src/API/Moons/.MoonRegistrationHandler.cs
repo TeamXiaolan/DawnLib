@@ -509,11 +509,11 @@ static class MoonRegistrationHandler
             NamespacedKey<DawnMoonInfo>? key = MoonKeys.GetByReflection(NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, true).RemoveEnd("Level"));
             if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedLevelModName(level, out string moonModName))
             {
-                key = NamespacedKey<DawnMoonInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(moonModName, false), NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+                key = NamespacedKey<DawnMoonInfo>.From(moonModName, level.PlanetName);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnMoonInfo>.From("unknown_modded", NamespacedKey.NormalizeStringForNamespacedKey(level.PlanetName, false));
+                key = NamespacedKey<DawnMoonInfo>.From("unknown_modded", level.PlanetName);
             }
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
