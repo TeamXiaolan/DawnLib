@@ -124,7 +124,7 @@ public class NamespacedKey : INetworkSerializable
         {
             if (!SmartPlaceholdersByKey.TryGetValue(key.Key, out List<NamespacedKey> list))
             {
-                list = new List<NamespacedKey>();
+                list = new();
                 SmartPlaceholdersByKey[key.Key] = list;
             }
             list.Add(key);
@@ -137,7 +137,7 @@ public class NamespacedKey : INetworkSerializable
             return;
         }
 
-        if (CanonicalByKey.TryGetValue(key.Key, out var existing))
+        if (CanonicalByKey.TryGetValue(key.Key, out NamespacedKey existing))
         {
             if (ShouldReplaceCandidate(existing, key))
             {

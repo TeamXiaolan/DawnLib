@@ -76,7 +76,11 @@ public class NamespacedConfigWeight
             };
             if (!float.TryParse(parts[1][0..], NumberStyles.Float, CultureInfo.InvariantCulture, out weight))
             {
-                weight = float.Parse(parts[1][1..], NumberStyles.Float, CultureInfo.InvariantCulture);
+                if (!float.TryParse(parts[1][1..], NumberStyles.Float, CultureInfo.InvariantCulture, out weight))
+                {
+                    DuskPlugin.Logger.LogWarning($"Invalid Conversion from string config input to a weight: {input}");
+                    weight = 0;
+                }
             }
         }
 

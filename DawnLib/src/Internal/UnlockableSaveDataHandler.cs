@@ -253,7 +253,9 @@ public static class UnlockableSaveDataHandler
         }
 
         if (root == null || root.Type != JTokenType.Object)
+        {
             return null;
+        }
 
         JToken? keysToken = root["keys"];
         JToken? itemsToken = root["items"];
@@ -266,13 +268,19 @@ public static class UnlockableSaveDataHandler
         }
 
         if (keysToken is null)
+        {
             root["keys"] = new JArray();
+        }
 
         if (itemsToken is null)
+        {
             root["items"] = new JArray();
+        }
 
         if (root["keys"] is not JArray || root["items"] is not JArray)
+        {
             return null;
+        }
 
         return root;
     }
