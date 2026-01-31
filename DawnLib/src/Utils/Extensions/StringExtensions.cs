@@ -12,7 +12,8 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        return input.First().ToString().ToUpper() + input[1..];
+        // Relying on a bold but practical assumption that 1 char == 1 grapheme
+        return input[..1].ToUpperInvariant() + input[1..];
     }
 
     public static string RemoveEnd(this string input, string end)
