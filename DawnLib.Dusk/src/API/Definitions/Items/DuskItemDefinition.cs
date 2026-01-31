@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Configuration;
 using Dawn;
 using Dawn.Utils;
@@ -146,27 +145,42 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
         });
     }
 
-    public ItemConfig CreateItemConfig(ConfigContext context)
+    public ItemConfig CreateItemConfig(ConfigContext section)
     {
-        ConfigEntry<bool>? isScrapItem = GenerateScrapConfig ? context.Bind($"{EntityNameReference} | Is Scrap", $"Whether {EntityNameReference} is a scrap item.", IsScrap) : null;
-        ConfigEntry<bool>? isShopItem = GenerateShopItemConfig ? context.Bind($"{EntityNameReference} | Is Shop Item", $"Whether {EntityNameReference} is a shop item.", IsShopItem) : null;
+        ItemConfig itemConfig = new(section, EntityNameReference);
 
-        return new ItemConfig
+        itemConfig.MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null;
+        itemConfig.InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights) : null;
+        itemConfig.WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null;
+
+        itemConfig.DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? section.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null;
+        itemConfig.DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? section.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null;
+
+        itemConfig.IsScrapItem = GenerateScrapConfig ? section.Bind($"{EntityNameReference} | Is Scrap", $"Whether {EntityNameReference} is a scrap item.", IsScrap) : null;
+        itemConfig.Worth = itemConfig.IsScrapItem?.Value ?? IsScrap ? section.Bind($"{EntityNameReference} | Value", $"How much {EntityNameReference} is worth when spawning.", new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f)) : null;
+
+        itemConfig.IsShopItem = GenerateShopItemConfig ? section.Bind($"{EntityNameReference} | Is Shop Item", $"Whether {EntityNameReference} is a shop item.", IsShopItem) : null;
+        itemConfig.Cost = itemConfig.IsShopItem?.Value ?? IsShopItem ? section.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null;
+
+        if (!itemConfig.UserAllowedToEdit())
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null,
-            InteriorSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? context.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null,
+            itemConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
+            itemConfig.InteriorSpawnWeights?.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
+            itemConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
 
-            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
+            itemConfig.DisableUnlockRequirements?.Value = false;
+            itemConfig.DisablePricingStrategy?.Value = false;
 
-            IsScrapItem = isScrapItem,
-            Worth = isScrapItem?.Value ?? IsScrap ? context.Bind($"{EntityNameReference} | Value", $"How much {EntityNameReference} is worth when spawning.", new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f)) : null,
+            itemConfig.IsScrapItem?.Value = IsScrap;
+            itemConfig.Worth?.Value = new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f);
 
-            IsShopItem = isShopItem,
-            Cost = isShopItem?.Value ?? IsShopItem ? context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
-        };
+            itemConfig.IsShopItem?.Value = IsShopItem;
+            itemConfig.Cost?.Value = Cost;
+        }
+
+        return itemConfig;
     }
+
 
     public override void TryNetworkRegisterAssets()
     {

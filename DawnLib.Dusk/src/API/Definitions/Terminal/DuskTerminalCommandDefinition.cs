@@ -54,13 +54,9 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
     [field: Tooltip("Setup a query command that involves a continue and cancel operation to reach the main command text.")]
     public QueryCommand QueryCommand { get; private set; }
 
-    public TerminalCommandConfig Config { get; private set; }
-
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateTerminalCommandConfig(section);
 
         DawnLib.DefineTerminalCommand(TypedKey, CommandName, builder =>
         {
@@ -82,13 +78,6 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
             }
             ApplyTagsTo(builder);
         });
-    }
-
-    public TerminalCommandConfig CreateTerminalCommandConfig(ConfigContext section)
-    {
-        return new TerminalCommandConfig
-        {
-        };
     }
 
     public override void TryNetworkRegisterAssets()

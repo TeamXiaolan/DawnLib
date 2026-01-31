@@ -161,7 +161,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
             _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
         }
 
-        DawnStingerDetail stingerDetail = new DawnStingerDetail(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
+        DawnStingerDetail stingerDetail = new(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
         return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, customData);
     }
 }

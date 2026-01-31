@@ -23,19 +23,21 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
     [field: Space(10)]
     [field: Header("Configs | Main")]
     [field: SerializeField]
+    public int Cost { get; private set; }
+    [field: SerializeField]
     public bool IsShipUpgrade { get; private set; }
     [field: SerializeField]
     public bool IsDecor { get; private set; }
-    [field: SerializeField]
-    public bool GenerateUnlockableTypeConfig { get; private set; }
-    [field: SerializeField]
-    public int Cost { get; private set; }
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public bool GenerateDisablePricingStrategyConfig { get; private set; }
+    public bool GenerateCostConfig { get; private set; } = true;
     [field: SerializeField]
-    public bool GenerateDisableUnlockRequirementConfig { get; private set; }
+    public bool GenerateUnlockableTypeConfig { get; private set; } = false;
+    [field: SerializeField]
+    public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
+    [field: SerializeField]
+    public bool GenerateDisableUnlockRequirementConfig { get; private set; } = true;
 
     public UnlockableConfig Config { get; private set; }
 
@@ -55,7 +57,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
             }
             else
             {
-                builder.SetCost(Config.Cost.Value);
+                builder.SetCost(Config.Cost?.Value ?? Cost);
             }
 
             if (UnlockableItem.prefabObject != null)
@@ -97,16 +99,28 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
         });
     }
 
-    public UnlockableConfig CreateUnlockableConfig(ConfigContext context)
+    public UnlockableConfig CreateUnlockableConfig(ConfigContext section)
     {
-        return new UnlockableConfig
+        UnlockableConfig unlockableConfig = new(section, EntityNameReference)
         {
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
-            DisableUnlockRequirement = GenerateDisableUnlockRequirementConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
-            IsDecor = GenerateUnlockableTypeConfig && IsDecor ? context.Bind($"{EntityNameReference} | Is Decor", $"Whether {EntityNameReference} is considered a decor.", IsDecor) : null,
-            IsShipUpgrade = GenerateUnlockableTypeConfig && IsShipUpgrade ? context.Bind($"{EntityNameReference} | Is Ship Upgrade", $"Whether {EntityNameReference} is considered a ship upgrade.", IsShipUpgrade) : null,
-            Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
+            Cost = GenerateCostConfig ? section.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
+
+            IsDecor = GenerateUnlockableTypeConfig ? section.Bind($"{EntityNameReference} | Is Decor", $"Whether {EntityNameReference} is considered a decor.", IsDecor) : null,
+            IsShipUpgrade = GenerateUnlockableTypeConfig ? section.Bind($"{EntityNameReference} | Is Ship Upgrade", $"Whether {EntityNameReference} is considered a ship upgrade.", IsShipUpgrade) : null,
+
+            DisableUnlockRequirement = GenerateDisableUnlockRequirementConfig ? section.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig ? section.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
         };
+
+        if (!unlockableConfig.UserAllowedToEdit())
+        {
+            unlockableConfig.Cost?.Value = Cost;
+            unlockableConfig.IsDecor?.Value = IsDecor;
+            unlockableConfig.IsShipUpgrade?.Value = IsShipUpgrade;
+            unlockableConfig.DisableUnlockRequirement?.Value = false;
+            unlockableConfig.DisablePricingStrategy?.Value = false;
+        }
+        return unlockableConfig;
     }
 
     public override void TryNetworkRegisterAssets()

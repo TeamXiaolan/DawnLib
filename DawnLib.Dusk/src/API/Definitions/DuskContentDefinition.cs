@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
+using Dawn.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -34,7 +35,7 @@ public abstract class DuskContentDefinition : ScriptableObject
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (DuskDynamicConfig configDefinition in _configEntries)
         {
-            generalConfigs[ConfigManager.CleanStringForConfig(configDefinition.settingName)] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
+            generalConfigs[configDefinition.settingName.CleanStringForConfig()] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
         }
         TryNetworkRegisterAssets();
     }

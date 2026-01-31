@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Configuration;
 using UnityEngine;
@@ -10,13 +9,6 @@ namespace Dusk;
 // todo: look over this again and see how much can become toml types?
 public class ConfigManager(ConfigFile file)
 {
-    private static readonly Regex ConfigCleanerRegex = new(@"[\n\t""`\[\]']");
-    internal static string CleanStringForConfig(string input)
-    {
-        // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
-        return ConfigCleanerRegex.Replace(input, string.Empty);
-    }
-
     public ConfigContext CreateConfigSection(string header)
     {
         return new ConfigContext(file, header);

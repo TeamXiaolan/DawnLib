@@ -30,8 +30,6 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     [field: SerializeField]
     public DuskPredicate Predicate { get; private set; }
 
-    public AdditionalTilesConfig Config { get; private set; }
-
     public override void Register(DuskMod mod)
     {
         base.Register(mod);

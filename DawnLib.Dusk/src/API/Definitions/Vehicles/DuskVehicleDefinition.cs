@@ -28,6 +28,8 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
+    public bool GenerateCostConfig { get; private set; } = true;
+    [field: SerializeField]
     public bool GenerateDisableUnlockConfig { get; private set; } = true;
     [field: SerializeField]
     public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
@@ -96,14 +98,25 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         DuskModContent.Vehicles.Register(this);
     }
 
-    public VehicleConfig CreateVehicleConfig(ConfigContext context)
+    public VehicleConfig CreateVehicleConfig(ConfigContext section)
     {
-        return new VehicleConfig
+        VehicleConfig vehicleConfig = new VehicleConfig(section, EntityNameReference)
         {
-            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
-            Cost = context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost),
+            Cost = GenerateCostConfig ? section.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
+
+            DisableUnlockRequirements = GenerateDisableUnlockConfig ? section.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig ? section.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
         };
+
+        if (!vehicleConfig.UserAllowedToEdit())
+        {
+            vehicleConfig.Cost?.Value = Cost;
+
+            vehicleConfig.DisableUnlockRequirements?.Value = false;
+            vehicleConfig.DisablePricingStrategy?.Value = false;
+        }
+
+        return vehicleConfig;
     }
 
     public override void TryNetworkRegisterAssets()

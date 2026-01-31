@@ -269,10 +269,7 @@ static class DungeonRegistrationHandler
         }
         else
         {
-            if (dungeonInfo.DungeonClampRange.Min > 0 && dungeonInfo.DungeonClampRange.Max > 0)
-            {
-                RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, dungeonInfo.DungeonClampRange.Min, dungeonInfo.DungeonClampRange.Max);
-            }
+            RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, dungeonInfo.DungeonClampRange.Min, dungeonInfo.DungeonClampRange.Max);
             RoundManager.Instance.dungeonGenerator.Generate();
         }
     }
@@ -405,7 +402,7 @@ static class DungeonRegistrationHandler
 
             string name = FormatFlowName(indoorMapType.dungeonFlow);
             NamespacedKey<DawnDungeonInfo>? key = DungeonKeys.GetByReflection(name);
-            BoundedRange dungeonRangeClamp = new(0, 0);
+            BoundedRange dungeonRangeClamp = new(0, 999);
             if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedDungeonModName(indoorMapType.dungeonFlow, out string dungeonModName))
             {
                 key = NamespacedKey<DawnDungeonInfo>.From(dungeonModName, indoorMapType.dungeonFlow.name);
