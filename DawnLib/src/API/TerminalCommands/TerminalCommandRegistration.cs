@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dawn.Internal;
+using Dawn.Utils;
 using UnityEngine.Events;
 using static Dawn.TerminalCommandRegistration;
 
@@ -32,6 +33,10 @@ public class TerminalCommandRegistration
     //will apply to keyword via interface
     public bool AcceptAdditionalText = false;
 
+    //allow user to ignore checking for existing keywords and overwrite them at build
+    public bool OverrideExistingKeywords = false;
+    public ITerminalKeyword.DawnKeywordType OverridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
+
     internal TerminalCommandRegistration(string commandName)
     {
         Name = commandName;
@@ -59,6 +64,16 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
     public TerminalCommandRegistrationBuilder SetKeywords(IProvider<List<string>> keywords)
     {
         register.KeywordList = keywords;
+        return this;
+    }
+
+    // WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
+    // You do not need to set this to false if you have not changed the default value
+    // Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload
+    public TerminalCommandRegistrationBuilder SetOverrideExistingKeywords(bool value, ITerminalKeyword.DawnKeywordType KeywordPriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
+    {
+        register.OverrideExistingKeywords = value;
+        register.OverridePriority = KeywordPriority;
         return this;
     }
 
@@ -92,16 +107,17 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         return this;
     }
 
-
-    //NOTE: If using a custom event, it must invoke AFTER Terminal Awake in order to properly build the command
-    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent unityBuildEvent)
+    // <summary>Override standard build event (TerminalAwake) for a custom UnityEvent to invoke TerminalCommand Build</summary>
+    // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent buildEvent)
     {
         unityBuildEvent?.AddListener(Build);
         return this;
     }
 
-    //override for custom dawnevents rather than unityevents
-    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
+    // <summary>Override standard destroy event (TerminalDisable) for a custom UnityEvent to invoke TerminalCommand Destroy</summary>
+    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
     {
         if (dawnBuildEvent != null)
         {
@@ -171,11 +187,24 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         foreach (string word in words)
         {
             Debuggers.Terminal?.Log($"Creating keyword [ {word} ] for command [ {register.Name} ]");
-            TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
-                .SetAcceptInput(register.AcceptAdditionalText)
-                .Build();
 
-            keywords.Add(addKeyword);
+            if (register.OverrideExistingKeywords)
+            {
+                TerminalKeyword overrideKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word)
+                    .SetAcceptInput(register.AcceptAdditionalText)
+                    .Build();
+
+                overrideKeyword.SetKeywordPriority(register.OverridePriority);
+                keywords.Add(overrideKeyword);
+            }
+            else
+            {
+                TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                    .SetAcceptInput(register.AcceptAdditionalText)
+                    .Build();
+
+                keywords.Add(addKeyword);
+            }
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
