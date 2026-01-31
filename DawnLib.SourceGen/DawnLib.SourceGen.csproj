@@ -56,6 +56,16 @@
         </ItemGroup>
     </Target>
 
+    <!--
+        Release tracking analyzer
+        https://github.com/dotnet/roslyn-analyzers/blob/main/src/Microsoft.CodeAnalysis.Analyzers/ReleaseTrackingAnalyzers.Help.md
+     -->
+    <ItemGroup>
+        <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+        <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+    </ItemGroup>
+
     <Target Name="PublishThunderstore">
     </Target>
 </Project>
+ 
