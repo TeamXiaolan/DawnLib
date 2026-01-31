@@ -20,7 +20,8 @@ public class TerminalCommandRegistration
     //--- Optional Values
     public string? Category;
     public string? Description;
-    public UnityEvent? DestroyEvent;
+    public UnityEvent? UnityDestroyEvent;
+    public DawnEvent? DawnDestroyEvent;
 
     //Query-Style
     public Func<string>? QueryFunction;
@@ -102,7 +103,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
 
     public TerminalCommandRegistrationBuilder BuildOnTerminalAwake()
     {
-        TerminalPatches.OnTerminalAwake += Build;
+        TerminalPatches.OnTerminalAwake.OnInvoke += Build;
         return this;
     }
 
@@ -110,7 +111,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
     // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
     public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent buildEvent)
     {
-        buildEvent.AddListener(Build);
+        unityBuildEvent?.AddListener(Build);
         return this;
     }
 
@@ -118,7 +119,25 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
     // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
     public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
     {
-        register.DestroyEvent = destroyEvent;
+        if (dawnBuildEvent != null)
+        {
+            dawnBuildEvent.OnInvoke += Build;
+        }
+            
+        return this;
+    }
+
+    //NOTE: The destroy event will not be listened to until the command has been built via the build event.
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent unityDestroyEvent)
+    {
+        register.UnityDestroyEvent = unityDestroyEvent;
+        return this;
+    }
+
+    //another override for DawnEvents
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
+    {
+        register.DawnDestroyEvent = dawnDestroyEvent;
         return this;
     }
 
@@ -189,11 +208,8 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
-        if (register.DestroyEvent != null)
-        {
-            //removes terminaldisable destroy event for specified event
-            commandbuilder.SetCustomDestroyEvent(register.DestroyEvent);
-        }
+
+        commandbuilder.TrySetDestroyEvents(register);
         commandbuilder.SetResultNode(resultNode);
         commandbuilder.AddResultAction(register.ResultFunction);
         commandbuilder.AddKeyword(keywords);

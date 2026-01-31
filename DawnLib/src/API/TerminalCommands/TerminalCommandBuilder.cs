@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Dawn.Internal;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Dawn;
 
@@ -24,13 +23,23 @@ public class TerminalCommandBuilder
     public TerminalCommandBuilder(string name)
     {
         _commandName = name;
-        TerminalPatches.OnTerminalDisable += Destroy;
+        TerminalPatches.OnTerminalDisable.OnInvoke += Destroy;
     }
 
-    internal void SetCustomDestroyEvent(UnityEvent destroyEvent)
+    //If a custom destroy event is defined, will remove the destroy event from terminaldisable and assign it to the defined events
+    //returns a bool in case we want to check the result of this in the future
+    internal bool TrySetDestroyEvents(TerminalCommandRegistration register)
     {
-        TerminalPatches.OnTerminalDisable -= Destroy;
-        destroyEvent.AddListener(Destroy);
+        //no custom event defined, do not remove Destroy from TerminalDisable
+        if (register.UnityDestroyEvent == null && register.DawnDestroyEvent == null)
+            return false;
+
+        TerminalPatches.OnTerminalDisable.OnInvoke -= Destroy;
+
+        register.UnityDestroyEvent?.AddListener(Destroy);
+        if (register.DawnDestroyEvent != null)
+            register.DawnDestroyEvent.OnInvoke += Destroy;
+        return true;
     }
 
     //Destroy created commands before next TerminalAwake

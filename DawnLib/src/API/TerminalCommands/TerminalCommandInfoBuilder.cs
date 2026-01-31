@@ -62,8 +62,10 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     private IProvider<bool> _isEnabled;
     private IProvider<List<string>> _validKeywords;
     private Func<string> _mainText;
-    private UnityEvent? _customBuildEvent = null;
-    private UnityEvent? _customDestroyEvent = null;
+    private UnityEvent? _customUnityBuildEvent = null;
+    private UnityEvent? _customUnityDestroyEvent = null;
+    private DawnEvent? _customDawnBuildEvent = null;
+    private DawnEvent? _customDawnDestroyEvent = null;
     private string _commandName, _categoryName, _description;
     private bool _acceptInput;
     private ClearText _clearTextFlags;
@@ -83,13 +85,25 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
     public TerminalCommandInfoBuilder SetCustomBuildEvent(UnityEvent customBuildEvent)
     {
-        _customBuildEvent = customBuildEvent;
+        _customUnityBuildEvent = customBuildEvent;
+        return this;
+    }
+
+    public TerminalCommandInfoBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
+    {
+        _customDawnBuildEvent = dawnBuildEvent;
         return this;
     }
 
     public TerminalCommandInfoBuilder SetCustomDestroyEvent(UnityEvent customDestroyEvent)
     {
-        _customDestroyEvent = customDestroyEvent;
+        _customUnityDestroyEvent = customDestroyEvent;
+        return this;
+    }
+
+    public TerminalCommandInfoBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
+    {
+        _customDawnDestroyEvent = dawnDestroyEvent;
         return this;
     }
 
@@ -167,22 +181,46 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             commandRegistrationBuilder.SetContinueWord(_queryCommandInfo.ContinueKeyword);
         }
 
-        if (_customBuildEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomBuildEvent(_customBuildEvent);
-        }
-        else
+        if (_customDawnBuildEvent == null && _customUnityBuildEvent == null)
         {
             commandRegistrationBuilder.BuildOnTerminalAwake();
         }
-
-        //will destroy on terminaldisable if not specified
-        if (_customDestroyEvent != null)
+        else
         {
-            commandRegistrationBuilder.SetCustomDestroyEvent(_customDestroyEvent);
+            SetCustomBuildEvents(commandRegistrationBuilder);
         }
 
-        DawnTerminalCommandInfo info = new DawnTerminalCommandInfo(key, tags, value, _queryCommandInfo, customData);
+        SetCustomDestroyEvents(commandRegistrationBuilder);
+
+        DawnTerminalCommandInfo info = new(key, tags, value, _queryCommandInfo, customData);
         return info;
+    }
+
+    //Sets any custom build event types if they are not null
+    private void SetCustomBuildEvents(TerminalCommandRegistrationBuilder commandRegistrationBuilder)
+    {
+        if (_customUnityBuildEvent != null)
+        {
+            commandRegistrationBuilder.SetCustomBuildEvent(_customUnityBuildEvent);
+        } 
+
+        if (_customDawnBuildEvent != null)
+        {
+            commandRegistrationBuilder.SetCustomBuildEvent(_customDawnBuildEvent);
+        }
+    }
+
+    //Sets any custom destroy event types if they are not null
+    private void SetCustomDestroyEvents(TerminalCommandRegistrationBuilder commandRegistrationBuilder)
+    {
+        if (_customUnityDestroyEvent != null)
+        {
+            commandRegistrationBuilder.SetCustomDestroyEvent(_customUnityDestroyEvent);
+        }
+        
+        if ( _customDawnDestroyEvent != null)
+        {
+            commandRegistrationBuilder.SetCustomDestroyEvent(_customDawnDestroyEvent);
+        }
     }
 }

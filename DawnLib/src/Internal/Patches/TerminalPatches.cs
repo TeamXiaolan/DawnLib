@@ -7,8 +7,8 @@ using MonoMod.Cil;
 namespace Dawn.Internal;
 static class TerminalPatches
 {
-    internal static event Action OnTerminalAwake = delegate { };
-    internal static event Action OnTerminalDisable = delegate { };
+    internal static DawnEvent OnTerminalAwake = new();
+    internal static DawnEvent OnTerminalDisable = new();
     internal static void Init()
     {
         On.Terminal.Awake += TerminalAwakeHook;
@@ -22,7 +22,6 @@ static class TerminalPatches
         IL.Terminal.TextPostProcess += HideResults;
         IL.Terminal.TextPostProcess += UseFailedNameResults;
     }
-
 
     private static TerminalKeyword CheckForExactSentencesPrefix(On.Terminal.orig_CheckForExactSentences orig, Terminal self, string playerWord)
     {
@@ -69,7 +68,7 @@ static class TerminalPatches
 
     private static void TerminalDisableHook(On.Terminal.orig_OnDisable orig, Terminal self)
     {
-        //All commands use this event to destroy themselves between lobby loads
+        //All commands use this event to destroy themselves between lobby loads by default
         OnTerminalDisable.Invoke();
 
         //still need to run the method
