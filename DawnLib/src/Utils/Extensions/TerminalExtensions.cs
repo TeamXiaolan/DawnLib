@@ -88,7 +88,6 @@ public static class TerminalExtensions
         {
             if (keyWord.CompareStringsInvariant(keyword.word))
             {
-                //Loggers.LogDebug($"Keyword: [{keyWord}] found!");
                 terminalKeyword = keyword;
                 return true;
             }

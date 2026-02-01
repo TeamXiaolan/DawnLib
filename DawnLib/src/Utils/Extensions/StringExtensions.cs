@@ -25,6 +25,32 @@ public static class StringExtensions
         return input;
     }
 
+    public static string ReplaceAtFirstIndexOf(this string value, string expectedText, string replacement)
+    {
+        int index = value.IndexOf(expectedText);
+        if(index < 0)
+        {
+            DawnPlugin.Logger.LogWarning($"InsertAtFirstIndexOf: Unable to find expected text - {expectedText} in string - {value}. Text is unchanged");
+            return value;
+        }
+
+        return value.Remove(index, expectedText.Length).Insert(index, replacement);
+
+    }
+
+    public static string ReplaceAtLastIndexOf(this string value, string expectedText, string replacement)
+    {
+        int index = value.LastIndexOf(expectedText);
+        if (index < 0)
+        {
+            DawnPlugin.Logger.LogWarning($"InsertAtLastIndexOf: Unable to find expected text - {expectedText} in string - {value}. Text is unchanged");
+            return value;
+        }
+
+        return value.Remove(index, expectedText.Length).Insert(index, replacement);
+
+    }
+
     public static string StripSpecialCharacters(this string input)
     {
         string returnString = string.Empty;
