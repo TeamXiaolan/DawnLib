@@ -109,15 +109,15 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
 
     // <summary>Override standard build event (TerminalAwake) for a custom UnityEvent to invoke TerminalCommand Build</summary>
     // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
-    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent buildEvent)
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent unityBuildEvent)
     {
         unityBuildEvent?.AddListener(Build);
         return this;
     }
 
-    // <summary>Override standard destroy event (TerminalDisable) for a custom UnityEvent to invoke TerminalCommand Destroy</summary>
-    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
-    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
+    // <summary>Override standard build event (TerminalAwake) for a custom DawnEvent to invoke TerminalCommand Build</summary>
+    // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
     {
         if (dawnBuildEvent != null)
         {
@@ -127,14 +127,16 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         return this;
     }
 
-    //NOTE: The destroy event will not be listened to until the command has been built via the build event.
+    // <summary>Override standard destroy event (TerminalDisable) for a custom UnityEvent to invoke TerminalCommand Destroy</summary>
+    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
     public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent unityDestroyEvent)
     {
         register.UnityDestroyEvent = unityDestroyEvent;
         return this;
     }
 
-    //another override for DawnEvents
+    // <summary>Override standard destroy event (TerminalDisable) for a custom DawnEvent to invoke TerminalCommand Destroy</summary>
+    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
     public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
     {
         register.DawnDestroyEvent = dawnDestroyEvent;
