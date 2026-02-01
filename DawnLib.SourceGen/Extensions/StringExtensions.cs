@@ -1,6 +1,5 @@
-﻿using System.Linq;
+﻿namespace Dawn.SourceGen.Extensions;
 
-namespace Dawn.SourceGen.Extensions;
 public static class StringExtensions
 {
     public static string ToCapitalized(this string input)
@@ -8,6 +7,7 @@ public static class StringExtensions
         if (string.IsNullOrWhiteSpace(input))
             return string.Empty;
 
-        return input.First().ToString().ToUpper() + string.Join("", input.Skip(1));
+        // Relying on a bold but practical assumption that 1 char == 1 grapheme
+        return input.Substring(0, 1).ToUpperInvariant() + input.Substring(1);
     }
 }
