@@ -93,6 +93,8 @@ public class FileWriterVisitor : ISymbolVisitor
             _builder.AppendLine($"using {@using};");
         }
 
+        _builder.AppendLine("#nullable enable");
+
         if (!string.IsNullOrWhiteSpace(codeFile.Namespace))
             _builder.AppendLine($"namespace {codeFile.Namespace};");
 
