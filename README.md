@@ -1,5 +1,8 @@
 # DawnLib
 
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/TeamXiaolan/DawnLib/.github%2Fworkflows%2Fbuild.yml)
+](https://github.com/TeamXiaolan/DawnLib/blob/main/.github/workflows/build.yml) [![NuGet Version](https://img.shields.io/nuget/v/TeamXiaolan.DawnLib)](https://www.nuget.org/packages?q=TeamXiaolan.DawnLib) [![Thunderstore Version](https://img.shields.io/thunderstore/v/TeamXiaolan/DawnLib)](https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/)
+
 (was CodeRebirthLib)
 
 DawnLib is a modern API for Lethal Company content and all sizes of mods. It contains:
