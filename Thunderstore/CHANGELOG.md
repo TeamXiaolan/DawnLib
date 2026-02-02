@@ -1,6 +1,6 @@
 # v0.7.8
 
-- Added a compat thing for LunarConfig to convert the weird names i.e. `Sevenfour_adamance` into the old names it had, `Adamance` (Crafty will update when he gets the chance).
+- Reverted to old namespace system due to too many issues, Sorry but there's no support for if you register multiple items with the same name except they start with a different number.
 - Cleaned up some code, Added more safeguards around.
 - Terminal commands can now override other commands like vanilla commands (thanks to darmuh).
 - Organised Config ordering a little bit better so configs aren't generating in an unintuitive order.
