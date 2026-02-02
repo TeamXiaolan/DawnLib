@@ -1,4 +1,8 @@
-# v0.7.8
+# v0.7.9
+
+- Adjusted `BoundedRange` configs to take in a `min` and `max` value that aren't just integers but also floats.
+
+## v0.7.8
 
 - Reverted to old namespace system due to too many issues, Sorry but there's no support for if you register multiple items with the same name except they start with a different number.
 - Cleaned up some code, Added more safeguards around.
