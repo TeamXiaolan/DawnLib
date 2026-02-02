@@ -1,0 +1,41 @@
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref that triggered the event"
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        ref: ${{ inputs.ref }}
+
+    - name: Setup .NET SDK
+      uses: ./.github/actions/setup-dotnet
+
+    - name: Restore dependencies
+      run: |
+        dotnet restore
+        dotnet tool restore
+
+    - name: Build solution
+      run: |
+        dotnet build --no-restore --configuration Release
+
+    - name: Upload Thunderstore artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: thunderstore-build
+        path: ./Packages/*.zip
+
+    - name: Upload Nuget artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nupkg-build
+        path: ./*/bin/Release/*.nupkg
