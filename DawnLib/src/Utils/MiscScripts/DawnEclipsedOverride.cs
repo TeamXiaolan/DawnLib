@@ -15,6 +15,7 @@ public class DawnEclipsedOverride : MonoBehaviour
         GameObject effectObject = LethalContent.Weathers[WeatherKeys.Eclipsed].WeatherEffect.effectObject;
 
         _eclipsedAudioSource = effectObject.GetComponentInChildren<AudioSource>();
+        _oldEclipsedMusic = _eclipsedAudioSource.clip;
         _eclipsedAudioSource.clip = NewEclipsedMusic;
     }
 
