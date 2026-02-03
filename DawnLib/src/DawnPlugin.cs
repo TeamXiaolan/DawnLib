@@ -100,8 +100,6 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Terminal Commands", LethalContent.TerminalCommands, commandInfo => commandInfo.ResultNode.name);
 
         PersistentData = this.GetPersistentDataContainer();
-        PersistentData.Set(NamespacedKey.From("dawn_lib", "last_version"), MyPluginInfo.PLUGIN_VERSION);
-
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));
     }
 

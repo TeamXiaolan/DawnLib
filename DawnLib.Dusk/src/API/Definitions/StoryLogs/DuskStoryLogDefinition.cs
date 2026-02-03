@@ -24,13 +24,9 @@ public class DuskStoryLogDefinition : DuskContentDefinition<DawnStoryLogInfo>
     [field: SerializeField]
     public TerminalNode? OverrideTerminalNode { get; private set; } = null;
 
-    public StoryLogConfig Config { get; private set; }
-
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
-        Config = CreateStoryLogConfig(section);
 
         DawnLib.DefineStoryLog(TypedKey, StoryLogGameObject, builder =>
         {
@@ -40,13 +36,6 @@ public class DuskStoryLogDefinition : DuskContentDefinition<DawnStoryLogInfo>
             builder.SetKeyword(Keyword);
             ApplyTagsTo(builder);
         });
-    }
-
-    public StoryLogConfig CreateStoryLogConfig(ConfigContext context)
-    {
-        return new StoryLogConfig
-        {
-        };
     }
 
     public override void TryNetworkRegisterAssets()

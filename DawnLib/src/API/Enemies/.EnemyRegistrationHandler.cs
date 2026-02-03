@@ -395,15 +395,15 @@ static class EnemyRegistrationHandler
             NamespacedKey<DawnEnemyInfo>? key = EnemyKeys.GetByReflection(name);
             if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetEnemyTypeFromLethalLib(enemyType, out string lethalLibModName))
             {
-                key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                key = NamespacedKey<DawnEnemyInfo>.From(lethalLibModName, enemyType.enemyName);
             }
             else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedEnemyTypeModName(enemyType, out string lethalLevelLoaderModName))
             {
-                key = NamespacedKey<DawnEnemyInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLevelLoaderModName, false), NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                key = NamespacedKey<DawnEnemyInfo>.From(lethalLevelLoaderModName, enemyType.enemyName);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnEnemyInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, false));
+                key = NamespacedKey<DawnEnemyInfo>.From("unknown_lib", enemyType.enemyName);
             }
 
             if (LethalContent.Enemies.ContainsKey(key))

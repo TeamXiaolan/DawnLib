@@ -168,6 +168,8 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 
     public MapObjectConfig CreateMapObjectConfig(ConfigContext section)
     {
+        MapObjectConfig mapObjectConfig = new(section, EntityNameReference);
+
         ConfigEntry<bool>? insideHazard = null, outsideHazard = null, insidePrioritiseMoon = null, outsidePrioritiseMoon = null;
         ConfigEntry<string>? insideMoonCurves = null, insideInteriorCurves = null, outsideMoonCurves = null, outsideInteriorCurves = null;
         if (CreateInsideHazardConfig)
@@ -180,80 +182,96 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
             outsideHazard = section.Bind($"{EntityNameReference} | Is Outside Hazard", $"Whether {EntityNameReference} is an outside hazard", IsOutsideHazard);
         }
 
+        string insideMoonStringToUse = string.Empty, insideInteriorStringToUse = string.Empty;
         if ((insideHazard?.Value ?? IsInsideHazard) && CreateInsideCurveSpawnWeightsConfig)
         {
             insidePrioritiseMoon = section.Bind($"{EntityNameReference} | Inside Spawn Prioritise Moon", $"Whether {EntityNameReference} should prioritise moon curves rather than interior curves when spawning inside.", InsidePrioritiseMoonConfig);
-            string moonStringToUse = DefaultInsideCurveSpawnWeights;
-            if (string.IsNullOrWhiteSpace(moonStringToUse))
+            insideMoonStringToUse = DefaultInsideCurveSpawnWeights;
+            if (string.IsNullOrWhiteSpace(insideMoonStringToUse))
             {
                 foreach (NamespacedKeyWithAnimationCurve curve in InsideMoonCurveSpawnWeights)
                 {
-                    moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    insideMoonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
                 }
-                if (!string.IsNullOrWhiteSpace(moonStringToUse))
+                if (!string.IsNullOrWhiteSpace(insideMoonStringToUse))
                 {
-                    moonStringToUse = moonStringToUse[..^3];
+                    insideMoonStringToUse = insideMoonStringToUse[..^3];
                 }
             }
-            string interiorStringToUse = string.Empty;
-            if (string.IsNullOrWhiteSpace(interiorStringToUse))
+            insideInteriorStringToUse = string.Empty;
+            if (string.IsNullOrWhiteSpace(insideInteriorStringToUse))
             {
                 foreach (NamespacedKeyWithAnimationCurve curve in InsideInteriorCurveSpawnWeights)
                 {
-                    interiorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    insideInteriorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
                 }
-                if (!string.IsNullOrWhiteSpace(interiorStringToUse))
+                if (!string.IsNullOrWhiteSpace(insideInteriorStringToUse))
                 {
-                    interiorStringToUse = interiorStringToUse[..^3];
+                    insideInteriorStringToUse = insideInteriorStringToUse[..^3];
                 }
             }
 
-            insideMoonCurves = section.Bind($"{EntityNameReference} | Inside Moon Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside using Moon weights.", moonStringToUse);
-            insideInteriorCurves = section.Bind($"{EntityNameReference} | Inside Interior Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside using Interior weights.", interiorStringToUse);
+            insideMoonCurves = section.Bind($"{EntityNameReference} | Inside Moon Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside using Moon weights.", insideMoonStringToUse);
+            insideInteriorCurves = section.Bind($"{EntityNameReference} | Inside Interior Spawn Weights", $"Curve weights for {EntityNameReference} when spawning inside using Interior weights.", insideInteriorStringToUse);
         }
 
+        string outsideMoonStringToUse = string.Empty, outsideInteriorStringToUse = string.Empty;
         if ((outsideHazard?.Value ?? IsOutsideHazard) && CreateOutsideCurveSpawnWeightsConfig)
         {
             outsidePrioritiseMoon = section.Bind($"{EntityNameReference} | Outside Spawn Prioritise Moon", $"Whether {EntityNameReference} should prioritise moon curves rather than interior curves when spawning outside.", OutsidePrioritiseMoonConfig);
-            string moonStringToUse = DefaultOutsideCurveSpawnWeights;
-            if (string.IsNullOrWhiteSpace(moonStringToUse))
+            outsideMoonStringToUse = DefaultOutsideCurveSpawnWeights;
+            if (string.IsNullOrWhiteSpace(outsideMoonStringToUse))
             {
                 foreach (NamespacedKeyWithAnimationCurve curve in OutsideMoonCurveSpawnWeights)
                 {
-                    moonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    outsideMoonStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
                 }
-                if (!string.IsNullOrWhiteSpace(moonStringToUse))
+                if (!string.IsNullOrWhiteSpace(outsideMoonStringToUse))
                 {
-                    moonStringToUse = moonStringToUse[..^3];
+                    outsideMoonStringToUse = outsideMoonStringToUse[..^3];
                 }
             }
-            string interiorStringToUse = string.Empty;
-            if (string.IsNullOrWhiteSpace(interiorStringToUse))
+            outsideInteriorStringToUse = string.Empty;
+            if (string.IsNullOrWhiteSpace(outsideInteriorStringToUse))
             {
                 foreach (NamespacedKeyWithAnimationCurve curve in OutsideInteriorCurveSpawnWeights)
                 {
-                    interiorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
+                    outsideInteriorStringToUse += $"{curve.Key} - {ConfigManager.ParseString(curve.Curve)} | ";
                 }
-                if (!string.IsNullOrWhiteSpace(interiorStringToUse))
+                if (!string.IsNullOrWhiteSpace(outsideInteriorStringToUse))
                 {
-                    interiorStringToUse = interiorStringToUse[..^3];
+                    outsideInteriorStringToUse = outsideInteriorStringToUse[..^3];
                 }
             }
-            outsideMoonCurves = section.Bind($"{EntityNameReference} | Outside Moon Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside using Moon weights.", moonStringToUse);
-            outsideInteriorCurves = section.Bind($"{EntityNameReference} | Outside Interior Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside using Interior weights.", interiorStringToUse);
+            outsideMoonCurves = section.Bind($"{EntityNameReference} | Outside Moon Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside using Moon weights.", outsideMoonStringToUse);
+            outsideInteriorCurves = section.Bind($"{EntityNameReference} | Outside Interior Spawn Weights", $"Curve weights for {EntityNameReference} when spawning outside using Interior weights.", outsideInteriorStringToUse);
         }
 
-        return new MapObjectConfig
+        mapObjectConfig.InsideHazard = insideHazard;
+        mapObjectConfig.OutsideHazard = outsideHazard;
+
+        mapObjectConfig.InsideMoonCurveSpawnWeights = insideMoonCurves;
+        mapObjectConfig.InsideInteriorCurveSpawnWeights = insideInteriorCurves;
+        mapObjectConfig.OutsideMoonCurveSpawnWeights = outsideMoonCurves;
+        mapObjectConfig.OutsideInteriorCurveSpawnWeights = outsideInteriorCurves;
+
+        mapObjectConfig.InsidePrioritiseMoon = insidePrioritiseMoon;
+        mapObjectConfig.OutsidePrioritiseMoon = outsidePrioritiseMoon;
+
+        if (!mapObjectConfig.UserAllowedToEdit())
         {
-            InsideHazard = insideHazard,
-            OutsideHazard = outsideHazard,
-            InsideMoonCurveSpawnWeights = insideMoonCurves,
-            InsideInteriorCurveSpawnWeights = insideInteriorCurves,
-            OutsideMoonCurveSpawnWeights = outsideMoonCurves,
-            OutsideInteriorCurveSpawnWeights = outsideInteriorCurves,
-            InsidePrioritiseMoon = insidePrioritiseMoon,
-            OutsidePrioritiseMoon = outsidePrioritiseMoon
-        };
+            mapObjectConfig.InsideHazard?.Value = IsInsideHazard;
+            mapObjectConfig.OutsideHazard?.Value = IsOutsideHazard;
+
+            mapObjectConfig.InsideMoonCurveSpawnWeights?.Value = insideMoonStringToUse;
+            mapObjectConfig.InsideInteriorCurveSpawnWeights?.Value = insideInteriorStringToUse;
+            mapObjectConfig.OutsideMoonCurveSpawnWeights?.Value = outsideMoonStringToUse;
+            mapObjectConfig.OutsideInteriorCurveSpawnWeights?.Value = outsideInteriorStringToUse;
+
+            mapObjectConfig.InsidePrioritiseMoon?.Value = InsidePrioritiseMoonConfig;
+            mapObjectConfig.OutsidePrioritiseMoon?.Value = OutsidePrioritiseMoonConfig;
+        }
+        return mapObjectConfig;
     }
 
     public override void TryNetworkRegisterAssets()

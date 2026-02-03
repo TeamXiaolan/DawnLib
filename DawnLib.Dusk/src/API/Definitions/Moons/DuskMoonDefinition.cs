@@ -4,6 +4,7 @@ using Dawn;
 using Dawn.Utils;
 using Dusk.Utils;
 using Dusk.Weights;
+using LethalLib.Modules;
 using UnityEngine;
 
 namespace Dusk;
@@ -27,6 +28,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     [field: SerializeField]
     public int Cost { get; private set; }
     [field: SerializeField]
+    [field: Tooltip("Vanilla typically hard codes this to a value of 3.")]
     public float OutsideEnemiesSpawnProbabilityRange { get; private set; } = 3;
 
     [field: Header("Configs | Generation")]
@@ -95,25 +97,49 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
         });
     }
 
-    public MoonConfig CreateMoonConfig(ConfigContext context)
+    public MoonConfig CreateMoonConfig(ConfigContext section)
     {
-        return new MoonConfig
+        MoonConfig moonConfig = new(section, EntityNameReference)
         {
-            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? context.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
-            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? context.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
-            Cost = GenerateCostConfig ? context.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
-            TimeFactor = GenerateTimeConfig && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Time Multiplier", $"Time multiplier for {EntityNameReference}.", Level.DaySpeedMultiplier) : null,
-            MinMaxScrap = GenerateMinMaxScrapConfig && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Min/Max Scrap", $"Min/Max scrap for {EntityNameReference}.", new BoundedRange(Level.minScrap, Level.maxScrap)) : null,
-            InsideEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Inside Enemy Power Count", $"Inside enemy power count for {EntityNameReference}.", Level.maxEnemyPowerCount) : null,
-            OutsideEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Outside Enemy Power Count", $"Outside enemy power count for {EntityNameReference}.", Level.maxOutsideEnemyPowerCount) : null,
-            DaytimeEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Daytime Enemy Power Count", $"Daytime enemy power count for {EntityNameReference}.", Level.maxDaytimeEnemyPowerCount) : null,
-            InsideEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Inside Enemy Spawn Curve", $"Inside enemy spawn curve for {EntityNameReference}.", Level.enemySpawnChanceThroughoutDay) : null,
-            OutsideEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Outside Enemy Spawn Curve", $"Outside enemy spawn curve for {EntityNameReference}.", Level.outsideEnemySpawnChanceThroughDay) : null,
-            DaytimeEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Daytime Enemy Spawn Curve", $"Daytime enemy spawn curve for {EntityNameReference}.", Level.daytimeEnemySpawnChanceThroughDay) : null,
-            InsideEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Inside Enemy Spawn Range", $"Inside enemy spawn range for {EntityNameReference}.", Level.spawnProbabilityRange) : null,
-            OutsideEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Outside Enemy Spawn Range", $"Outside enemy spawn range for {EntityNameReference}.", OutsideEnemiesSpawnProbabilityRange) : null,
-            DaytimeEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? context.Bind($"{EntityNameReference} | Daytime Enemy Spawn Range", $"Daytime enemy spawn range for {EntityNameReference}.", Level.daytimeEnemiesProbabilityRange) : null
+            Cost = GenerateCostConfig ? section.Bind($"{EntityNameReference} | Cost", $"Cost for {EntityNameReference} in the shop.", Cost) : null,
+            MinMaxScrap = GenerateMinMaxScrapConfig ? section.Bind($"{EntityNameReference} | Min/Max Scrap", $"Min/Max scrap for {EntityNameReference}.", new BoundedRange(Level.minScrap, Level.maxScrap)) : null,
+            TimeFactor = GenerateTimeConfig && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Time Multiplier", $"Time multiplier for {EntityNameReference}.", Level.DaySpeedMultiplier) : null,
+
+            InsideEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Power Count", $"Inside enemy power count for {EntityNameReference}.", Level.maxEnemyPowerCount) : null,
+            OutsideEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Power Count", $"Outside enemy power count for {EntityNameReference}.", Level.maxOutsideEnemyPowerCount) : null,
+            DaytimeEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Power Count", $"Daytime enemy power count for {EntityNameReference}.", Level.maxDaytimeEnemyPowerCount) : null,
+
+            InsideEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Spawn Range", $"Inside enemy spawn range for {EntityNameReference}.", Level.spawnProbabilityRange) : null,
+            OutsideEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Spawn Range", $"Outside enemy spawn range for {EntityNameReference}.", OutsideEnemiesSpawnProbabilityRange) : null,
+            DaytimeEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Spawn Range", $"Daytime enemy spawn range for {EntityNameReference}.", Level.daytimeEnemiesProbabilityRange) : null,
+
+            InsideEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Spawn Curve", $"Inside enemy spawn curve for {EntityNameReference}.", Level.enemySpawnChanceThroughoutDay) : null,
+            OutsideEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Spawn Curve", $"Outside enemy spawn curve for {EntityNameReference}.", Level.outsideEnemySpawnChanceThroughDay) : null,
+            DaytimeEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Spawn Curve", $"Daytime enemy spawn curve for {EntityNameReference}.", Level.daytimeEnemySpawnChanceThroughDay) : null,
+
+            DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? section.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
+            DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? section.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
         };
+
+        if (!moonConfig.UserAllowedToEdit())
+        {
+            moonConfig.Cost?.Value = Cost;
+            moonConfig.MinMaxScrap?.Value = new BoundedRange(Level.minScrap, Level.maxScrap);
+            moonConfig.TimeFactor?.Value = Level.DaySpeedMultiplier;
+
+            moonConfig.InsideEnemyPowerCount?.Value = Level.maxEnemyPowerCount;
+            moonConfig.OutsideEnemyPowerCount?.Value = Level.maxOutsideEnemyPowerCount;
+            moonConfig.DaytimeEnemyPowerCount?.Value = Level.maxDaytimeEnemyPowerCount;
+
+            moonConfig.InsideEnemySpawnRange?.Value = Level.spawnProbabilityRange;
+            moonConfig.OutsideEnemySpawnRange?.Value = OutsideEnemiesSpawnProbabilityRange;
+            moonConfig.DaytimeEnemySpawnRange?.Value = Level.daytimeEnemiesProbabilityRange;
+
+            moonConfig.InsideEnemySpawnCurve?.Value = Level.enemySpawnChanceThroughoutDay;
+            moonConfig.OutsideEnemySpawnCurve?.Value = Level.outsideEnemySpawnChanceThroughDay;
+            moonConfig.DaytimeEnemySpawnCurve?.Value = Level.daytimeEnemySpawnChanceThroughDay;
+        }
+        return moonConfig;
     }
 
     public override void TryNetworkRegisterAssets() { }

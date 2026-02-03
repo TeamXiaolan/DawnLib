@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dawn.Internal;
+using Dawn.Utils;
 using UnityEngine.Events;
 using static Dawn.TerminalCommandRegistration;
 
@@ -19,7 +20,8 @@ public class TerminalCommandRegistration
     //--- Optional Values
     public string? Category;
     public string? Description;
-    public UnityEvent? DestroyEvent;
+    public UnityEvent? UnityDestroyEvent;
+    public DawnEvent? DawnDestroyEvent;
 
     //Query-Style
     public Func<string>? QueryFunction;
@@ -30,6 +32,10 @@ public class TerminalCommandRegistration
     //for commands that accept input after the keyword (ie. "fov 90" where the command is <fov> and <90> is the additional input)
     //will apply to keyword via interface
     public bool AcceptAdditionalText = false;
+
+    //allow user to ignore checking for existing keywords and overwrite them at build
+    public bool OverrideExistingKeywords = false;
+    public ITerminalKeyword.DawnKeywordType OverridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
 
     internal TerminalCommandRegistration(string commandName)
     {
@@ -61,6 +67,16 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         return this;
     }
 
+    // WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
+    // You do not need to set this to false if you have not changed the default value
+    // Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload
+    public TerminalCommandRegistrationBuilder SetOverrideExistingKeywords(bool value, ITerminalKeyword.DawnKeywordType KeywordPriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
+    {
+        register.OverrideExistingKeywords = value;
+        register.OverridePriority = KeywordPriority;
+        return this;
+    }
+
     public TerminalCommandRegistrationBuilder SetupQuery(Func<string> queryFunc)
     {
         register.QueryFunction = queryFunc;
@@ -87,21 +103,43 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
 
     public TerminalCommandRegistrationBuilder BuildOnTerminalAwake()
     {
-        TerminalPatches.OnTerminalAwake += Build;
+        TerminalPatches.OnTerminalAwake.OnInvoke += Build;
         return this;
     }
 
-
-    //NOTE: The event in this param must invoke AFTER Terminal Awake in order to work
-    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent buildEvent)
+    // <summary>Override standard build event (TerminalAwake) for a custom UnityEvent to invoke TerminalCommand Build</summary>
+    // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(UnityEvent unityBuildEvent)
     {
-        buildEvent.AddListener(Build);
+        unityBuildEvent?.AddListener(Build);
         return this;
     }
 
-    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent destroyEvent)
+    // <summary>Override standard build event (TerminalAwake) for a custom DawnEvent to invoke TerminalCommand Build</summary>
+    // <remarks>NOTE: The event in this param must invoke AFTER Terminal Awake in order to work</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
     {
-        register.DestroyEvent = destroyEvent;
+        if (dawnBuildEvent != null)
+        {
+            dawnBuildEvent.OnInvoke += Build;
+        }
+            
+        return this;
+    }
+
+    // <summary>Override standard destroy event (TerminalDisable) for a custom UnityEvent to invoke TerminalCommand Destroy</summary>
+    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(UnityEvent unityDestroyEvent)
+    {
+        register.UnityDestroyEvent = unityDestroyEvent;
+        return this;
+    }
+
+    // <summary>Override standard destroy event (TerminalDisable) for a custom DawnEvent to invoke TerminalCommand Destroy</summary>
+    // <remarks>NOTE: This event will not be listened to until AFTER the command has been built</remarks>
+    public TerminalCommandRegistrationBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
+    {
+        register.DawnDestroyEvent = dawnDestroyEvent;
         return this;
     }
 
@@ -151,19 +189,29 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         foreach (string word in words)
         {
             Debuggers.Terminal?.Log($"Creating keyword [ {word} ] for command [ {register.Name} ]");
-            TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
-                .SetAcceptInput(register.AcceptAdditionalText)
-                .Build();
 
-            keywords.Add(addKeyword);
+            if (register.OverrideExistingKeywords)
+            {
+                TerminalKeyword overrideKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word)
+                    .SetAcceptInput(register.AcceptAdditionalText)
+                    .Build();
+
+                overrideKeyword.SetKeywordPriority(register.OverridePriority);
+                keywords.Add(overrideKeyword);
+            }
+            else
+            {
+                TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                    .SetAcceptInput(register.AcceptAdditionalText)
+                    .Build();
+
+                keywords.Add(addKeyword);
+            }
         }
 
         TerminalCommandBuilder commandbuilder = new(register.Name);
-        if (register.DestroyEvent != null)
-        {
-            //removes terminaldisable destroy event for specified event
-            commandbuilder.SetCustomDestroyEvent(register.DestroyEvent);
-        }
+
+        commandbuilder.TrySetDestroyEvents(register);
         commandbuilder.SetResultNode(resultNode);
         commandbuilder.AddResultAction(register.ResultFunction);
         commandbuilder.AddKeyword(keywords);

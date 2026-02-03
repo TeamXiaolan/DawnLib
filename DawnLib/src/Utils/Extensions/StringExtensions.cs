@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Dawn.Utils;
 
@@ -12,7 +13,8 @@ public static class StringExtensions
             return string.Empty;
         }
 
-        return input.First().ToString().ToUpper() + input[1..];
+        // Relying on a bold but practical assumption that 1 char == 1 grapheme
+        return input[..1].ToUpperInvariant() + input[1..];
     }
 
     public static string RemoveEnd(this string input, string end)
@@ -118,25 +120,10 @@ public static class StringExtensions
         return result;
     }
 
-    public static string BepinFriendlyString(this string input)
+    private static readonly Regex ConfigCleanerRegex = new(@"[\n\t""`\[\]']");
+    internal static string CleanStringForConfig(this string input)
     {
-        char[] invalidChars = ['\'', '\n', '\t', '\\', '"', '[', ']'];
-        string result = "";
-
-        input = input.Trim();
-
-        foreach (char c in input)
-        {
-            if (!invalidChars.Contains(c))
-            {
-                result += c;
-            }
-            else
-            {
-                continue;
-            }
-        }
-
-        return result;
+        // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
+        return ConfigCleanerRegex.Replace(input, string.Empty);
     }
 }

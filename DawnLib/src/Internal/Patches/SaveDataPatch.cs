@@ -1,4 +1,5 @@
 
+using System;
 using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.Cil;
@@ -13,12 +14,19 @@ static class SaveDataPatch
     internal static void Init()
     {
         On.MenuManager.Start += LCBetterSaveInit;
+        On.MenuManager.Start += SetLastDawnVersion;
         On.DeleteFileButton.DeleteFile += ResetSaveFile;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "Awake"), OnPlaceableShipObjectAwake));
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "OnDestroy"), OnPlaceableShipObjectOnDestroy));
+    }
+
+    private static void SetLastDawnVersion(On.MenuManager.orig_Start orig, MenuManager self)
+    {
+        orig(self);
+        DawnPlugin.PersistentData.Set(DawnKeys.LastVersion, MyPluginInfo.PLUGIN_VERSION);
     }
 
     private static void LCBetterSaveInit(On.MenuManager.orig_Start orig, MenuManager self)

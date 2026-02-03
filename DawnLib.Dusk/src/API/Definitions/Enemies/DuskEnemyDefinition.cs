@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BepInEx.Configuration;
 using Dawn;
 using Dusk.Weights;
 using Unity.Netcode;
@@ -117,15 +118,25 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
 
     public EnemyConfig CreateEnemyConfig(ConfigContext section)
     {
-        return new EnemyConfig
+        EnemyConfig enemyConfig = new(section, EntityNameReference)
         {
             MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null,
             InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights) : null,
             WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null,
-
             PowerLevel = section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", EnemyType.PowerLevel),
-            MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", EnemyType.MaxCount),
+            MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", EnemyType.MaxCount)
         };
+
+        if (!enemyConfig.UserAllowedToEdit())
+        {
+            enemyConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
+            enemyConfig.InteriorSpawnWeights?.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
+            enemyConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
+            enemyConfig.PowerLevel.Value = EnemyType.PowerLevel;
+            enemyConfig.MaxSpawnCount.Value = EnemyType.MaxCount;
+        }
+
+        return enemyConfig;
     }
 
     public override void TryNetworkRegisterAssets()

@@ -7,7 +7,7 @@ public static class DawnLibDiagnostics
         id: "DAWN001",
         title: "Missing Root Namespace",
         messageFormat: "The project does not define a RootNamespace. Please set <RootNamespace> in your .csproj.",
-        category: "SourceGen",
+        category: "Usage",
         DiagnosticSeverity.Error,
         isEnabledByDefault: true
     );

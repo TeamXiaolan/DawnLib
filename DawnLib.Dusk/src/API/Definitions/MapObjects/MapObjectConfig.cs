@@ -2,7 +2,7 @@ using BepInEx.Configuration;
 
 namespace Dusk;
 
-public class MapObjectConfig
+public class MapObjectConfig(ConfigContext section, string EntityNameReference) : DuskBaseConfig(section, EntityNameReference)
 {
     public ConfigEntry<string>? InsideMoonCurveSpawnWeights;
     public ConfigEntry<string>? InsideInteriorCurveSpawnWeights;

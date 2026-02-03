@@ -260,15 +260,15 @@ static class ItemRegistrationHandler
             NamespacedKey<DawnItemInfo>? key = ItemKeys.GetByReflection(name);
             if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetItemFromLethalLib(item, out string lethalLibModName))
             {
-                key = NamespacedKey<DawnItemInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+                key = NamespacedKey<DawnItemInfo>.From(lethalLibModName, item.itemName);
             }
             else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedItemModName(item, out string lethalLevelLoaderModName))
             {
-                key = NamespacedKey<DawnItemInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLevelLoaderModName, false), NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+                key = NamespacedKey<DawnItemInfo>.From(lethalLevelLoaderModName, item.itemName);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnItemInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, false));
+                key = NamespacedKey<DawnItemInfo>.From("unknown_lib", item.itemName);
             }
 
             if (LethalContent.Items.ContainsKey(key))

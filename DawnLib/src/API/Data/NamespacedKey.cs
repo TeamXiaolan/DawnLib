@@ -64,23 +64,27 @@ public class NamespacedKey : INetworkSerializable
 
         string cleanedString = NamespacedKeyRegex.Replace(input, string.Empty);
 
-        int start = 0;
-        while (start < cleanedString.Length && (cleanedString[start] == ' ' || cleanedString[start] == '_'))
+        StringBuilder cleanBuilder = new(cleanedString.Length);
+        bool foundNonLeading = false;
+        foreach (char character in cleanedString)
         {
-            start++;
+            if (!foundNonLeading && (char.IsDigit(character) || character == ' '))
+                continue;
+
+            foundNonLeading = true;
+            cleanBuilder.Append(character);
         }
 
-        StringBuilder actualWordBuilder = new(cleanedString.Length * 4);
-        for (int i = start; i < cleanedString.Length; i++)
+        StringBuilder actualWordBuilder = new(cleanBuilder.Length);
+        foreach (char character in cleanBuilder.ToString())
         {
-            char c = cleanedString[i];
-            if (NumberWords.TryGetValue(c, out string word))
+            if (NumberWords.TryGetValue(character, out var word))
             {
                 actualWordBuilder.Append(word);
             }
             else
             {
-                actualWordBuilder.Append(c);
+                actualWordBuilder.Append(character);
             }
         }
 
@@ -88,7 +92,9 @@ public class NamespacedKey : INetworkSerializable
 
         if (CSharpName)
         {
-            result = result.Replace(" ", string.Empty).Replace("_", string.Empty).ToCapitalized();
+            result = result.Replace(" ", string.Empty);
+            result = result.Replace("_", string.Empty);
+            result = result.ToCapitalized();
         }
         else
         {
@@ -124,7 +130,7 @@ public class NamespacedKey : INetworkSerializable
         {
             if (!SmartPlaceholdersByKey.TryGetValue(key.Key, out List<NamespacedKey> list))
             {
-                list = new List<NamespacedKey>();
+                list = new();
                 SmartPlaceholdersByKey[key.Key] = list;
             }
             list.Add(key);
@@ -137,7 +143,7 @@ public class NamespacedKey : INetworkSerializable
             return;
         }
 
-        if (CanonicalByKey.TryGetValue(key.Key, out var existing))
+        if (CanonicalByKey.TryGetValue(key.Key, out NamespacedKey existing))
         {
             if (ShouldReplaceCandidate(existing, key))
             {

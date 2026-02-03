@@ -29,7 +29,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
-    public BoundedRange DungeonRangeClamp { get; private set; }
+    public BoundedRange DungeonRangeClamp { get; private set; } = new BoundedRange(0, 999);
     [field: SerializeField]
     public float MapTileSize { get; private set; } = 1f;
     [field: SerializeField]
@@ -54,6 +54,11 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
+        if (DungeonRangeClamp.Min == 0 && DungeonRangeClamp.Max == 0)
+        {
+            DungeonRangeClamp = new BoundedRange(0, 999);
+        }
+
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateDungeonConfig(section);
 
@@ -80,12 +85,19 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
     public DungeonConfig CreateDungeonConfig(ConfigContext section)
     {
-        return new DungeonConfig
+        DungeonConfig dungeonConfig = new(section, EntityNameReference);
+
+        dungeonConfig.MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null;
+        dungeonConfig.WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null;
+        dungeonConfig.DungeonRangeClamp = section.Bind($"{EntityNameReference} | Dungeon Range Clamp", $"Dungeon range clamp for {EntityNameReference}.", DungeonRangeClamp);
+
+        if (!dungeonConfig.UserAllowedToEdit())
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null,
-            DungeonRangeClamp = section.Bind($"{EntityNameReference} | Dungeon Range Clamp", $"Dungeon range clamp for {EntityNameReference}.", DungeonRangeClamp),
-        };
+            dungeonConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
+            dungeonConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
+            dungeonConfig.DungeonRangeClamp.Value = DungeonRangeClamp;
+        }
+        return dungeonConfig;
     }
 
     public override void TryNetworkRegisterAssets() { }

@@ -286,11 +286,11 @@ static class UnlockableRegistrationHandler
             NamespacedKey<DawnUnlockableItemInfo>? key = UnlockableItemKeys.GetByReflection(name);
             if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetUnlockableItemFromLethalLib(unlockableItem, out string lethalLibModName))
             {
-                key = NamespacedKey<DawnUnlockableItemInfo>.From(NamespacedKey.NormalizeStringForNamespacedKey(lethalLibModName, false), NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+                key = NamespacedKey<DawnUnlockableItemInfo>.From(lethalLibModName, unlockableItem.unlockableName);
             }
             else if (key == null)
             {
-                key = NamespacedKey<DawnUnlockableItemInfo>.From("unknown_lib", NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, false));
+                key = NamespacedKey<DawnUnlockableItemInfo>.From("unknown_lib", unlockableItem.unlockableName);
             }
 
             if (LethalContent.Unlockables.ContainsKey(key))

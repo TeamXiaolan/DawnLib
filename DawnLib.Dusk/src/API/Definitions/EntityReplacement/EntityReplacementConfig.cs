@@ -2,7 +2,7 @@ using BepInEx.Configuration;
 
 namespace Dusk;
 
-public class EntityReplacementConfig
+public class EntityReplacementConfig(ConfigContext section, string EntityNameReference) : DuskBaseConfig(section, EntityNameReference)
 {
     public ConfigEntry<string>? MoonSpawnWeights;
     public ConfigEntry<string>? InteriorSpawnWeights;

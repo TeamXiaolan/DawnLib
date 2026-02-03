@@ -51,6 +51,27 @@ public class TerminalKeywordBuilder
         }
     }
 
+    // <summary>Internal TerminalKeywordBuilder that will override existing matching keywords if they exist</summary>
+    // <remarks>WARNING: Do not use this constructor if you do not wish to override other existing terminal keywords with the same word!</remarks>
+    internal TerminalKeywordBuilder(string name, string word)
+    {
+        if (WordAlreadyExists(word, out TerminalKeyword existingKeywordWithSameWord))
+        {
+            _keyword = existingKeywordWithSameWord;
+            DawnPlugin.Logger.LogWarning($"Keyword Override! Replacing keyword [{_keyword.word}] results");
+            _keyword.name = name;
+        }
+        else
+        {
+            _keyword = ScriptableObject.CreateInstance<TerminalKeyword>();
+            _keyword.name = name;
+            OverrideWord(word);
+            AllTerminalKeywords.Add(_keyword);
+        }
+    }
+
+    // <summary>Internal TerminalKeywordBuilder that checks if a keyword exists before keyword creation.</summary>
+    // <remarks>DawnKeywordType determines if a matching keyword is overwritten or if the keyword word will be modified at creation</remarks>
     internal TerminalKeywordBuilder(string name, string word, ITerminalKeyword.DawnKeywordType keywordPriority)
     {
         if (WordAlreadyExists(word, out TerminalKeyword existingKeywordWithSameWord))

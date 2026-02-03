@@ -17,26 +17,17 @@ public static class ConfigFileExtensions
 
     public static ConfigEntry<T> CleanedBind<T>(this ConfigFile ModConfig, string section, string configItemName, T defaultValue, string ConfigDescription)
     {
-        section = section.BepinFriendlyString();
-        configItemName = configItemName.BepinFriendlyString();
-
-        return ModConfig.Bind(section, configItemName, defaultValue, new ConfigDescription(ConfigDescription));
+        return ModConfig.Bind(section.CleanStringForConfig(), configItemName.CleanStringForConfig(), defaultValue, new ConfigDescription(ConfigDescription));
     }
 
     public static ConfigEntry<T> CleanedBind<T>(this ConfigFile ModConfig, string section, string configItemName, T defaultValue, string description, AcceptableValueList<T> acceptableValues = null!) where T : IEquatable<T>
     {
-        section = section.BepinFriendlyString();
-        configItemName = configItemName.BepinFriendlyString();
-
-        return ModConfig.Bind(section, configItemName, defaultValue, new ConfigDescription(description, acceptableValues));
+        return ModConfig.Bind(section.CleanStringForConfig(), configItemName.CleanStringForConfig(), defaultValue, new ConfigDescription(description, acceptableValues));
     }
 
     public static ConfigEntry<T> CleanedBind<T>(this ConfigFile ModConfig, string section, string configItemName, T defaultValue, string description, T minValue, T maxValue) where T : IComparable
     {
-        section = section.BepinFriendlyString();
-        configItemName = configItemName.BepinFriendlyString();
         AcceptableValueRange<T> acceptableRange = new(minValue, maxValue);
-
-        return ModConfig.Bind(section, configItemName, defaultValue, new ConfigDescription(description, acceptableRange));
+        return ModConfig.Bind(section.CleanStringForConfig(), configItemName.CleanStringForConfig(), defaultValue, new ConfigDescription(description, acceptableRange));
     }
 }

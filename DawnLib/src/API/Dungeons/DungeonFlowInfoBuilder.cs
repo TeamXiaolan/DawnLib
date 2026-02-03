@@ -12,7 +12,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     private AudioClip? _firstTimeAudio = null;
     private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> _weights;
     private string _assetBundlePath = string.Empty;
-    private BoundedRange _dungeonRangeClamp = new BoundedRange(0, 0);
+    private BoundedRange _dungeonRangeClamp = new BoundedRange(0, 999);
     private bool _stingerPlaysMoreThanOnce = false;
     private float _stingerPlayChance = 100f;
     private FuncProvider<bool> _allowStingerToPlay = new FuncProvider<bool>(() => true);
@@ -161,7 +161,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
             _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
         }
 
-        DawnStingerDetail stingerDetail = new DawnStingerDetail(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
+        DawnStingerDetail stingerDetail = new(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
         return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, customData);
     }
 }
