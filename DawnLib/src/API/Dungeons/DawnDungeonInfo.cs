@@ -16,7 +16,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     internal List<SpawnSyncedObject> spawnSyncedObjects = new();
     internal List<Tile> tiles = new();
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weights, float mapTileSize, DawnStingerDetail stingerDetail, string assetBundlePath, BoundedRange dungeonClampRange, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weights, float mapTileSize, DawnStingerDetail stingerDetail, string assetBundlePath, BoundedRange dungeonClampRange, int extraScrapGeneration, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
         Weights = weights;
@@ -24,6 +24,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
         StingerDetail = stingerDetail;
         AssetBundlePath = assetBundlePath;
         DungeonClampRange = dungeonClampRange;
+        ExtraScrapGeneration = extraScrapGeneration;
 
         if (!ShouldSkipIgnoreOverride())
             return;
@@ -88,6 +89,7 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     public float MapTileSize { get; private set; }
     public DawnStingerDetail StingerDetail { get; private set; }
     public BoundedRange DungeonClampRange { get; private set; }
+    public int ExtraScrapGeneration { get; private set; }
 
     public IReadOnlyList<Tile> Tiles => tiles.AsReadOnly();
     public IReadOnlyList<Doorway> Doorways => doorways.AsReadOnly();
