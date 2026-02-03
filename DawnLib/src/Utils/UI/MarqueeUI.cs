@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dawn.Utils;
@@ -11,7 +10,7 @@ public class MarqueeUI : MonoBehaviour
 
     [SerializeField] float _stoppedTime = 1f, _movingTime = 2f;
 
-    Coroutine _currentAnim;
+    Coroutine? _currentAnim;
 
     void Awake()
     {

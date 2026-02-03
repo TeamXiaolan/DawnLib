@@ -14,6 +14,8 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
         private Func<string> _queryFunc, _cancelFunc;
         private string _continueKeyword, _cancelKeyword;
+        private FuncProvider<bool> _continueProvider;
+        private DawnEvent<bool>? _onQueryContinuedEvent;
 
         internal QueryCommandBuilder(TerminalCommandInfoBuilder parent)
         {
@@ -32,6 +34,18 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             return this;
         }
 
+        public QueryCommandBuilder SetContinueConditions(FuncProvider<bool> continueProvider)
+        {
+            _continueProvider = continueProvider;
+            return this;
+        }
+
+        public QueryCommandBuilder SetQueryEvent(DawnEvent<bool> onQueryContinuedEvent)
+        {
+            _onQueryContinuedEvent = onQueryContinuedEvent;
+            return this;
+        }
+
         public QueryCommandBuilder SetContinueWord(string continueKeyword)
         {
             _continueKeyword = continueKeyword;
@@ -46,7 +60,11 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
         internal DawnQueryCommandInfo Build()
         {
-            return new DawnQueryCommandInfo(_queryFunc, _cancelFunc, _continueKeyword, _cancelKeyword);
+            if (_continueProvider == null)
+            {
+                _continueProvider = new FuncProvider<bool>(() => true);
+            }
+            return new DawnQueryCommandInfo(_queryFunc, _cancelFunc, _continueKeyword, _cancelKeyword, _continueProvider, _onQueryContinuedEvent);
         }
     }
     // Allow setting a query with a continue and cancel word, query text

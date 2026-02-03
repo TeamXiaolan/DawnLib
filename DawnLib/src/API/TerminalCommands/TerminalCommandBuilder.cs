@@ -23,7 +23,7 @@ public class TerminalCommandBuilder
     public TerminalCommandBuilder(string name)
     {
         _commandName = name;
-        TerminalPatches.OnTerminalDisable.OnInvoke += Destroy;
+        TerminalCommandRegistration.OnTerminalDisable.OnInvoke += Destroy;
     }
 
     //If a custom destroy event is defined, will remove the destroy event from terminaldisable and assign it to the defined events
@@ -34,11 +34,13 @@ public class TerminalCommandBuilder
         if (register.UnityDestroyEvent == null && register.DawnDestroyEvent == null)
             return false;
 
-        TerminalPatches.OnTerminalDisable.OnInvoke -= Destroy;
-
+        TerminalCommandRegistration.OnTerminalDisable.OnInvoke -= Destroy;
         register.UnityDestroyEvent?.AddListener(Destroy);
         if (register.DawnDestroyEvent != null)
+        {
             register.DawnDestroyEvent.OnInvoke += Destroy;
+        }
+
         return true;
     }
 

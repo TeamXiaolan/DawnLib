@@ -164,20 +164,19 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
         if (!itemConfig.UserAllowedToEdit())
         {
-            itemConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
-            itemConfig.InteriorSpawnWeights?.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
-            itemConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.InteriorSpawnWeights, InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights);
 
-            itemConfig.DisableUnlockRequirements?.Value = false;
-            itemConfig.DisablePricingStrategy?.Value = false;
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.DisableUnlockRequirements, false);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.DisablePricingStrategy, false);
 
-            itemConfig.IsScrapItem?.Value = IsScrap;
-            itemConfig.Worth?.Value = new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.IsScrapItem, IsScrap);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.Worth, new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f));
 
-            itemConfig.IsShopItem?.Value = IsShopItem;
-            itemConfig.Cost?.Value = Cost;
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.IsShopItem, IsShopItem);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.Cost, Cost);
         }
-
         return itemConfig;
     }
 

@@ -124,11 +124,17 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
         if (!entityReplacementConfig.UserAllowedToEdit())
         {
-            entityReplacementConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
-            entityReplacementConfig.InteriorSpawnWeights?.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
-            entityReplacementConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
+            if (entityReplacementConfig.MoonSpawnWeights != null)
+                entityReplacementConfig.MoonSpawnWeights.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
 
-            entityReplacementConfig.DisableDateCheck?.Value = false;
+            if (entityReplacementConfig.InteriorSpawnWeights != null)
+                entityReplacementConfig.InteriorSpawnWeights.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
+
+            if (entityReplacementConfig.WeatherSpawnWeights != null)
+                entityReplacementConfig.WeatherSpawnWeights.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
+
+            if (entityReplacementConfig.DisableDateCheck != null)
+                entityReplacementConfig.DisableDateCheck.Value = false;
         }
 
         return entityReplacementConfig;

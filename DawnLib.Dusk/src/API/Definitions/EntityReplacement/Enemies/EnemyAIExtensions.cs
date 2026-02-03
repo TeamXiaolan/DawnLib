@@ -1,18 +1,22 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
 
 namespace Dusk;
 
 public static class EnemyAIExtensions
 {
-    public static DuskEnemyReplacementDefinition? GetEnemyReplacement(this EnemyAI enemyAI)
+    public static bool TryGetEnemyReplacement(this EnemyAI enemyAI, [NotNullWhen(true)] out DuskEnemyReplacementDefinition? replacement)
     {
-        DuskEnemyReplacementDefinition? enemyReplacementDefinition = (DuskEnemyReplacementDefinition?)((ICurrentEntityReplacement)enemyAI).CurrentEntityReplacement;
-        return enemyReplacementDefinition;
+        replacement = ((ICurrentEntityReplacement)enemyAI).CurrentEntityReplacement as DuskEnemyReplacementDefinition;
+        return replacement != null;
     }
 
-    internal static bool HasEnemyReplacement(this EnemyAI enemyAI)
+    [Obsolete($"Use {nameof(TryGetEnemyReplacement)}")]
+    public static DuskEnemyReplacementDefinition? GetEnemyReplacement(this EnemyAI enemyAI)
     {
-        return enemyAI.GetEnemyReplacement() != null;
+        enemyAI.TryGetEnemyReplacement(out var replacement);
+        return replacement;
     }
 
     internal static void SetEnemyReplacement(this EnemyAI enemyAI, DuskEnemyReplacementDefinition enemyReplacementDefinition)

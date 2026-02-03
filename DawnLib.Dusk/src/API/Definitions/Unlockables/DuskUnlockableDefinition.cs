@@ -114,11 +114,13 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
 
         if (!unlockableConfig.UserAllowedToEdit())
         {
-            unlockableConfig.Cost?.Value = Cost;
-            unlockableConfig.IsDecor?.Value = IsDecor;
-            unlockableConfig.IsShipUpgrade?.Value = IsShipUpgrade;
-            unlockableConfig.DisableUnlockRequirement?.Value = false;
-            unlockableConfig.DisablePricingStrategy?.Value = false;
+            DuskBaseConfig.AssignValueIfNotNull(unlockableConfig.Cost, Cost);
+
+            DuskBaseConfig.AssignValueIfNotNull(unlockableConfig.IsDecor, IsDecor);
+            DuskBaseConfig.AssignValueIfNotNull(unlockableConfig.IsShipUpgrade, IsShipUpgrade);
+
+            DuskBaseConfig.AssignValueIfNotNull(unlockableConfig.DisableUnlockRequirement, false);
+            DuskBaseConfig.AssignValueIfNotNull(unlockableConfig.DisablePricingStrategy, false);
         }
         return unlockableConfig;
     }
