@@ -17,6 +17,15 @@ public class ModifyDisplayText
 
     public Style ModifyStyle = Style.InsertLast;
 
+    /// <summary>This determines your text modification style. (see remarks for more information)</summary>
+    /// <remarks>
+    /// InsertAll - This will INSERT your AddedText at all locations that match your TextToLookFor property.
+    /// InsertFirst - This will INSERT your AddedText at the FIRST location that matches your TextToLookFor property.
+    /// InsertLast - This will INSERT your AddedText at the LAST location that matches your TextToLookFor property.
+    /// ReplaceAll - This will REPLACE all matching instances of your TextToLookFor property with your AddedText property.
+    /// ReplaceFirst - This will REPLACE the FIRST matching instance of your TextToLookFor property with your AddedText property.
+    /// ReplaceAll - This will REPLACE the LAST matching instance of your TextToLookFor property with your AddedText property.
+    /// </remarks>
     public enum Style
     {
         InsertAll,
@@ -27,6 +36,12 @@ public class ModifyDisplayText
         ReplaceLast,
     }
 
+    /// <summary>Primary constructor for ModifyDisplayText. Takes a given keyword and modifies the resulting node's displaytext</summary>
+    /// <param name="keyword">This is the keyword a user enters to display the TerminalNode</param>
+    /// <param name="textToAdd">This is the text you plan to add to the resulting TerminalNode. Can be any type of IProvider<string></param>
+    /// <param name="textToLookFor">(Optional) This is the text you are wishing to insert after OR replace, depending on the next parameter</param>
+    /// <param name="replaceStyle">(Optional) This determines your modification style. Options are defined under ModifyDisplayText.Style</param>
+    /// <remarks>Text modification is done one time at Terminal Start. This does not replace or add to the Terminal.TextPostProcess method</remarks>
     public ModifyDisplayText(string keyword, IProvider<string> textToAdd, string textToLookFor = "", Style replaceStyle = Style.InsertLast)
     {
         Word = keyword;
@@ -37,6 +52,32 @@ public class ModifyDisplayText
         DawnDisplayTextInserts.Add(this);
     }
 
+    /// <summary>Secondary constructor for ModifyDisplayText. Takes a given TerminalNode and modifies the resulting node's displaytext</summary>
+    /// <param name="terminalNode">This is the TerminalNode you wish to modify.</param>
+    /// <param name="textToAdd">This is the text you plan to add to the resulting TerminalNode. Can be any type of IProvider<string></param>
+    /// <param name="textToLookFor">(Optional) This is the text you are wishing to insert after OR replace, depending on the next parameter</param>
+    /// <param name="replaceStyle">(Optional) This determines your modification style. Options are defined under ModifyDisplayText.Style</param>
+    /// <remarks>
+    /// Text modification is done one time at Terminal Start. This does not replace or add to the Terminal.TextPostProcess method.
+    /// When utilizing this secondary constructor, if the TerminalNode is deleted and then re-created your text modifications will not take place.
+    /// You may utilize ManualResultNode(TerminalNode terminalNode) to manually update your resulting terminal node if you do not wish to use the primary constructor.
+    /// </remarks>
+    public ModifyDisplayText(TerminalNode terminalNode, IProvider<string> textToAdd, string textToLookFor = "", Style replaceStyle = Style.InsertLast)
+    {
+        ResultNode = terminalNode;
+        Word = string.Empty;
+        AddedText = textToAdd;
+        TextToLookFor = textToLookFor;
+        ModifyStyle = replaceStyle;
+
+        DawnDisplayTextInserts.Add(this);
+    }
+
+    /// <summary>This allows you to disable or re-enable your text modification</summary>
+    /// <remarks>
+    /// If the text has already been modified this will not remove your modifications at runtime.
+    /// This simply removes your text modification from the list of modifications to run at Terminal Start.
+    /// </remarks>
     public void ToggleTextInsert(bool value)
     {
         if (value)
@@ -48,6 +89,37 @@ public class ModifyDisplayText
         {
             DawnDisplayTextInserts.Remove(this);
         }
+    }
+
+    /// <summary>This allows you to manually set your Result TerminalNode</summary>
+    /// <remarks>
+    /// Setting this manually to a non-null result will disable keyword to result node matching.
+    /// NOTE: Changing this after Terminal Start has no affect on the result node.
+    /// </remarks>
+    public void ManualResultNode(TerminalNode terminalNode)
+    {
+        ResultNode = terminalNode;
+    }
+
+    /// <summary>This allows you to manually remove your added text during runtime</summary>
+    /// <remarks>
+    /// Running this method is not necessary unless there is a desire to remove the modifications before lobby reset.
+    /// Text modifications are automatically removed at lobby reset by default.
+    /// </remarks>
+    public void RemoveAddedTextNow()
+    {
+        ResetNodeText();
+    }
+
+    /// <summary>This allows you to manually refresh your added text during runtime</summary>
+    /// <remarks>
+    /// Running this method is not necessary unless there is a desire to refresh the text modifications before lobby reset.
+    /// Text modifications are automatically removed at lobby reset by default and refreshed at lobby load.
+    /// </remarks>
+    public void RefreshAddedTextNow()
+    {
+        ResetNodeText();
+        AddText();
     }
 
     internal static void AddAllTextInserts()
