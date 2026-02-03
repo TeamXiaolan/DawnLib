@@ -176,12 +176,16 @@ public class DuskMoonSceneData
     [Obsolete]
     public string WeatherWeights { get; private set; }
 
+#pragma warning disable CS0612
+    internal string WeatherWeightsCompat => WeatherWeights;
+#pragma warning restore CS0612
+
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> _weights;
 
     public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weight() // TODO: make this configurable
     {
-        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherWeights);
+        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherWeightsCompat);
 
         SpawnWeights.SetupSpawnWeightsPreset(new(), new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig, BaseWeight);
         WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
