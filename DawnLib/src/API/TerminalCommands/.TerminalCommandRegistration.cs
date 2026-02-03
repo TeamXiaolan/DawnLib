@@ -268,7 +268,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         {
             dawnBuildEvent.OnInvoke += Build;
         }
-            
+
         return this;
     }
 
