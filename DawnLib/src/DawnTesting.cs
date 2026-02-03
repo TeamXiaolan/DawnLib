@@ -47,8 +47,14 @@ internal class DawnTesting
             builder.SetDescription("Takes the player's input and uses it on the next screen.");
         });
 
-        DawnEvent dawnEvent = new();
-        dawnEvent.OnInvoke += () => GameNetworkManager.Instance.localPlayerController.DamagePlayer(50);
+        DawnEvent<bool> dawnEvent = new();
+        dawnEvent.OnInvoke += continued =>
+        {
+            if (!continued)
+            {
+                GameNetworkManager.Instance.localPlayerController.DamagePlayer(50);
+            }
+        };
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_query_command"), "DawnLibQuery", builder =>
         {
             builder.SetEnabled(new SimpleProvider<bool>(true));

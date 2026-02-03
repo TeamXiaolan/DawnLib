@@ -1,4 +1,10 @@
-# v0.7.10
+# v0.7.11
+
+- Added to the Query implementation of DawnTerminalCommands.
+  - You can now run a DawnEvent after ending a query.
+  - You can now set a condition on the query for whether it should continue even after typing the continue keyword.
+
+## v0.7.10
 
 - I said the dungeon stuff breaking wasn't DawnLib and then I woke up to a message showing it was, It's time I pull out the ukelele.
 

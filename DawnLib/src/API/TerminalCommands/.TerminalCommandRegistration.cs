@@ -83,10 +83,11 @@ public class TerminalCommandRegistration
                     {
                         nodeToLoad.displayText = nodeToLoad.GetCommandFunction().Invoke();
                     }
+                    commandInfo.QueryCommandInfo.OnQueryContinuedEvent?.Invoke(false);
                 }
                 else
                 {
-                    commandInfo.QueryCommandInfo.OnQueryContinuedEvent?.Invoke();
+                    commandInfo.QueryCommandInfo.OnQueryContinuedEvent?.Invoke(true);
                 }
             }
         }

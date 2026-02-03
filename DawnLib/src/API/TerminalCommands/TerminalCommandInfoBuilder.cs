@@ -15,7 +15,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         private Func<string> _queryFunc, _cancelFunc;
         private string _continueKeyword, _cancelKeyword;
         private FuncProvider<bool> _continueProvider;
-        private DawnEvent? _onQueryContinuedEvent;
+        private DawnEvent<bool>? _onQueryContinuedEvent;
 
         internal QueryCommandBuilder(TerminalCommandInfoBuilder parent)
         {
@@ -40,7 +40,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             return this;
         }
 
-        public QueryCommandBuilder SetQueryEvent(DawnEvent onQueryContinuedEvent)
+        public QueryCommandBuilder SetQueryEvent(DawnEvent<bool> onQueryContinuedEvent)
         {
             _onQueryContinuedEvent = onQueryContinuedEvent;
             return this;
