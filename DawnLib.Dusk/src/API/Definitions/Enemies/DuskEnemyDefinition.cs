@@ -46,6 +46,10 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
 
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
+    [field: SerializeField]
+    public bool GeneratePowerLevelConfig { get; private set; } = true;
+    [field: SerializeField]
+    public bool GenerateMaxSpawnCountConfig { get; private set; } = true;
 
     [field: Header("Configs | Obsolete")]
     [field: SerializeField]
@@ -123,17 +127,18 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights) : null,
             InteriorSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Interior Weights", $"Preset interior weights for {EntityNameReference}.", InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights) : null,
             WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights) : null,
-            PowerLevel = section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", EnemyType.PowerLevel),
-            MaxSpawnCount = section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", EnemyType.MaxCount)
+            PowerLevel = GeneratePowerLevelConfig ? section.Bind($"{EntityNameReference} | Power Level", $"Power level for {EntityNameReference}.", EnemyType.PowerLevel) : null,
+            MaxSpawnCount = GenerateMaxSpawnCountConfig ? section.Bind($"{EntityNameReference} | Max Spawn Count", $"Max spawn count for {EntityNameReference}.", EnemyType.MaxCount) : null,
         };
 
         if (!enemyConfig.UserAllowedToEdit())
         {
-            enemyConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
-            enemyConfig.InteriorSpawnWeights?.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
-            enemyConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
-            enemyConfig.PowerLevel.Value = EnemyType.PowerLevel;
-            enemyConfig.MaxSpawnCount.Value = EnemyType.MaxCount;
+            DuskBaseConfig.AssignValueIfNotNull(enemyConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(enemyConfig.InteriorSpawnWeights, InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(enemyConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights);
+
+            DuskBaseConfig.AssignValueIfNotNull(enemyConfig.PowerLevel, EnemyType.PowerLevel);
+            DuskBaseConfig.AssignValueIfNotNull(enemyConfig.MaxSpawnCount, EnemyType.MaxCount);
         }
 
         return enemyConfig;

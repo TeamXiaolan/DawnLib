@@ -93,9 +93,10 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
         if (!dungeonConfig.UserAllowedToEdit())
         {
-            dungeonConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
-            dungeonConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
-            dungeonConfig.DungeonRangeClamp.Value = DungeonRangeClamp;
+            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights);
+
+            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.DungeonRangeClamp, DungeonRangeClamp);
         }
         return dungeonConfig;
     }

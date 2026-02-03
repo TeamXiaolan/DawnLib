@@ -71,6 +71,7 @@ public class DawnPlugin : BaseUnityPlugin
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
         HandleCorruptedDataPatch.Init();
+        TerminalCommandRegistration.Init();
 
         EnemyDataPatch.Init();
         ExtraItemEventsPatch.Init();

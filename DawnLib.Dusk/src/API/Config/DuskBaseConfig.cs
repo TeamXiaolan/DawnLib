@@ -20,4 +20,11 @@ public class DuskBaseConfig
     public ConfigEntry<bool> AllowEditingConfig;
 
     public bool UserAllowedToEdit() => AllowEditingConfig.Value;
+    internal static void AssignValueIfNotNull<T>(ConfigEntry<T>? configEntry, T value)
+    {
+        if (configEntry != null)
+        {
+            configEntry.Value = value;
+        }
+    }
 }

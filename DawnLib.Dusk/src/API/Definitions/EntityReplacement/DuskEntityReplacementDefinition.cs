@@ -124,11 +124,11 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
         if (!entityReplacementConfig.UserAllowedToEdit())
         {
-            entityReplacementConfig.MoonSpawnWeights?.Value = MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights;
-            entityReplacementConfig.InteriorSpawnWeights?.Value = InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights;
-            entityReplacementConfig.WeatherSpawnWeights?.Value = WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights;
+            DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.InteriorSpawnWeights, InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeights);
+            DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeights);
 
-            entityReplacementConfig.DisableDateCheck?.Value = false;
+            DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.DisableDateCheck, false);
         }
 
         return entityReplacementConfig;

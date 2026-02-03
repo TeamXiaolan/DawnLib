@@ -110,10 +110,10 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
 
         if (!vehicleConfig.UserAllowedToEdit())
         {
-            vehicleConfig.Cost?.Value = Cost;
+            DuskBaseConfig.AssignValueIfNotNull(vehicleConfig.Cost, Cost);
 
-            vehicleConfig.DisableUnlockRequirements?.Value = false;
-            vehicleConfig.DisablePricingStrategy?.Value = false;
+            DuskBaseConfig.AssignValueIfNotNull(vehicleConfig.DisableUnlockRequirements, false);
+            DuskBaseConfig.AssignValueIfNotNull(vehicleConfig.DisablePricingStrategy, false);
         }
 
         return vehicleConfig;

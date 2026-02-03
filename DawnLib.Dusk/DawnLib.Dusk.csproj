@@ -11,7 +11,7 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <RootNamespace>Dusk</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <!-- NuGet Packaging -->

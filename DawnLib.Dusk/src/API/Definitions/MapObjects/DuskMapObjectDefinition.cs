@@ -260,16 +260,16 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 
         if (!mapObjectConfig.UserAllowedToEdit())
         {
-            mapObjectConfig.InsideHazard?.Value = IsInsideHazard;
-            mapObjectConfig.OutsideHazard?.Value = IsOutsideHazard;
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.InsideHazard, IsInsideHazard);
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.OutsideHazard, IsOutsideHazard);
 
-            mapObjectConfig.InsideMoonCurveSpawnWeights?.Value = insideMoonStringToUse;
-            mapObjectConfig.InsideInteriorCurveSpawnWeights?.Value = insideInteriorStringToUse;
-            mapObjectConfig.OutsideMoonCurveSpawnWeights?.Value = outsideMoonStringToUse;
-            mapObjectConfig.OutsideInteriorCurveSpawnWeights?.Value = outsideInteriorStringToUse;
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.InsideMoonCurveSpawnWeights, insideMoonStringToUse);
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.InsideInteriorCurveSpawnWeights, insideInteriorStringToUse);
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.OutsideMoonCurveSpawnWeights, outsideMoonStringToUse);
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.OutsideInteriorCurveSpawnWeights, outsideInteriorStringToUse);
 
-            mapObjectConfig.InsidePrioritiseMoon?.Value = InsidePrioritiseMoonConfig;
-            mapObjectConfig.OutsidePrioritiseMoon?.Value = OutsidePrioritiseMoonConfig;
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.InsidePrioritiseMoon, InsidePrioritiseMoonConfig);
+            DuskBaseConfig.AssignValueIfNotNull(mapObjectConfig.OutsidePrioritiseMoon, OutsidePrioritiseMoonConfig);
         }
         return mapObjectConfig;
     }

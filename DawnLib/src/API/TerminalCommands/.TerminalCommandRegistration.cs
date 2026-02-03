@@ -51,6 +51,150 @@ public class TerminalCommandRegistration
         Query = 1 << 1,
         Cancel = 1 << 2
     }
+
+    internal static DawnEvent OnTerminalAwake = new();
+    internal static DawnEvent OnTerminalDisable = new();
+
+    internal static void Init()
+    {
+        On.Terminal.Awake += TerminalAwakeHook;
+        On.Terminal.OnDisable += TerminalDisableHook;
+
+        On.Terminal.LoadNewNode += HandleQueryEventAndContinueCondition;
+        On.Terminal.Start += AssignTerminalPriorites;
+        On.Terminal.CheckForExactSentences += CheckForExactSentencesPrefix;
+        On.Terminal.ParseWord += ParseWordPrefix;
+        On.Terminal.ParsePlayerSentence += HandleDawnCommand;
+    }
+
+    private static void HandleQueryEventAndContinueCondition(On.Terminal.orig_LoadNewNode orig, Terminal self, TerminalNode node)
+    {
+        TerminalNode nodeToLoad = node;
+
+        if (nodeToLoad.HasDawnInfo())
+        {
+            DawnTerminalCommandInfo commandInfo = nodeToLoad.GetDawnInfo();
+            if (commandInfo.ResultNode == node && commandInfo.QueryCommandInfo != null)
+            {
+                if (!commandInfo.QueryCommandInfo.ContinueProvider.Provide())
+                {
+                    nodeToLoad = commandInfo.QueryCommandInfo.CancelNode!;
+                    if (nodeToLoad.HasCommandFunction())
+                    {
+                        nodeToLoad.displayText = nodeToLoad.GetCommandFunction().Invoke();
+                    }
+                }
+                else
+                {
+                    commandInfo.QueryCommandInfo.OnQueryContinuedEvent?.Invoke();
+                }
+            }
+        }
+        orig(self, nodeToLoad);
+    }
+
+    private static TerminalKeyword CheckForExactSentencesPrefix(On.Terminal.orig_CheckForExactSentences orig, Terminal self, string playerWord)
+    {
+        //reset last command values to be empty/null
+        //this runs before ParseWordPrefix
+        self.SetLastCommand(string.Empty);
+        self.SetLastVerb(null!);
+        self.SetLastNoun(null!);
+
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
+        {
+            self.UpdateLastKeywordParsed(NonNullResult);
+            self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
+            return NonNullResult;
+        }
+        else
+        {
+            //run original
+            TerminalKeyword vanillaResult = orig(self, playerWord);
+            self.UpdateLastKeywordParsed(vanillaResult);
+            self.SetLastCommand(playerWord);
+            return vanillaResult;
+        }
+
+    }
+
+    private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)
+    {
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
+        {
+            self.UpdateLastKeywordParsed(NonNullResult);
+            self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
+            return NonNullResult;
+        }
+        else
+        {
+            //run original
+            TerminalKeyword vanillaResult = orig(self, playerWord, specificityRequired);
+            self.UpdateLastKeywordParsed(vanillaResult);
+            return vanillaResult;
+        }
+
+    }
+
+    private static void TerminalDisableHook(On.Terminal.orig_OnDisable orig, Terminal self)
+    {
+        //All commands use this event to destroy themselves between lobby loads by default
+        OnTerminalDisable.Invoke();
+
+        //still need to run the method
+        orig(self);
+    }
+
+    private static void AssignTerminalPriorites(On.Terminal.orig_Start orig, Terminal self)
+    {
+        orig(self);
+
+        //assign priorities to any remaining keywords that have not received a value yet
+        //also assign descriptions/category if unassigned
+        //doing this in start to give time after Terminal.Awake where commands are created
+        foreach (TerminalKeyword keyword in self.terminalNodes.allKeywords)
+        {
+            keyword.TryAssignType();
+            if (string.IsNullOrEmpty(keyword.GetKeywordCategory()))
+            {
+                keyword.SetKeywordCategory(keyword.GetKeywordPriority().ToString());
+            }
+
+            if (string.IsNullOrEmpty(keyword.GetKeywordDescription()))
+            {
+                if (keyword.TryGetKeywordInfoText(out string result))
+                {
+                    keyword.SetKeywordDescription(result.Trim());
+                }
+                else
+                {
+                    keyword.SetKeywordDescription($"No information on the terminal keyword [ {keyword.word} ]");
+                }
+            }
+        }
+    }
+
+    private static void TerminalAwakeHook(On.Terminal.orig_Awake orig, Terminal self)
+    {
+        orig(self);
+        //below will have many terminal commands begin building on the below invoke
+        //only commands with a custom defined build event will not use this event
+        OnTerminalAwake.Invoke();
+    }
+
+    private static TerminalNode HandleDawnCommand(On.Terminal.orig_ParsePlayerSentence orig, Terminal self)
+    {
+        //Get vanilla result
+        TerminalNode terminalNode = orig(self);
+
+        //updates the node's displaytext based on it's NodeFunction Func<string> that was injected (if not null)
+        if (terminalNode.HasCommandFunction())
+        {
+            terminalNode.displayText = terminalNode.GetCommandFunction().Invoke();
+        }
+
+        return terminalNode;
+    }
 }
 
 public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode resultNode, Func<string> mainFunction)
@@ -103,7 +247,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
 
     public TerminalCommandRegistrationBuilder BuildOnTerminalAwake()
     {
-        TerminalPatches.OnTerminalAwake.OnInvoke += Build;
+        OnTerminalAwake.OnInvoke += Build;
         return this;
     }
 
@@ -183,29 +327,29 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
             return;
         }
 
-        List<TerminalKeyword> keywords = [];
-        List<string> words = register.KeywordList.Provide();
+        List<TerminalKeyword> terminalKeywords = [];
+        List<string> keywords = register.KeywordList.Provide();
 
-        foreach (string word in words)
+        foreach (string keyword in keywords)
         {
-            Debuggers.Terminal?.Log($"Creating keyword [ {word} ] for command [ {register.Name} ]");
+            Debuggers.Terminal?.Log($"Creating keyword [ {keyword} ] for command [ {register.Name} ]");
 
             if (register.OverrideExistingKeywords)
             {
-                TerminalKeyword overrideKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word)
+                TerminalKeyword overrideKeyword = new TerminalKeywordBuilder($"{register.Name}_{keyword}", keyword)
                     .SetAcceptInput(register.AcceptAdditionalText)
                     .Build();
 
                 overrideKeyword.SetKeywordPriority(register.OverridePriority);
-                keywords.Add(overrideKeyword);
+                terminalKeywords.Add(overrideKeyword);
             }
             else
             {
-                TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{word}", word, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                TerminalKeyword addKeyword = new TerminalKeywordBuilder($"{register.Name}_{keyword}", keyword, ITerminalKeyword.DawnKeywordType.DawnCommand)
                     .SetAcceptInput(register.AcceptAdditionalText)
                     .Build();
 
-                keywords.Add(addKeyword);
+                terminalKeywords.Add(addKeyword);
             }
         }
 
@@ -214,7 +358,7 @@ public class TerminalCommandRegistrationBuilder(string CommandName, TerminalNode
         commandbuilder.TrySetDestroyEvents(register);
         commandbuilder.SetResultNode(resultNode);
         commandbuilder.AddResultAction(register.ResultFunction);
-        commandbuilder.AddKeyword(keywords);
+        commandbuilder.AddKeyword(terminalKeywords);
 
         if (IsQueryCommand())
         {

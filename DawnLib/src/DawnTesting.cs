@@ -47,11 +47,13 @@ internal class DawnTesting
             builder.SetDescription("Takes the player's input and uses it on the next screen.");
         });
 
+        DawnEvent dawnEvent = new();
+        dawnEvent.OnInvoke += () => GameNetworkManager.Instance.localPlayerController.DamagePlayer(50);
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_query_command"), "DawnLibQuery", builder =>
         {
             builder.SetEnabled(new SimpleProvider<bool>(true));
             builder.SetMainText(() => "You have selected, YES!\n\n");
-            builder.SetKeywords(new SimpleProvider<List<string>>(["query", "version"]));
+            builder.SetKeywords(new SimpleProvider<List<string>>(["qUEry", "version"]));
             builder.SetCategoryName("Test");
             builder.SetClearTextFlags(TerminalCommandRegistration.ClearText.Query);
             builder.SetDescription("Test query command with added compatible nouns");
@@ -59,6 +61,8 @@ internal class DawnTesting
             {
                 queryCommandBuilder.SetQuery(() => "This is a test query, respond [YES] or [NO]\n\n");
                 queryCommandBuilder.SetCancel(() => "You have selected, NO!\n\n");
+                queryCommandBuilder.SetContinueConditions(new FuncProvider<bool>(() => GameNetworkManager.Instance.localPlayerController.currentlyHeldObjectServer != null));
+                queryCommandBuilder.SetQueryEvent(dawnEvent);
                 queryCommandBuilder.SetContinueWord("yes");
                 queryCommandBuilder.SetCancelWord("no");
             });

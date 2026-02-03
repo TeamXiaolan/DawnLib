@@ -123,21 +123,24 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 
         if (!moonConfig.UserAllowedToEdit())
         {
-            moonConfig.Cost?.Value = Cost;
-            moonConfig.MinMaxScrap?.Value = new BoundedRange(Level.minScrap, Level.maxScrap);
-            moonConfig.TimeFactor?.Value = Level.DaySpeedMultiplier;
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.Cost, Cost);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.MinMaxScrap, new BoundedRange(Level.minScrap, Level.maxScrap));
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.TimeFactor, Level.DaySpeedMultiplier);
 
-            moonConfig.InsideEnemyPowerCount?.Value = Level.maxEnemyPowerCount;
-            moonConfig.OutsideEnemyPowerCount?.Value = Level.maxOutsideEnemyPowerCount;
-            moonConfig.DaytimeEnemyPowerCount?.Value = Level.maxDaytimeEnemyPowerCount;
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideEnemyPowerCount, Level.maxEnemyPowerCount);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideEnemyPowerCount, Level.maxOutsideEnemyPowerCount);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeEnemyPowerCount, Level.maxDaytimeEnemyPowerCount);
 
-            moonConfig.InsideEnemySpawnRange?.Value = Level.spawnProbabilityRange;
-            moonConfig.OutsideEnemySpawnRange?.Value = OutsideEnemiesSpawnProbabilityRange;
-            moonConfig.DaytimeEnemySpawnRange?.Value = Level.daytimeEnemiesProbabilityRange;
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideEnemySpawnRange, Level.spawnProbabilityRange);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideEnemySpawnRange, OutsideEnemiesSpawnProbabilityRange);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeEnemySpawnRange, Level.daytimeEnemiesProbabilityRange);
 
-            moonConfig.InsideEnemySpawnCurve?.Value = Level.enemySpawnChanceThroughoutDay;
-            moonConfig.OutsideEnemySpawnCurve?.Value = Level.outsideEnemySpawnChanceThroughDay;
-            moonConfig.DaytimeEnemySpawnCurve?.Value = Level.daytimeEnemySpawnChanceThroughDay;
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideEnemySpawnCurve, Level.enemySpawnChanceThroughoutDay);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideEnemySpawnCurve, Level.outsideEnemySpawnChanceThroughDay);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeEnemySpawnCurve, Level.daytimeEnemySpawnChanceThroughDay);
+
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.DisableUnlockRequirements, false);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.DisablePricingStrategy, false);
         }
         return moonConfig;
     }
