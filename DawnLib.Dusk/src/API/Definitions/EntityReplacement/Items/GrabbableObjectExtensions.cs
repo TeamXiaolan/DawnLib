@@ -1,18 +1,22 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
 
 namespace Dusk;
 
 public static class GrabbableObjectExtensions
 {
-    public static DuskItemReplacementDefinition? GetGrabbableObjectReplacement(this GrabbableObject grabbableObject)
+    public static bool TryGetGrabbableObjectReplacement(this GrabbableObject grabbableObject, [NotNullWhen(true)] out DuskItemReplacementDefinition? output)
     {
-        DuskItemReplacementDefinition? grabbableObjectReplacementDefinition = (DuskItemReplacementDefinition?)((ICurrentEntityReplacement)grabbableObject).CurrentEntityReplacement;
-        return grabbableObjectReplacementDefinition;
+        output = ((ICurrentEntityReplacement)grabbableObject).CurrentEntityReplacement as DuskItemReplacementDefinition;
+        return output != null;
     }
 
-    internal static bool HasGrabbableObjectReplacement(this GrabbableObject grabbableObject)
+    [Obsolete($"Use {nameof(TryGetGrabbableObjectReplacement)}")]
+    public static DuskItemReplacementDefinition? GetGrabbableObjectReplacement(this GrabbableObject grabbableObject)
     {
-        return grabbableObject.GetGrabbableObjectReplacement() != null;
+        grabbableObject.TryGetGrabbableObjectReplacement(out var output);
+        return output;
     }
 
     internal static void SetGrabbableObjectReplacement(this GrabbableObject grabbableObject, DuskItemReplacementDefinition itemReplacementDefinition)
