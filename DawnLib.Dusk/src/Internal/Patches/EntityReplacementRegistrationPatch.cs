@@ -175,11 +175,11 @@ static class EntityReplacementRegistrationPatch
                 c.Index += 2;
                 c.EmitDelegate<Func<GrabbableObject, float, float>>((self, existing) =>
                 {
-                    if (!self.HasGrabbableObjectReplacement())
+                    if (!self.TryGetGrabbableObjectReplacement(out var replacement))
                     {
                         return existing;
                     }
-                    return self.GetGrabbableObjectReplacement().VerticalOffset;
+                    return replacement.VerticalOffset;
                 });
                 continue;
             }
@@ -192,11 +192,11 @@ static class EntityReplacementRegistrationPatch
                 c.Index += 2;
                 c.EmitDelegate<Func<GrabbableObject, int, int>>((self, existing) =>
                 {
-                    if (!self.HasGrabbableObjectReplacement())
+                    if (!self.TryGetGrabbableObjectReplacement(out var replacement))
                     {
                         return existing;
                     }
-                    return self.GetGrabbableObjectReplacement().FloorYOffset;
+                    return replacement.FloorYOffset;
                 });
                 continue;
             }
@@ -313,7 +313,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (self.HasGrabbableObjectReplacement())
+        if (self.TryGetGrabbableObjectReplacement(out var _))
         {
             orig(self);
             return;
@@ -411,11 +411,11 @@ static class EntityReplacementRegistrationPatch
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<AudioClip[], EnemyAI, AudioClip[]>>((existingAudioClips, self) =>
                 {
-                    if (!self.HasEnemyReplacement())
+                    if (!self.TryGetEnemyReplacement(out var replacement))
                     {
                         return existingAudioClips;
                     }
-                    return self.GetEnemyReplacement().AudioClips;
+                    return replacement.AudioClips;
                 });
                 continue;
             }
@@ -548,7 +548,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (self.HasEnemyReplacement())
+        if (self.TryGetEnemyReplacement(out var _))
         {
             return;
         }
