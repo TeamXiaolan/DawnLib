@@ -73,11 +73,17 @@ static class TerminalPatches
 
         //still need to run the method
         orig(self);
+
+        //Remove all InsertToDisplayText changes and return nodes to original values
+        ModifyDisplayText.RemoveAllTextInserts();
     }
 
     private static void TerminalStartHook(On.Terminal.orig_Start orig, Terminal self)
     {
         orig(self);
+
+        //Run all InsertToDisplayText changes
+        ModifyDisplayText.AddAllTextInserts();
 
         //assign priorities to any remaining keywords that have not received a value yet
         //also assign descriptions/category if unassigned

@@ -19,8 +19,10 @@ internal class DawnTesting
             builder.SetClearTextFlags(TerminalCommandRegistration.ClearText.Result | TerminalCommandRegistration.ClearText.Query);
         });
 
+        ModifyDisplayText versionAdd = new("help", new SimpleProvider<string>("\n\n>VERSION\nDisplay Dawnlib's current version"), "record.", ModifyDisplayText.Style.InsertFirst);
+
         UnityEvent test = new();
-        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "lights_command"), "DawnLibLights", builder =>
+        DawnTerminalCommandInfo lightsCommand = DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "lights_command"), "DawnLibLights", builder =>
         {
             builder.SetEnabled(new SimpleProvider<bool>(true));
             builder.SetMainText(BasicLightsCommand);
@@ -37,6 +39,8 @@ internal class DawnTesting
             test.Invoke();
         };
 
+        ModifyDisplayText lightsAdd = new("other", new FuncProvider<string>(() => $"\n\n>{ListToString(LightsKeywords(), ", ").ToUpperInvariant()}\nToggle ship interior lights"), "planet.");
+
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_input_command"), "DawnLibInputs", builder =>
         {
             builder.SetEnabled(new SimpleProvider<bool>(true));
@@ -46,6 +50,8 @@ internal class DawnTesting
             builder.SetAcceptInput(true);
             builder.SetDescription("Takes the player's input and uses it on the next screen.");
         });
+
+        ModifyDisplayText inputCommand = new("store", new SimpleProvider<string>($"\nThis is a hint to input\n\n"));
 
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_query_command"), "DawnLibQuery", builder =>
         {
@@ -63,6 +69,21 @@ internal class DawnTesting
                 queryCommandBuilder.SetCancelWord("no");
             });
         });
+
+        ModifyDisplayText ReplaceAllTest = new("help", new SimpleProvider<string>("///"), ">", ModifyDisplayText.Style.ReplaceAll);
+        ModifyDisplayText ReplaceLastTest = new("help", new SimpleProvider<string>("da"), "the", ModifyDisplayText.Style.ReplaceLast);
+    }
+
+    private static string ListToString(List<string> list, string separator)
+    {
+        string result = string.Empty;
+
+        foreach(string item in list)
+        {
+            result += item + separator;
+        }
+
+        return result.RemoveEnd(separator);
     }
 
     private static string BasicLightsCommand()
@@ -99,6 +120,6 @@ internal class DawnTesting
 
     private static List<string> LightsKeywords()
     {
-        return ["lights", "dark", "vow", "help"];
+        return ["lights", "dark"];
     }
 }
