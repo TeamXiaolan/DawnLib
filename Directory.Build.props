@@ -20,7 +20,7 @@
         <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
     </PropertyGroup>
 
-    <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
+    <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)MyPluginInfo.cs">
         <PropertyGroup>
             <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">$(AssemblyName)</BepInExPluginGuid>
             <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(Product)</BepInExPluginName>
@@ -40,8 +40,10 @@ namespace Dawn
         </PropertyGroup>
         <ItemGroup>
             <Compile Include="$(GeneratedFilePath)" />
+            <!-- Append to FileWrites so the file will be removed on clean -->
             <FileWrites Include="$(GeneratedFilePath)" />
         </ItemGroup>
+        <!-- Generate plugin info file here -->
         <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
     </Target>
 
