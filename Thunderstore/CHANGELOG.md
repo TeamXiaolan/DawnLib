@@ -1,4 +1,8 @@
-# v0.7.9
+# v0.7.10
+
+- I said the dungeon stuff breaking wasn't DawnLib and then I woke up to a message showing it was, It's time I pull out the ukelele.
+
+## v0.7.9
 
 - Adjusted `BoundedRange` configs to take in a `min` and `max` value that aren't just integers but also floats.
 

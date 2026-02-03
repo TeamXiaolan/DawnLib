@@ -39,9 +39,9 @@ static class LethalLevelLoaderCompat
                 dungeonRangeClamp = new BoundedRange(extendedDungeonFlow.DynamicDungeonSizeMinMax.x, extendedDungeonFlow.DynamicDungeonSizeMinMax.y);
                 return dungeonRangeClamp;
             }
-            return new BoundedRange(0, 0);
+            return new BoundedRange(0, 999);
         }
-        return new BoundedRange(0, 0);
+        return new BoundedRange(0, 999);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
