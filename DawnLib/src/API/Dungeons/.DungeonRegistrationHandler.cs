@@ -306,7 +306,12 @@ static class DungeonRegistrationHandler
         }
         else
         {
-            RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, dungeonInfo.DungeonClampRange.Min, dungeonInfo.DungeonClampRange.Max);
+            BoundedRange toUse = dungeonInfo.DungeonClampRange;
+            if (dungeonInfo.DungeonClampRange.Min == 0 && dungeonInfo.DungeonClampRange.Max == 0)
+            {
+                toUse = new BoundedRange(0, 999f);
+            }
+            RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, toUse.Min, toUse.Max);
             RoundManager.Instance.dungeonGenerator.Generate();
         }
     }
