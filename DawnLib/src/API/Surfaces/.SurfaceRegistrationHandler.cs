@@ -21,10 +21,49 @@ static class SurfaceRegistrationHandler
             On.StartOfRound.Awake += RegisterDawnSurfaces;
         }
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditGravityDirection;
-        IL.GameNetcodeStuff.PlayerControllerB.Update += EditGravityStrength;
+        IL.GameNetcodeStuff.PlayerControllerB.Update += EditFallValueForGravity;
+        IL.GameNetcodeStuff.PlayerControllerB.Update += EditUncappedFallValueForGravity;
     }
 
-    private static void EditGravityStrength(ILContext il)
+    private static void EditUncappedFallValueForGravity(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdfld<PlayerControllerB>("fallValueUncapped"),
+            instr => instr.MatchLdcR4(26),
+            instr => instr.MatchCall<Time>("get_deltaTime"),
+            instr => instr.MatchMul()
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.Update IL for normal gravity strength control 1.");
+            return;
+        }
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(GetGravityStrength)));
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Mul);
+
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdfld<PlayerControllerB>("fallValueUncapped"),
+            instr => instr.MatchLdcR4(38),
+            instr => instr.MatchCall<Time>("get_deltaTime"),
+            instr => instr.MatchMul()
+            ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.Update IL for uncapped gravity strength control 2.");
+            return;
+        }
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(GetGravityStrength)));
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Mul);
+    }
+
+    private static void EditFallValueForGravity(ILContext il)
     {
         ILCursor cursor = new(il);
         if (!cursor.TryGotoNext(
@@ -37,7 +76,7 @@ static class SurfaceRegistrationHandler
             instr => instr.MatchMul()
             ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.Update IL for gravity strength control.");
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.Update IL for normal gravity strength control.");
             return;
         }
 
@@ -47,7 +86,12 @@ static class SurfaceRegistrationHandler
 
     private static float GetGravityStrength()
     {
-        return 1f;
+        float gravityStrength = 1f;
+        if (GameNetworkManager.Instance.localPlayerController.TryGetCurrentDawnSurface(out DawnSurface? dawnSurface))
+        {
+            gravityStrength = dawnSurface.GravityStrength;
+        }
+        return gravityStrength;
     }
 
     private static void EditGravityDirection(ILContext il)
@@ -83,8 +127,13 @@ static class SurfaceRegistrationHandler
 
     private static Vector3 GetGravityDirection()
     {
-        Vector3 direction = Vector3.down;
-        return direction.normalized;
+        if (!GameNetworkManager.Instance.localPlayerController.TryGetCurrentDawnSurface(out DawnSurface? dawnSurface) || dawnSurface.GravityCenter == null)
+        {
+            return Vector3.down;
+        }
+
+        Vector3 gravityDirection = dawnSurface.GravityCenter.transform.position - GameNetworkManager.Instance.localPlayerController.transform.position;
+        return gravityDirection.normalized;
     }
 
     private static void RegisterDawnSurfaces(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -152,10 +201,11 @@ static class SurfaceRegistrationHandler
             .CreateLabel(out Label vanillaFootstep)
             .Insert(
                 new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex))),
-                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndex))),
+                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndexPlayer))),
                 new(OpCodes.Brfalse_S, vanillaFootstep),
                 new(OpCodes.Ret))
             .InstructionEnumeration();
@@ -173,19 +223,21 @@ static class SurfaceRegistrationHandler
             .CreateLabel(out Label vanillaFootstep)
             .Insert(
                 new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.enemyRayHit))),
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldflda, AccessTools.Field(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.currentFootstepSurfaceIndex))),
-                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndex))),
+                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndexMasked))),
                 new(OpCodes.Brfalse_S, vanillaFootstep),
                 new(OpCodes.Ret))
             .InstructionEnumeration();
     }
 
-    private static bool TryGetAndSetDawnSurfaceIndex(ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
+    private static bool TryGetAndSetDawnSurfaceIndexPlayer(PlayerControllerB playerControllerB, ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
     {
         if (hit.collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
         {
+            playerControllerB.SetCurrentDawnSurface(surface);
             currentFootstepSurfaceIndex = surface.SurfaceIndex;
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
             if (surfaceInfo.SurfaceVFXPrefab != null)
@@ -195,6 +247,25 @@ static class SurfaceRegistrationHandler
             return true; // DawnSurface found, return early!
         }
 
+        playerControllerB.SetCurrentDawnSurface(null);
+        return false; // Vanilla surface, do nothin'.
+    }
+
+    private static bool TryGetAndSetDawnSurfaceIndexMasked(MaskedPlayerEnemy maskedPlayerEnemy, ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
+    {
+        if (hit.collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
+        {
+            maskedPlayerEnemy.SetCurrentDawnSurface(surface);
+            currentFootstepSurfaceIndex = surface.SurfaceIndex;
+            DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
+            if (surfaceInfo.SurfaceVFXPrefab != null)
+            {
+                FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
+            }
+            return true; // DawnSurface found, return early!
+        }
+
+        maskedPlayerEnemy.SetCurrentDawnSurface(null);
         return false; // Vanilla surface, do nothin'.
     }
 

@@ -4,6 +4,8 @@
   - You can now run a DawnEvent after ending a query.
   - You can now set a condition on the query for whether it should continue even after typing the continue keyword.
 - Interiors are now able to add extra scrap upon their generation.
+- Added ability to control gravity through DawnSurfaces.
+  - Editing where gravity comes from does NOT automatically rotate the player or anything like that, you'll have to do that yourself (or a workaround that involves rotating the object as the player moves forward instead of having the player move around it)
 
 ## v0.7.10
 
