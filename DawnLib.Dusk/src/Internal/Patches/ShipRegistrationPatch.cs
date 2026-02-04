@@ -18,7 +18,6 @@ static class ShipRegistrationPatch
     internal static void Init()
     {
         On.Terminal.Awake += AddShipsToTerminal;
-        On.Terminal.RunTerminalEvents += AddEventToTerminal;
         On.Terminal.TextPostProcess += EditTextPostProcess;
     }
 
@@ -37,8 +36,8 @@ static class ShipRegistrationPatch
 
         modifiedDisplayText = orig(self,modifiedDisplayText, node);
 
-        StringBuilder stringBuilder = new StringBuilder();
-        foreach (BuyableShipPreset ship in (List<BuyableShipPreset>)((ITerminalBuyableShips)self).buyableShips)
+        StringBuilder stringBuilder = new();
+        foreach (BuyableShipPreset ship in (List<BuyableShipPreset>)((ITerminal)self).BuyableShips)
             stringBuilder.Append("\n* " + ship.ShipName + "  //  Price: $" + ship.Cost);
 
         modifiedDisplayText = modifiedDisplayText.Replace("[buyableShipsList]", stringBuilder.ToString());
@@ -58,8 +57,8 @@ static class ShipRegistrationPatch
         //List<CompatibleNoun> allBuyKeywordNounsList = buyKeyword.compatibleNouns.ToList();
         //List<CompatibleNoun> allInfoKeywordNounsList = infoKeyword.compatibleNouns.ToList();
 
-        List <BuyableShipPreset> buyableShips = new List<BuyableShipPreset>();
-        int currentShipIndex = 0;
+        List<BuyableShipPreset> buyableShips = new();
+        int currentShipId = 0;
 
         foreach (DuskShipDefinition shipDefinition in DuskModContent.Ships.Values)
         {
@@ -79,30 +78,28 @@ static class ShipRegistrationPatch
                 builder.SetDescription($"Buy {shipDefinition.BuyableShipPreset.ShipName}.");
                 builder.DefineQueryCommand(queryCommandBuilder =>
                 {
+                    DawnEvent<bool> dawnEvent = new();
+                    dawnEvent.OnInvoke += (bool value) =>
+                    {
+                        ShipSpawnHandler.ChangeShip(currentShipId);
+                    };
+
                     queryCommandBuilder.SetQuery(() => $"Are you sure you want to buy {shipDefinition.BuyableShipPreset.ShipName}?"); //add confirm or deny text
                     queryCommandBuilder.SetCancel(() => ""); //change that
                     queryCommandBuilder.SetContinueWord("confirm");
                     queryCommandBuilder.SetCancelWord("deny");
-                    //queryCommandBuilder.SetContinueEvent or smth like that
+                    queryCommandBuilder.SetQueryEvent(dawnEvent);
                 });
             });
 
-            currentShipIndex++;
+            currentShipId++;
         }
         
-        ((ITerminalBuyableShips)self).buyableShips = buyableShips;
+        ((ITerminal)self).BuyableShips = buyableShips;
+        ((ITerminal)self).CurrentShipId = 0; //TODO: Read save and change ship if needed
 
         DuskModContent.Ships.Freeze();
         orig(self);
     }
-
-
-    //TODO: this patch prob should be more abstract so we could use terminal events for something like terminal event registration in editor or smth like that
-    private static void AddEventToTerminal(On.Terminal.orig_RunTerminalEvents orig, Terminal self, TerminalNode node)
-    {
-        orig(self, node);
-    }
-
-
 }
 

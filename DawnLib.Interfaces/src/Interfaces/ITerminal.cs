@@ -15,4 +15,9 @@ public interface ITerminal
 
     //Used by keyword matching
     TerminalKeyword DawnLastVerb { get; set; }
+
+
+    public object BuyableShips { get; set; } //supposed to be BuyableShipPreset type but i THINK i cant use that here?
+
+    public int CurrentShipId { get; set; }
 }
