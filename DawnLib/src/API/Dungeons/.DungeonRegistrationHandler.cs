@@ -40,6 +40,7 @@ static class DungeonRegistrationHandler
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         IL.RoundManager.Generator_OnGenerationStatusChanged += FixVanillaGenerationStatusChangedBug;
         On.MenuManager.Awake += DeleteLLLTranspilerAndEnsureDelayedDungeon;
+        IL.RoundManager.SpawnScrapInLevel += MakeExtraScrapGenerationMoreModular;
         On.RoundManager.GenerateNewFloor += (orig, self) =>
         {
             UpdateDungeonWeightOnLevel(self.currentLevel);
@@ -60,6 +61,42 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    private static void MakeExtraScrapGenerationMoreModular(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdfld<RoundManager>("currentDungeonType"),
+            instr => instr.MatchLdcI4(4),
+            instr => instr.MatchBneUn(out _),
+            instr => instr.MatchLdloc(1),
+            instr => instr.MatchLdcI4(6),
+            instr => instr.MatchAdd(),
+            instr => instr.MatchStloc(1)))
+        {
+            DawnPlugin.Logger.LogWarning($"Failed to find IL for RoundManager.SpawnScrapInLevel (MakeExtraScrapGenerationMoreModular).");
+            return;
+        }
+
+        // remove all those instructions and replace them with an emit delegate
+        cursor.RemoveRange(8);
+        cursor.Emit(OpCodes.Ldloc_1);
+        cursor.Emit(OpCodes.Call, AccessTools.DeclaredMethod(typeof(DungeonRegistrationHandler), nameof(GetExtraScrapForCurrentlyLoadedInterior)));
+        cursor.Emit(OpCodes.Add);
+        cursor.Emit(OpCodes.Stloc_1);
+    }
+
+    private static int GetExtraScrapForCurrentlyLoadedInterior()
+    {
+        DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
+        if (dungeonInfo == null)
+        {
+            return 0;
+        }
+        return dungeonInfo.ExtraScrapGeneration;
     }
 
     private static readonly NamespacedKey StingerPlayedKey = NamespacedKey.From("dawn_lib", "played_stinger_once_before");
@@ -269,7 +306,12 @@ static class DungeonRegistrationHandler
         }
         else
         {
-            RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, dungeonInfo.DungeonClampRange.Min, dungeonInfo.DungeonClampRange.Max);
+            BoundedRange toUse = dungeonInfo.DungeonClampRange;
+            if (dungeonInfo.DungeonClampRange.Min == 0 && dungeonInfo.DungeonClampRange.Max == 0)
+            {
+                toUse = new BoundedRange(0, 999f);
+            }
+            RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, toUse.Min, toUse.Max);
             RoundManager.Instance.dungeonGenerator.Generate();
         }
     }
@@ -433,7 +475,12 @@ static class DungeonRegistrationHandler
             }
 
             DawnStingerDetail stingerDetail = new DawnStingerDetail(indoorMapType.firstTimeAudio, false, 100f, new FuncProvider<bool>(() => true));
-            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, stingerDetail, string.Empty, dungeonRangeClamp, customData);
+            int extraScrapGeneration = 0;
+            if (key == DungeonKeys.MineshaftFlow)
+            {
+                extraScrapGeneration = 6;
+            }
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, stingerDetail, string.Empty, dungeonRangeClamp, extraScrapGeneration, customData);
             indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
             LethalContent.Dungeons.Register(dungeonInfo);
         }

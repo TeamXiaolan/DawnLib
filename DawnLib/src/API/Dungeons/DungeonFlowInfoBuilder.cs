@@ -16,6 +16,7 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     private bool _stingerPlaysMoreThanOnce = false;
     private float _stingerPlayChance = 100f;
     private FuncProvider<bool> _allowStingerToPlay = new FuncProvider<bool>(() => true);
+    private int _extraScrapGeneration;
 
     internal DungeonFlowInfoBuilder(NamespacedKey<DawnDungeonInfo> key, DungeonFlow value) : base(key, value)
     {
@@ -109,6 +110,12 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         return this;
     }
 
+    public DungeonFlowInfoBuilder SetExtraScrapGeneration(int extraScrapGeneration)
+    {
+        _extraScrapGeneration = extraScrapGeneration;
+        return this;
+    }
+
     public DungeonFlowInfoBuilder SetAssetBundlePath(string assetBundlePath)
     {
         _assetBundlePath = assetBundlePath;
@@ -162,6 +169,6 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         }
 
         DawnStingerDetail stingerDetail = new(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
-        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, customData);
+        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, _extraScrapGeneration, customData);
     }
 }

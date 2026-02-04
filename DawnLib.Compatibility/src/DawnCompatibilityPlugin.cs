@@ -1,6 +1,5 @@
 using BepInEx;
 using BepInEx.Logging;
-using HarmonyLib;
 using loaforcsSoundAPI;
 
 namespace Dawn.Compatibility;

@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
@@ -17,6 +20,71 @@ static class SurfaceRegistrationHandler
         {
             On.StartOfRound.Awake += RegisterDawnSurfaces;
         }
+        IL.GameNetcodeStuff.PlayerControllerB.Update += EditGravityDirection;
+        IL.GameNetcodeStuff.PlayerControllerB.Update += EditGravityStrength;
+    }
+
+    private static void EditGravityStrength(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdfld<PlayerControllerB>("fallValue"),
+            instr => instr.MatchLdcR4(38),
+            instr => instr.MatchCall(typeof(Time), "get_deltaTime"),
+            instr => instr.MatchMul()
+            ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.Update IL for gravity strength control.");
+            return;
+        }
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(GetGravityStrength)));
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Mul);
+    }
+
+    private static float GetGravityStrength()
+    {
+        return 1f;
+    }
+
+    private static void EditGravityDirection(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            instr => instr.MatchLdcR4(0),
+            instr => instr.MatchLdarg(0),
+            instr => instr.MatchLdfld<PlayerControllerB>("fallValue"),
+            instr => instr.MatchLdcR4(0),
+            instr => instr.MatchNewobj(typeof(Vector3))
+            ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.Update IL for gravity direction control.");
+            return;
+        }
+
+        cursor.RemoveRange(5);
+
+        MethodInfo multiplyVector3 = AccessTools.Method(typeof(Vector3), "op_Multiply", [typeof(Vector3), typeof(float)]);
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(GetGravityDirection)));
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldc_R4, -1f);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, multiplyVector3);
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldfld, AccessTools.Field(typeof(PlayerControllerB), "fallValue"));
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, multiplyVector3);
+    }
+
+    private static Vector3 GetGravityDirection()
+    {
+        Vector3 direction = Vector3.down;
+        return direction.normalized;
     }
 
     private static void RegisterDawnSurfaces(On.StartOfRound.orig_Awake orig, StartOfRound self)

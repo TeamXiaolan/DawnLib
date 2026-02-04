@@ -220,7 +220,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         if (_customUnityBuildEvent != null)
         {
             commandRegistrationBuilder.SetCustomBuildEvent(_customUnityBuildEvent);
-        } 
+        }
 
         if (_customDawnBuildEvent != null)
         {
@@ -235,8 +235,8 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         {
             commandRegistrationBuilder.SetCustomDestroyEvent(_customUnityDestroyEvent);
         }
-        
-        if ( _customDawnDestroyEvent != null)
+
+        if (_customDawnDestroyEvent != null)
         {
             commandRegistrationBuilder.SetCustomDestroyEvent(_customDawnDestroyEvent);
         }
