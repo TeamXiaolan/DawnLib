@@ -102,7 +102,7 @@ public class TerminalCommandRegistration
         self.SetLastVerb(null!);
         self.SetLastNoun(null!);
 
-        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
+        if (self.DawnTryResolveKeyword(playerWord, out var NonNullResult))
         {
             self.UpdateLastKeywordParsed(NonNullResult);
             self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
@@ -121,7 +121,7 @@ public class TerminalCommandRegistration
 
     private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)
     {
-        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword NonNullResult))
+        if (self.DawnTryResolveKeyword(playerWord, out var NonNullResult))
         {
             self.UpdateLastKeywordParsed(NonNullResult);
             self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
@@ -163,7 +163,7 @@ public class TerminalCommandRegistration
 
             if (string.IsNullOrEmpty(keyword.GetKeywordDescription()))
             {
-                if (keyword.TryGetKeywordInfoText(out string result))
+                if (keyword.TryGetKeywordInfoText(out var result))
                 {
                     keyword.SetKeywordDescription(result.Trim());
                 }
