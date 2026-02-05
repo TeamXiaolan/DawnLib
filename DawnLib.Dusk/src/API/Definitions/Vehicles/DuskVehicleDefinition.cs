@@ -97,7 +97,16 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
             PricingStrategy = null;
         }
 
-        DawnVehicleInfo = new DawnVehicleInfo(TypedKey, _tags.ToHashSet(), BuyableVehiclePreset.VehiclePrefab, BuyableVehiclePreset.SecondaryPrefab, BuyableVehiclePreset.StationPrefab, new DawnPurchaseInfo(PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy, TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess()), null);
+        DawnVehicleInfo = new DawnVehicleInfo(
+            TypedKey,
+            _tags.ToHashSet(),
+            BuyableVehiclePreset.VehiclePrefab,
+            BuyableVehiclePreset.SecondaryPrefab,
+            BuyableVehiclePreset.StationPrefab,
+            new DawnPurchaseInfo(
+                PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy,
+                TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess()),
+            null);
         DuskModContent.Vehicles.Register(this);
     }
 
