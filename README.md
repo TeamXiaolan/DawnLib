@@ -129,16 +129,17 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 ### Credits - Maintainers/Main Contributors
 
-- Bongo Xiaolan
-- Xu Xiaolan
-- Darmuh
-- Pacoito
-- Fumo
+- [Bongo Xiaolan](https://github.com/LoafOrc)
+- [Xu Xiaolan](https://github.com/XuuXiaolan)
+- [Darmuh](https://github.com/darmuh)
+- [Pacoito](https://github.com/pacoito123)
+- [Fumo](https://github.com/xntkrnl)
+- [Ratijas](https://github.com/ratijas)
 
 ### Credits - Misc
 
 - Crafty (Making LunarConfig exposed a few places that needed improvement in implementation).
-- Slayer (Achievement UI)
+- [Slayer](https://github.com/slayer6409) (Achievement UI)
 - Monty (Hotloading UI Feedback)
 - IAmBatby (UI+General Feedback)
 - Zaggy (Advice + other stuff I forgor)
