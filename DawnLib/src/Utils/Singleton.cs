@@ -18,7 +18,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
         }
     }
 
-    protected void OnDestroy()
+    protected virtual void OnDestroy()
     {
         if (Instance == (T)this) _instance = null;
     }
