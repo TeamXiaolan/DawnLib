@@ -228,8 +228,7 @@ static class EntityReplacementRegistrationPatch
                 if (!mapObjectInfo.CustomData.TryGet(Key, out List<DuskMapObjectReplacementDefinition>? list))
                 {
                     DuskMapObjectReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskMapObjectReplacementDefinition>();
-                    vanilla.IsDefault = true;
-                    vanilla.Register(null);
+                    vanilla.RegisterAsDefault();
                     list = [vanilla];
                     mapObjectInfo.CustomData.Set(Key, list);
                 }
@@ -273,8 +272,7 @@ static class EntityReplacementRegistrationPatch
                 if (!unlockableItemInfo.CustomData.TryGet(Key, out List<DuskUnlockableReplacementDefinition>? list))
                 {
                     DuskUnlockableReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskUnlockableReplacementDefinition>();
-                    vanilla.IsDefault = true;
-                    vanilla.Register(null);
+                    vanilla.RegisterAsDefault();
                     list = [vanilla];
                     unlockableItemInfo.CustomData.Set(Key, list);
                 }
@@ -295,8 +293,7 @@ static class EntityReplacementRegistrationPatch
                 if (!itemInfo.CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? list))
                 {
                     DuskItemReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
-                    vanilla.IsDefault = true;
-                    vanilla.Register(null);
+                    vanilla.RegisterAsDefault();
                     list = [vanilla];
                     itemInfo.CustomData.Set(Key, list);
                 }
@@ -524,8 +521,7 @@ static class EntityReplacementRegistrationPatch
                 if (!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? list))
                 {
                     DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
-                    defaultSkin.IsDefault = true;
-                    defaultSkin.Register(null);
+                    defaultSkin.RegisterAsDefault();
                     list = [defaultSkin];
                     enemyInfo.CustomData.Set(Key, list);
                 }
