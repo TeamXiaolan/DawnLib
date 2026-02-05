@@ -80,9 +80,14 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateEnemyConfig(section);
 
-        EnemyType enemy = EnemyType;
-        enemy.MaxCount = Config.MaxSpawnCount.Value;
-        enemy.PowerLevel = Config.PowerLevel.Value;
+        if (GeneratePowerLevelConfig && Config.PowerLevel is { } ConfigPowerLevel)
+        {
+            EnemyType.PowerLevel = ConfigPowerLevel.Value;
+        }
+        if (GenerateMaxSpawnCountConfig && Config.MaxSpawnCount is { } ConfigMaxSpawnCount)
+        {
+            EnemyType.MaxCount = ConfigMaxSpawnCount.Value;
+        }
 
         List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeightsCompat);
         List<NamespacedConfigWeight> Interiors = NamespacedConfigWeight.ConvertManyFromString(Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeightsCompat);
