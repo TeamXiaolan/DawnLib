@@ -83,7 +83,10 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateVehicleConfig(section);
 
-        Cost = Config.Cost.Value;
+        if (GenerateCostConfig && Config.Cost is { } ConfigCost)
+        {
+            Cost = Config.Cost.Value;
+        }
         if (Config.DisableUnlockRequirements?.Value ?? false && TerminalPredicate)
         {
             TerminalPredicate = null;
