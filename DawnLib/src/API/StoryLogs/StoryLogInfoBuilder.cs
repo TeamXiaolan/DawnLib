@@ -12,7 +12,7 @@ public class StoryLogInfoBuilder : BaseInfoBuilder<DawnStoryLogInfo, GameObject,
     {
     }
 
-    public StoryLogInfoBuilder OverrideTerminalNode(TerminalNode terminalNode)
+    public StoryLogInfoBuilder OverrideTerminalNode(TerminalNode? terminalNode)
     {
         _storyLogTerminalNode = terminalNode;
         return this;
