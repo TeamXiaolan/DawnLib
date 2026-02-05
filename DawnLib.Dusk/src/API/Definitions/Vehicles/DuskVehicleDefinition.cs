@@ -87,12 +87,12 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         {
             Cost = Config.Cost.Value;
         }
-        if (Config.DisableUnlockRequirements?.Value ?? false && TerminalPredicate)
+        if (Config.DisableUnlockRequirements?.Value ?? false && TerminalPredicate != null)
         {
             TerminalPredicate = null;
         }
 
-        if (Config.DisablePricingStrategy?.Value ?? false && PricingStrategy)
+        if (Config.DisablePricingStrategy?.Value ?? false && PricingStrategy != null)
         {
             PricingStrategy = null;
         }
@@ -104,8 +104,8 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
             BuyableVehiclePreset.SecondaryPrefab,
             BuyableVehiclePreset.StationPrefab,
             new DawnPurchaseInfo(
-                PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy,
-                TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess()),
+                PricingStrategy != null ? PricingStrategy : new SimpleProvider<int>(Cost),
+                TerminalPredicate != null ? TerminalPredicate : ITerminalPurchasePredicate.AlwaysSuccess()),
             null);
         DuskModContent.Vehicles.Register(this);
     }

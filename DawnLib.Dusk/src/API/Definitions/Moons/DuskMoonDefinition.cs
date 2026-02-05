@@ -72,14 +72,14 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             }
 
             bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
-            if (!disableUnlockRequirements && TerminalPredicate)
+            if (!disableUnlockRequirements && TerminalPredicate != null)
             {
                 TerminalPredicate.Register(TypedKey);
                 builder.SetPurchasePredicate(TerminalPredicate);
             }
 
             bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;
-            if (!disablePricingStrategy && PricingStrategy)
+            if (!disablePricingStrategy && PricingStrategy != null)
             {
                 PricingStrategy.Register(Key);
                 builder.OverrideCost(PricingStrategy);

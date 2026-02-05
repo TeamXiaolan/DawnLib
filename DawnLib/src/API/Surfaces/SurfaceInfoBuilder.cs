@@ -11,7 +11,7 @@ public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurfa
     {
     }
 
-    public SurfaceInfoBuilder SetSurfaceVFXPrefab(GameObject surfaceVFXPrefab)
+    public SurfaceInfoBuilder SetSurfaceVFXPrefab(GameObject? surfaceVFXPrefab)
     {
         _surfaceVFXPrefab = surfaceVFXPrefab;
         return this;

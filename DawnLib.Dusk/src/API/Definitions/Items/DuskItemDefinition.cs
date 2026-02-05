@@ -128,14 +128,14 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
                     shopItemBuilder.OverrideInfoNode(ShopItemPreset.ItemInfoNode);
 
                     bool disableUnlockRequirements = Config.DisableUnlockRequirements?.Value ?? false;
-                    if (!disableUnlockRequirements && TerminalPredicate)
+                    if (!disableUnlockRequirements && TerminalPredicate != null)
                     {
                         TerminalPredicate.Register(TypedKey);
                         shopItemBuilder.SetPurchasePredicate(TerminalPredicate);
                     }
 
                     bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;
-                    if (PricingStrategy && !disablePricingStrategy)
+                    if (PricingStrategy != null && !disablePricingStrategy)
                     {
                         PricingStrategy.Register(Key);
                         shopItemBuilder.OverrideCost(PricingStrategy);
