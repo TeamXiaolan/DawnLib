@@ -22,9 +22,10 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
         DuskAchievementHandler.OnAchievementUnlocked += QueuePopup;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         DuskAchievementHandler.OnAchievementUnlocked -= QueuePopup;
+        base.OnDestroy();
     }
 
     internal void QueuePopup(DuskAchievementDefinition achievement)
