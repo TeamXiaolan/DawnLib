@@ -27,7 +27,7 @@ public class SimpleContextualProvider<T, TBase>(T value) : IContextualProvider<T
     public T Provide(TBase info) => value;
 }
 
-public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
+public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IContextualProvider<T?, TBase> where TBase : INamespaced<TBase>
 {
     public T? Provide(TBase info)
     {
@@ -35,7 +35,7 @@ public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> target
     }
 }
 
-public class HasTagContextualProvider<T, TBase>(NamespacedKey tag, T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
+public class HasTagContextualProvider<T, TBase>(NamespacedKey tag, T value) : IContextualProvider<T?, TBase> where TBase : INamespaced<TBase>
 {
     public T? Provide(TBase info)
     {
