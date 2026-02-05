@@ -83,11 +83,17 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         }
     }
 
+    internal void RegisterAsDefault()
+    {
+        IsDefault = true;
+        Weights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
+    }
+
     public override void Register(DuskMod mod)
     {
         if (IsDefault)
         {
-            Weights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
+            RegisterAsDefault();
             return;
         }
 
@@ -110,7 +116,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             DatePredicate = DatePredicate.Instantiate(DatePredicate);
         }
         bool disableDateCheck = Config.DisableDateCheck?.Value ?? false;
-        if (DatePredicate && !disableDateCheck)
+        if (DatePredicate != null && !disableDateCheck)
         {
             DatePredicate.Register(Key);
         }

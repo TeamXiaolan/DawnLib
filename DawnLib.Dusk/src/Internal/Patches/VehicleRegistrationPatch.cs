@@ -203,7 +203,7 @@ static class VehicleRegistrationPatch
             BuyableVehicle buyableVehicle = new()
             {
                 vehicleDisplayName = vehicleDefinition.VehicleDisplayName,
-                creditsWorth = vehicleDefinition.Config.Cost.Value,
+                creditsWorth = vehicleDefinition.Cost,
                 vehiclePrefab = vehicleDefinition.BuyableVehiclePreset.VehiclePrefab,
                 secondaryPrefab = vehicleDefinition.BuyableVehiclePreset.SecondaryPrefab
             };
@@ -225,7 +225,7 @@ static class VehicleRegistrationPatch
                 .SetClearPreviousText(true)
                 .SetMaxCharactersToType(35)
                 .SetBuyVehicleIndex(currentVehicleIndex)
-                .SetItemCost(vehicleDefinition.Config.Cost.Value)
+                .SetItemCost(vehicleDefinition.Cost)
                 .SetPlaySyncedClip(0)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode = confirmDuskNode;
@@ -249,7 +249,7 @@ static class VehicleRegistrationPatch
                 .SetMaxCharactersToType(15)
                 .SetIsConfirmationNode(true)
                 .SetBuyVehicleIndex(currentVehicleIndex)
-                .SetItemCost(vehicleDefinition.Config.Cost.Value)
+                .SetItemCost(vehicleDefinition.Cost)
                 .SetOverrideOptions(true)
                 .SetTerminalOptions(buyNodeNouns)
                 .Build();

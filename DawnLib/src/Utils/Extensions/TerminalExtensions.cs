@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Dawn.Internal;
 
@@ -67,7 +69,7 @@ public static class TerminalExtensions
         return ((ITerminal)terminal).DawnLastVerb;
     }
 
-    public static bool TryGetKeywordInfoText(this TerminalKeyword terminalKeyword, out string text)
+    public static bool TryGetKeywordInfoText(this TerminalKeyword terminalKeyword, [NotNullWhen(true)] out string? text)
     {
         text = string.Empty;
         CompatibleNoun matchedCompatibleNoun = TerminalRefs.InfoKeyword.compatibleNouns.FirstOrDefault(x => x.noun.word == terminalKeyword.word);
@@ -80,7 +82,7 @@ public static class TerminalExtensions
         return true;
     }
 
-    public static bool TryGetKeyword(this Terminal terminal, string keyWord, out TerminalKeyword terminalKeyword)
+    public static bool TryGetKeyword(this Terminal terminal, string keyWord, [NotNullWhen(true)] out TerminalKeyword? terminalKeyword)
     {
         List<TerminalKeyword> keyWordList = [.. terminal.terminalNodes.allKeywords];
 
@@ -94,7 +96,7 @@ public static class TerminalExtensions
             }
         }
 
-        terminalKeyword = null!;
+        terminalKeyword = null;
         return false;
     }
 
@@ -313,9 +315,9 @@ public static class TerminalExtensions
         return word;
     }
 
-    public static bool DawnTryResolveKeyword(this Terminal terminal, string input, out TerminalKeyword word)
+    public static bool DawnTryResolveKeyword(this Terminal terminal, string input, [NotNullWhen(true)] out TerminalKeyword? word)
     {
-        word = null!;
+        word = null;
 
         //empty input, return false
         if (string.IsNullOrWhiteSpace(input))

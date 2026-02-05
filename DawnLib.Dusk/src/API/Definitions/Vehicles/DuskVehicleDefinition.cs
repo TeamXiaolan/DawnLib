@@ -83,18 +83,30 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateVehicleConfig(section);
 
-        Cost = Config.Cost.Value;
-        if (Config.DisableUnlockRequirements?.Value ?? false && TerminalPredicate)
+        if (GenerateCostConfig && Config.Cost is { } ConfigCost)
+        {
+            Cost = Config.Cost.Value;
+        }
+        if (Config.DisableUnlockRequirements?.Value ?? false && TerminalPredicate != null)
         {
             TerminalPredicate = null;
         }
 
-        if (Config.DisablePricingStrategy?.Value ?? false && PricingStrategy)
+        if (Config.DisablePricingStrategy?.Value ?? false && PricingStrategy != null)
         {
             PricingStrategy = null;
         }
 
-        DawnVehicleInfo = new DawnVehicleInfo(TypedKey, _tags.ToHashSet(), BuyableVehiclePreset.VehiclePrefab, BuyableVehiclePreset.SecondaryPrefab, BuyableVehiclePreset.StationPrefab, new DawnPurchaseInfo(PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy, TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess()), null);
+        DawnVehicleInfo = new DawnVehicleInfo(
+            TypedKey,
+            _tags.ToHashSet(),
+            BuyableVehiclePreset.VehiclePrefab,
+            BuyableVehiclePreset.SecondaryPrefab,
+            BuyableVehiclePreset.StationPrefab,
+            new DawnPurchaseInfo(
+                PricingStrategy != null ? PricingStrategy : new SimpleProvider<int>(Cost),
+                TerminalPredicate != null ? TerminalPredicate : ITerminalPurchasePredicate.AlwaysSuccess()),
+            null);
         DuskModContent.Vehicles.Register(this);
     }
 

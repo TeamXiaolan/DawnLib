@@ -14,8 +14,8 @@ public sealed class DawnSurfaceInfo : DawnBaseInfo<DawnSurfaceInfo>
     }
 
     public FootstepSurface Surface { get; internal set; }
-    public GameObject? SurfaceVFXPrefab { get; set; }
-    public Vector3 SurfaceVFXOffset { get; set; }
+    public GameObject? SurfaceVFXPrefab { get; }
+    public Vector3 SurfaceVFXOffset { get; }
 
     public int SurfaceIndex { get; internal set; } = -1;
 }

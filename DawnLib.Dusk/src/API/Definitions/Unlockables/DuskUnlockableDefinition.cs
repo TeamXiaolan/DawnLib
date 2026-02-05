@@ -50,7 +50,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
         DawnLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {
             bool disablePricingStrategy = Config.DisablePricingStrategy?.Value ?? false;
-            if (PricingStrategy && !disablePricingStrategy)
+            if (PricingStrategy != null && !disablePricingStrategy)
             {
                 PricingStrategy.Register(Key);
                 builder.SetCost(PricingStrategy);
@@ -87,7 +87,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
             }
 
             bool disableUnlockRequirements = Config.DisableUnlockRequirement?.Value ?? false;
-            if (!disableUnlockRequirements && TerminalPredicate)
+            if (!disableUnlockRequirements && TerminalPredicate != null)
             {
                 TerminalPredicate.Register(Key);
                 builder.SetPurchasePredicate(TerminalPredicate);
