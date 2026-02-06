@@ -15,6 +15,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Fetch Sources
+        uses: actions/checkout@v6
+
       - name: Download all artifacts
         uses: actions/download-artifact@v7
 
