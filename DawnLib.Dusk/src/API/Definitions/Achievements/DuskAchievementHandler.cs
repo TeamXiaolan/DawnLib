@@ -8,7 +8,7 @@ namespace Dusk;
 
 static class DuskAchievementHandler
 {
-    public static Action<DuskAchievementDefinition> OnAchievementUnlocked = delegate { };
+    public static Action<DuskAchievementDefinition>? OnAchievementUnlocked;
 
     internal static void LoadAll()
     {
