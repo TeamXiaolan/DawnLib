@@ -1,3 +1,4 @@
+using GameNetcodeStuff;
 using UnityEngine;
 
 namespace Dawn.Utils;
@@ -35,4 +36,16 @@ public class DawnSurface : MonoBehaviour
 
         SurfaceIndex = surfaceInfo.SurfaceIndex;
     }
+
+    /*public void Update() // todo
+    {
+        PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
+        if (GravityCenter == null || !localPlayer.TryGetCurrentDawnSurface(out DawnSurface? currentDawnSurface) || currentDawnSurface != this)
+        {
+            return;
+        }
+
+        Transform localPlayerMesh = GameNetworkManager.Instance.localPlayerController.meshContainer;
+        localPlayerMesh.transform.up = (GameNetworkManager.Instance.localPlayerController.meshContainer.position - GravityCenter.transform.position).normalized;
+    }*/
 }
