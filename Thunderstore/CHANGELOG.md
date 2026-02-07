@@ -1,4 +1,9 @@
-# v0.7.11
+# v0.7.12
+
+- Removed instance warnings from showing up, they were for debugging anyway.
+- Removed LL from being packaged with the DawnLib NuGet
+
+## v0.7.11
 
 - Added to the Query implementation of DawnTerminalCommands.
   - You can now run a DawnEvent after ending a query.

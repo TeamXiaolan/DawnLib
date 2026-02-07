@@ -11,8 +11,8 @@ public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSi
         {
             if (_instance == null)
             {
-                DawnPlugin.Logger.LogWarning($"Tried to get instance reference to {typeof(T).Name} networksingleton, but it isn't created yet.");
-                DawnPlugin.Logger.LogWarning("There will likely be issues!");
+                /*DawnPlugin.Logger.LogWarning($"Tried to get instance reference to {typeof(T).Name} networksingleton, but it isn't created yet.");
+                DawnPlugin.Logger.LogWarning("There will likely be issues!");*/
             }
             return _instance;
         }

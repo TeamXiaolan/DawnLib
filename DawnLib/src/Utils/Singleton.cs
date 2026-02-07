@@ -9,10 +9,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
         get
         {
-            if (!_instance)
+            if (_instance == null)
             {
-                DawnPlugin.Logger.LogWarning($"Tried to get instance reference to {typeof(T).Name} singleton, but it isn't created yet.");
-                DawnPlugin.Logger.LogWarning("There will likely be issues!");
+                /*DawnPlugin.Logger.LogWarning($"Tried to get instance reference to {typeof(T).Name} singleton, but it isn't created yet.");
+                DawnPlugin.Logger.LogWarning("There will likely be issues!");*/
             }
             return _instance;
         }
