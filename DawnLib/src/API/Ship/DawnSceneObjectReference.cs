@@ -7,7 +7,7 @@ public class DawnSceneObjectReference : MonoBehaviour
     public string sceneObjectReferenceSearch;
     public bool searchInInactive = true;
     public bool exactMatch = true;
-    public bool keepVisiable = false;
+    public bool keepVisible = false;
 
     [Space]
     public Color hologramColor = Color.cyan;
