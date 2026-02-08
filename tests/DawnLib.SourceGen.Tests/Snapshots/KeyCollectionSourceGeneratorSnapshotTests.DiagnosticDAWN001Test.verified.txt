@@ -1,0 +1,16 @@
+﻿{
+  Diagnostics: [
+    {
+      Message: The project does not define a RootNamespace. Please set <RootNamespace> in your .csproj.,
+      Severity: Error,
+      Descriptor: {
+        Id: DAWN001,
+        Title: Missing Root Namespace,
+        MessageFormat: The project does not define a RootNamespace. Please set <RootNamespace> in your .csproj.,
+        Category: Usage,
+        DefaultSeverity: Error,
+        IsEnabledByDefault: true
+      }
+    }
+  ]
+}

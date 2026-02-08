@@ -60,7 +60,7 @@ public class TagSourceGenerator : ISourceGenerator
             }
             else
             {
-                field.Value = $"NamespacedKey.From(\"{parts[0]}\",\"{parts[1]}\")";
+                field.Value = $"NamespacedKey.From(\"{parts[0]}\", \"{parts[1]}\")";
             }
             @class.Members.Add(field);
         }
