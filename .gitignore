@@ -4,3 +4,6 @@ Packages/
 DawnLib.Editor/deps/*
 *.user
 /.vs
+
+# Non redistributable libraries from `Lethal Company_Data/Managed/` directory
+DawnLib/deps/Unity.*.dll

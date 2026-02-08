@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+
+        <RootNamespace>Dawn.SourceGen.IntegrationTests</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.4" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+        <PackageReference Include="xunit.v3" Version="3.2.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Stubs are enough to build in CI -->
+        <Reference Include="MMHOOK_Unity.Netcode.Runtime">
+            <HintPath>$(SolutionDir)\DawnLib\deps\MMHOOK_Unity.Netcode.Runtime.dll</HintPath>
+        </Reference>
+        <!-- Actual library is required to run integration tests -->
+        <Reference Include="Unity.Netcode.Runtime">
+            <HintPath>$(SolutionDir)\DawnLib\deps\Unity.Netcode.Runtime.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\DawnLib\DawnLib.csproj" PrivateAssets="all" />
+
+        <ProjectReference Include="..\..\DawnLib.SourceGen\DawnLib.SourceGen.csproj"
+            OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <DataDir>$(SolutionDir)\DawnLib\data\</DataDir>
+    </PropertyGroup>
+    <ItemGroup>
+        <!--
+        Include only a small subset of data files.
+        Their code will be generated under a different RootNamespace than DawnLib.
+        -->
+        <DataJson Include="$(DataDir)keys\extra.namespaced_keys.json" />
+        <DataJson Include="$(DataDir)tags\hot.tag.json" />
+        <DataJson Include="$(DataDir)tags\Dungeon\artificial.tag.json" />
+
+        <None Remove="@(DataJson)" />
+        <AdditionalFiles Include="@(DataJson)" />
+    </ItemGroup>
+    <!-- This is how you can collect JSON data files (keys and tags) in your project. -->
+    <ItemGroup>
+        <None Remove="data\**\*.json" />
+        <AdditionalFiles Include="data\**\*.json" />
+    </ItemGroup>
+
+</Project>
