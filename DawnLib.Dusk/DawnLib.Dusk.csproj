@@ -50,7 +50,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" PrivateAssets="all"/>
-        <ProjectReference Include="..\DawnLib.Interfaces\DawnLib.Interfaces.csproj" PrivateAssets="all" />
 
         <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="0.8.0" PrivateAssets="all" />
     </ItemGroup>
@@ -63,8 +62,9 @@
         <Reference Include="MMHOOK_Assembly-CSharp">
             <HintPath>$(SolutionDir)\DawnLib\deps\MMHOOK_Assembly-CSharp.dll</HintPath>
         </Reference>
-        
-      <ProjectReference Include="..\DawnLib\DawnLib.csproj" />
+
+        <ProjectReference Include="..\DawnLib\DawnLib.csproj" />
+        <ProjectReference Include="..\DawnLib.Interfaces\DawnLib.Interfaces.csproj" PrivateAssets="all" />
     </ItemGroup>
 
     <!-- Netcode Patcher Post-Build Event -->
