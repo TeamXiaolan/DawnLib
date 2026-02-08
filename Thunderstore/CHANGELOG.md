@@ -1,4 +1,8 @@
-# v0.7.12
+# v0.7.13
+
+- Updated to add compat with new weather registry breaking changes.
+
+## v0.7.12
 
 - Removed instance warnings from showing up, they were for debugging anyway.
 - Removed LL from being packaged with the DawnLib NuGet

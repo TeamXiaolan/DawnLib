@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -18,7 +20,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
     [field: SerializeField]
     public string SunAnimatorBool { get; private set; }
     [field: SerializeField]
-    public Color TerminalColour { get; private set; }
+    public TMP_ColorGradient TerminalColorGradient { get; private set; }
 
     [field: Space(10)]
     [field: Header("Configs | Main")]
@@ -36,6 +38,11 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
     public bool CreateExcludeConfig { get; private set; }
     [field: SerializeField]
     public string ExcludeOrIncludeList { get; private set; }
+
+    [field: Header("Configs | Obsolete")]
+    [field: Obsolete]
+    [field: SerializeField]
+    public Color TerminalColour { get; private set; }
 
     public override void Register(DuskMod mod)
     {
@@ -74,9 +81,16 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
         newImprovedWeatherEffect.EffectObject?.SetActive(false);
         newImprovedWeatherEffect.WorldObject?.SetActive(false);
 
+        if (TerminalColorGradient == null)
+        {
+            TerminalColorGradient = ScriptableObject.CreateInstance<TMP_ColorGradient>();
+            TerminalColorGradient.colorMode = TMPro.ColorMode.Single;
+            TerminalColorGradient.topLeft = TerminalColorGradient.topRight = TerminalColorGradient.bottomLeft = TerminalColorGradient.bottomRight = TerminalColour;
+        }
+
         WeatherRegistry.Weather weather = new(WeatherName, newImprovedWeatherEffect)
         {
-            Color = TerminalColour,
+            ColorGradient = TerminalColorGradient,
             Config = new WeatherRegistry.Modules.RegistryWeatherConfig
             {
                 DefaultWeight = new WeatherRegistry.IntegerConfigHandler(SpawnWeight),
