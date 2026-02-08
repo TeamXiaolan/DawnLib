@@ -1,4 +1,8 @@
-# v0.7.13
+# v0.7.14
+
+- Brought back overriding LLL terminal moon page with DawnLib's version of it.
+
+## v0.7.13
 
 - Updated to add compat with new weather registry breaking changes.
 
