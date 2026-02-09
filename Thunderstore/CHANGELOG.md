@@ -1,4 +1,17 @@
-# v0.7.11
+# v0.7.14
+
+- Brought back overriding LLL terminal moon page with DawnLib's version of it.
+
+## v0.7.13
+
+- Updated to add compat with new weather registry breaking changes.
+
+## v0.7.12
+
+- Removed instance warnings from showing up, they were for debugging anyway.
+- Removed LL from being packaged with the DawnLib NuGet
+
+## v0.7.11
 
 - Added to the Query implementation of DawnTerminalCommands.
   - You can now run a DawnEvent after ending a query.

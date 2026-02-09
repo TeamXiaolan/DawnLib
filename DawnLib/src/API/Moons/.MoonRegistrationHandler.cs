@@ -370,7 +370,7 @@ static class MoonRegistrationHandler
     // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
-        if (node != TerminalRefs.MoonCatalogueNode || LethalLevelLoaderCompat.Enabled)
+        if (node != TerminalRefs.MoonCatalogueNode)
         {
             return orig(self, modifieddisplaytext, node);
         }

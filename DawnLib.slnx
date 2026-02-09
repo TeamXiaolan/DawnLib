@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DawnLib.Compatibility/DawnLib.Compatibility.csproj" />
+  <Project Path="DawnLib.Dusk/DawnLib.Dusk.csproj" />
+  <Project Path="DawnLib.Interfaces/DawnLib.Interfaces.csproj" />
+  <Project Path="DawnLib.SourceGen/DawnLib.SourceGen.csproj" />
+  <Project Path="DawnLib/DawnLib.csproj" />
+</Solution>

@@ -27,14 +27,23 @@
 
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" PrivateAssets="all" GeneratePathProperty="true" />
 
-        <None Include="$(PkgNewtonsoft_Json)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    </ItemGroup>
+        <!--
+        Being a code analyzer & source generator package,
+        its binary artifacts are placed at a special path
+        analyzers/dotnet/cs instead of the usual lib/<tfm>/.
 
-    <ItemGroup>
+        The empty file named `_._` is packaged per official
+        recommendation just to avoid NuGet Warning NU5128.
+
+        https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5128
+         -->
+        <Content Include="lib/**" Pack="True" PackagePath="lib/" BuildAction="None" />
+
+        <None Include="$(PkgNewtonsoft_Json)\lib\netstandard2.0\*.dll"
+            Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
         <None Include="bin\$(Configuration)\netstandard2.0\DawnLib.SourceGen.dll"
-            Pack="true"
-            PackagePath="analyzers/dotnet/cs"
-            Visible="false" />
+            Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
     <PropertyGroup>
         <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
