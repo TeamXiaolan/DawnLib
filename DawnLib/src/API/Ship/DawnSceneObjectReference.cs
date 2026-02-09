@@ -5,13 +5,11 @@ namespace Dawn;
 public class DawnSceneObjectReference : MonoBehaviour
 {
     public string sceneObjectReferenceSearch;
-    public bool searchInInactive = true;
-    public bool exactMatch = true;
     public bool keepVisible = false;
 
     [Space]
-    public Color hologramColor = Color.cyan;
-    public Color wireframeColor = Color.white;
+    public Color hologramColor = new Color(.15f, .8f, .8f, .25f);
+    public Color wireframeColor = new Color(0f, 1f, 1f, .25f);
 
     [HideInInspector]
     public string cachedObjectPath = "";
