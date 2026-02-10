@@ -1,4 +1,8 @@
-# v0.7.14
+# v0.7.15
+
+- Organised configs a bit more, user auto generated configs using the editor should be under the main configs auto generated now.
+
+## v0.7.14
 
 - Brought back overriding LLL terminal moon page with DawnLib's version of it.
 
