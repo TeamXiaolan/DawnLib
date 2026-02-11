@@ -4,3 +4,10 @@ Packages/
 DawnLib.Editor/deps/*
 *.user
 /.vs
+
+# Non redistributable libraries from `Lethal Company_Data/Managed/` directory
+DawnLib/deps/Unity.*.dll
+
+# NuGet local-packages source for NuGet integration testing
+/nuget-artifacts/
+/nuget-packages/

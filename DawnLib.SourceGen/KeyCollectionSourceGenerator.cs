@@ -65,7 +65,7 @@ public class KeyCollectionSourceGenerator : ISourceGenerator
                     }
                     else
                     {
-                        field.Value = $"{type}.From(\"{parts[0]}\",\"{parts[1]}\")";
+                        field.Value = $"{type}.From(\"{parts[0]}\", \"{parts[1]}\")";
                     }
                     @class.Members.Add(field);
                 }

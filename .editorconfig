@@ -75,3 +75,18 @@ resharper_wrap_object_and_collection_initializer_style = chop_always
 
 # IDE0130: Namespace does not match folder structure
 dotnet_style_namespace_match_folder = false
+
+# https://github.com/VerifyTests/Verify
+# Verify settings
+[*.{received,verified}.{json,txt,xml}]
+charset = utf-8-bom
+end_of_line = lf
+indent_size = unset
+indent_style = unset
+insert_final_newline = false
+tab_width = unset
+trim_trailing_whitespace = false
+
+[*.{received,verified}.{json,xml,html,htm,yaml,cs,svg}]
+indent_size = 2
+indent_style = space
