@@ -7,7 +7,7 @@ namespace Dawn;
 public enum ClearText
 {
     None = 0,
-    Result = 1 << 0,
+    Continue = 1 << 0,
     Query = 1 << 1,
     Cancel = 1 << 2
 }
@@ -23,7 +23,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         private Func<string> _continueFunc, _cancelFunc;
         private string _continueString, _cancelString;
         private Func<bool> _continueCondition;
-        private DawnEvent<bool>? _onQueryContinuedEvent;
+        private Action<bool>? _onQueryContinuedEvent;
 
         internal QueryCommandBuilder(TerminalCommandInfoBuilder parent)
         {
@@ -48,7 +48,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             return this;
         }
 
-        public QueryCommandBuilder SetQueryEvent(DawnEvent<bool> onQueryContinuedEvent)
+        public QueryCommandBuilder SetQueryEvent(Action<bool> onQueryContinuedEvent)
         {
             _onQueryContinuedEvent = onQueryContinuedEvent;
             return this;
@@ -103,7 +103,10 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             TerminalKeyword _cancelKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelString, ITerminalKeyword.DawnKeywordType.DawnCommand)
                                                 .Build();
 
-            return new DawnQueryCommandInfo(_continueFunc, _continueNode, _cancelNode, _cancelFunc, _continueKeyword, _cancelKeyword, _continueCondition, _onQueryContinuedEvent);
+            _continueNode.clearPreviousText = _parentBuilder._clearTextFlags.HasFlag(ClearText.Continue);
+            _cancelNode.clearPreviousText = _parentBuilder._clearTextFlags.HasFlag(ClearText.Cancel);
+
+            return new DawnQueryCommandInfo(_continueNode, _cancelNode, _continueFunc, _cancelFunc, _continueKeyword, _cancelKeyword, _continueCondition, _onQueryContinuedEvent);
         }
     }
     // Allow setting a query with a continue and cancel word, query text
@@ -125,9 +128,8 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     private bool _overrideKeywords = false;
     private ITerminalKeyword.DawnKeywordType _overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
 
-    public TerminalCommandInfoBuilder(NamespacedKey<DawnTerminalCommandInfo> key, string commandName, TerminalNode value) : base(key, value)
+    public TerminalCommandInfoBuilder(NamespacedKey<DawnTerminalCommandInfo> key, TerminalNode value) : base(key, value)
     {
-        _commandName = commandName;
     }
 
     public TerminalCommandInfoBuilder SetEnabled(IProvider<bool> isEnabled)
@@ -150,7 +152,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
     public TerminalCommandInfoBuilder SetClearTextFlags(ClearText clearTextFlags)
     {
-        value.clearPreviousText = clearTextFlags.HasFlag(ClearText.Result);
         _clearTextFlags = clearTextFlags;
         return this;
     }
@@ -189,6 +190,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
     override internal DawnTerminalCommandInfo Build()
     {
-        return new DawnTerminalCommandInfo(key, tags, value, _queryCommandInfo, customData);
+        return new DawnTerminalCommandInfo(key, value, tags, _queryCommandInfo, customData);
     }
 }
