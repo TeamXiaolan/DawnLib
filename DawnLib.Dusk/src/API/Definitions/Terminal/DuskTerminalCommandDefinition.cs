@@ -70,7 +70,7 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
             {
                 builder.DefineQueryCommand(builder =>
                 {
-                    builder.SetQuery(() => QueryCommand.QueryDisplayText);
+                    builder.SetContinue(() => QueryCommand.QueryDisplayText);
                     builder.SetCancel(() => QueryCommand.CancelDisplayText);
                     builder.SetCancelWord(QueryCommand.CancelKeyword);
                     builder.SetContinueWord(QueryCommand.ContinueKeyword);

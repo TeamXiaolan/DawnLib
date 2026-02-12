@@ -65,7 +65,7 @@ internal class DawnTesting
             builder.SetDescription("Test query command with added compatible nouns");
             builder.DefineQueryCommand(queryCommandBuilder =>
             {
-                queryCommandBuilder.SetQuery(() => "This is a test query, respond [YES] or [NO]\n\n");
+                queryCommandBuilder.SetContinue(() => "This is a test query, respond [YES] or [NO]\n\n");
                 queryCommandBuilder.SetCancel(() => "You have selected, NO!\n\n");
                 queryCommandBuilder.SetContinueConditions(new FuncProvider<bool>(() => GameNetworkManager.Instance.localPlayerController.currentlyHeldObjectServer != null));
                 queryCommandBuilder.SetQueryEvent(dawnEvent);

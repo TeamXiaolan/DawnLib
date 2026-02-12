@@ -26,24 +26,6 @@ public class TerminalCommandBuilder
         TerminalCommandRegistration.OnTerminalDisable.OnInvoke += Destroy;
     }
 
-    //If a custom destroy event is defined, will remove the destroy event from terminaldisable and assign it to the defined events
-    //returns a bool in case we want to check the result of this in the future
-    internal bool TrySetDestroyEvents(TerminalCommandRegistration register)
-    {
-        //no custom event defined, do not remove Destroy from TerminalDisable
-        if (register.UnityDestroyEvent == null && register.DawnDestroyEvent == null)
-            return false;
-
-        TerminalCommandRegistration.OnTerminalDisable.OnInvoke -= Destroy;
-        register.UnityDestroyEvent?.AddListener(Destroy);
-        if (register.DawnDestroyEvent != null)
-        {
-            register.DawnDestroyEvent.OnInvoke += Destroy;
-        }
-
-        return true;
-    }
-
     //Destroy created commands before next TerminalAwake
     //While some commands should always exist, we should not assume all commands are built this way.
     //Also, deleting them on TerminalDisable allows for configuration items to determine if a command should be enabled/disabled on lobby reload

@@ -5,23 +5,27 @@ public sealed class DawnQueryCommandInfo
 {
     public DawnTerminalCommandInfo ParentInfo { get; internal set; }
 
-    internal DawnQueryCommandInfo(Func<string> queryFunc, Func<string> cancelFunc, string continueKeyword, string cancelKeyword, FuncProvider<bool> continueProvider, DawnEvent<bool>? onQueryContinuedEvent)
+    internal DawnQueryCommandInfo(Func<string> continueFunc, TerminalNode continueNode, TerminalNode cancelNode, Func<string> cancelFunc, TerminalKeyword continueKeyword, TerminalKeyword cancelKeyword, Func<bool> continueCondition, DawnEvent<bool>? onContinuedEvent)
     {
-        QueryFunc = queryFunc;
+        ContinueNode = continueNode;
+        CancelNode = cancelNode;
+
+        ContinueFunc = continueFunc;
         CancelFunc = cancelFunc;
         ContinueKeyword = continueKeyword;
         CancelKeyword = cancelKeyword;
-        ContinueProvider = continueProvider;
-        OnQueryContinuedEvent = onQueryContinuedEvent;
+        ContinueCondition = continueCondition;
+        OnContinuedEvent = onContinuedEvent;
     }
 
-    internal Func<string> QueryFunc { get; }
-    internal Func<string> CancelFunc { get; }
-    internal string ContinueKeyword { get; }
-    internal string CancelKeyword { get; }
-    internal FuncProvider<bool> ContinueProvider { get; private set; }
-    internal DawnEvent<bool>? OnQueryContinuedEvent { get; private set; }
+    internal TerminalKeyword ContinueKeyword { get; }
+    internal TerminalKeyword CancelKeyword { get; }
+    internal Func<bool> ContinueCondition { get; private set; }
+    internal DawnEvent<bool>? OnContinuedEvent { get; private set; }
 
-    public TerminalNode? QueryNode { get; internal set; }
-    public TerminalNode? CancelNode { get; internal set; }
+    public Func<string> ContinueFunc { get; }
+    public Func<string> CancelFunc { get; }
+
+    public TerminalNode ContinueNode { get; }
+    public TerminalNode CancelNode { get; }
 }

@@ -94,12 +94,6 @@ public class TerminalNodeBuilder
         return this;
     }
 
-    public TerminalNodeBuilder AddNodeFunction(Func<string> _function)
-    {
-        _node.SetNodeFunction(_function);
-        return this;
-    }
-
     public TerminalNode Build()
     {
         return _node;

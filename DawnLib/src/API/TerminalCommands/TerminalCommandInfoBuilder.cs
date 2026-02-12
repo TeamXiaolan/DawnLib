@@ -1,9 +1,17 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
-using static Dawn.TerminalCommandRegistration;
 
 namespace Dawn;
+
+[Flags]
+public enum ClearText
+{
+    None = 0,
+    Result = 1 << 0,
+    Query = 1 << 1,
+    Cancel = 1 << 2
+}
+
 public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInfo, TerminalNode, TerminalCommandInfoBuilder>
 {
     private DawnQueryCommandInfo? _queryCommandInfo = null;
@@ -12,9 +20,9 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     {
         private TerminalCommandInfoBuilder _parentBuilder;
 
-        private Func<string> _queryFunc, _cancelFunc;
-        private string _continueKeyword, _cancelKeyword;
-        private FuncProvider<bool> _continueProvider;
+        private Func<string> _continueFunc, _cancelFunc;
+        private string _continueString, _cancelString;
+        private Func<bool> _continueCondition;
         private DawnEvent<bool>? _onQueryContinuedEvent;
 
         internal QueryCommandBuilder(TerminalCommandInfoBuilder parent)
@@ -22,9 +30,9 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             _parentBuilder = parent;
         }
 
-        public QueryCommandBuilder SetQuery(Func<string> queryFunc)
+        public QueryCommandBuilder SetContinue(Func<string> queryFunc)
         {
-            _queryFunc = queryFunc;
+            _continueFunc = queryFunc;
             return this;
         }
 
@@ -34,9 +42,9 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             return this;
         }
 
-        public QueryCommandBuilder SetContinueConditions(FuncProvider<bool> continueProvider)
+        public QueryCommandBuilder SetContinueConditions(Func<bool> continueProvider)
         {
-            _continueProvider = continueProvider;
+            _continueCondition = continueProvider;
             return this;
         }
 
@@ -48,23 +56,54 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
         public QueryCommandBuilder SetContinueWord(string continueKeyword)
         {
-            _continueKeyword = continueKeyword;
+            _continueString = continueKeyword;
             return this;
         }
 
         public QueryCommandBuilder SetCancelWord(string cancelKeyword)
         {
-            _cancelKeyword = cancelKeyword;
+            _cancelString = cancelKeyword;
             return this;
         }
 
         internal DawnQueryCommandInfo Build()
         {
-            if (_continueProvider == null)
+            if (_continueCondition == null)
             {
-                _continueProvider = new FuncProvider<bool>(() => true);
+                _continueCondition = new Func<bool>(() => true);
             }
-            return new DawnQueryCommandInfo(_queryFunc, _cancelFunc, _continueKeyword, _cancelKeyword, _continueProvider, _onQueryContinuedEvent);
+
+            TerminalNode _continueNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ContinueNode")
+                                            .SetDisplayText(_continueFunc.Invoke())
+                                            .SetClearPreviousText(true)
+                                            .SetMaxCharactersToType(35)
+                                            .Build();
+            
+            TerminalNode _cancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:CancelNode")
+                                            .SetDisplayText(_cancelFunc.Invoke())
+                                            .SetClearPreviousText(true)
+                                            .SetMaxCharactersToType(35)
+                                            .Build();
+
+            if (string.IsNullOrEmpty(_cancelString))
+            {
+                _cancelString = "deny";
+                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set cancel word. Defaulting to '{_cancelString}'");
+            }
+
+            if (string.IsNullOrEmpty(_continueString))
+            {
+                _continueString = "confirm";
+                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set continue word. Defaulting to '{_continueString}'");
+            }
+
+            TerminalKeyword _continueKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:ContinueKeyword", _continueString, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                                                .Build();
+            
+            TerminalKeyword _cancelKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelString, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                                                .Build();
+
+            return new DawnQueryCommandInfo(_continueFunc, _continueNode, _cancelNode, _cancelFunc, _continueKeyword, _cancelKeyword, _continueCondition, _onQueryContinuedEvent);
         }
     }
     // Allow setting a query with a continue and cancel word, query text
@@ -80,10 +119,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     private IProvider<bool> _isEnabled;
     private IProvider<List<string>> _validKeywords;
     private Func<string> _mainText;
-    private UnityEvent? _customUnityBuildEvent = null;
-    private UnityEvent? _customUnityDestroyEvent = null;
-    private DawnEvent? _customDawnBuildEvent = null;
-    private DawnEvent? _customDawnDestroyEvent = null;
     private string _commandName, _categoryName, _description;
     private bool _acceptInput;
     private ClearText _clearTextFlags;
@@ -98,30 +133,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     public TerminalCommandInfoBuilder SetEnabled(IProvider<bool> isEnabled)
     {
         _isEnabled = isEnabled;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetCustomBuildEvent(UnityEvent customBuildEvent)
-    {
-        _customUnityBuildEvent = customBuildEvent;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
-    {
-        _customDawnBuildEvent = dawnBuildEvent;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetCustomDestroyEvent(UnityEvent customDestroyEvent)
-    {
-        _customUnityDestroyEvent = customDestroyEvent;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
-    {
-        _customDawnDestroyEvent = dawnDestroyEvent;
         return this;
     }
 
@@ -178,67 +189,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
     override internal DawnTerminalCommandInfo Build()
     {
-        TerminalCommandRegistrationBuilder commandRegistrationBuilder = new TerminalCommandRegistrationBuilder(_commandName, value, _mainText);
-        commandRegistrationBuilder.SetCategory(_categoryName);
-        commandRegistrationBuilder.SetDescription(_description);
-        commandRegistrationBuilder.SetEnabled(_isEnabled);
-        if (_validKeywords.Provide().Count <= 0)
-        {
-            DawnPlugin.Logger.LogError($"No valid keywords provided for command: {_commandName}");
-        }
-        commandRegistrationBuilder.SetKeywords(_validKeywords);
-        commandRegistrationBuilder.SetClearText(_clearTextFlags);
-        commandRegistrationBuilder.SetAcceptInput(_acceptInput);
-        commandRegistrationBuilder.SetOverrideExistingKeywords(_overrideKeywords, _overridePriority);
-
-        if (_queryCommandInfo != null)
-        {
-            commandRegistrationBuilder.SetupQuery(_queryCommandInfo.QueryFunc);
-            commandRegistrationBuilder.SetupCancel(_queryCommandInfo.CancelFunc);
-            commandRegistrationBuilder.SetCancelWord(_queryCommandInfo.CancelKeyword);
-            commandRegistrationBuilder.SetContinueWord(_queryCommandInfo.ContinueKeyword);
-        }
-
-        if (_customDawnBuildEvent == null && _customUnityBuildEvent == null)
-        {
-            commandRegistrationBuilder.BuildOnTerminalAwake();
-        }
-        else
-        {
-            SetCustomBuildEvents(commandRegistrationBuilder);
-        }
-
-        SetCustomDestroyEvents(commandRegistrationBuilder);
-
-        DawnTerminalCommandInfo info = new(key, tags, value, _queryCommandInfo, customData);
-        return info;
-    }
-
-    //Sets any custom build event types if they are not null
-    private void SetCustomBuildEvents(TerminalCommandRegistrationBuilder commandRegistrationBuilder)
-    {
-        if (_customUnityBuildEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomBuildEvent(_customUnityBuildEvent);
-        }
-
-        if (_customDawnBuildEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomBuildEvent(_customDawnBuildEvent);
-        }
-    }
-
-    //Sets any custom destroy event types if they are not null
-    private void SetCustomDestroyEvents(TerminalCommandRegistrationBuilder commandRegistrationBuilder)
-    {
-        if (_customUnityDestroyEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomDestroyEvent(_customUnityDestroyEvent);
-        }
-
-        if (_customDawnDestroyEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomDestroyEvent(_customDawnDestroyEvent);
-        }
+        return new DawnTerminalCommandInfo(key, tags, value, _queryCommandInfo, customData);
     }
 }
