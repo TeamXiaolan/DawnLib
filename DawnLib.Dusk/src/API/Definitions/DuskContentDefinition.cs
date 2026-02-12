@@ -32,12 +32,16 @@ public abstract class DuskContentDefinition : ScriptableObject
         }
 
         Mod = mod;
+        TryNetworkRegisterAssets();
+    }
+
+    public virtual void RegisterPost(DuskMod mod)
+    {
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (DuskDynamicConfig configDefinition in _configEntries)
         {
             generalConfigs[configDefinition.settingName.CleanStringForConfig()] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
         }
-        TryNetworkRegisterAssets();
     }
 
     public abstract void TryNetworkRegisterAssets();

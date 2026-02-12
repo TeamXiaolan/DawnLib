@@ -62,6 +62,7 @@ public abstract class ContentHandler(DuskMod mod)
         {
             definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(mod);
+            definition.RegisterPost(mod);
         }
     }
 

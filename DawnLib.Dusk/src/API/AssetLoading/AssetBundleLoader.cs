@@ -86,8 +86,11 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             typeof(DuskEnemyDefinition),
             typeof(DuskUnlockableDefinition),
             typeof(DuskItemDefinition),
+            typeof(DuskTerminalCommandDefinition),
             typeof(DuskEntityReplacementDefinition),
+            typeof(DuskStoryLogDefinition),
             typeof(DuskAchievementDefinition),
+            typeof(DuskSurfaceDefinition),
             typeof(DuskAdditionalTilesDefinition),
         ];
 
@@ -116,10 +119,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             return true;
         }
 
-        if (Debuggers.Dusk != null)
-        {
-            Content.FirstOrDefault()?.Mod.Logger?.LogWarning($"TryGetConfig: '{configName}' does not exist on '{Content}', returning false and entry will be null");
-        }
+        Content.FirstOrDefault()?.Mod.Logger?.LogWarning($"TryGetConfig: '{configName}' does not exist on '{Content}', returning false and entry will be null");
 
         entry = null;
         return false;
