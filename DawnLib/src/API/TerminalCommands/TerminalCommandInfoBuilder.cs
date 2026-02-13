@@ -14,59 +14,79 @@ public enum ClearText
 
 public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInfo, TerminalNode, TerminalCommandInfoBuilder>
 {
-    private DawnQueryCommandInfo? _queryCommandInfo = null;
+    private DawnComplexQueryCommandInfo? _complexQueryCommandInfo = null;
+    private DawnSimpleQueryCommandInfo? _simpleQueryCommandInfo = null;
+    private DawnSimpleCommandInfo? _simpleCommandInfo = null;
+    private DawnTerminalObjectCommandInfo? _terminalObjectCommandInfo = null;
+    private DawnEventDrivenCommandInfo? _eventDrivenCommandInfo = null;
+    private DawnInputCommandInfo? _inputCommandInfo = null;
 
-    public class QueryCommandBuilder
+    public class ComplexQueryCommandBuilder
     {
         private TerminalCommandInfoBuilder _parentBuilder;
 
-        private Func<string> _continueFunc, _cancelFunc;
-        private string _continueString, _cancelString;
-        private Func<bool> _continueCondition;
-        private Action<bool>? _onQueryContinuedEvent;
-
-        internal QueryCommandBuilder(TerminalCommandInfoBuilder parent)
+        internal ComplexQueryCommandBuilder(TerminalCommandInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
-        public QueryCommandBuilder SetContinue(Func<string> queryFunc)
+        internal DawnComplexQueryCommandInfo Build()
         {
-            _continueFunc = queryFunc;
+            return new DawnComplexQueryCommandInfo();
+        }
+    }
+
+    public class SimpleQueryCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        private string _continueDisplayText, _cancelDisplayText;
+        private string _continueKeyword, _cancelKeyword;
+        private Func<bool> _continueCondition;
+        private Action<bool>? _onQueryContinuedEvent;
+
+        internal SimpleQueryCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        public SimpleQueryCommandBuilder SetContinue(string continueDisplayText)
+        {
+            _continueDisplayText = continueDisplayText;
             return this;
         }
 
-        public QueryCommandBuilder SetCancel(Func<string> cancelFunc)
+        public SimpleQueryCommandBuilder SetCancel(string cancelDisplayText)
         {
-            _cancelFunc = cancelFunc;
+            _cancelDisplayText = cancelDisplayText;
             return this;
         }
 
-        public QueryCommandBuilder SetContinueConditions(Func<bool> continueProvider)
+        public SimpleQueryCommandBuilder SetContinueConditions(Func<bool> continueProvider)
         {
             _continueCondition = continueProvider;
             return this;
         }
 
-        public QueryCommandBuilder SetQueryEvent(Action<bool> onQueryContinuedEvent)
+        public SimpleQueryCommandBuilder SetQueryEvent(Action<bool> onQueryContinuedEvent)
         {
             _onQueryContinuedEvent = onQueryContinuedEvent;
             return this;
         }
 
-        public QueryCommandBuilder SetContinueWord(string continueKeyword)
+        public SimpleQueryCommandBuilder SetContinueWord(string continueKeyword)
         {
-            _continueString = continueKeyword;
+            _continueKeyword = continueKeyword;
             return this;
         }
 
-        public QueryCommandBuilder SetCancelWord(string cancelKeyword)
+        public SimpleQueryCommandBuilder SetCancelWord(string cancelKeyword)
         {
-            _cancelString = cancelKeyword;
+            _cancelKeyword = cancelKeyword;
             return this;
         }
 
-        internal DawnQueryCommandInfo Build()
+        internal DawnSimpleQueryCommandInfo Build()
         {
             if (_continueCondition == null)
             {
@@ -74,68 +94,117 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             }
 
             TerminalNode _continueNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ContinueNode")
-                                            .SetDisplayText(_continueFunc.Invoke())
+                                            .SetDisplayText(_continueDisplayText)
                                             .SetClearPreviousText(true)
                                             .SetMaxCharactersToType(35)
                                             .Build();
             
             TerminalNode _cancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:CancelNode")
-                                            .SetDisplayText(_cancelFunc.Invoke())
+                                            .SetDisplayText(_cancelDisplayText)
                                             .SetClearPreviousText(true)
                                             .SetMaxCharactersToType(35)
                                             .Build();
 
-            if (string.IsNullOrEmpty(_cancelString))
+            if (string.IsNullOrEmpty(_cancelKeyword))
             {
-                _cancelString = "deny";
-                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set cancel word. Defaulting to '{_cancelString}'");
+                _cancelKeyword = "deny";
+                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set cancel word. Defaulting to '{_cancelKeyword}'");
             }
 
-            if (string.IsNullOrEmpty(_continueString))
+            if (string.IsNullOrEmpty(_continueKeyword))
             {
-                _continueString = "confirm";
-                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set continue word. Defaulting to '{_continueString}'");
+                _continueKeyword = "confirm";
+                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set continue word. Defaulting to '{_continueKeyword}'");
             }
 
-            TerminalKeyword _continueKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:ContinueKeyword", _continueString, ITerminalKeyword.DawnKeywordType.DawnCommand)
+            TerminalKeyword _continueTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:ContinueKeyword", _continueKeyword, ITerminalKeyword.DawnKeywordType.DawnCommand)
                                                 .Build();
             
-            TerminalKeyword _cancelKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelString, ITerminalKeyword.DawnKeywordType.DawnCommand)
+            TerminalKeyword _cancelTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelKeyword, ITerminalKeyword.DawnKeywordType.DawnCommand)
                                                 .Build();
 
             _continueNode.clearPreviousText = _parentBuilder._clearTextFlags.HasFlag(ClearText.Continue);
             _cancelNode.clearPreviousText = _parentBuilder._clearTextFlags.HasFlag(ClearText.Cancel);
 
-            return new DawnQueryCommandInfo(_continueNode, _cancelNode, _continueFunc, _cancelFunc, _continueKeyword, _cancelKeyword, _continueCondition, _onQueryContinuedEvent);
+            return new DawnSimpleQueryCommandInfo(_continueNode, _cancelNode, _continueTerminalKeyword, _cancelTerminalKeyword, _continueCondition, _onQueryContinuedEvent);
+        }
+    }
+
+    public class SimpleCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        internal SimpleCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        internal DawnSimpleCommandInfo Build()
+        {
+            return new DawnSimpleCommandInfo();
+        }
+    }
+
+    public class TerminalObjectCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        internal TerminalObjectCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        internal DawnTerminalObjectCommandInfo Build()
+        {
+            return new DawnTerminalObjectCommandInfo();
+        }
+    }
+
+    public class EventDrivenCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        internal EventDrivenCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        internal DawnEventDrivenCommandInfo Build()
+        {
+            return new DawnEventDrivenCommandInfo();
+        }
+    }
+
+    public class InputCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        internal InputCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        internal DawnInputCommandInfo Build()
+        {
+            return new DawnInputCommandInfo();
         }
     }
     // Allow setting a query with a continue and cancel word, query text
 
-    public TerminalCommandInfoBuilder DefineQueryCommand(Action<QueryCommandBuilder> callback)
+    public TerminalCommandInfoBuilder DefineQueryCommand(Action<SimpleQueryCommandBuilder> callback)
     {
-        QueryCommandBuilder builder = new(this);
+        SimpleQueryCommandBuilder builder = new(this);
         callback(builder);
-        _queryCommandInfo = builder.Build();
+        _simpleQueryCommandInfo = builder.Build();
         return this;
     }
 
-    private IProvider<bool> _isEnabled;
-    private IProvider<List<string>> _validKeywords;
     private Func<string> _mainText;
     private string _commandName, _categoryName, _description;
-    private bool _acceptInput;
     private ClearText _clearTextFlags;
-    private bool _overrideKeywords = false;
-    private ITerminalKeyword.DawnKeywordType _overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
 
     public TerminalCommandInfoBuilder(NamespacedKey<DawnTerminalCommandInfo> key, TerminalNode value) : base(key, value)
     {
-    }
-
-    public TerminalCommandInfoBuilder SetEnabled(IProvider<bool> isEnabled)
-    {
-        _isEnabled = isEnabled;
-        return this;
     }
 
     public TerminalCommandInfoBuilder SetMainText(Func<string> mainText)
@@ -144,15 +213,21 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetKeywords(IProvider<List<string>> validKeywords)
+    public TerminalCommandInfoBuilder SetKeywords(List<string> keywords)
     {
-        _validKeywords = validKeywords;
+
         return this;
     }
 
     public TerminalCommandInfoBuilder SetClearTextFlags(ClearText clearTextFlags)
     {
         _clearTextFlags = clearTextFlags;
+        return this;
+    }
+
+    public TerminalCommandInfoBuilder SetCommandName(string commandName)
+    {
+        _commandName = commandName;
         return this;
     }
 
@@ -168,28 +243,10 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetAcceptInput(bool acceptInput)
-    {
-        _acceptInput = acceptInput;
-        return this;
-    }
-
-    // <summary>Override any existing keywords and manually set the keyword's priority</summary>
-    /* <remarks>
-        WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
-        You do not need to set this to false if you have not changed the default value
-        Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload.
-      </remarks> */
-
-    public TerminalCommandInfoBuilder SetOverrideKeywords(bool value, ITerminalKeyword.DawnKeywordType overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
-    {
-        _overrideKeywords = value;
-        _overridePriority = overridePriority;
-        return this;
-    }
-
     override internal DawnTerminalCommandInfo Build()
     {
-        return new DawnTerminalCommandInfo(key, value, tags, _queryCommandInfo, customData);
+        DawnTerminalCommandInfo terminalCommandInfo = new DawnTerminalCommandInfo(key, value, tags, _complexQueryCommandInfo, _simpleQueryCommandInfo, _simpleCommandInfo, _terminalObjectCommandInfo, _eventDrivenCommandInfo, _inputCommandInfo, customData); 
+        value.SetDawnInfo(terminalCommandInfo);
+        return terminalCommandInfo;
     }
 }

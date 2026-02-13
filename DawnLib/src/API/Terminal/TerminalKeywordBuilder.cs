@@ -152,12 +152,6 @@ public class TerminalKeywordBuilder
         return this;
     }
 
-    public TerminalKeywordBuilder SetNodeFunction(Func<string> _function)
-    {
-        _keyword.specialKeywordResult.SetNodeFunction(_function);
-        return this;
-    }
-
     public TerminalKeywordBuilder SetAcceptInput(bool value)
     {
         if (value)
