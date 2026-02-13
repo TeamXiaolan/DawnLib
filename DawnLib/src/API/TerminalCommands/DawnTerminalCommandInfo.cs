@@ -3,9 +3,10 @@ using System.Collections.Generic;
 namespace Dawn;
 public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandInfo>
 {
-    internal DawnTerminalCommandInfo(NamespacedKey<DawnTerminalCommandInfo> key, TerminalNode resultNode, HashSet<NamespacedKey> tags, DawnComplexQueryCommandInfo? complexQueryCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnTerminalObjectCommandInfo? terminalObjectCommandInfo, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnInputCommandInfo? inputCommandInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnTerminalCommandInfo(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, List<TerminalKeyword> commandKeywords, HashSet<NamespacedKey> tags, DawnComplexQueryCommandInfo? complexQueryCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo, DawnComplexCommandInfo? complexCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnTerminalObjectCommandInfo? terminalObjectCommandInfo, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnInputCommandInfo? inputCommandInfo, IDataContainer? customData) : base(key, tags, customData)
     {
-        ResultNode = resultNode;
+        CommandBasicInformation = commandBasicInformation;
+        CommandKeywords = commandKeywords;
 
         ComplexQueryCommandInfo = complexQueryCommandInfo; // Uses a verb, similar to buy keyword/node shenanigans
         if (ComplexQueryCommandInfo != null)
@@ -17,6 +18,12 @@ public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandIn
         if (SimpleQueryCommandInfo != null)
         {
             SimpleQueryCommandInfo.ParentInfo = this;
+        }
+
+        ComplexCommandInfo = complexCommandInfo;
+        if (ComplexCommandInfo != null)
+        {
+            ComplexCommandInfo.ParentInfo = this;
         }
 
         SimpleCommandInfo = simpleCommandInfo; // keyword with a special keyword result where node has nothing except text on it
@@ -44,12 +51,16 @@ public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandIn
         }
     }
 
-    public TerminalNode ResultNode { get; }
+    public List<TerminalKeyword> CommandKeywords { get; }
+    public TerminalCommandBasicInformation CommandBasicInformation { get; }
 
     public DawnComplexQueryCommandInfo? ComplexQueryCommandInfo { get; }
     public DawnSimpleQueryCommandInfo? SimpleQueryCommandInfo { get; }
+    public DawnComplexCommandInfo? ComplexCommandInfo { get; }
     public DawnSimpleCommandInfo? SimpleCommandInfo { get; }
     public DawnTerminalObjectCommandInfo? TerminalObjectCommandInfo { get; }
     public DawnEventDrivenCommandInfo? EventDrivenCommandInfo { get; }
     public DawnInputCommandInfo? InputCommandInfo { get; }
+
+    public List<TerminalKeyword> AssociatedKeywords { get; } = new();
 }

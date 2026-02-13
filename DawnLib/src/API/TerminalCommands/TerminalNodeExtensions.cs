@@ -20,4 +20,18 @@ public static class TerminalNodeExtensions
     {
         ((IDawnObject)terminalNode).DawnInfo = terminalCommandInfo;
     }
+
+    public static string GetDisplayText(this TerminalNode terminalNode)
+    {
+        if (((ITerminalNode)terminalNode).DynamicDisplayText == null)
+        {
+            return terminalNode.displayText;
+        }
+        return ((ITerminalNode)terminalNode).DynamicDisplayText.Invoke();
+    }
+
+    internal static void SetDynamicDisplayText(this TerminalNode terminalNode, Func<string> func)
+    {
+        ((ITerminalNode)terminalNode).DynamicDisplayText = func;
+    }
 }

@@ -40,6 +40,12 @@ public class TerminalNodeBuilder
         return this;
     }
 
+    public TerminalNodeBuilder SetDynamicDisplayText(Func<string> func)
+    {
+        _node.SetDynamicDisplayText(func);
+        return this;
+    }
+
     public TerminalNodeBuilder SetClearPreviousText(bool clearPreviousText)
     {
         _node.clearPreviousText = clearPreviousText;

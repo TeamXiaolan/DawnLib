@@ -1,4 +1,5 @@
-﻿using Dawn.Utils;
+﻿using System;
+using Dawn.Utils;
 using MonoMod.RuntimeDetour;
 
 namespace Dawn;
@@ -12,19 +13,34 @@ public class TerminalCommandRegistration
         {
             On.Terminal.Awake += RegisterDawnTerminalCommands;
         }
+
         using (new DetourContext(priority: 1))
         {
             On.Terminal.Awake += GrabVanillaTerminalCommands;
+        }
+
+        using (new DetourContext(priority: -9999))
+        {
+            On.Terminal.LoadNewNode += AssignNodeProperDisplayText;
         }
         On.Terminal.LoadNewNode += HandleQueryEventAndContinueCondition;
         On.Terminal.Start += AssignTerminalPriorites;
         On.Terminal.CheckForExactSentences += CheckForExactSentencesPrefix;
         On.Terminal.ParseWord += ParseWordPrefix;
-        On.Terminal.ParsePlayerSentence += HandleDawnCommand;
+    }
+
+    private static void AssignNodeProperDisplayText(On.Terminal.orig_LoadNewNode orig, Terminal self, TerminalNode node)
+    {
+        node.displayText = node.GetDisplayText();
+        orig(self, node);
     }
 
     private static void GrabVanillaTerminalCommands(On.Terminal.orig_Awake orig, Terminal self)
     {
+        foreach (TerminalKeyword terminalKeyword in self.terminalNodes.allKeywords)
+        {
+            
+        }
         // Grab the vanilla references here
         orig(self);
     }
@@ -34,9 +50,7 @@ public class TerminalCommandRegistration
         foreach (DawnTerminalCommandInfo terminalCommandInfo in LethalContent.TerminalCommands.Values)
         {
             if (terminalCommandInfo.ShouldSkipIgnoreOverride())
-            {
                 continue;
-            }
 
             // register the command into the terminal here.
         }
@@ -50,22 +64,39 @@ public class TerminalCommandRegistration
         if (nodeToLoad.HasDawnInfo())
         {
             DawnTerminalCommandInfo commandInfo = nodeToLoad.GetDawnInfo();
-            if (commandInfo.ResultNode == node && commandInfo.QueryCommandInfo != null)
+            if (commandInfo.SimpleQueryCommandInfo != null && commandInfo.SimpleQueryCommandInfo.ResultNode == node)
             {
-                if (!commandInfo.QueryCommandInfo.ContinueCondition.Invoke())
+                if (!commandInfo.SimpleQueryCommandInfo.ContinueCondition.Invoke())
                 {
-                    nodeToLoad = commandInfo.QueryCommandInfo.CancelNode;
-                    nodeToLoad.displayText = commandInfo.QueryCommandInfo.CancelFunc.Invoke();
-                    commandInfo.QueryCommandInfo.OnContinuedEvent?.Invoke(false);
+                    nodeToLoad = commandInfo.SimpleQueryCommandInfo.CancelNode;
+                    commandInfo.SimpleQueryCommandInfo.OnContinuedEvent?.Invoke(false);
                 }
                 else
                 {
-                    nodeToLoad = commandInfo.QueryCommandInfo.ContinueNode;
-                    nodeToLoad.displayText = commandInfo.QueryCommandInfo.ContinueFunc.Invoke();
-                    commandInfo.QueryCommandInfo.OnContinuedEvent?.Invoke(true);
+                    commandInfo.SimpleQueryCommandInfo.OnContinuedEvent?.Invoke(true);
+                }
+            }
+            else if (commandInfo.ComplexQueryCommandInfo != null)
+            {
+                for (int i = 0; i < commandInfo.ComplexQueryCommandInfo.ResultNodes.Length; i++)
+                {
+                    if (commandInfo.ComplexQueryCommandInfo.ResultNodes[i] == node)
+                    {
+                        if (!commandInfo.ComplexQueryCommandInfo.ContinueConditions[i].Invoke())
+                        {
+                            nodeToLoad = commandInfo.ComplexQueryCommandInfo.CancelNodes[i];
+                            commandInfo.ComplexQueryCommandInfo.OnContinuedEvent[i]?.Invoke(false);
+                        }
+                        else
+                        {
+                            commandInfo.ComplexQueryCommandInfo.OnContinuedEvent[i]?.Invoke(true);
+                        }
+                        break;
+                    }
                 }
             }
         }
+
         orig(self, nodeToLoad);
     }
 
@@ -77,7 +108,7 @@ public class TerminalCommandRegistration
         self.SetLastVerb(null!);
         self.SetLastNoun(null!);
 
-        if (self.DawnTryResolveKeyword(playerWord, out var NonNullResult))
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword? NonNullResult))
         {
             self.UpdateLastKeywordParsed(NonNullResult);
             self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
@@ -96,7 +127,7 @@ public class TerminalCommandRegistration
 
     private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)
     {
-        if (self.DawnTryResolveKeyword(playerWord, out var NonNullResult))
+        if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword? NonNullResult))
         {
             self.UpdateLastKeywordParsed(NonNullResult);
             self.SetLastCommand(playerWord.GetExactMatch(NonNullResult.word));
@@ -129,7 +160,7 @@ public class TerminalCommandRegistration
 
             if (string.IsNullOrEmpty(keyword.GetKeywordDescription()))
             {
-                if (keyword.TryGetKeywordInfoText(out var result))
+                if (keyword.TryGetKeywordInfoText(out string? result))
                 {
                     keyword.SetKeywordDescription(result.Trim());
                 }
@@ -139,19 +170,5 @@ public class TerminalCommandRegistration
                 }
             }
         }
-    }
-
-    private static TerminalNode HandleDawnCommand(On.Terminal.orig_ParsePlayerSentence orig, Terminal self)
-    {
-        //Get vanilla result
-        TerminalNode terminalNode = orig(self);
-
-        //updates the node's displaytext based on it's NodeFunction Func<string> that was injected (if not null)
-        if (terminalNode.HasCommandFunction())
-        {
-            terminalNode.displayText = terminalNode.GetCommandFunction().Invoke();
-        }
-
-        return terminalNode;
     }
 }

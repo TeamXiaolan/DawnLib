@@ -5,9 +5,12 @@ public sealed class DawnSimpleQueryCommandInfo
 {
     public DawnTerminalCommandInfo ParentInfo { get; internal set; }
 
-    internal DawnSimpleQueryCommandInfo(TerminalNode continueNode, TerminalNode cancelNode, TerminalKeyword continueKeyword, TerminalKeyword cancelKeyword, Func<bool> continueCondition, Action<bool>? onContinuedEvent)
+    internal DawnSimpleQueryCommandInfo(TerminalNode resultNode, TerminalNode continueOrCancelNode, TerminalNode cancelNode, TerminalKeyword continueKeyword, TerminalKeyword cancelKeyword, Func<bool> continueCondition, Action<bool>? onContinuedEvent)
     {
-        ContinueNode = continueNode;
+        // keyword with a specialkeywordresult
+        // that specialkeywordresult
+        ResultNode = resultNode;
+        ContinueOrCancelNode = continueOrCancelNode;
         CancelNode = cancelNode;
 
         ContinueKeyword = continueKeyword;
@@ -23,6 +26,7 @@ public sealed class DawnSimpleQueryCommandInfo
     public Func<bool> ContinueCondition { get; private set; }
     public Action<bool>? OnContinuedEvent { get; private set; }
 
-    public TerminalNode ContinueNode { get; }
+    public TerminalNode ResultNode { get; }
+    public TerminalNode ContinueOrCancelNode { get; }
     public TerminalNode CancelNode { get; }
 }

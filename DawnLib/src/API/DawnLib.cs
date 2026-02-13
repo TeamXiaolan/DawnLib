@@ -86,16 +86,12 @@ public static class DawnLib
         MiscFixesPatch.tilesToFixSockets.Add(prefab);
     }
 
-    public static DawnTerminalCommandInfo DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo> key, string commandName, Action<TerminalCommandInfoBuilder> callback)
+    public static DawnTerminalCommandInfo DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, Action<TerminalCommandInfoBuilder> callback)
     {
-        TerminalNode resultNode = new TerminalNodeBuilder($"{commandName}{key}_node")
-            .SetDisplayText($"{commandName}{key} command")
-            .Build();
-
-        TerminalCommandInfoBuilder builder = new(key, commandName, resultNode);
+        TerminalCommandInfoBuilder builder = new(key, commandBasicInformation);
         callback(builder);
         DawnTerminalCommandInfo commandInfo = builder.Build();
-        resultNode.SetDawnInfo(commandInfo);
+        // todo: register all the nodes here?
         LethalContent.TerminalCommands.Register(commandInfo);
         return commandInfo;
     }

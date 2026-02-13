@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Dawn.Internal;
@@ -71,7 +70,7 @@ public static class TerminalExtensions
 
     public static bool TryGetKeywordInfoText(this TerminalKeyword terminalKeyword, [NotNullWhen(true)] out string? text)
     {
-        text = string.Empty;
+        text = null;
         CompatibleNoun matchedCompatibleNoun = TerminalRefs.InfoKeyword.compatibleNouns.FirstOrDefault(x => x.noun.word == terminalKeyword.word);
         if (matchedCompatibleNoun == null)
         {
@@ -113,7 +112,7 @@ public static class TerminalExtensions
 
         if (terminalKeyword.accessTerminalObjects)
         {
-            terminalKeyword.SetKeywordPriority(ITerminalKeyword.DawnKeywordType.Code);
+            terminalKeyword.SetKeywordPriority(ITerminalKeyword.DawnKeywordType.TerminalObject);
             return;
         }
 
@@ -195,12 +194,6 @@ public static class TerminalExtensions
         if (terminalNode.storyLogFileID > -1)
         {
             return ITerminalKeyword.DawnKeywordType.SigurdLog;
-        }
-
-        //command keywords
-        if (terminalNode.HasCommandFunction())
-        {
-            return ITerminalKeyword.DawnKeywordType.DawnCommand;
         }
 
         //no matching types
