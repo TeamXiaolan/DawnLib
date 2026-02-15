@@ -23,6 +23,12 @@ public static class TerminalNodeExtensions
 
     public static string GetDisplayText(this TerminalNode terminalNode)
     {
+        DawnTerminalCommandInfo? commandInfo = terminalNode.GetDawnInfo();
+        if (commandInfo != null && commandInfo.InputCommandInfo != null)
+        {
+            return commandInfo.InputCommandInfo.DynamicInputTextResult.Invoke(DawnInputCommandInfo.GetLastUserInput());
+        }
+
         if (((ITerminalNode)terminalNode).DynamicDisplayText == null)
         {
             return terminalNode.displayText;

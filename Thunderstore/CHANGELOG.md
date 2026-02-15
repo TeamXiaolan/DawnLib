@@ -1,4 +1,16 @@
-# v0.7.15
+# v0.8.0
+
+- Rewrote most of the terminal commands implementation to be simpler (for now) and much more extensible.
+  - Currently possible commands:
+  - Input
+  - SimpleQuery
+  - ComplexQuery
+  - Simple
+  - Complex
+  - EventDriven
+  - TerminalObject
+
+## v0.7.15
 
 - Organised configs a bit more, user auto generated configs using the editor should be under the main configs auto generated now.
 

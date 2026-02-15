@@ -26,7 +26,7 @@ public class TerminalKeywordBuilder
             _keywordsAdded = value;
         }
     }
-    internal static List<TerminalKeyword> WordsThatAcceptInput { get; private set; } = [];
+
     private TerminalKeyword _keyword;
 
     private static bool WordAlreadyExists(string word, [NotNullWhen(true)] out TerminalKeyword? existingKeyword)
@@ -154,15 +154,6 @@ public class TerminalKeywordBuilder
 
     public TerminalKeywordBuilder SetAcceptInput(bool value)
     {
-        if (value)
-        {
-            WordsThatAcceptInput.Add(_keyword);
-        }
-        else
-        {
-            WordsThatAcceptInput.Remove(_keyword);
-        }
-
         _keyword.SetKeywordAcceptInput(value);
         return this;
     }

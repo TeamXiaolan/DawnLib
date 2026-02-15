@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using Dawn.Utils;
+using HarmonyLib;
 using MonoMod.RuntimeDetour;
 
 namespace Dawn;
 
-//for use with creating terminal commands from plugin awake
-public class TerminalCommandRegistration
+[HarmonyPatch]
+static class TerminalCommandRegistration
 {
     internal static void Init()
     {
@@ -29,6 +31,20 @@ public class TerminalCommandRegistration
         On.Terminal.ParseWord += ParseWordPrefix;
     }
 
+    [HarmonyPatch(typeof(Terminal), nameof(Terminal.RunTerminalEvents)), HarmonyPrefix, HarmonyPriority(int.MaxValue)]
+    static bool OverrideVanillaTerminalsAndRunDawnEvents(Terminal __instance, TerminalNode node)
+    {
+        if (node.HasDawnInfo())
+        {
+            DawnEventDrivenCommandInfo? eventDrivenCommandInfo = node.GetDawnInfo().EventDrivenCommandInfo;
+            if (eventDrivenCommandInfo != null)
+            {
+                eventDrivenCommandInfo.OnTerminalEvent(__instance, node);
+            }
+        }
+        return false;
+    }
+
     private static void AssignNodeProperDisplayText(On.Terminal.orig_LoadNewNode orig, Terminal self, TerminalNode node)
     {
         node.displayText = node.GetDisplayText();
@@ -37,10 +53,67 @@ public class TerminalCommandRegistration
 
     private static void GrabVanillaTerminalCommands(On.Terminal.orig_Awake orig, Terminal self)
     {
+        if (LethalContent.TerminalCommands.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
         foreach (TerminalKeyword terminalKeyword in self.terminalNodes.allKeywords)
         {
-            
+            if (terminalKeyword.specialKeywordResult == null)
+                continue;
+
+            List<TerminalNode> terminalNodesToCheck = [terminalKeyword.specialKeywordResult];
+            if (terminalKeyword.specialKeywordResult.terminalOptions != null)
+            {
+                foreach (CompatibleNoun compatibleNoun in terminalKeyword.specialKeywordResult.terminalOptions)
+                {
+                    if (compatibleNoun.result == null)
+                        continue;
+
+                    terminalNodesToCheck.Add(compatibleNoun.result);
+                }
+            }
+
+            foreach (TerminalNode nodeToCheck in terminalNodesToCheck)
+            {
+                if (nodeToCheck.HasDawnInfo() || string.IsNullOrEmpty(nodeToCheck.terminalEvent))
+                    continue;
+
+                Action<Terminal, TerminalNode>? onTerminalEvent = null;
+                switch (nodeToCheck.terminalEvent)
+                {
+                    case "switchCamera":
+                        onTerminalEvent = VanillaTerminalEvents.SwitchCameraEvent;
+                        break;
+                    case "setUpTerminal":
+                        onTerminalEvent = VanillaTerminalEvents.SetUpTerminalEvent;
+                        break;
+                    case "ejectPlayers":
+                        onTerminalEvent = VanillaTerminalEvents.EjectPlayersEvent;
+                        break;
+                    case "cheat_ResetCredits":
+                        onTerminalEvent = VanillaTerminalEvents.Cheat_ResetCreditsEvent;
+                        break;
+                }
+
+                if (onTerminalEvent == null)
+                    continue;
+
+                nodeToCheck.terminalEvent = string.Empty;
+                NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(nodeToCheck.name);
+                TerminalCommandBasicInformation basicInformation = new(nodeToCheck.terminalEvent.ToCapitalized() + "Command", "TerminalEvent", $"Runs the following event: {nodeToCheck.terminalEvent}", ClearText.None);
+                HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
+                DawnEventDrivenCommandInfo eventDrivenCommandInfo = new(nodeToCheck, onTerminalEvent);
+
+                DawnTerminalCommandInfo terminalCommandInfo = new(namespacedKey, basicInformation, [terminalKeyword], tags, null, null, null, null, null, eventDrivenCommandInfo, null, null);
+                LethalContent.TerminalCommands.Register(terminalCommandInfo);
+                nodeToCheck.SetDawnInfo(terminalCommandInfo);
+            }
         }
+
+        LethalContent.TerminalCommands.Freeze();
         // Grab the vanilla references here
         orig(self);
     }
@@ -52,6 +125,7 @@ public class TerminalCommandRegistration
             if (terminalCommandInfo.ShouldSkipIgnoreOverride())
                 continue;
 
+            terminalCommandInfo.InjectCommandIntoTerminal(self);
             // register the command into the terminal here.
         }
         orig(self);
@@ -69,27 +143,27 @@ public class TerminalCommandRegistration
                 if (!commandInfo.SimpleQueryCommandInfo.ContinueCondition.Invoke())
                 {
                     nodeToLoad = commandInfo.SimpleQueryCommandInfo.CancelNode;
-                    commandInfo.SimpleQueryCommandInfo.OnContinuedEvent?.Invoke(false);
+                    commandInfo.SimpleQueryCommandInfo.OnContinuedEvent.Invoke(false);
                 }
                 else
                 {
-                    commandInfo.SimpleQueryCommandInfo.OnContinuedEvent?.Invoke(true);
+                    commandInfo.SimpleQueryCommandInfo.OnContinuedEvent.Invoke(true);
                 }
             }
             else if (commandInfo.ComplexQueryCommandInfo != null)
             {
-                for (int i = 0; i < commandInfo.ComplexQueryCommandInfo.ResultNodes.Length; i++)
+                for (int i = 0; i < commandInfo.ComplexQueryCommandInfo.ResultNodes.Count; i++)
                 {
                     if (commandInfo.ComplexQueryCommandInfo.ResultNodes[i] == node)
                     {
                         if (!commandInfo.ComplexQueryCommandInfo.ContinueConditions[i].Invoke())
                         {
-                            nodeToLoad = commandInfo.ComplexQueryCommandInfo.CancelNodes[i];
-                            commandInfo.ComplexQueryCommandInfo.OnContinuedEvent[i]?.Invoke(false);
+                            nodeToLoad = commandInfo.ComplexQueryCommandInfo.CancelNode;
+                            commandInfo.ComplexQueryCommandInfo.OnContinuedEvents[i].Invoke(false);
                         }
                         else
                         {
-                            commandInfo.ComplexQueryCommandInfo.OnContinuedEvent[i]?.Invoke(true);
+                            commandInfo.ComplexQueryCommandInfo.OnContinuedEvents[i].Invoke(true);
                         }
                         break;
                     }

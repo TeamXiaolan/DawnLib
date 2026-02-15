@@ -2,19 +2,20 @@ using System;
 using System.Collections.Generic;
 using Dawn;
 using UnityEngine;
-using static Dawn.TerminalCommandRegistration;
 
 namespace Dusk;
 
 [Serializable]
-public class QueryCommand
+public class SimpleQueryCommand
 {
     [field: SerializeField]
     public bool Enabled { get; private set; }
 
     [field: SerializeField]
-    public string QueryDisplayText { get; private set; }
+    public string ResultDisplayText { get; private set; }
 
+    [field: SerializeField]
+    public string ContinueOrCancelDisplayText { get; private set; }
     [field: SerializeField]
     public string CancelDisplayText { get; private set; }
 
@@ -29,49 +30,29 @@ public class QueryCommand
 public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalCommandInfo>
 {
     [field: SerializeField]
-    public string CommandName { get; private set; }
-
-    [field: SerializeField]
-    [field: TextArea(2, 20)]
-    public string CommandMainText { get; private set; }
+    public TerminalCommandBasicInformation CommandBasicInformation { get; private set; }
 
     [field: SerializeField]
     public List<string> CommandKeywordsList { get; private set; }
 
     [field: SerializeField]
-    [field: Tooltip("Category of the command for internal use.")]
-    public string CommandCategory { get; private set; }
-
-    [field: SerializeField]
-    [field: Tooltip("Description of the command for internal use.")]
-    public string CommandDescription { get; private set; }
-
-    [field: SerializeField]
-    [field: Tooltip("Clear text flags for the command, i.e. which commands clear text on entering.")]
-    public ClearText CommandClearTextFlags { get; private set; }
-
-    [field: SerializeField]
     [field: Tooltip("Setup a query command that involves a continue and cancel operation to reach the main command text.")]
-    public QueryCommand QueryCommand { get; private set; }
+    public SimpleQueryCommand QueryCommand { get; private set; }
 
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
 
-        DawnLib.DefineTerminalCommand(TypedKey, CommandName, builder =>
+        DawnLib.DefineTerminalCommand(TypedKey, CommandBasicInformation, builder =>
         {
-            builder.SetEnabled(new SimpleProvider<bool>(true));
-            builder.SetMainText(() => CommandMainText);
-            builder.SetKeywords(new SimpleProvider<List<string>>(CommandKeywordsList));
-            builder.SetCategoryName(CommandCategory);
-            builder.SetDescription(CommandDescription);
-            builder.SetClearTextFlags(CommandClearTextFlags);
+            builder.SetKeywords(CommandKeywordsList);
             if (QueryCommand.Enabled)
             {
-                builder.DefineQueryCommand(builder =>
+                builder.DefineSimpleQueryCommand(builder =>
                 {
-                    builder.SetContinue(() => QueryCommand.QueryDisplayText);
+                    builder.SetResult(() => QueryCommand.ResultDisplayText);
                     builder.SetCancel(() => QueryCommand.CancelDisplayText);
+                    builder.SetContinueOrCancel(() => QueryCommand.ContinueOrCancelDisplayText);
                     builder.SetCancelWord(QueryCommand.CancelKeyword);
                     builder.SetContinueWord(QueryCommand.ContinueKeyword);
                 });
@@ -85,5 +66,5 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
 
     }
 
-    protected override string EntityNameReference => CommandName ?? string.Empty;
+    protected override string EntityNameReference => CommandBasicInformation.CommandName ?? string.Empty;
 }

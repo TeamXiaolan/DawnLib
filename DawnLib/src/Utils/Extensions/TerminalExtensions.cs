@@ -7,14 +7,28 @@ namespace Dawn.Utils;
 
 public static class TerminalExtensions
 {
-
-    public static bool GetKeywordAcceptInput(this TerminalKeyword word)
+    public static bool GetKeywordAcceptingInput(this TerminalKeyword word)
     {
         return ((ITerminalKeyword)word).DawnAcceptAdditionalText;
     }
 
+    private static List<TerminalKeyword> WordsThatAcceptInput = new();
+    public static List<TerminalKeyword> GetKeywordsAcceptingInput()
+    {
+        return WordsThatAcceptInput;
+    }
+
     public static void SetKeywordAcceptInput(this TerminalKeyword word, bool value)
     {
+        if (value)
+        {
+            WordsThatAcceptInput.Add(word);
+        }
+        else
+        {
+            WordsThatAcceptInput.Remove(word);
+        }
+
         ((ITerminalKeyword)word).DawnAcceptAdditionalText = value;
     }
 
@@ -237,7 +251,7 @@ public static class TerminalExtensions
             input = input.Split(' ')[0];
         }
 
-        words = TerminalKeywordBuilder.WordsThatAcceptInput.FindAll(x => x.word.StringContainsInvariant(input));
+        words = WordsThatAcceptInput.FindAll(x => x.word.StringContainsInvariant(input));
         return words.Count != 0;
     }
 
