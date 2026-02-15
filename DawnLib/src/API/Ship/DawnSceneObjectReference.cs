@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dawn;
 public class DawnSceneObjectReference : MonoBehaviour
@@ -14,9 +16,35 @@ public class DawnSceneObjectReference : MonoBehaviour
     [HideInInspector]
     public string cachedObjectPath = "";
 
-    //[HideInInspector]
-    //public List<Mesh> cachedMeshes = new List<Mesh>();
+    public Transform? foundObject;
 
-    //[HideInInspector]
-    //public List<Matrix4x4> cachedTransforms = new List<Matrix4x4>();
+    public bool TryFind()
+    {
+        //i could assume that root is always Environment but i was thinking about more general aproach 
+        //var root = StartOfRound.Instance.shipAnimatorObject.transform.parent;
+        var activeScene = SceneManager.GetActiveScene();
+        var roots = activeScene.GetRootGameObjects();
+        var root = roots.FirstOrDefault(go => go.name == cachedObjectPath.Split('/')[0]);
+
+        if (root)
+        {
+            var index = cachedObjectPath.IndexOf('/');
+            var pathFromRoot = cachedObjectPath.Substring(index + 1);
+            foundObject = root.transform.Find(pathFromRoot);
+        }
+
+        return foundObject != null;
+    }
+
+    public bool TryMove()
+    {
+        if (foundObject == null) return false;
+
+        foundObject.position = transform.position;
+        foundObject.rotation = transform.rotation;
+        //foundObject.localScale = transform.localScale;
+        //foundObject.parent = transform;
+
+        return true;
+    }
 }

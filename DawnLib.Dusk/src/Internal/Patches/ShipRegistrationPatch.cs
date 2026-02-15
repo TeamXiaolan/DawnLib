@@ -14,21 +14,14 @@ namespace Dusk.Internal;
 
 static class ShipRegistrationPatch
 {
-    //TODO: show buyable ships in store rotataion if its enabled in config
     internal static void Init()
     {
         On.Terminal.Awake += AddShipsToTerminal;
         On.Terminal.TextPostProcess += EditTextPostProcess;
     }
 
-    //TODO: rewrite shop entirely?
     private static string EditTextPostProcess(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
-        /*if (!node.displayText.Contains("[buyableShipsList]"))
-        {
-            node.displayText = node.displayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
-        }*/
-
         if (!modifiedDisplayText.Contains("[buyableShipsList]"))
         {
             modifiedDisplayText = modifiedDisplayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
@@ -47,18 +40,10 @@ static class ShipRegistrationPatch
 
     private static void AddShipsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
-        //TerminalKeyword buyKeyword = TerminalRefs.BuyKeyword;
-        //TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
-        //TerminalKeyword confirmPurchaseKeyword = TerminalRefs.ConfirmPurchaseKeyword;
-        //TerminalKeyword denyPurchaseKeyword = TerminalRefs.DenyKeyword;
-        //TerminalNode cancelPurchaseNode = TerminalRefs.CancelPurchaseNode;
-
-        //List<TerminalKeyword> allKeywordsList = self.terminalNodes.allKeywords.ToList();
-        //List<CompatibleNoun> allBuyKeywordNounsList = buyKeyword.compatibleNouns.ToList();
-        //List<CompatibleNoun> allInfoKeywordNounsList = infoKeyword.compatibleNouns.ToList();
-
         List<BuyableShipPreset> buyableShips = new();
-        int currentShipId = 0;
+        NamespacedKey currentShip = NamespacedKey.From("lethal_company", "ship");
+        ShipSpawnHandler shipSpawnHandler = new();
+        shipSpawnHandler.Initialize();
 
         foreach (DuskShipDefinition shipDefinition in DuskModContent.Ships.Values)
         {
@@ -81,7 +66,7 @@ static class ShipRegistrationPatch
                     DawnEvent<bool> dawnEvent = new();
                     dawnEvent.OnInvoke += (bool value) =>
                     {
-                        ShipSpawnHandler.ChangeShip(currentShipId);
+                        shipSpawnHandler.ChangeShip(shipDefinition.Key);
                     };
 
                     queryCommandBuilder.SetQuery(() => $"Are you sure you want to buy {shipDefinition.BuyableShipPreset.ShipName}?"); //add confirm or deny text
@@ -91,12 +76,10 @@ static class ShipRegistrationPatch
                     queryCommandBuilder.SetQueryEvent(dawnEvent);
                 });
             });
-
-            currentShipId++;
         }
         
         ((ITerminal)self).BuyableShips = buyableShips;
-        ((ITerminal)self).CurrentShipId = 0; //TODO: Read save and change ship if needed
+        ((ITerminal)self).CurrentShip = shipSpawnHandler.LoadShipFromSave().ToString();
 
         DuskModContent.Ships.Freeze();
         orig(self);

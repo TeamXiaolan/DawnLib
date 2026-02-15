@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Ship Definition", menuName = $"{DuskModConstants.Definitions}/Ship Definition")]
-public class DuskShipDefinition : DuskContentDefinition<DuskShipDefinition>, INamespaced<DuskShipDefinition>
+public class DuskShipDefinition : DuskContentDefinition<DawnShipInfo>, INamespaced<DuskShipDefinition>
 {
     [field: SerializeField]
     public BuyableShipPreset BuyableShipPreset { get; private set; }
@@ -27,26 +27,25 @@ public class DuskShipDefinition : DuskContentDefinition<DuskShipDefinition>, INa
     [field: SerializeField]
     public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
 
-    NamespacedKey<DuskShipDefinition> INamespaced<DuskShipDefinition>.TypedKey => TypedKey.AsTyped<DuskShipDefinition>();
-
     protected override string EntityNameReference => BuyableShipPreset.ShipName;
 
     public ShipConfig Config { get; private set; }
-    //public DawnVehicleInfo DawnVehicleInfo { get; private set; }
+    public DawnShipInfo DawnShipInfo { get; private set; }
+    NamespacedKey<DuskShipDefinition> INamespaced<DuskShipDefinition>.TypedKey => TypedKey.AsTyped<DuskShipDefinition>();
 
     public override void Register(DuskMod mod)
     {
-            if (!BuyableShipPreset.ShipPrefab)
-            {
-                DuskPlugin.Logger.LogError($"The ship: {BuyableShipPreset.ShipName} has no ship prefab.");
-                return;
-            }
+        if (!BuyableShipPreset.ShipPrefab)
+        {
+            DuskPlugin.Logger.LogError($"The ship: {BuyableShipPreset.ShipName} has no ship prefab.");
+            return;
+        }
 
-            if (!BuyableShipPreset.NavmeshPrefab)
-            {
-                DuskPlugin.Logger.LogError($"The ship: {BuyableShipPreset.ShipName} has no ship navmesh prefab.");
-                return;
-            }
+        if (!BuyableShipPreset.NavmeshPrefab)
+        {
+            DuskPlugin.Logger.LogError($"The ship: {BuyableShipPreset.ShipName} has no ship navmesh prefab.");
+            return;
+        }
 
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
@@ -63,7 +62,14 @@ public class DuskShipDefinition : DuskContentDefinition<DuskShipDefinition>, INa
             PricingStrategy = null;
         }
 
-        //DawnVehicleInfo = new DawnVehicleInfo(TypedKey, _tags.ToHashSet(), BuyableVehiclePreset.VehiclePrefab, BuyableVehiclePreset.SecondaryPrefab, BuyableVehiclePreset.StationPrefab, new DawnPurchaseInfo(PricingStrategy == null ? new SimpleProvider<int>(Cost) : PricingStrategy, TerminalPredicate ?? ITerminalPurchasePredicate.AlwaysSuccess()), null);
+        DawnShipInfo = new DawnShipInfo(
+            TypedKey,
+            _tags.ToHashSet(),
+            BuyableShipPreset.ShipName,
+            BuyableShipPreset.ShipPrefab,
+            BuyableShipPreset.NavmeshPrefab,
+            BuyableShipPreset.Cost,
+            null);
 
         DuskModContent.Ships.Register(this);
     }
@@ -71,9 +77,9 @@ public class DuskShipDefinition : DuskContentDefinition<DuskShipDefinition>, INa
     public override void TryNetworkRegisterAssets()
     {
         if (BuyableShipPreset.ShipPrefab != null && BuyableShipPreset.ShipPrefab.TryGetComponent(out NetworkObject _))
-        {
             DawnLib.RegisterNetworkPrefab(BuyableShipPreset.ShipPrefab);
-        }
+        else
+            DawnPlugin.Logger.LogError($"{BuyableShipPreset.ShipName} ShipPrefab does not have NetworkObject! This will cause issues.");
     }
 
     public ShipConfig CreateShipConfig(ConfigContext context)

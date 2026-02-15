@@ -19,5 +19,5 @@ public interface ITerminal
 
     public object BuyableShips { get; set; } //supposed to be BuyableShipPreset type but i THINK i cant use that here?
 
-    public int CurrentShipId { get; set; }
+    public string CurrentShip { get; set; }
 }

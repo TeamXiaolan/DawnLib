@@ -5,21 +5,22 @@ using System.Text;
 
 namespace Dusk;
 
-internal class DuskShipReference : DuskContentReference<DuskShipDefinition, DuskShipDefinition>
+[Serializable]
+public class DuskShipReference : DuskContentReference<DuskShipDefinition, DawnShipInfo>
 {
     public DuskShipReference() : base()
     { }
 
-    public DuskShipReference(NamespacedKey<DuskShipDefinition> key) : base(key)
+    public DuskShipReference(NamespacedKey<DawnShipInfo> key) : base(key)
     { }
 
-    public override bool TryResolve(out DuskShipDefinition info)
+    public override bool TryResolve(out DawnShipInfo info)
     {
-        return DuskModContent.Ships.TryGetValue(TypedKey, out info);
+        return LethalContent.Ships.TryGetValue(TypedKey, out info);
     }
 
-    public override DuskShipDefinition Resolve()
+    public override DawnShipInfo Resolve()
     {
-        return DuskModContent.Ships[TypedKey];
+        return LethalContent.Ships[TypedKey];
     }
 }
