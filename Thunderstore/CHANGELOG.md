@@ -1,14 +1,22 @@
 # v0.8.0
 
 - Rewrote most of the terminal commands implementation to be simpler (for now) and much more extensible.
-  - Currently possible commands:
+  - Currently possible commands, some of these are not able to created via editor and require code:
   - Input
+    - Feeds the player input back to them, allowing you to modify the text or running code according to whatever they might have typed, does not have unity editor support.
   - SimpleQuery
+    - A command that has two outcomes, with a query that lets you type something to end up in either outcome, has unity editor support.
   - ComplexQuery
+    - Similar to SimpleQuery, but allows you to have as many outcomes as you'd like, has unity editor support.
   - Simple
+    - A command that displays text, that's it, has unity editor support.
   - Complex
+    - Similar to Simple, takes in multiple words in one command to display different text, has unity editor support.
   - EventDriven
+    - A command that has an event that is run when it's activated, does not have unity editor support.
   - TerminalObject
+    - Used by Hazards, not much is able to be done with this yet, does not have unity editor support.
+- All these commands, when created via code, can have their results edited via a `Func<string>` for different results according to different conditions.
 
 ## v0.7.15
 

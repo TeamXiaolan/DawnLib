@@ -93,7 +93,7 @@ internal class DawnTesting
                eventDrivenCommandBuilder.SetResultNodeDisplayText(() => "This is a test event driven command, it copies the... eject command... wait what?\n\n");
                eventDrivenCommandBuilder.SetOnTerminalEvent(VanillaTerminalEvents.EjectPlayersEvent);
            });
-        });
+        }); // Event Driven Command
     }
 
     private static string BasicLightsCommand()

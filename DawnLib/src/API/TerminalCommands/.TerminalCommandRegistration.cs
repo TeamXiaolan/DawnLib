@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.RuntimeDetour;
@@ -59,63 +60,128 @@ static class TerminalCommandRegistration
             return;
         }
 
+        Dictionary<TerminalNode, (HashSet<TerminalKeyword>, DawnEventDrivenCommandInfo?, DawnSimpleCommandInfo?, DawnSimpleQueryCommandInfo?)> terminalNodeWithCommandInfo = new();
         foreach (TerminalKeyword terminalKeyword in self.terminalNodes.allKeywords)
         {
-            if (terminalKeyword.specialKeywordResult == null)
-                continue;
-
-            List<TerminalNode> terminalNodesToCheck = [terminalKeyword.specialKeywordResult];
-            if (terminalKeyword.specialKeywordResult.terminalOptions != null)
+            if (terminalKeyword.accessTerminalObjects)
             {
-                foreach (CompatibleNoun compatibleNoun in terminalKeyword.specialKeywordResult.terminalOptions)
-                {
-                    if (compatibleNoun.result == null)
-                        continue;
+                DawnTerminalObjectCommandInfo terminalObjectCommandInfo = new();
+                NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(terminalKeyword.name);
+                HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
 
-                    terminalNodesToCheck.Add(compatibleNoun.result);
-                }
+                TerminalCommandBasicInformation basicInformation = new($"{terminalKeyword.name.ToCapitalized()}Command", "Vanilla Command", "Terminal Object Command.", ClearText.None);
+                DawnTerminalCommandInfo terminalCommandInfo = new(namespacedKey, basicInformation, [terminalKeyword], tags, null, null, null, null, terminalObjectCommandInfo, null, null, null);
+                LethalContent.TerminalCommands.Register(terminalCommandInfo);
+                continue;
             }
 
+            List<TerminalNode> terminalNodesToCheck = GetAllNodesRelatedToAKeyword(terminalKeyword);
             foreach (TerminalNode nodeToCheck in terminalNodesToCheck)
             {
-                if (nodeToCheck.HasDawnInfo() || string.IsNullOrEmpty(nodeToCheck.terminalEvent))
-                    continue;
-
-                Action<Terminal, TerminalNode>? onTerminalEvent = null;
-                switch (nodeToCheck.terminalEvent)
+                DawnEventDrivenCommandInfo? eventDrivenCommandInfo = TryGetEventCommandFromNode(nodeToCheck);
+                if (eventDrivenCommandInfo != null)
                 {
-                    case "switchCamera":
-                        onTerminalEvent = VanillaTerminalEvents.SwitchCameraEvent;
-                        break;
-                    case "setUpTerminal":
-                        onTerminalEvent = VanillaTerminalEvents.SetUpTerminalEvent;
-                        break;
-                    case "ejectPlayers":
-                        onTerminalEvent = VanillaTerminalEvents.EjectPlayersEvent;
-                        break;
-                    case "cheat_ResetCredits":
-                        onTerminalEvent = VanillaTerminalEvents.Cheat_ResetCreditsEvent;
-                        break;
+                    if (terminalNodeWithCommandInfo.ContainsKey(nodeToCheck))
+                    {
+                        (HashSet<TerminalKeyword>, DawnEventDrivenCommandInfo?, DawnSimpleCommandInfo?, DawnSimpleQueryCommandInfo?) existingInfo = terminalNodeWithCommandInfo[nodeToCheck];
+                        existingInfo.Item1.Add(terminalKeyword);
+                        existingInfo.Item2 = eventDrivenCommandInfo;
+                        terminalNodeWithCommandInfo[nodeToCheck] = existingInfo;
+                    }
+                    else
+                    {
+                        terminalNodeWithCommandInfo.Add(nodeToCheck, ([terminalKeyword], eventDrivenCommandInfo, null, null));
+                    }
                 }
-
-                if (onTerminalEvent == null)
-                    continue;
-
-                nodeToCheck.terminalEvent = string.Empty;
-                NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(nodeToCheck.name);
-                TerminalCommandBasicInformation basicInformation = new(nodeToCheck.terminalEvent.ToCapitalized() + "Command", "TerminalEvent", $"Runs the following event: {nodeToCheck.terminalEvent}", ClearText.None);
-                HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-                DawnEventDrivenCommandInfo eventDrivenCommandInfo = new(nodeToCheck, onTerminalEvent);
-
-                DawnTerminalCommandInfo terminalCommandInfo = new(namespacedKey, basicInformation, [terminalKeyword], tags, null, null, null, null, null, eventDrivenCommandInfo, null, null);
-                LethalContent.TerminalCommands.Register(terminalCommandInfo);
-                nodeToCheck.SetDawnInfo(terminalCommandInfo);
             }
+        }
+
+        foreach ((TerminalNode nodeToCheck, (HashSet<TerminalKeyword> keywords, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo)) in terminalNodeWithCommandInfo)
+        {
+            NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(nodeToCheck.name);
+            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
+            string description = GiveCommandADescription(eventDrivenCommandInfo, simpleCommandInfo, simpleQueryCommandInfo);
+
+            TerminalCommandBasicInformation basicInformation = new($"{nodeToCheck.name}Command", "Vanilla Command", description, ClearText.None);
+            DawnTerminalCommandInfo terminalCommandInfo = new(namespacedKey, basicInformation, [.. keywords], tags, null, simpleQueryCommandInfo, null, simpleCommandInfo, null, eventDrivenCommandInfo, null, null);
+            LethalContent.TerminalCommands.Register(terminalCommandInfo);
+            nodeToCheck.SetDawnInfo(terminalCommandInfo);
         }
 
         LethalContent.TerminalCommands.Freeze();
         // Grab the vanilla references here
         orig(self);
+    }
+
+    private static string GiveCommandADescription(DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo)
+    {
+        string description = string.Empty;
+        if (eventDrivenCommandInfo != null)
+        {
+            description += "Event Driven Command, ";
+        }
+
+        if (simpleCommandInfo != null)
+        {
+            description += "Simple Command, ";
+        }
+
+        if (simpleQueryCommandInfo != null)
+        {
+            description += "Simple Query Command, ";
+        }
+
+        return description.RemoveEnd(", ") + ".";
+    }
+
+    private static DawnEventDrivenCommandInfo? TryGetEventCommandFromNode(TerminalNode node)
+    {
+        if (!string.IsNullOrEmpty(node.terminalEvent))
+        {
+            Action<Terminal, TerminalNode>? onTerminalEvent = null;
+            switch (node.terminalEvent)
+            {
+                case "switchCamera":
+                    onTerminalEvent = VanillaTerminalEvents.SwitchCameraEvent;
+                    break;
+                case "setUpTerminal":
+                    onTerminalEvent = VanillaTerminalEvents.SetUpTerminalEvent;
+                    break;
+                case "ejectPlayers":
+                    onTerminalEvent = VanillaTerminalEvents.EjectPlayersEvent;
+                    break;
+                case "cheat_ResetCredits":
+                    onTerminalEvent = VanillaTerminalEvents.Cheat_ResetCreditsEvent;
+                    break;
+            }
+
+            if (onTerminalEvent == null)
+                return null;
+
+            node.terminalEvent = string.Empty;
+            return new DawnEventDrivenCommandInfo(node, onTerminalEvent);
+        }
+        return null;
+    }
+
+    private static List<TerminalNode> GetAllNodesRelatedToAKeyword(TerminalKeyword keyword)
+    {
+        List<TerminalNode> foundNodes = new();
+        if (keyword.specialKeywordResult != null)
+        {
+            foundNodes.Add(keyword.specialKeywordResult);
+            if (keyword.specialKeywordResult.terminalOptions != null)
+            {
+                foreach (CompatibleNoun compatibleNoun in keyword.specialKeywordResult.terminalOptions)
+                {
+                    if (compatibleNoun.result == null)
+                        continue;
+
+                    foundNodes.Add(compatibleNoun.result);
+                }
+            }
+        }
+        return foundNodes;
     }
 
     private static void RegisterDawnTerminalCommands(On.Terminal.orig_Awake orig, Terminal self)
