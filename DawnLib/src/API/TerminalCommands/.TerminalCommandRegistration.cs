@@ -71,7 +71,7 @@ static class TerminalCommandRegistration
                 NamespacedKey<DawnTerminalCommandInfo>? terminalObjectNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                 if (terminalObjectNamespacedKey == null)
                 {
-                    terminalObjectNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                    terminalObjectNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.From("unknown_lib", formattedName);
                 }
 
                 if (LethalContent.TerminalCommands.ContainsKey(terminalObjectNamespacedKey))
@@ -104,7 +104,7 @@ static class TerminalCommandRegistration
                 NamespacedKey<DawnTerminalCommandInfo>? complexNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                 if (complexNamespacedKey == null)
                 {
-                    complexNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                    complexNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.From("unknown_lib", formattedName);
                 }
 
                 if (LethalContent.TerminalCommands.ContainsKey(complexNamespacedKey))
@@ -146,7 +146,7 @@ static class TerminalCommandRegistration
                     NamespacedKey<DawnTerminalCommandInfo>? simpleQueryNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                     if (simpleQueryNamespacedKey == null)
                     {
-                        simpleQueryNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                        simpleQueryNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.From("unknown_lib", formattedName);
                     }
 
                     if (LethalContent.TerminalCommands.ContainsKey(simpleQueryNamespacedKey))
@@ -187,7 +187,7 @@ static class TerminalCommandRegistration
                     NamespacedKey<DawnTerminalCommandInfo>? eventDrivenNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                     if (eventDrivenNamespacedKey == null)
                     {
-                        eventDrivenNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                        eventDrivenNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.From("unknown_lib", formattedName);
                     }
 
                     if (LethalContent.TerminalCommands.ContainsKey(eventDrivenNamespacedKey))
