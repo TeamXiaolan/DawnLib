@@ -71,7 +71,6 @@ static class TerminalCommandRegistration
                 NamespacedKey<DawnTerminalCommandInfo>? terminalObjectNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                 if (terminalObjectNamespacedKey == null)
                 {
-                    DawnPlugin.Logger.LogFatal($"Could not find terminalObjectNamespacedKey for {formattedName}!");
                     terminalObjectNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
                 }
 
@@ -105,7 +104,6 @@ static class TerminalCommandRegistration
                 NamespacedKey<DawnTerminalCommandInfo>? complexNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                 if (complexNamespacedKey == null)
                 {
-                    DawnPlugin.Logger.LogFatal($"Could not find complexNamespacedKey for {formattedName}!");
                     complexNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
                 }
 
@@ -148,7 +146,6 @@ static class TerminalCommandRegistration
                     NamespacedKey<DawnTerminalCommandInfo>? simpleQueryNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                     if (simpleQueryNamespacedKey == null)
                     {
-                        DawnPlugin.Logger.LogFatal($"Could not find simpleQueryNamespacedKey for {formattedName}!");
                         simpleQueryNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
                     }
 
@@ -190,7 +187,6 @@ static class TerminalCommandRegistration
                     NamespacedKey<DawnTerminalCommandInfo>? eventDrivenNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
                     if (eventDrivenNamespacedKey == null)
                     {
-                        DawnPlugin.Logger.LogFatal($"Could not find eventDrivenNamespacedKey for {formattedName}!");
                         eventDrivenNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
                     }
 

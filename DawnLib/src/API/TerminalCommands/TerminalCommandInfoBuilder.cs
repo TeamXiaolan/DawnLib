@@ -327,6 +327,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             foreach (Func<string> resultDisplayText in _resultDisplayTexts)
             {
                 TerminalNode resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                                .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
                                                 .SetDisplayText(resultDisplayText.Invoke())
                                                 .Build();
 
@@ -356,6 +357,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         internal DawnSimpleCommandInfo Build()
         {
             TerminalNode resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
                                             .SetDisplayText(_resultDisplayText.Invoke())
                                             .Build();
 
@@ -415,6 +417,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             if (_resultNode == null)
             {
                 _resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                                    .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
                                                     .SetDisplayText(_resultNodeDisplayText.Invoke())
                                                     .Build();
 
@@ -455,6 +458,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             }
 
             TerminalNode resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
                                             .SetDisplayText(_resultDisplayText.Invoke(DawnInputCommandInfo.GetLastUserInput()))
                                             .Build();
 
