@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Dawn.Internal;
 using Dawn.Utils;
-using HarmonyLib;
 using MonoMod.RuntimeDetour;
 
 namespace Dawn;
 
-[HarmonyPatch]
+[HarmonyLib.HarmonyPatch]
 static class TerminalCommandRegistration
 {
     internal static void Init()
@@ -32,7 +33,7 @@ static class TerminalCommandRegistration
         On.Terminal.ParseWord += ParseWordPrefix;
     }
 
-    [HarmonyPatch(typeof(Terminal), nameof(Terminal.RunTerminalEvents)), HarmonyPrefix, HarmonyPriority(int.MaxValue)]
+    [HarmonyLib.HarmonyPatch(typeof(Terminal), nameof(Terminal.RunTerminalEvents)), HarmonyLib.HarmonyPrefix, HarmonyLib.HarmonyPriority(int.MaxValue)]
     static bool OverrideVanillaTerminalsAndRunDawnEvents(Terminal __instance, TerminalNode node)
     {
         if (node.HasDawnInfo())
@@ -43,6 +44,7 @@ static class TerminalCommandRegistration
                 eventDrivenCommandInfo.OnTerminalEvent(__instance, node);
             }
         }
+
         return false;
     }
 
@@ -60,52 +62,149 @@ static class TerminalCommandRegistration
             return;
         }
 
-        Dictionary<TerminalNode, (HashSet<TerminalKeyword>, DawnEventDrivenCommandInfo?, DawnSimpleCommandInfo?, DawnSimpleQueryCommandInfo?)> terminalNodeWithCommandInfo = new();
         foreach (TerminalKeyword terminalKeyword in self.terminalNodes.allKeywords)
         {
             if (terminalKeyword.accessTerminalObjects)
             {
                 DawnTerminalObjectCommandInfo terminalObjectCommandInfo = new();
-                NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(terminalKeyword.name);
-                HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
+                string formattedName = FormatNodeName(terminalKeyword.name);
+                NamespacedKey<DawnTerminalCommandInfo>? terminalObjectNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
+                if (terminalObjectNamespacedKey == null)
+                {
+                    DawnPlugin.Logger.LogFatal($"Could not find terminalObjectNamespacedKey for {formattedName}!");
+                    terminalObjectNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                }
 
-                TerminalCommandBasicInformation basicInformation = new($"{terminalKeyword.name.ToCapitalized()}Command", "Vanilla Command", "Terminal Object Command.", ClearText.None);
-                DawnTerminalCommandInfo terminalCommandInfo = new(namespacedKey, basicInformation, [terminalKeyword], tags, null, null, null, null, terminalObjectCommandInfo, null, null, null);
+                if (LethalContent.TerminalCommands.ContainsKey(terminalObjectNamespacedKey))
+                    continue;
+
+                HashSet<NamespacedKey> terminalCommandTags = [DawnLibTags.IsExternal];
+
+                TerminalCommandBasicInformation terminalCommandBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Terminal Object Command.", ClearText.None);
+                DawnTerminalCommandInfo terminalCommandInfo = new(terminalObjectNamespacedKey, terminalCommandBasicInformation, [terminalKeyword], terminalCommandTags, null, null, null, null, terminalObjectCommandInfo, null, null, null);
                 LethalContent.TerminalCommands.Register(terminalCommandInfo);
                 continue;
+            }
+
+            if (terminalKeyword.isVerb && terminalKeyword.compatibleNouns.Length > 0)
+            {
+                List<TerminalNode> complexResultNodes = new();
+                List<TerminalKeyword> secondaryKeywords = new();
+                foreach (CompatibleNoun compatibleNoun in terminalKeyword.compatibleNouns)
+                {
+                    if (compatibleNoun.result == null || compatibleNoun.noun == null)
+                        continue;
+
+                    complexResultNodes.Add(compatibleNoun.result);
+                    secondaryKeywords.Add(compatibleNoun.noun);
+                }
+
+                Debuggers.Terminal?.Log($"Getting ComplexCommand with base terminalKeyword {terminalKeyword.name}");
+                DawnComplexCommandInfo complexCommandInfo = new(complexResultNodes, secondaryKeywords);
+                string formattedName = FormatNodeName(terminalKeyword.name);
+                NamespacedKey<DawnTerminalCommandInfo>? complexNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
+                if (complexNamespacedKey == null)
+                {
+                    DawnPlugin.Logger.LogFatal($"Could not find complexNamespacedKey for {formattedName}!");
+                    complexNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                }
+
+                if (LethalContent.TerminalCommands.ContainsKey(complexNamespacedKey))
+                    continue;
+
+                HashSet<NamespacedKey> complexCommandTags = [DawnLibTags.IsExternal];
+                ClearText complexClearText = ClearText.None;
+                if (complexCommandInfo.ResultNodes.Any(x => x.clearPreviousText))
+                {
+                    complexClearText |= ClearText.Result;
+                }
+
+                TerminalCommandBasicInformation complexCommandBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Complex Command.", complexClearText);
+                DawnTerminalCommandInfo complexTerminalCommandInfo = new(complexNamespacedKey, complexCommandBasicInformation, [terminalKeyword], complexCommandTags, null, null, complexCommandInfo, null, null, null, null, null);
+                LethalContent.TerminalCommands.Register(complexTerminalCommandInfo);
+
+                foreach (TerminalNode complexResultNode in complexResultNodes)
+                {
+                    complexResultNode.SetDawnInfo(complexTerminalCommandInfo);
+                    if (complexResultNode.terminalOptions == null || complexResultNode.terminalOptions.Length != 2 || complexResultNode.name == "FileCabinet1" || complexResultNode.name == "Cupboard1" || complexResultNode.name == "Bunkbeds1")
+                        continue;
+
+                    Debuggers.Terminal?.Log($"Getting SimpleQueryCommand from {complexResultNode.name} with base terminalKeyword {terminalKeyword.name}");
+                    TerminalNode simpleQueryCommandResultNode = complexResultNode.terminalOptions[0].result;
+                    TerminalNode simpleQueryCommandCancelNode = complexResultNode.terminalOptions[1].result;
+                    TerminalKeyword simpleQueryCommandConfirmKeyword = complexResultNode.terminalOptions[0].noun;
+                    TerminalKeyword simpleQueryCommandCancelKeyword = complexResultNode.terminalOptions[1].noun;
+
+                    if (complexResultNode.terminalOptions[0].noun.word == "deny")
+                    {
+                        Debuggers.Terminal?.Log($"Switcharoo because deny is suddenly on top instead of bottom!");
+                        simpleQueryCommandResultNode = complexResultNode.terminalOptions[1].result;
+                        simpleQueryCommandCancelNode = complexResultNode.terminalOptions[0].result;
+                        simpleQueryCommandConfirmKeyword = complexResultNode.terminalOptions[1].noun;
+                        simpleQueryCommandCancelKeyword = complexResultNode.terminalOptions[0].noun;
+                    }
+
+                    formattedName = FormatNodeName(simpleQueryCommandResultNode.name);
+                    NamespacedKey<DawnTerminalCommandInfo>? simpleQueryNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
+                    if (simpleQueryNamespacedKey == null)
+                    {
+                        DawnPlugin.Logger.LogFatal($"Could not find simpleQueryNamespacedKey for {formattedName}!");
+                        simpleQueryNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
+                    }
+
+                    if (LethalContent.TerminalCommands.ContainsKey(simpleQueryNamespacedKey))
+                        continue;
+
+                    DawnSimpleQueryCommandInfo simpleQueryCommandInfo = new(simpleQueryCommandResultNode, complexResultNode, complexResultNode.terminalOptions[1].result, complexResultNode.terminalOptions[0].noun, complexResultNode.terminalOptions[1].noun, () => true, _ => { });
+                    HashSet<NamespacedKey> simpleQueryTags = [DawnLibTags.IsExternal];
+                    ClearText simpleQueryClearText = ClearText.None;
+                    if (simpleQueryCommandInfo.ResultNode.clearPreviousText)
+                    {
+                        simpleQueryClearText |= ClearText.Result;
+                    }
+
+                    if (simpleQueryCommandInfo.ContinueOrCancelNode.clearPreviousText)
+                    {
+                        simpleQueryClearText |= ClearText.Query;
+                    }
+
+                    if (simpleQueryCommandInfo.CancelNode.clearPreviousText)
+                    {
+                        simpleQueryClearText |= ClearText.Cancel;
+                    }
+
+                    TerminalCommandBasicInformation simpleQueryBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Complex Command.", simpleQueryClearText);
+                    DawnTerminalCommandInfo simpleQueryTerminalCommandInfo = new(simpleQueryNamespacedKey, simpleQueryBasicInformation, [terminalKeyword], simpleQueryTags, null, simpleQueryCommandInfo, null, null, null, null, null, null);
+                    LethalContent.TerminalCommands.Register(simpleQueryTerminalCommandInfo);
+                    simpleQueryCommandResultNode.SetDawnInfo(simpleQueryTerminalCommandInfo);
+                }
             }
 
             List<TerminalNode> terminalNodesToCheck = GetAllNodesRelatedToAKeyword(terminalKeyword);
             foreach (TerminalNode nodeToCheck in terminalNodesToCheck)
             {
-                DawnEventDrivenCommandInfo? eventDrivenCommandInfo = TryGetEventCommandFromNode(nodeToCheck);
-                if (eventDrivenCommandInfo != null)
+                if (TryGetEventCommandFromNode(nodeToCheck, out DawnEventDrivenCommandInfo? eventDrivenCommandInfo))
                 {
-                    if (terminalNodeWithCommandInfo.ContainsKey(nodeToCheck))
+                    Debuggers.Terminal?.Log($"Getting EventDrivenCommand from {nodeToCheck.name} with base terminalKeyword {terminalKeyword.name}");
+                    string formattedName = FormatNodeName(nodeToCheck.name);
+                    NamespacedKey<DawnTerminalCommandInfo>? eventDrivenNamespacedKey = TerminalCommandKeys.GetByReflection(formattedName);
+                    if (eventDrivenNamespacedKey == null)
                     {
-                        (HashSet<TerminalKeyword>, DawnEventDrivenCommandInfo?, DawnSimpleCommandInfo?, DawnSimpleQueryCommandInfo?) existingInfo = terminalNodeWithCommandInfo[nodeToCheck];
-                        existingInfo.Item1.Add(terminalKeyword);
-                        existingInfo.Item2 = eventDrivenCommandInfo;
-                        terminalNodeWithCommandInfo[nodeToCheck] = existingInfo;
+                        DawnPlugin.Logger.LogFatal($"Could not find eventDrivenNamespacedKey for {formattedName}!");
+                        eventDrivenNamespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(formattedName);
                     }
-                    else
-                    {
-                        terminalNodeWithCommandInfo.Add(nodeToCheck, ([terminalKeyword], eventDrivenCommandInfo, null, null));
-                    }
+
+                    if (LethalContent.TerminalCommands.ContainsKey(eventDrivenNamespacedKey))
+                        continue;
+
+                    HashSet<NamespacedKey> eventDrivenTags = [DawnLibTags.IsExternal];
+
+                    TerminalCommandBasicInformation eventDrivenBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Event Driven Command.", eventDrivenCommandInfo.ResultNode.clearPreviousText ? ClearText.Result : ClearText.None);
+                    DawnTerminalCommandInfo eventDrivenTerminalCommandInfo = new(eventDrivenNamespacedKey, eventDrivenBasicInformation, [terminalKeyword], eventDrivenTags, null, null, null, null, null, eventDrivenCommandInfo, null, null);
+                    LethalContent.TerminalCommands.Register(eventDrivenTerminalCommandInfo);
+                    nodeToCheck.SetDawnInfo(eventDrivenTerminalCommandInfo);
                 }
             }
-        }
-
-        foreach ((TerminalNode nodeToCheck, (HashSet<TerminalKeyword> keywords, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo)) in terminalNodeWithCommandInfo)
-        {
-            NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.Vanilla(nodeToCheck.name);
-            HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
-            string description = GiveCommandADescription(eventDrivenCommandInfo, simpleCommandInfo, simpleQueryCommandInfo);
-
-            TerminalCommandBasicInformation basicInformation = new($"{nodeToCheck.name}Command", "Vanilla Command", description, ClearText.None);
-            DawnTerminalCommandInfo terminalCommandInfo = new(namespacedKey, basicInformation, [.. keywords], tags, null, simpleQueryCommandInfo, null, simpleCommandInfo, null, eventDrivenCommandInfo, null, null);
-            LethalContent.TerminalCommands.Register(terminalCommandInfo);
-            nodeToCheck.SetDawnInfo(terminalCommandInfo);
         }
 
         LethalContent.TerminalCommands.Freeze();
@@ -113,29 +212,41 @@ static class TerminalCommandRegistration
         orig(self);
     }
 
-    private static string GiveCommandADescription(DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo)
+    private static string FormatNodeName(string terminalNodeName)
     {
-        string description = string.Empty;
-        if (eventDrivenCommandInfo != null)
-        {
-            description += "Event Driven Command, ";
-        }
-
-        if (simpleCommandInfo != null)
-        {
-            description += "Simple Command, ";
-        }
-
-        if (simpleQueryCommandInfo != null)
-        {
-            description += "Simple Query Command, ";
-        }
-
-        return description.RemoveEnd(", ") + ".";
+        string name = terminalNodeName;
+        name = ReplaceInternalLevelNames(name);
+        name = NamespacedKey.NormalizeStringForNamespacedKey(name, true);
+        return name;
     }
 
-    private static DawnEventDrivenCommandInfo? TryGetEventCommandFromNode(TerminalNode node)
+    private static readonly Dictionary<string, string> _internalToHumanRouteNames = new()
     {
+        { "5route", "EmbrionRoute" },
+        { "7route", "DineRoute" },
+        { "8route", "TitanRoute" },
+        { "20route", "AdamanceRoute" },
+        { "21route", "OffenseRoute" },
+        { "41route", "ExperimentationRoute" },
+        { "56route", "VowRoute" },
+        { "61route", "MarchRoute" },
+        { "68route", "ArtificeRoute" },
+        { "85route", "RendRoute" },
+        { "220route", "AssuranceRoute" },
+    };
+
+    private static string ReplaceInternalLevelNames(string input)
+    {
+        foreach ((string internalName, string humanName) in _internalToHumanRouteNames)
+        {
+            input = input.Replace(internalName, humanName);
+        }
+        return input;
+    }
+
+    private static bool TryGetEventCommandFromNode(TerminalNode node, [NotNullWhen(true)] out DawnEventDrivenCommandInfo? eventDrivenCommandInfo)
+    {
+        eventDrivenCommandInfo = null;
         if (!string.IsNullOrEmpty(node.terminalEvent))
         {
             Action<Terminal, TerminalNode>? onTerminalEvent = null;
@@ -156,12 +267,13 @@ static class TerminalCommandRegistration
             }
 
             if (onTerminalEvent == null)
-                return null;
+                return false;
 
             node.terminalEvent = string.Empty;
-            return new DawnEventDrivenCommandInfo(node, onTerminalEvent);
+            eventDrivenCommandInfo = new DawnEventDrivenCommandInfo(node, onTerminalEvent);
+            return true;
         }
-        return null;
+        return false;
     }
 
     private static List<TerminalNode> GetAllNodesRelatedToAKeyword(TerminalKeyword keyword)
@@ -224,7 +336,10 @@ static class TerminalCommandRegistration
                     {
                         if (!commandInfo.ComplexQueryCommandInfo.ContinueConditions[i].Invoke())
                         {
-                            nodeToLoad = commandInfo.ComplexQueryCommandInfo.CancelNode;
+                            if (commandInfo.ComplexQueryCommandInfo.CancelNode != null)
+                            {
+                                nodeToLoad = commandInfo.ComplexQueryCommandInfo.CancelNode;
+                            }
                             commandInfo.ComplexQueryCommandInfo.OnContinuedEvents[i].Invoke(false);
                         }
                         else

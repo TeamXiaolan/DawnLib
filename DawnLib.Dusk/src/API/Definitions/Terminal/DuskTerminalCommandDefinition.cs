@@ -40,12 +40,6 @@ public class ComplexQueryCommand
 
     [field: SerializeField]
     public string ContinueOrCancelDisplayText { get; private set; }
-
-    [field: SerializeField]
-    public string CancelDisplayText { get; private set; }
-
-    [field: SerializeField]
-    public string CancelKeyword { get; private set; }
 }
 
 [Serializable]
@@ -124,8 +118,6 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
                     }
                     complexQueryBuilder.SetResultDisplayTexts(resultDisplayTexts);
                     complexQueryBuilder.SetContinueOrCancelDisplayTexts(() => ComplexQueryCommand.ContinueOrCancelDisplayText);
-                    complexQueryBuilder.SetCancelDisplayText(() => ComplexQueryCommand.CancelDisplayText);
-                    complexQueryBuilder.SetCancelKeyword(ComplexQueryCommand.CancelKeyword);
                     complexQueryBuilder.SetContinueKeywords(ComplexQueryCommand.ContinueKeywords);
                 });
             }

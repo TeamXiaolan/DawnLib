@@ -39,7 +39,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
         private List<Func<string>> _resultDisplayTexts;
         private Func<string> _continueOrCancelDisplayText;
-        private Func<string> _cancelDisplayText;
+        private Func<string>? _cancelDisplayText;
         private string _cancelKeyword;
         private List<string> _continueKeywords;
         private List<Func<bool>> _continueConditions = new();
@@ -102,22 +102,26 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
             continueOrCancelNode.SetDynamicDisplayText(_continueOrCancelDisplayText);
 
-            TerminalNode cancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:CancelNode")
-                                            .SetDisplayText(_cancelDisplayText.Invoke())
-                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Cancel))
-                                            .SetMaxCharactersToType(35)
-                                            .Build();
+            TerminalNode? cancelNode = null;
 
-            cancelNode.SetDynamicDisplayText(_cancelDisplayText);;
-
-            if (string.IsNullOrEmpty(_cancelKeyword))
+            if (_cancelDisplayText != null)
             {
-                _cancelKeyword = "cancel";
-                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set cancel word. Defaulting to '{_cancelKeyword}'");
+                cancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:CancelNode")
+                                                .SetDisplayText(_cancelDisplayText.Invoke())
+                                                .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Cancel))
+                                                .SetMaxCharactersToType(35)
+                                                .Build();
+
+                cancelNode.SetDynamicDisplayText(_cancelDisplayText);
             }
 
-            TerminalKeyword cancelTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelKeyword)
-                                                .Build();
+            TerminalKeyword? cancelTerminalKeyword = null;
+            if (!string.IsNullOrEmpty(_cancelKeyword))
+            {
+                cancelTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelKeyword)
+                                            .Build();
+            }
+
 
             List<TerminalNode> resultNodes = new();
             List<TerminalKeyword> continueTerminalKeywords = new();
