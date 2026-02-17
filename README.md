@@ -11,10 +11,10 @@ DawnLib is a modern API for Lethal Company content and all sizes of mods. It con
 
 - DawnLib API
   - Moons
-  - Weathers
   - Interiors
+  - Weathers
   - Terminal Commands
-  - FootstepSurfaces
+  - FootstepSurfaces (With gravity control)
   - Enemies
   - Items
   - Map Objects (Inside and Outside hazards)
@@ -38,14 +38,15 @@ pinging on the lethal modding discord, we accept any sort of help, UI, Coders, A
 
 **NOTE:** Enemies/Items/etc managed through DawnLib are likely **_unsupported_** by mods like CentralConfig or LethalQuantities.
 This is because of the way DawnLib supports dynamically updating weights and therefore cannot be fixed from DawnLib.
+For this, DawnLib has collaborated with the creator `@Crafty` that made the mod `LunarConfig` which does super similar functionality and gives the user a lot of control!
 
 ## DawnLib (All C#)
 
 ```xml
-<PackageReference Include="TeamXiaolan.DawnLib" Version="0.6.*" />
+<PackageReference Include="TeamXiaolan.DawnLib" Version="0.8.*" />
 
 <!-- Optional Source Generation, mostly for when using the DuskMod API -->
-<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.6.*" />
+<PackageReference Include="TeamXiaolan.DawnLib.SourceGen" Version="0.8.*" />
 ```
 
 DawnLib is a hands-off way to register your content. The code to switch from LethalLib to DawnLib is very similar and will require minimal refactoring.

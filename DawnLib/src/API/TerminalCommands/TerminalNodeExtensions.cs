@@ -21,23 +21,23 @@ public static class TerminalNodeExtensions
         ((IDawnObject)terminalNode).DawnInfo = terminalCommandInfo;
     }
 
-    public static Func<string> GetCommandFunction(this TerminalNode node)
+    public static string GetDisplayText(this TerminalNode terminalNode)
     {
-        return ((ITerminalNode)node).DawnNodeFunction;
-    }
-
-    internal static bool HasCommandFunction(this TerminalNode node)
-    {
-        if (node == null)
+        DawnTerminalCommandInfo? commandInfo = terminalNode.GetDawnInfo();
+        if (commandInfo != null && commandInfo.InputCommandInfo != null)
         {
-            return false;
+            return commandInfo.InputCommandInfo.DynamicInputTextResult.Invoke(DawnInputCommandInfo.GetLastUserInput());
         }
 
-        return node.GetCommandFunction() != null;
+        if (((ITerminalNode)terminalNode).DynamicDisplayText == null)
+        {
+            return terminalNode.displayText;
+        }
+        return ((ITerminalNode)terminalNode).DynamicDisplayText.Invoke();
     }
 
-    internal static void SetNodeFunction(this TerminalNode node, Func<string> NodeFunc)
+    internal static void SetDynamicDisplayText(this TerminalNode terminalNode, Func<string> func)
     {
-        ((ITerminalNode)node).DawnNodeFunction = NodeFunc;
+        ((ITerminalNode)terminalNode).DynamicDisplayText = func;
     }
 }

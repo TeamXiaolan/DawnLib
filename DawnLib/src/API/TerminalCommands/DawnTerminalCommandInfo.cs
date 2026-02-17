@@ -3,15 +3,130 @@ using System.Collections.Generic;
 namespace Dawn;
 public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandInfo>
 {
-    internal DawnTerminalCommandInfo(NamespacedKey<DawnTerminalCommandInfo> key, HashSet<NamespacedKey> tags, TerminalNode result, DawnQueryCommandInfo? queryCommandInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnTerminalCommandInfo(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, List<TerminalKeyword> commandKeywords, HashSet<NamespacedKey> tags, DawnComplexQueryCommandInfo? complexQueryCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo, DawnComplexCommandInfo? complexCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnTerminalObjectCommandInfo? terminalObjectCommandInfo, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnInputCommandInfo? inputCommandInfo, IDataContainer? customData) : base(key, tags, customData)
     {
-        ResultNode = result;
-        QueryCommandInfo = queryCommandInfo;
-        if (QueryCommandInfo != null) QueryCommandInfo.ParentInfo = this;
+        CommandBasicInformation = commandBasicInformation;
+        CommandKeywords = commandKeywords;
+
+        ComplexQueryCommandInfo = complexQueryCommandInfo; // Uses a verb, similar to buy keyword/node shenanigans
+        if (ComplexQueryCommandInfo != null)
+        {
+            ComplexQueryCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                ComplexQueryCommandInfo.SetupComplexQueryCommand();
+            }
+        }
+
+        SimpleQueryCommandInfo = simpleQueryCommandInfo; // Uses specialKeywordResult + overrideOptions on the node + terminalOptions
+        if (SimpleQueryCommandInfo != null)
+        {
+            SimpleQueryCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                SimpleQueryCommandInfo.SetupSimpleQueryCommand();
+            }
+        }
+
+        ComplexCommandInfo = complexCommandInfo;
+        if (ComplexCommandInfo != null)
+        {
+            ComplexCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                ComplexCommandInfo.SetupComplexCommand();
+            }
+        }
+
+        SimpleCommandInfo = simpleCommandInfo; // keyword with a special keyword result where node has nothing except text on it
+        if (SimpleCommandInfo != null)
+        {
+            SimpleCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                SimpleCommandInfo.SetupSimpleCommand();
+            }
+        }
+
+        TerminalObjectCommandInfo = terminalObjectCommandInfo; // this doesn't even have a node to it, it's just a checkbox
+        if (TerminalObjectCommandInfo != null)
+        {
+            TerminalObjectCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                TerminalObjectCommandInfo.SetupTerminalObjectCommand();
+            }
+        }
+
+        EventDrivenCommandInfo = eventDrivenCommandInfo; // TerminalKeyword pointing to a TerminalNode that contains a TerminalEvent
+        if (EventDrivenCommandInfo != null)
+        {
+            EventDrivenCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                EventDrivenCommandInfo.SetupEventDrivenCommand();
+            }
+        }
+
+        InputCommandInfo = inputCommandInfo;
+        if (InputCommandInfo != null)
+        {
+            InputCommandInfo.ParentInfo = this;
+            if (!ShouldSkipIgnoreOverride())
+            {
+                InputCommandInfo.SetupInputCommand();
+            }
+        }
     }
 
-    public TerminalNode ResultNode { get; set; }
-    public List<TerminalKeyword>? KeywordList { get; internal set; }
+    internal void InjectCommandIntoTerminal(Terminal terminal)
+    {
+        if (ComplexQueryCommandInfo != null)
+        {
+            ComplexQueryCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
 
-    public DawnQueryCommandInfo? QueryCommandInfo { get; private set; }
+        if (SimpleQueryCommandInfo != null)
+        {
+            SimpleQueryCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
+
+        if (ComplexCommandInfo != null)
+        {
+            ComplexCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
+
+        if (SimpleCommandInfo != null)
+        {
+            SimpleCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
+
+        if (TerminalObjectCommandInfo != null)
+        {
+            TerminalObjectCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
+
+        if (EventDrivenCommandInfo != null)
+        {
+            EventDrivenCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
+
+        if (InputCommandInfo != null)
+        {
+            InputCommandInfo.InjectCommandIntoTerminal(terminal);
+        }
+    }
+
+    public List<TerminalKeyword> CommandKeywords { get; }
+    public TerminalCommandBasicInformation CommandBasicInformation { get; }
+
+    public DawnComplexQueryCommandInfo? ComplexQueryCommandInfo { get; }
+    public DawnSimpleQueryCommandInfo? SimpleQueryCommandInfo { get; }
+    public DawnComplexCommandInfo? ComplexCommandInfo { get; }
+    public DawnSimpleCommandInfo? SimpleCommandInfo { get; }
+    public DawnTerminalObjectCommandInfo? TerminalObjectCommandInfo { get; }
+    public DawnEventDrivenCommandInfo? EventDrivenCommandInfo { get; }
+    public DawnInputCommandInfo? InputCommandInfo { get; }
+
+    public List<TerminalKeyword> AssociatedKeywords { get; } = new();
 }
