@@ -1,4 +1,8 @@
-# v0.8.0
+# v0.8.1
+
+- Inherited a patch from CruiserImproved (that doesn't work with DawnLib installed) that fixes items from the cruiser close to the ship not being sent to the ship on lobby reload causing them to just float.
+
+## v0.8.0
 
 - Rewrote most of the terminal commands implementation to be simpler (for now) and much more extensible.
   - Currently possible commands, some of these are not able to created via editor and require code:
