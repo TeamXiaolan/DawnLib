@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Dawn;
 
@@ -15,9 +16,13 @@ public enum ClearText
 [Serializable]
 public class TerminalCommandBasicInformation(string commandName, string categoryName, string description, ClearText clearTextFlags)
 {
+    [field: SerializeField]
     public string CommandName { get; private set; } = commandName;
+    [field: SerializeField]
     public string CategoryName { get; private set; } = categoryName;
+    [field: SerializeField]
     public string Description { get; private set; } = description;
+    [field: SerializeField]
     public ClearText ClearTextFlags { get; private set; } = clearTextFlags;
 }
 
