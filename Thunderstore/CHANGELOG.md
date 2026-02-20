@@ -1,4 +1,8 @@
-# v0.8.3
+# v0.8.4
+
+- Fixed issue where extra scan events wouldn't run.
+
+## v0.8.3
 
 - Added a new command, `SimpleInput` for editor use, uses the Input command but for editor purposes like multiple results with specific inputs, including a failed result.
 - Added a bool for code based terminal commands to decide whether to build the command on terminal awake or manually call `DawnTerminalCommandInfo.InjectCommandIntoTerminal();`.

@@ -29,8 +29,8 @@ public class ExtraScanEvents : MonoBehaviour
         {
             _onFirstScan.Invoke();
             alreadyScanned.Add(_saveId);
+            // make sure to update the persistent data container
+            DawnLib.GetCurrentSave()!.Set(_dataKey, alreadyScanned);
         }
-        // make sure to update the persistent data container
-        DawnLib.GetCurrentSave()!.Set(_dataKey, alreadyScanned);
     }
 }
