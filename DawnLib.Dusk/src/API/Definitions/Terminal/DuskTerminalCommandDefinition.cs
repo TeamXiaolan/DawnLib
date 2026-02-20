@@ -12,11 +12,14 @@ public class SimpleQueryCommand
     public bool Enabled { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string ResultDisplayText { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string ContinueOrCancelDisplayText { get; private set; }
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string CancelDisplayText { get; private set; }
 
     [field: SerializeField]
@@ -33,12 +36,14 @@ public class ComplexQueryCommand
     public bool Enabled { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public List<string> ResultDisplayTexts { get; private set; }
 
     [field: SerializeField]
     public List<string> ContinueKeywords { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string ContinueOrCancelDisplayText { get; private set; }
 }
 
@@ -52,6 +57,7 @@ public class ComplexCommand
     public List<string> SecondaryKeywords { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public List<string> ResultDisplayTexts { get; private set; }
 }
 
@@ -62,6 +68,7 @@ public class SimpleCommand
     public bool Enabled { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string ResultDisplayText { get; private set; }
 }
 
@@ -75,9 +82,11 @@ public class SimpleInputCommand
     public List<string> Inputs { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public List<string> InputResults { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string FailedInputResult { get; private set; }
 }
 

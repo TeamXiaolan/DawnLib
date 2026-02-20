@@ -1,6 +1,7 @@
 # v0.8.4
 
 - Fixed issue where extra scan events wouldn't run.
+- Improved terminal writing space for the display text to be bigger.
 
 ## v0.8.3
 
