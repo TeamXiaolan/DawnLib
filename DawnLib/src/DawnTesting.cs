@@ -73,26 +73,26 @@ internal class DawnTesting
         TerminalCommandBasicInformation complexQueryCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibComplexQueryCommand", "Test", "Test complex query command", ClearText.Result | ClearText.Query);
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_complex_query_command"), complexQueryCommandBasicInformation, builder =>
         {
-           builder.SetKeywords(["complex query", "please"]);
-           builder.DefineComplexQueryCommand(complexQueryCommandBuilder =>
-           {
+            builder.SetKeywords(["complex query", "please"]);
+            builder.DefineComplexQueryCommand(complexQueryCommandBuilder =>
+            {
                 complexQueryCommandBuilder.SetContinueOrCancelDisplayTexts(() => "This is a test complex query, what's your favourite mod?\n\n");
                 complexQueryCommandBuilder.SetResultDisplayTexts([() => "wow, that's a nice mod", () => "Not a good mod", () => "It's had its ups and downs"]);
                 complexQueryCommandBuilder.SetContinueKeywords(["coderebirth", "surfaced", "biodiversity"]);
                 complexQueryCommandBuilder.SetCancelKeyword("usefulzapgun");
                 complexQueryCommandBuilder.SetCancelDisplayText(() => "That's not a nice mod\n\n");
-           });
+            });
         }); // Complex Query Command
 
         TerminalCommandBasicInformation eventDrivenCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibEventDrivenCommand", "Test", "Test event driven command", ClearText.Result | ClearText.Query);
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_event_driven_command"), eventDrivenCommandBasicInformation, builder =>
         {
-           builder.SetKeywords(["event driven"]);
-           builder.DefineEventDrivenCommand(eventDrivenCommandBuilder =>
-           {
-               eventDrivenCommandBuilder.SetResultNodeDisplayText(() => "This is a test event driven command, it copies the... eject command... wait what?\n\n");
-               eventDrivenCommandBuilder.SetOnTerminalEvent(VanillaTerminalEvents.EjectPlayersEvent);
-           });
+            builder.SetKeywords(["event driven"]);
+            builder.DefineEventDrivenCommand(eventDrivenCommandBuilder =>
+            {
+                eventDrivenCommandBuilder.SetResultNodeDisplayText(() => "This is a test event driven command, it copies the... eject command... wait what?\n\n");
+                eventDrivenCommandBuilder.SetOnTerminalEvent(VanillaTerminalEvents.EjectPlayersEvent);
+            });
         }); // Event Driven Command
     }
 

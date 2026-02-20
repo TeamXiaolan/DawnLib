@@ -46,7 +46,7 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
             ProgressivePredicate? predicate = ProgressivePredicate.AllProgressiveItems.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; });
             if (predicate)
             {
-                values[i] = predicate!.IsUnlocked;
+                values[i] = predicate.IsUnlocked;
                 Debuggers.Progressive?.Log($"set values[{i}] = {values[i]}");
             }
             else

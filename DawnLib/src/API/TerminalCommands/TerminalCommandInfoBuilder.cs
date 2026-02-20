@@ -276,7 +276,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
             TerminalKeyword _continueTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:ContinueKeyword", _continueKeyword)
                                                 .Build();
-            
+
             TerminalKeyword _cancelTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelKeyword)
                                                 .Build();
 
@@ -561,6 +561,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             terminalKeywords.Add(terminalKeyword);
         }
 
-        return new DawnTerminalCommandInfo(key, value, terminalKeywords, _buildOnTerminalAwake, tags, _complexQueryCommandInfo, _simpleQueryCommandInfo, _complexCommandInfo, _simpleCommandInfo, _terminalObjectCommandInfo, _eventDrivenCommandInfo, _inputCommandInfo, customData);;
+        return new DawnTerminalCommandInfo(key, value, terminalKeywords, _buildOnTerminalAwake, tags, _complexQueryCommandInfo, _simpleQueryCommandInfo, _complexCommandInfo, _simpleCommandInfo, _terminalObjectCommandInfo, _eventDrivenCommandInfo, _inputCommandInfo, customData);
     }
 }

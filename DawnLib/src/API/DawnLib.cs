@@ -112,7 +112,6 @@ public static class DawnLib
         DawnStoryLogInfo storyLogInfo = builder.Build();
         DawnStoryLogNamespacedKeyContainer container = storyLogGameObject.AddComponent<DawnStoryLogNamespacedKeyContainer>();
         container.Value = storyLogInfo.TypedKey;
-
         LethalContent.StoryLogs.Register(storyLogInfo);
         return storyLogInfo;
     }
@@ -146,7 +145,6 @@ public static class DawnLib
         DawnMapObjectInfo info = builder.Build();
         DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
         container.Value = info.TypedKey;
-
         LethalContent.MapObjects.Register(info);
         return info;
     }

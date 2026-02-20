@@ -1,6 +1,7 @@
 # v0.8.3
 
 - Added a new command, `SimpleInput` for editor use, uses the Input command but for editor purposes like multiple results with specific inputs, including a failed result.
+- Added a bool for code based terminal commands to decide whether to build the command on terminal awake or manually call `DawnTerminalCommandInfo.InjectCommandIntoTerminal();`.
 
 ## v0.8.2
 
