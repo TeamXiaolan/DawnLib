@@ -80,7 +80,7 @@ static class TerminalCommandRegistration
                 HashSet<NamespacedKey> terminalCommandTags = [DawnLibTags.IsExternal];
 
                 TerminalCommandBasicInformation terminalCommandBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Terminal Object Command.", ClearText.None);
-                DawnTerminalCommandInfo terminalCommandInfo = new(terminalObjectNamespacedKey, terminalCommandBasicInformation, [terminalKeyword], terminalCommandTags, null, null, null, null, terminalObjectCommandInfo, null, null, null);
+                DawnTerminalCommandInfo terminalCommandInfo = new(terminalObjectNamespacedKey, terminalCommandBasicInformation, [terminalKeyword], true, terminalCommandTags, null, null, null, null, terminalObjectCommandInfo, null, null, null);
                 LethalContent.TerminalCommands.Register(terminalCommandInfo);
                 continue;
             }
@@ -118,7 +118,7 @@ static class TerminalCommandRegistration
                 }
 
                 TerminalCommandBasicInformation complexCommandBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Complex Command.", complexClearText);
-                DawnTerminalCommandInfo complexTerminalCommandInfo = new(complexNamespacedKey, complexCommandBasicInformation, [terminalKeyword], complexCommandTags, null, null, complexCommandInfo, null, null, null, null, null);
+                DawnTerminalCommandInfo complexTerminalCommandInfo = new(complexNamespacedKey, complexCommandBasicInformation, [terminalKeyword], true, complexCommandTags, null, null, complexCommandInfo, null, null, null, null, null);
                 LethalContent.TerminalCommands.Register(complexTerminalCommandInfo);
 
                 foreach (TerminalNode complexResultNode in complexResultNodes)
@@ -171,7 +171,7 @@ static class TerminalCommandRegistration
                     }
 
                     TerminalCommandBasicInformation simpleQueryBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Complex Command.", simpleQueryClearText);
-                    DawnTerminalCommandInfo simpleQueryTerminalCommandInfo = new(simpleQueryNamespacedKey, simpleQueryBasicInformation, [terminalKeyword], simpleQueryTags, null, simpleQueryCommandInfo, null, null, null, null, null, null);
+                    DawnTerminalCommandInfo simpleQueryTerminalCommandInfo = new(simpleQueryNamespacedKey, simpleQueryBasicInformation, [terminalKeyword], true, simpleQueryTags, null, simpleQueryCommandInfo, null, null, null, null, null, null);
                     LethalContent.TerminalCommands.Register(simpleQueryTerminalCommandInfo);
                     simpleQueryCommandResultNode.SetDawnInfo(simpleQueryTerminalCommandInfo);
                 }
@@ -196,7 +196,7 @@ static class TerminalCommandRegistration
                     HashSet<NamespacedKey> eventDrivenTags = [DawnLibTags.IsExternal];
 
                     TerminalCommandBasicInformation eventDrivenBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Event Driven Command.", eventDrivenCommandInfo.ResultNode.clearPreviousText ? ClearText.Result : ClearText.None);
-                    DawnTerminalCommandInfo eventDrivenTerminalCommandInfo = new(eventDrivenNamespacedKey, eventDrivenBasicInformation, [terminalKeyword], eventDrivenTags, null, null, null, null, null, eventDrivenCommandInfo, null, null);
+                    DawnTerminalCommandInfo eventDrivenTerminalCommandInfo = new(eventDrivenNamespacedKey, eventDrivenBasicInformation, [terminalKeyword], true, eventDrivenTags, null, null, null, null, null, eventDrivenCommandInfo, null, null);
                     LethalContent.TerminalCommands.Register(eventDrivenTerminalCommandInfo);
                     nodeToCheck.SetDawnInfo(eventDrivenTerminalCommandInfo);
                 }
@@ -297,6 +297,9 @@ static class TerminalCommandRegistration
         foreach (DawnTerminalCommandInfo terminalCommandInfo in LethalContent.TerminalCommands.Values)
         {
             if (terminalCommandInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            if (!terminalCommandInfo.BuildOnTerminalAwake)
                 continue;
 
             terminalCommandInfo.InjectCommandIntoTerminal(self);

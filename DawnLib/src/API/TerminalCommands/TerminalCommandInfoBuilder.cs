@@ -37,6 +37,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
     private DawnInputCommandInfo? _inputCommandInfo = null;
 
     private List<string> _keywords = new();
+    private bool _buildOnTerminalAwake = true;
 
     public class ComplexQueryCommandBuilder
     {
@@ -537,6 +538,12 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
         return this;
     }
 
+    public TerminalCommandInfoBuilder OverrideTerminalAwakeBuild()
+    {
+        _buildOnTerminalAwake = false;
+        return this;
+    }
+
     override internal DawnTerminalCommandInfo Build()
     {
         if (_keywords.Count <= 0)
@@ -554,6 +561,6 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             terminalKeywords.Add(terminalKeyword);
         }
 
-        return new DawnTerminalCommandInfo(key, value, terminalKeywords, tags, _complexQueryCommandInfo, _simpleQueryCommandInfo, _complexCommandInfo, _simpleCommandInfo, _terminalObjectCommandInfo, _eventDrivenCommandInfo, _inputCommandInfo, customData);;
+        return new DawnTerminalCommandInfo(key, value, terminalKeywords, _buildOnTerminalAwake, tags, _complexQueryCommandInfo, _simpleQueryCommandInfo, _complexCommandInfo, _simpleCommandInfo, _terminalObjectCommandInfo, _eventDrivenCommandInfo, _inputCommandInfo, customData);;
     }
 }

@@ -161,11 +161,6 @@ public static class ItemSaveDataHandler
 
             GrabbableObject grabbable = GameObject.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(rotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
 
-            if (grabbable.transform.localScale == Vector3.zero)
-            {
-                DawnPlugin.Logger.LogWarning($"Item: {itemInfo.Key} has zero scale on GameObject.Instantiate; fixing.");
-                grabbable.transform.localScale = itemInfo.Item.spawnPrefab.transform.localScale;
-            }
             grabbable.fallTime = 0f;
             grabbable.scrapPersistedThroughRounds = true;
             grabbable.isInElevator = true;
@@ -178,11 +173,6 @@ public static class ItemSaveDataHandler
             }
 
             grabbable.NetworkObject.Spawn(false);
-            if (grabbable.transform.localScale == Vector3.zero)
-            {
-                DawnPlugin.Logger.LogWarning($"Item: {itemInfo.Key} has zero scale on NetworkObject.Spawn; fixing.");
-                grabbable.transform.localScale = itemInfo.Item.spawnPrefab.transform.localScale;
-            }
             StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbable.transform, rotation));
         }
     }

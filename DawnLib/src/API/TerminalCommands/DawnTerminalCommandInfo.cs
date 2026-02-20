@@ -3,10 +3,11 @@ using System.Collections.Generic;
 namespace Dawn;
 public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandInfo>
 {
-    internal DawnTerminalCommandInfo(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, List<TerminalKeyword> commandKeywords, HashSet<NamespacedKey> tags, DawnComplexQueryCommandInfo? complexQueryCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo, DawnComplexCommandInfo? complexCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnTerminalObjectCommandInfo? terminalObjectCommandInfo, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnInputCommandInfo? inputCommandInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnTerminalCommandInfo(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, List<TerminalKeyword> commandKeywords, bool buildOnTerminalAwake, HashSet<NamespacedKey> tags, DawnComplexQueryCommandInfo? complexQueryCommandInfo, DawnSimpleQueryCommandInfo? simpleQueryCommandInfo, DawnComplexCommandInfo? complexCommandInfo, DawnSimpleCommandInfo? simpleCommandInfo, DawnTerminalObjectCommandInfo? terminalObjectCommandInfo, DawnEventDrivenCommandInfo? eventDrivenCommandInfo, DawnInputCommandInfo? inputCommandInfo, IDataContainer? customData) : base(key, tags, customData)
     {
         CommandBasicInformation = commandBasicInformation;
         CommandKeywords = commandKeywords;
+        BuildOnTerminalAwake = buildOnTerminalAwake;
 
         ComplexQueryCommandInfo = complexQueryCommandInfo; // Uses a verb, similar to buy keyword/node shenanigans
         if (ComplexQueryCommandInfo != null)
@@ -79,8 +80,15 @@ public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandIn
         }
     }
 
-    internal void InjectCommandIntoTerminal(Terminal terminal)
+    public void InjectCommandIntoTerminal(Terminal terminal)
     {
+        if (CommandInjected)
+        {
+            DawnPlugin.Logger.LogWarning($"Command {Key} already injected into terminal, yet tried to inject again.");
+            return;
+        }
+
+        CommandInjected = true;
         if (ComplexQueryCommandInfo != null)
         {
             ComplexQueryCommandInfo.InjectCommandIntoTerminal(terminal);
@@ -117,8 +125,9 @@ public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandIn
         }
     }
 
-    public List<TerminalKeyword> CommandKeywords { get; }
     public TerminalCommandBasicInformation CommandBasicInformation { get; }
+    public List<TerminalKeyword> CommandKeywords { get; }
+    public bool BuildOnTerminalAwake { get; }
 
     public DawnComplexQueryCommandInfo? ComplexQueryCommandInfo { get; }
     public DawnSimpleQueryCommandInfo? SimpleQueryCommandInfo { get; }
@@ -128,5 +137,5 @@ public sealed class DawnTerminalCommandInfo : DawnBaseInfo<DawnTerminalCommandIn
     public DawnEventDrivenCommandInfo? EventDrivenCommandInfo { get; }
     public DawnInputCommandInfo? InputCommandInfo { get; }
 
-    public List<TerminalKeyword> AssociatedKeywords { get; } = new();
+    public bool CommandInjected { get; private set; }
 }
