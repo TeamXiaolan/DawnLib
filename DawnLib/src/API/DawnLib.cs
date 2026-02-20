@@ -91,7 +91,6 @@ public static class DawnLib
         TerminalCommandInfoBuilder builder = new(key, commandBasicInformation);
         callback(builder);
         DawnTerminalCommandInfo commandInfo = builder.Build();
-        // todo: register all the nodes here?
         LethalContent.TerminalCommands.Register(commandInfo);
         return commandInfo;
     }

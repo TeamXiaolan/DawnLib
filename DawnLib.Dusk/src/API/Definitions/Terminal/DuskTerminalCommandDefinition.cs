@@ -65,6 +65,22 @@ public class SimpleCommand
     public string ResultDisplayText { get; private set; }
 }
 
+[Serializable]
+public class SimpleInputCommand
+{
+    [field: SerializeField]
+    public bool Enabled { get; private set; }
+
+    [field: SerializeField]
+    public List<string> Inputs { get; private set; }
+
+    [field: SerializeField]
+    public List<string> InputResults { get; private set; }
+
+    [field: SerializeField]
+    public string FailedInputResult { get; private set; }
+}
+
 [CreateAssetMenu(fileName = "New TerminalCommand Definition", menuName = $"{DuskModConstants.Definitions}/TerminalCommand Definition")]
 public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalCommandInfo>
 {
@@ -87,6 +103,9 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
 
     [field: SerializeField]
     public SimpleCommand SimpleCommand { get; private set; }
+
+    [field: SerializeField]
+    public SimpleInputCommand SimpleInputCommand { get; private set; }
 
     public override void Register(DuskMod mod)
     {
@@ -144,8 +163,29 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
                     simpleCommandBuilder.SetResultDisplayText(() => SimpleCommand.ResultDisplayText);
                 });
             }
+
+            if (SimpleInputCommand.Enabled)
+            {
+                builder.DefineInputCommand(simpleInputCommandBuilder =>
+                {
+                    simpleInputCommandBuilder.SetResultDisplayText(SimpleInputResult);
+                });
+            }
             ApplyTagsTo(builder);
         });
+    }
+
+    public string SimpleInputResult(string input)
+    {
+        for (int i = 0; i < SimpleInputCommand.Inputs.Count; i++)
+        {
+            string possibleInput = SimpleInputCommand.Inputs[i];
+            if (input.Equals(possibleInput, StringComparison.OrdinalIgnoreCase))
+            {
+                return SimpleInputCommand.InputResults[i];
+            }
+        }
+        return SimpleInputCommand.FailedInputResult;
     }
 
     public override void TryNetworkRegisterAssets()

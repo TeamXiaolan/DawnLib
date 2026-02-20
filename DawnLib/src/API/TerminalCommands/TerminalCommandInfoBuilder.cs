@@ -99,7 +99,7 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
 
         internal DawnComplexQueryCommandInfo Build()
         {
-            TerminalNode continueOrCancelNode =  new TerminalNodeBuilder($"{_parentBuilder.key}:ContinueNode")
+            TerminalNode continueOrCancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ContinueNode")
                                                 .SetDisplayText(_continueOrCancelDisplayText.Invoke())
                                                 .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Query))
                                                 .SetMaxCharactersToType(35)

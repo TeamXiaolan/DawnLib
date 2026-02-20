@@ -1,4 +1,8 @@
-# v0.8.2
+# v0.8.3
+
+- Added a new command, `SimpleInput` for editor use, uses the Input command but for editor purposes like multiple results with specific inputs, including a failed result.
+
+## v0.8.2
 
 - Forgot to serialize the fields for the custom terminal commands in editor.
 
