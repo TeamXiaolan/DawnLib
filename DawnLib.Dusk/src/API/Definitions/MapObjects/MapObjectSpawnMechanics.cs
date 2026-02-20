@@ -1,13 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
 using Dawn.Internal;
+using Dusk.Weights;
 using UnityEngine;
 
 namespace Dusk;
 
-public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, DawnMoonInfo>
+public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>
 {
     public MapObjectSpawnMechanics(string moonConfigString, string interiorConfigString, bool prioritiseMoons = true)
     {
@@ -57,10 +57,15 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
 
     public AnimationCurve CurveFunction(DawnMoonInfo moonInfo)
     {
+        return CurveFunction(moonInfo, SpawnWeightContextFactory.FromCurrentGame());
+    }
+
+    public AnimationCurve CurveFunction(DawnMoonInfo moonInfo, SpawnWeightContext ctx)
+    {
         if (moonInfo == null || moonInfo.Level == null)
             return AnimationCurve.Constant(0, 1, 0);
 
-        DawnDungeonInfo? dungeonInfo = RoundManagerRefs.Instance?.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
+        DawnDungeonInfo? dungeonInfo = ctx.Dungeon;
 
         if (PrioritiseMoons && CurvesByMoonOrTagName.TryGetValue(moonInfo.Key, out AnimationCurve curve))
         {
@@ -124,8 +129,8 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
         return AnimationCurve.Constant(0, 1, 0);
     }
 
-    public AnimationCurve? Provide(DawnMoonInfo info)
+    public AnimationCurve? Provide(DawnMoonInfo info, SpawnWeightContext ctx)
     {
-        return CurveFunction(info);
+        return CurveFunction(info, ctx);
     }
 }

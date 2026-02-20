@@ -1,4 +1,8 @@
-# v0.8.4
+# v0.8.5
+
+- Updated to add better compat with LunarConfig MapObject weights.
+
+## v0.8.4
 
 - Fixed issue where extra scan events wouldn't run.
 - Improved terminal writing space for the display text to be bigger.

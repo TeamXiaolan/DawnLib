@@ -22,22 +22,22 @@ public static class WeightedExtensions
     }
 }
 
-public class SimpleContextualProvider<T, TBase>(T value) : IContextualProvider<T, TBase> where TBase : INamespaced<TBase>
+public class SimpleContextualProvider<T, TBase, TContext>(T value) : IContextualProvider<T, TBase, TContext> where TBase : INamespaced<TBase>
 {
-    public T Provide(TBase info) => value;
+    public T Provide(TBase info, TContext ctx) => value;
 }
 
-public class MatchingKeyContextualProvider<T, TBase>(NamespacedKey<TBase> targetKey, T value) : IContextualProvider<T?, TBase> where TBase : INamespaced<TBase>
+public class MatchingKeyContextualProvider<T, TBase, TContext>(NamespacedKey<TBase> targetKey, T value) : IContextualProvider<T?, TBase, TContext> where TBase : INamespaced<TBase>
 {
-    public T? Provide(TBase info)
+    public T? Provide(TBase info, TContext ctx)
     {
         return Equals(info.Key, targetKey) ? value : default;
     }
 }
 
-public class HasTagContextualProvider<T, TBase>(NamespacedKey tag, T value) : IContextualProvider<T?, TBase> where TBase : INamespaced<TBase>
+public class HasTagContextualProvider<T, TBase, TContext>(NamespacedKey tag, T value) : IContextualProvider<T?, TBase, TContext> where TBase : INamespaced<TBase>
 {
-    public T? Provide(TBase info)
+    public T? Provide(TBase info, TContext ctx)
     {
         if (info is not ITaggable taggable) return default;
         if (!taggable.HasTag(tag)) return default;
