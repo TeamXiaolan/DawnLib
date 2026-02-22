@@ -154,12 +154,12 @@ public static class ItemSaveDataHandler
 
             JToken itemSavedData = row.Count > 8 ? row[8] : 0;
 
-            if (!StartOfRoundRefs.Instance.shipBounds.bounds.Contains(spawnPosition))
+            if (!StartOfRoundRefs.Instance.shipInnerRoomBounds.bounds.Contains(spawnPosition))
             {
                 spawnPosition = StartOfRoundRefs.Instance.playerSpawnPositions[1].position;
             }
 
-            GrabbableObject grabbable = UnityEngine.Object.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(rotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
+            GrabbableObject grabbable = GameObject.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(rotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
 
             grabbable.fallTime = 0f;
             grabbable.scrapPersistedThroughRounds = true;

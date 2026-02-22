@@ -1,244 +1,566 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
-using static Dawn.TerminalCommandRegistration;
+using UnityEngine;
 
 namespace Dawn;
-public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInfo, TerminalNode, TerminalCommandInfoBuilder>
-{
-    private DawnQueryCommandInfo? _queryCommandInfo = null;
 
-    public class QueryCommandBuilder
+[Flags]
+public enum ClearText
+{
+    None = 0,
+    Result = 1 << 0,
+    Query = 1 << 1,
+    Cancel = 1 << 2
+}
+
+[Serializable]
+public class TerminalCommandBasicInformation(string commandName, string categoryName, string description, ClearText clearTextFlags)
+{
+    [field: SerializeField]
+    public string CommandName { get; private set; } = commandName;
+    [field: SerializeField]
+    public string CategoryName { get; private set; } = categoryName;
+    [field: SerializeField]
+    public string Description { get; private set; } = description;
+    [field: SerializeField]
+    public ClearText ClearTextFlags { get; private set; } = clearTextFlags;
+}
+
+public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInfo, TerminalCommandBasicInformation, TerminalCommandInfoBuilder>
+{
+    private DawnComplexQueryCommandInfo? _complexQueryCommandInfo = null;
+    private DawnSimpleQueryCommandInfo? _simpleQueryCommandInfo = null;
+    private DawnComplexCommandInfo? _complexCommandInfo = null;
+    private DawnSimpleCommandInfo? _simpleCommandInfo = null;
+    private DawnTerminalObjectCommandInfo? _terminalObjectCommandInfo = null;
+    private DawnEventDrivenCommandInfo? _eventDrivenCommandInfo = null;
+    private DawnInputCommandInfo? _inputCommandInfo = null;
+
+    private List<string> _keywords = new();
+    private bool _buildOnTerminalAwake = true;
+
+    public class ComplexQueryCommandBuilder
     {
         private TerminalCommandInfoBuilder _parentBuilder;
 
-        private Func<string> _queryFunc, _cancelFunc;
-        private string _continueKeyword, _cancelKeyword;
-        private FuncProvider<bool> _continueProvider;
-        private DawnEvent<bool>? _onQueryContinuedEvent;
+        private List<Func<string>> _resultDisplayTexts;
+        private Func<string> _continueOrCancelDisplayText;
+        private Func<string>? _cancelDisplayText;
+        private string _cancelKeyword;
+        private List<string> _continueKeywords;
+        private List<Func<bool>> _continueConditions = new();
+        private List<Action<bool>> _onQueryContinuedEvents = new();
 
-        internal QueryCommandBuilder(TerminalCommandInfoBuilder parent)
+        internal ComplexQueryCommandBuilder(TerminalCommandInfoBuilder parent)
         {
             _parentBuilder = parent;
         }
 
-        public QueryCommandBuilder SetQuery(Func<string> queryFunc)
+        public ComplexQueryCommandBuilder SetResultDisplayTexts(List<Func<string>> resultDisplayTexts)
         {
-            _queryFunc = queryFunc;
+            _resultDisplayTexts = resultDisplayTexts;
             return this;
         }
 
-        public QueryCommandBuilder SetCancel(Func<string> cancelFunc)
+        public ComplexQueryCommandBuilder SetContinueOrCancelDisplayTexts(Func<string> continueOrCancelDisplayText)
         {
-            _cancelFunc = cancelFunc;
+            _continueOrCancelDisplayText = continueOrCancelDisplayText;
             return this;
         }
 
-        public QueryCommandBuilder SetContinueConditions(FuncProvider<bool> continueProvider)
+        public ComplexQueryCommandBuilder SetCancelDisplayText(Func<string> cancelDisplayText)
         {
-            _continueProvider = continueProvider;
+            _cancelDisplayText = cancelDisplayText;
             return this;
         }
 
-        public QueryCommandBuilder SetQueryEvent(DawnEvent<bool> onQueryContinuedEvent)
+        public ComplexQueryCommandBuilder SetContinueKeywords(List<string> continueKeywords)
         {
-            _onQueryContinuedEvent = onQueryContinuedEvent;
+            _continueKeywords = continueKeywords;
             return this;
         }
 
-        public QueryCommandBuilder SetContinueWord(string continueKeyword)
-        {
-            _continueKeyword = continueKeyword;
-            return this;
-        }
-
-        public QueryCommandBuilder SetCancelWord(string cancelKeyword)
+        public ComplexQueryCommandBuilder SetCancelKeyword(string cancelKeyword)
         {
             _cancelKeyword = cancelKeyword;
             return this;
         }
 
-        internal DawnQueryCommandInfo Build()
+        public ComplexQueryCommandBuilder SetContinueConditions(List<Func<bool>> continueConditions)
         {
-            if (_continueProvider == null)
+            _continueConditions = continueConditions;
+            return this;
+        }
+
+        public ComplexQueryCommandBuilder SetOnQueryContinuedEvents(List<Action<bool>> onQueryContinuedEvents)
+        {
+            _onQueryContinuedEvents = onQueryContinuedEvents;
+            return this;
+        }
+
+        internal DawnComplexQueryCommandInfo Build()
+        {
+            TerminalNode continueOrCancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ContinueNode")
+                                                .SetDisplayText(_continueOrCancelDisplayText.Invoke())
+                                                .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Query))
+                                                .SetMaxCharactersToType(35)
+                                                .Build();
+
+            continueOrCancelNode.SetDynamicDisplayText(_continueOrCancelDisplayText);
+
+            TerminalNode? cancelNode = null;
+
+            if (_cancelDisplayText != null)
             {
-                _continueProvider = new FuncProvider<bool>(() => true);
+                cancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:CancelNode")
+                                                .SetDisplayText(_cancelDisplayText.Invoke())
+                                                .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Cancel))
+                                                .SetMaxCharactersToType(35)
+                                                .Build();
+
+                cancelNode.SetDynamicDisplayText(_cancelDisplayText);
             }
-            return new DawnQueryCommandInfo(_queryFunc, _cancelFunc, _continueKeyword, _cancelKeyword, _continueProvider, _onQueryContinuedEvent);
+
+            TerminalKeyword? cancelTerminalKeyword = null;
+            if (!string.IsNullOrEmpty(_cancelKeyword))
+            {
+                cancelTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelKeyword)
+                                            .Build();
+            }
+
+
+            List<TerminalNode> resultNodes = new();
+            List<TerminalKeyword> continueTerminalKeywords = new();
+
+            for (int i = 0; i < _resultDisplayTexts.Count; i++)
+            {
+                TerminalNode _resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                                .SetDisplayText(_resultDisplayTexts[i].Invoke())
+                                                .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
+                                                .SetMaxCharactersToType(35)
+                                                .Build();
+
+                _resultNode.SetDynamicDisplayText(_resultDisplayTexts[i]);
+                resultNodes.Add(_resultNode);
+
+                if (_continueConditions.Count <= i)
+                {
+                    _continueConditions.Add(() => true);
+                }
+
+                if (_onQueryContinuedEvents.Count <= i)
+                {
+                    _onQueryContinuedEvents.Add(_ => { });
+                }
+
+                if (_continueKeywords.Count <= i)
+                {
+                    _continueKeywords.Add("continue");
+                    DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set continue word. Defaulting to '{_continueKeywords}'");
+                }
+
+                TerminalKeyword _continueTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:ContinueKeyword", _continueKeywords[i])
+                                                    .Build();
+
+                continueTerminalKeywords.Add(_continueTerminalKeyword);
+            }
+
+            return new DawnComplexQueryCommandInfo(resultNodes, continueOrCancelNode, cancelNode, continueTerminalKeywords, cancelTerminalKeyword, _continueConditions, _onQueryContinuedEvents);
         }
     }
-    // Allow setting a query with a continue and cancel word, query text
 
-    public TerminalCommandInfoBuilder DefineQueryCommand(Action<QueryCommandBuilder> callback)
+    public class SimpleQueryCommandBuilder
     {
-        QueryCommandBuilder builder = new(this);
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        private Func<string> _resultDisplayText;
+        private Func<string> _continueOrCancelDisplayText, _cancelDisplayText;
+        private string _continueKeyword, _cancelKeyword;
+        private Func<bool> _continueCondition;
+        private Action<bool> _onQueryContinuedEvent;
+
+        internal SimpleQueryCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        public SimpleQueryCommandBuilder SetResult(Func<string> resultDisplayText)
+        {
+            _resultDisplayText = resultDisplayText;
+            return this;
+        }
+
+        public SimpleQueryCommandBuilder SetContinueOrCancel(Func<string> continueOrCancelDisplayText)
+        {
+            _continueOrCancelDisplayText = continueOrCancelDisplayText;
+            return this;
+        }
+
+        public SimpleQueryCommandBuilder SetCancel(Func<string> cancelDisplayText)
+        {
+            _cancelDisplayText = cancelDisplayText;
+            return this;
+        }
+
+        public SimpleQueryCommandBuilder SetContinueConditions(Func<bool> continueProvider)
+        {
+            _continueCondition = continueProvider;
+            return this;
+        }
+
+        public SimpleQueryCommandBuilder SetQueryEvent(Action<bool> onQueryContinuedEvent)
+        {
+            _onQueryContinuedEvent = onQueryContinuedEvent;
+            return this;
+        }
+
+        public SimpleQueryCommandBuilder SetContinueWord(string continueKeyword)
+        {
+            _continueKeyword = continueKeyword;
+            return this;
+        }
+
+        public SimpleQueryCommandBuilder SetCancelWord(string cancelKeyword)
+        {
+            _cancelKeyword = cancelKeyword;
+            return this;
+        }
+
+        internal DawnSimpleQueryCommandInfo Build()
+        {
+            if (_continueCondition == null)
+            {
+                _continueCondition = new Func<bool>(() => true);
+            }
+
+            if (_onQueryContinuedEvent == null)
+            {
+                _onQueryContinuedEvent = new Action<bool>(_ => { });
+            }
+
+            TerminalNode _resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                            .SetDisplayText(_resultDisplayText.Invoke())
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
+                                            .SetMaxCharactersToType(35)
+                                            .Build();
+
+            _resultNode.SetDynamicDisplayText(_resultDisplayText);
+
+            TerminalNode _continueOrCancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ContinueNode")
+                                            .SetDisplayText(_continueOrCancelDisplayText.Invoke())
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Query))
+                                            .SetMaxCharactersToType(35)
+                                            .Build();
+
+            _continueOrCancelNode.SetDynamicDisplayText(_continueOrCancelDisplayText);
+
+            TerminalNode _cancelNode = new TerminalNodeBuilder($"{_parentBuilder.key}:CancelNode")
+                                            .SetDisplayText(_cancelDisplayText.Invoke())
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Cancel))
+                                            .SetMaxCharactersToType(35)
+                                            .Build();
+
+            _cancelNode.SetDynamicDisplayText(_cancelDisplayText);
+
+            if (string.IsNullOrEmpty(_cancelKeyword))
+            {
+                _cancelKeyword = "deny";
+                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set cancel word. Defaulting to '{_cancelKeyword}'");
+            }
+
+            if (string.IsNullOrEmpty(_continueKeyword))
+            {
+                _continueKeyword = "confirm";
+                DawnPlugin.Logger.LogWarning($"Query '{_parentBuilder.key}' didn't set continue word. Defaulting to '{_continueKeyword}'");
+            }
+
+            TerminalKeyword _continueTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:ContinueKeyword", _continueKeyword)
+                                                .Build();
+
+            TerminalKeyword _cancelTerminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:CancelKeyword", _cancelKeyword)
+                                                .Build();
+
+            return new DawnSimpleQueryCommandInfo(_resultNode, _continueOrCancelNode, _cancelNode, _continueTerminalKeyword, _cancelTerminalKeyword, _continueCondition, _onQueryContinuedEvent);
+        }
+    }
+
+    public class ComplexCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        private List<string> _secondaryKeywords = new();
+        private List<Func<string>> _resultDisplayTexts = new();
+        internal ComplexCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        public ComplexCommandBuilder SetSecondaryKeywords(List<string> secondaryKeywords)
+        {
+            _secondaryKeywords = secondaryKeywords;
+            return this;
+        }
+
+        public ComplexCommandBuilder SetResultsDisplayText(List<Func<string>> resultDisplayTexts)
+        {
+            _resultDisplayTexts = resultDisplayTexts;
+            return this;
+        }
+
+        internal DawnComplexCommandInfo Build()
+        {
+            if (_secondaryKeywords.Count <= 0)
+            {
+                throw new ArgumentException($"Command: '{_parentBuilder.key}' didn't set any keywords, this will cause issues.");
+            }
+
+            if (_secondaryKeywords.Count != _resultDisplayTexts.Count)
+            {
+                throw new ArgumentException($"Command: '{_parentBuilder.key}' didn't set the same amount of keywords as results.");
+            }
+
+            List<TerminalNode> resultNodes = new();
+            List<TerminalKeyword> secondaryTerminalKeywords = new();
+
+            foreach (string secondaryKeyword in _secondaryKeywords)
+            {
+                TerminalKeyword terminalKeyword = new TerminalKeywordBuilder($"{_parentBuilder.key}:{secondaryKeyword}", secondaryKeyword)
+                                                    .Build();
+
+                secondaryTerminalKeywords.Add(terminalKeyword);
+            }
+
+            foreach (Func<string> resultDisplayText in _resultDisplayTexts)
+            {
+                TerminalNode resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                                .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
+                                                .SetDisplayText(resultDisplayText.Invoke())
+                                                .Build();
+
+                resultNode.SetDynamicDisplayText(resultDisplayText);
+                resultNodes.Add(resultNode);
+            }
+            return new DawnComplexCommandInfo(resultNodes, secondaryTerminalKeywords);
+        }
+    }
+
+    public class SimpleCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        private Func<string> _resultDisplayText;
+        internal SimpleCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        public SimpleCommandBuilder SetResultDisplayText(Func<string> resultDisplayText)
+        {
+            _resultDisplayText = resultDisplayText;
+            return this;
+        }
+
+        internal DawnSimpleCommandInfo Build()
+        {
+            TerminalNode resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
+                                            .SetDisplayText(_resultDisplayText.Invoke())
+                                            .Build();
+
+            resultNode.SetDynamicDisplayText(_resultDisplayText);
+            return new DawnSimpleCommandInfo(resultNode);
+        }
+    }
+
+    public class TerminalObjectCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        internal TerminalObjectCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        internal DawnTerminalObjectCommandInfo Build()
+        {
+            return new DawnTerminalObjectCommandInfo();
+        }
+    }
+
+    public class EventDrivenCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        private Func<string> _resultNodeDisplayText;
+        private TerminalNode _resultNode;
+        private Action<Terminal, TerminalNode> _onTerminalEvent;
+
+        internal EventDrivenCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        public EventDrivenCommandBuilder SetResultNodeDisplayText(Func<string> resultNodeDisplayText)
+        {
+            _resultNodeDisplayText = resultNodeDisplayText;
+            return this;
+        }
+
+        public EventDrivenCommandBuilder OverrideResultNode(TerminalNode resultNode)
+        {
+            _resultNode = resultNode;
+            return this;
+        }
+
+        public EventDrivenCommandBuilder SetOnTerminalEvent(Action<Terminal, TerminalNode> onTerminalEvent)
+        {
+            _onTerminalEvent = onTerminalEvent;
+            return this;
+        }
+
+        internal DawnEventDrivenCommandInfo Build()
+        {
+            if (_resultNode == null)
+            {
+                _resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                                    .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
+                                                    .SetDisplayText(_resultNodeDisplayText.Invoke())
+                                                    .Build();
+
+                _resultNode.SetDynamicDisplayText(_resultNodeDisplayText);
+            }
+
+            if (_onTerminalEvent == null)
+            {
+                throw new ArgumentException($"Event driven command: '{_parentBuilder.key}' didn't set onTerminalEvent.");
+            }
+
+            return new DawnEventDrivenCommandInfo(_resultNode, _onTerminalEvent);
+        }
+    }
+
+    public class InputCommandBuilder
+    {
+        private TerminalCommandInfoBuilder _parentBuilder;
+
+        private Func<string, string> _resultDisplayText;
+
+        internal InputCommandBuilder(TerminalCommandInfoBuilder parent)
+        {
+            _parentBuilder = parent;
+        }
+
+        public InputCommandBuilder SetResultDisplayText(Func<string, string> resultDisplayText)
+        {
+            _resultDisplayText = resultDisplayText;
+            return this;
+        }
+
+        internal DawnInputCommandInfo Build()
+        {
+            if (_resultDisplayText == null)
+            {
+                throw new ArgumentException($"Input command: '{_parentBuilder.key}' didn't set result display text.");
+            }
+
+            TerminalNode resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
+                                            .SetClearPreviousText(_parentBuilder.value.ClearTextFlags.HasFlag(ClearText.Result))
+                                            .SetDisplayText(_resultDisplayText.Invoke(DawnInputCommandInfo.GetLastUserInput()))
+                                            .Build();
+
+            return new DawnInputCommandInfo(resultNode, _resultDisplayText);
+        }
+    }
+
+    public TerminalCommandInfoBuilder DefineComplexQueryCommand(Action<ComplexQueryCommandBuilder> callback)
+    {
+        ComplexQueryCommandBuilder builder = new(this);
         callback(builder);
-        _queryCommandInfo = builder.Build();
+        _complexQueryCommandInfo = builder.Build();
         return this;
     }
 
-    private IProvider<bool> _isEnabled;
-    private IProvider<List<string>> _validKeywords;
-    private Func<string> _mainText;
-    private UnityEvent? _customUnityBuildEvent = null;
-    private UnityEvent? _customUnityDestroyEvent = null;
-    private DawnEvent? _customDawnBuildEvent = null;
-    private DawnEvent? _customDawnDestroyEvent = null;
-    private string _commandName, _categoryName, _description;
-    private bool _acceptInput;
-    private ClearText _clearTextFlags;
-    private bool _overrideKeywords = false;
-    private ITerminalKeyword.DawnKeywordType _overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand;
-
-    public TerminalCommandInfoBuilder(NamespacedKey<DawnTerminalCommandInfo> key, string commandName, TerminalNode value) : base(key, value)
+    public TerminalCommandInfoBuilder DefineSimpleQueryCommand(Action<SimpleQueryCommandBuilder> callback)
     {
-        _commandName = commandName;
-    }
-
-    public TerminalCommandInfoBuilder SetEnabled(IProvider<bool> isEnabled)
-    {
-        _isEnabled = isEnabled;
+        SimpleQueryCommandBuilder builder = new(this);
+        callback(builder);
+        _simpleQueryCommandInfo = builder.Build();
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetCustomBuildEvent(UnityEvent customBuildEvent)
+    public TerminalCommandInfoBuilder DefineComplexCommand(Action<ComplexCommandBuilder> callback)
     {
-        _customUnityBuildEvent = customBuildEvent;
+        ComplexCommandBuilder builder = new(this);
+        callback(builder);
+        _complexCommandInfo = builder.Build();
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetCustomBuildEvent(DawnEvent dawnBuildEvent)
+    public TerminalCommandInfoBuilder DefineSimpleCommand(Action<SimpleCommandBuilder> callback)
     {
-        _customDawnBuildEvent = dawnBuildEvent;
+        SimpleCommandBuilder builder = new(this);
+        callback(builder);
+        _simpleCommandInfo = builder.Build();
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetCustomDestroyEvent(UnityEvent customDestroyEvent)
+    public TerminalCommandInfoBuilder DefineTerminalObjectCommand(Action<TerminalObjectCommandBuilder> callback)
     {
-        _customUnityDestroyEvent = customDestroyEvent;
+        TerminalObjectCommandBuilder builder = new(this);
+        callback(builder);
+        _terminalObjectCommandInfo = builder.Build();
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetCustomDestroyEvent(DawnEvent dawnDestroyEvent)
+    public TerminalCommandInfoBuilder DefineEventDrivenCommand(Action<EventDrivenCommandBuilder> callback)
     {
-        _customDawnDestroyEvent = dawnDestroyEvent;
+        EventDrivenCommandBuilder builder = new(this);
+        callback(builder);
+        _eventDrivenCommandInfo = builder.Build();
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetMainText(Func<string> mainText)
+    public TerminalCommandInfoBuilder DefineInputCommand(Action<InputCommandBuilder> callback)
     {
-        _mainText = mainText;
+        InputCommandBuilder builder = new(this);
+        callback(builder);
+        _inputCommandInfo = builder.Build();
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetKeywords(IProvider<List<string>> validKeywords)
+    public TerminalCommandInfoBuilder(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation value) : base(key, value)
     {
-        _validKeywords = validKeywords;
+    }
+
+    public TerminalCommandInfoBuilder SetKeywords(List<string> keywords)
+    {
+        _keywords = keywords;
         return this;
     }
 
-    public TerminalCommandInfoBuilder SetClearTextFlags(ClearText clearTextFlags)
+    public TerminalCommandInfoBuilder OverrideTerminalAwakeBuild()
     {
-        value.clearPreviousText = clearTextFlags.HasFlag(ClearText.Result);
-        _clearTextFlags = clearTextFlags;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetCategoryName(string categoryName)
-    {
-        _categoryName = categoryName;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetDescription(string description)
-    {
-        _description = description;
-        return this;
-    }
-
-    public TerminalCommandInfoBuilder SetAcceptInput(bool acceptInput)
-    {
-        _acceptInput = acceptInput;
-        return this;
-    }
-
-    // <summary>Override any existing keywords and manually set the keyword's priority</summary>
-    /* <remarks>
-        WARNING: Setting this to true can cause compatibility issues with other mods! Use with Caution!!
-        You do not need to set this to false if you have not changed the default value
-        Overriding a vanilla keyword will permanently alter the keyword result. Vanilla does not rebuild keywords automatically on lobby reload.
-      </remarks> */
-
-    public TerminalCommandInfoBuilder SetOverrideKeywords(bool value, ITerminalKeyword.DawnKeywordType overridePriority = ITerminalKeyword.DawnKeywordType.DawnCommand)
-    {
-        _overrideKeywords = value;
-        _overridePriority = overridePriority;
+        _buildOnTerminalAwake = false;
         return this;
     }
 
     override internal DawnTerminalCommandInfo Build()
     {
-        TerminalCommandRegistrationBuilder commandRegistrationBuilder = new TerminalCommandRegistrationBuilder(_commandName, value, _mainText);
-        commandRegistrationBuilder.SetCategory(_categoryName);
-        commandRegistrationBuilder.SetDescription(_description);
-        commandRegistrationBuilder.SetEnabled(_isEnabled);
-        if (_validKeywords.Provide().Count <= 0)
+        if (_keywords.Count <= 0)
         {
-            DawnPlugin.Logger.LogError($"No valid keywords provided for command: {_commandName}");
-        }
-        commandRegistrationBuilder.SetKeywords(_validKeywords);
-        commandRegistrationBuilder.SetClearText(_clearTextFlags);
-        commandRegistrationBuilder.SetAcceptInput(_acceptInput);
-        commandRegistrationBuilder.SetOverrideExistingKeywords(_overrideKeywords, _overridePriority);
-
-        if (_queryCommandInfo != null)
-        {
-            commandRegistrationBuilder.SetupQuery(_queryCommandInfo.QueryFunc);
-            commandRegistrationBuilder.SetupCancel(_queryCommandInfo.CancelFunc);
-            commandRegistrationBuilder.SetCancelWord(_queryCommandInfo.CancelKeyword);
-            commandRegistrationBuilder.SetContinueWord(_queryCommandInfo.ContinueKeyword);
+            throw new ArgumentException($"Command: '{key}' didn't set any keywords, this will cause issues.");
         }
 
-        if (_customDawnBuildEvent == null && _customUnityBuildEvent == null)
-        {
-            commandRegistrationBuilder.BuildOnTerminalAwake();
-        }
-        else
-        {
-            SetCustomBuildEvents(commandRegistrationBuilder);
-        }
+        List<TerminalKeyword> terminalKeywords = new();
 
-        SetCustomDestroyEvents(commandRegistrationBuilder);
-
-        DawnTerminalCommandInfo info = new(key, tags, value, _queryCommandInfo, customData);
-        return info;
-    }
-
-    //Sets any custom build event types if they are not null
-    private void SetCustomBuildEvents(TerminalCommandRegistrationBuilder commandRegistrationBuilder)
-    {
-        if (_customUnityBuildEvent != null)
+        foreach (string keyword in _keywords)
         {
-            commandRegistrationBuilder.SetCustomBuildEvent(_customUnityBuildEvent);
+            TerminalKeyword terminalKeyword = new TerminalKeywordBuilder($"{key}_{keyword}", keyword, ITerminalKeyword.DawnKeywordType.DawnCommand)
+                                                .Build();
+
+            terminalKeywords.Add(terminalKeyword);
         }
 
-        if (_customDawnBuildEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomBuildEvent(_customDawnBuildEvent);
-        }
-    }
-
-    //Sets any custom destroy event types if they are not null
-    private void SetCustomDestroyEvents(TerminalCommandRegistrationBuilder commandRegistrationBuilder)
-    {
-        if (_customUnityDestroyEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomDestroyEvent(_customUnityDestroyEvent);
-        }
-
-        if (_customDawnDestroyEvent != null)
-        {
-            commandRegistrationBuilder.SetCustomDestroyEvent(_customDawnDestroyEvent);
-        }
+        return new DawnTerminalCommandInfo(key, value, terminalKeywords, _buildOnTerminalAwake, tags, _complexQueryCommandInfo, _simpleQueryCommandInfo, _complexCommandInfo, _simpleCommandInfo, _terminalObjectCommandInfo, _eventDrivenCommandInfo, _inputCommandInfo, customData);
     }
 }

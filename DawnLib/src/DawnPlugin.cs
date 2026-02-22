@@ -79,6 +79,7 @@ public class DawnPlugin : BaseUnityPlugin
         SaveDataPatch.Init();
         TerminalPatches.Init();
         DebugPatches.Init();
+        ExtraScanEventsPatch.Init();
 
         // Testing
         // DawnTesting.TestCommands();
@@ -98,7 +99,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Archetypes", LethalContent.Archetypes, archetypeInfo => archetypeInfo.DungeonArchetype.name);
         DebugPrintRegistryResult("Story Logs", LethalContent.StoryLogs, storyLogInfo => storyLogInfo.StoryLogTerminalNode.creatureName);
         DebugPrintRegistryResult("Surfaces", LethalContent.Surfaces, surfaceInfo => surfaceInfo.Surface.surfaceTag);
-        DebugPrintRegistryResult("Terminal Commands", LethalContent.TerminalCommands, commandInfo => commandInfo.ResultNode.name);
+        DebugPrintRegistryResult("Terminal Commands", LethalContent.TerminalCommands, commandInfo => commandInfo.CommandBasicInformation.CommandName);
 
         PersistentData = this.GetPersistentDataContainer();
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));

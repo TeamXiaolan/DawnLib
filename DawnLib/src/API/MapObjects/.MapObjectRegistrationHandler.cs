@@ -113,7 +113,8 @@ static class MapObjectRegistrationHandler
                     spawnableOutsideObjectWithRarity.spawnableObject.objectWidth = mapObjectInfo.OutsideInfo.ObjectWidth;
                     spawnableOutsideObjectWithRarity.spawnableObject.spawnableFloorTags = mapObjectInfo.OutsideInfo.SpawnableFloorTags;
                     spawnableOutsideObjectWithRarity.spawnableObject.rotationOffset = mapObjectInfo.OutsideInfo.RotationOffset;
-                    spawnableOutsideObjectWithRarity.randomAmount = mapObjectInfo.OutsideInfo.SpawnWeights.GetFor(moonInfo) ?? AnimationCurve.Constant(0, 1, 0);
+                    SpawnWeightContext context = new(moonInfo.Level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(moonInfo.Level)?.GetDawnInfo());
+                    spawnableOutsideObjectWithRarity.randomAmount = mapObjectInfo.OutsideInfo.SpawnWeights.GetFor(moonInfo, context) ?? AnimationCurve.Constant(0, 1, 0);
                     break;
                 }
             }
@@ -139,8 +140,8 @@ static class MapObjectRegistrationHandler
 
     private static void FreezeMapObjectContents()
     {
-        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo>> insideWeightsByPrefab = new();
-        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo>> outsideWeightsByPrefab = new();
+        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> insideWeightsByPrefab = new();
+        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> outsideWeightsByPrefab = new();
 
         Dictionary<string, InsideMapObjectSettings> insidePlacementByPrefab = new();
         Dictionary<string, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
@@ -163,9 +164,9 @@ static class MapObjectRegistrationHandler
                     }
                 }
 
-                if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo> builder))
+                if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
                 {
-                    builder = new CurveTableBuilder<DawnMoonInfo>();
+                    builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
                     insideWeightsByPrefab[prefab] = builder;
 
                     if (!insidePlacementByPrefab.ContainsKey(prefab.name))
@@ -188,7 +189,7 @@ static class MapObjectRegistrationHandler
             foreach (SpawnableOutsideObjectWithRarity outsideMapObject in level.spawnableOutsideObjects)
             {
                 SpawnableOutsideObject? spawnable = outsideMapObject.spawnableObject;
-                if (spawnable?.prefabToSpawn == null)
+                if (spawnable == null || spawnable.prefabToSpawn == null)
                     continue;
 
                 GameObject prefab = spawnable.prefabToSpawn;
@@ -201,9 +202,9 @@ static class MapObjectRegistrationHandler
                     }
                 }
 
-                if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo> builder))
+                if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
                 {
-                    builder = new CurveTableBuilder<DawnMoonInfo>();
+                    builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
                     outsideWeightsByPrefab[prefab] = builder;
 
                     if (!outsidePlacementByPrefab.ContainsKey(prefab.name))
@@ -228,7 +229,7 @@ static class MapObjectRegistrationHandler
         foreach (var kvp in insideWeightsByPrefab)
         {
             GameObject prefab = kvp.Key;
-            ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
+            ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> table = kvp.Value.Build();
             insidePlacementByPrefab.TryGetValue(prefab.name, out InsideMapObjectSettings mapObjectSettings);
             DawnInsideMapObjectInfo insideInfo = new(
                 table,
@@ -247,7 +248,7 @@ static class MapObjectRegistrationHandler
         foreach (var kvp in outsideWeightsByPrefab)
         {
             GameObject prefab = kvp.Key;
-            ProviderTable<AnimationCurve?, DawnMoonInfo> table = kvp.Value.Build();
+            ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> table = kvp.Value.Build();
             outsidePlacementByPrefab.TryGetValue(prefab.name, out OutsideMapObjectSettings mapObjectSettings);
             DawnOutsideMapObjectInfo outsideInfo = new(
                 table,
@@ -351,7 +352,8 @@ static class MapObjectRegistrationHandler
         DawnMapObjectInfo mapObjectInfo = outsideInfo.ParentInfo;
 
         GameObject prefabToSpawn = mapObjectInfo.MapObject;
-        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
+        SpawnWeightContext context = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
 
         int randomNumberToSpawn;
         if (mapObjectInfo.HasNetworkObject)
@@ -550,7 +552,9 @@ static class MapObjectRegistrationHandler
                 newSpawnableMapObjects.Add(spawnableMapObject);
                 level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
             }
-            spawnableMapObject.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo()) ?? AnimationCurve.Constant(0, 1, 0);
+
+            SpawnWeightContext context = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+            spawnableMapObject.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 

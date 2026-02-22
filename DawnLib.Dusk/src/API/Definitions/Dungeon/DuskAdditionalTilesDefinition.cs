@@ -25,7 +25,7 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     public List<NamespacedKey<DawnArchetypeInfo>> archetypeKeys = new();
 
     [field: SerializeField]
-    public BranchCapSetting BranchCap { get; private set; }
+    public BranchCapSetting BranchCap { get; private set; } = BranchCapSetting.Regular | BranchCapSetting.BranchCap;
 
     [field: SerializeField]
     public DuskPredicate Predicate { get; private set; }

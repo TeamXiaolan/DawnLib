@@ -11,7 +11,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
 
         // maybe replace this (vvv) with a SpawnableMapObject Builder?
         private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances; // this feels like it should be one SO or some data thing instead of a million bools
-        private ProviderTable<AnimationCurve?, DawnMoonInfo>? _weights;
+        private ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>? _weights;
 
         internal InsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -54,9 +54,9 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             return this;
         }
 
-        public InsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo>> callback)
+        public InsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
         {
-            CurveTableBuilder<DawnMoonInfo> builder = new CurveTableBuilder<DawnMoonInfo>();
+            CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
             callback(builder);
             _weights = builder.Build();
             return this;
@@ -67,7 +67,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo>.Empty();
+                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>.Empty();
             }
             return new DawnInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
         }
@@ -82,7 +82,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
         private Vector3 _rotationOffset = Vector3.zero;
         private string[] _spawnableFloorTags = Array.Empty<string>();
 
-        private ProviderTable<AnimationCurve?, DawnMoonInfo>? _weights;
+        private ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>? _weights;
 
         internal OutsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -125,9 +125,9 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             return this;
         }
 
-        public OutsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo>> callback)
+        public OutsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
         {
-            CurveTableBuilder<DawnMoonInfo> builder = new CurveTableBuilder<DawnMoonInfo>();
+            CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
             callback(builder);
             _weights = builder.Build();
             return this;
@@ -138,7 +138,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo>.Empty();
+                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>.Empty();
             }
             return new DawnOutsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _objectWidth, _spawnableFloorTags, _rotationOffset, _alignWithTerrain, _minimumNodeSpawnRequirement);
         }

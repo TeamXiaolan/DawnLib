@@ -2,20 +2,24 @@ using System;
 using System.Collections.Generic;
 using Dawn;
 using UnityEngine;
-using static Dawn.TerminalCommandRegistration;
 
 namespace Dusk;
 
 [Serializable]
-public class QueryCommand
+public class SimpleQueryCommand
 {
     [field: SerializeField]
     public bool Enabled { get; private set; }
 
     [field: SerializeField]
-    public string QueryDisplayText { get; private set; }
+    [field: TextArea(3, 10)]
+    public string ResultDisplayText { get; private set; }
 
     [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public string ContinueOrCancelDisplayText { get; private set; }
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
     public string CancelDisplayText { get; private set; }
 
     [field: SerializeField]
@@ -25,59 +29,172 @@ public class QueryCommand
     public string ContinueKeyword { get; private set; }
 }
 
+[Serializable]
+public class ComplexQueryCommand
+{
+    [field: SerializeField]
+    public bool Enabled { get; private set; }
+
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public List<string> ResultDisplayTexts { get; private set; }
+
+    [field: SerializeField]
+    public List<string> ContinueKeywords { get; private set; }
+
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public string ContinueOrCancelDisplayText { get; private set; }
+}
+
+[Serializable]
+public class ComplexCommand
+{
+    [field: SerializeField]
+    public bool Enabled { get; private set; }
+
+    [field: SerializeField]
+    public List<string> SecondaryKeywords { get; private set; }
+
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public List<string> ResultDisplayTexts { get; private set; }
+}
+
+[Serializable]
+public class SimpleCommand
+{
+    [field: SerializeField]
+    public bool Enabled { get; private set; }
+
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public string ResultDisplayText { get; private set; }
+}
+
+[Serializable]
+public class SimpleInputCommand
+{
+    [field: SerializeField]
+    public bool Enabled { get; private set; }
+
+    [field: SerializeField]
+    public List<string> Inputs { get; private set; }
+
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public List<string> InputResults { get; private set; }
+
+    [field: SerializeField]
+    [field: TextArea(3, 10)]
+    public string FailedInputResult { get; private set; }
+}
+
 [CreateAssetMenu(fileName = "New TerminalCommand Definition", menuName = $"{DuskModConstants.Definitions}/TerminalCommand Definition")]
 public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalCommandInfo>
 {
     [field: SerializeField]
-    public string CommandName { get; private set; }
-
-    [field: SerializeField]
-    [field: TextArea(2, 20)]
-    public string CommandMainText { get; private set; }
+    public TerminalCommandBasicInformation CommandBasicInformation { get; private set; }
 
     [field: SerializeField]
     public List<string> CommandKeywordsList { get; private set; }
 
     [field: SerializeField]
-    [field: Tooltip("Category of the command for internal use.")]
-    public string CommandCategory { get; private set; }
-
-    [field: SerializeField]
-    [field: Tooltip("Description of the command for internal use.")]
-    public string CommandDescription { get; private set; }
-
-    [field: SerializeField]
-    [field: Tooltip("Clear text flags for the command, i.e. which commands clear text on entering.")]
-    public ClearText CommandClearTextFlags { get; private set; }
-
-    [field: SerializeField]
     [field: Tooltip("Setup a query command that involves a continue and cancel operation to reach the main command text.")]
-    public QueryCommand QueryCommand { get; private set; }
+    public SimpleQueryCommand SimpleQueryCommand { get; private set; }
+
+    [field: SerializeField]
+    [field: Tooltip("Setup a complex query command that can have multiple continues and one cancel operation to reach multiple main command texts.")]
+    public ComplexQueryCommand ComplexQueryCommand { get; private set; }
+
+    [field: SerializeField]
+    public ComplexCommand ComplexCommand { get; private set; }
+
+    [field: SerializeField]
+    public SimpleCommand SimpleCommand { get; private set; }
+
+    [field: SerializeField]
+    public SimpleInputCommand SimpleInputCommand { get; private set; }
 
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
 
-        DawnLib.DefineTerminalCommand(TypedKey, CommandName, builder =>
+        DawnLib.DefineTerminalCommand(TypedKey, CommandBasicInformation, builder =>
         {
-            builder.SetEnabled(new SimpleProvider<bool>(true));
-            builder.SetMainText(() => CommandMainText);
-            builder.SetKeywords(new SimpleProvider<List<string>>(CommandKeywordsList));
-            builder.SetCategoryName(CommandCategory);
-            builder.SetDescription(CommandDescription);
-            builder.SetClearTextFlags(CommandClearTextFlags);
-            if (QueryCommand.Enabled)
+            builder.SetKeywords(CommandKeywordsList);
+            if (SimpleQueryCommand.Enabled)
             {
-                builder.DefineQueryCommand(builder =>
+                builder.DefineSimpleQueryCommand(simpleQueryBuilder =>
                 {
-                    builder.SetQuery(() => QueryCommand.QueryDisplayText);
-                    builder.SetCancel(() => QueryCommand.CancelDisplayText);
-                    builder.SetCancelWord(QueryCommand.CancelKeyword);
-                    builder.SetContinueWord(QueryCommand.ContinueKeyword);
+                    simpleQueryBuilder.SetResult(() => SimpleQueryCommand.ResultDisplayText);
+                    simpleQueryBuilder.SetCancel(() => SimpleQueryCommand.CancelDisplayText);
+                    simpleQueryBuilder.SetContinueOrCancel(() => SimpleQueryCommand.ContinueOrCancelDisplayText);
+                    simpleQueryBuilder.SetCancelWord(SimpleQueryCommand.CancelKeyword);
+                    simpleQueryBuilder.SetContinueWord(SimpleQueryCommand.ContinueKeyword);
+                });
+            }
+
+            if (ComplexQueryCommand.Enabled)
+            {
+                builder.DefineComplexQueryCommand(complexQueryBuilder =>
+                {
+                    List<Func<string>> resultDisplayTexts = new();
+                    foreach (string resultDisplayText in ComplexQueryCommand.ResultDisplayTexts)
+                    {
+                        resultDisplayTexts.Add(() => resultDisplayText);
+                    }
+                    complexQueryBuilder.SetResultDisplayTexts(resultDisplayTexts);
+                    complexQueryBuilder.SetContinueOrCancelDisplayTexts(() => ComplexQueryCommand.ContinueOrCancelDisplayText);
+                    complexQueryBuilder.SetContinueKeywords(ComplexQueryCommand.ContinueKeywords);
+                });
+            }
+
+            if (ComplexCommand.Enabled)
+            {
+                builder.DefineComplexCommand(complexCommandBuilder =>
+                {
+                    complexCommandBuilder.SetSecondaryKeywords(ComplexCommand.SecondaryKeywords);
+
+                    List<Func<string>> resultDisplayTexts = new();
+                    foreach (string resultDisplayText in ComplexCommand.ResultDisplayTexts)
+                    {
+                        resultDisplayTexts.Add(() => resultDisplayText);
+                    }
+                    complexCommandBuilder.SetResultsDisplayText(resultDisplayTexts);
+                });
+            }
+
+            if (SimpleCommand.Enabled)
+            {
+                builder.DefineSimpleCommand(simpleCommandBuilder =>
+                {
+                    simpleCommandBuilder.SetResultDisplayText(() => SimpleCommand.ResultDisplayText);
+                });
+            }
+
+            if (SimpleInputCommand.Enabled)
+            {
+                builder.DefineInputCommand(simpleInputCommandBuilder =>
+                {
+                    simpleInputCommandBuilder.SetResultDisplayText(SimpleInputResult);
                 });
             }
             ApplyTagsTo(builder);
         });
+    }
+
+    public string SimpleInputResult(string input)
+    {
+        for (int i = 0; i < SimpleInputCommand.Inputs.Count; i++)
+        {
+            string possibleInput = SimpleInputCommand.Inputs[i];
+            if (input.Equals(possibleInput, StringComparison.OrdinalIgnoreCase))
+            {
+                return SimpleInputCommand.InputResults[i];
+            }
+        }
+        return SimpleInputCommand.FailedInputResult;
     }
 
     public override void TryNetworkRegisterAssets()
@@ -85,5 +202,5 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
 
     }
 
-    protected override string EntityNameReference => CommandName ?? string.Empty;
+    protected override string EntityNameReference => CommandBasicInformation.CommandName ?? string.Empty;
 }

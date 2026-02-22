@@ -11,7 +11,7 @@ public interface ITerminalKeyword
     {
         Unset = 0, //used for default value before it has been set, ie. vanilla keywords or keywords added outside of DawnLib
         Core, //core vanilla keywords that overwriting could severely affect gameplay
-        Code, //doors, turrets, etc.
+        TerminalObject, //doors, turrets, etc.
         Moons,
         Ships,
         Vehicles,
@@ -19,7 +19,7 @@ public interface ITerminalKeyword
         Bestiary,
         SigurdLog,
         TerminalEvent, //Will contain commands created by LLL, WeatherRegistry, etc.
-        DawnCommand, //Standard DawnLib-made commands
+        DawnCommand,
         Other
     }
 

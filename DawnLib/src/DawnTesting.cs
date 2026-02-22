@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Dawn.Internal;
-using Dawn.Utils;
-using UnityEngine.Events;
+﻿using System;
 
 namespace Dawn;
 
@@ -9,74 +6,103 @@ internal class DawnTesting
 {
     internal static void TestCommands()
     {
-        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "version_command"), "DawnLibVersion", builder =>
+        TerminalCommandBasicInformation versionCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibVersionCommand", "Test", "Prints the version of DawnLib!", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "version_command"), versionCommandBasicInformation, builder =>
         {
-            builder.SetEnabled(new FuncProvider<bool>(ShouldAddVersion));
-            builder.SetMainText(() => $"DawnLib version {MyPluginInfo.PLUGIN_VERSION}\n\n");
-            builder.SetKeywords(new SimpleProvider<List<string>>(["dawn version", "version"]));
-            builder.SetCategoryName("Test");
-            builder.SetDescription("Prints the version of DawnLib");
-            builder.SetClearTextFlags(TerminalCommandRegistration.ClearText.Result | TerminalCommandRegistration.ClearText.Query);
-        });
+            builder.SetKeywords(["version"]);
+            builder.DefineSimpleCommand(simpleBuilder =>
+            {
+                simpleBuilder.SetResultDisplayText(() => $"DawnLib version {MyPluginInfo.PLUGIN_VERSION}");
+            });
+        }); // Simple command
 
-        UnityEvent test = new();
-        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "lights_command"), "DawnLibLights", builder =>
+        TerminalCommandBasicInformation lightsCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibLightsCommand", "Test", "Toggles the lights in the ship.", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "lights_command"), lightsCommandBasicInformation, builder =>
         {
-            builder.SetEnabled(new SimpleProvider<bool>(true));
-            builder.SetMainText(BasicLightsCommand);
-            builder.SetKeywords(new FuncProvider<List<string>>(LightsKeywords));
-            builder.SetOverrideKeywords(true);
-            builder.SetCategoryName("Test");
-            builder.SetDescription("Toggles the lights in the ship.");
-            builder.SetCustomBuildEvent(test);
-        });
-        On.Terminal.Start += (orig, self) =>
-        {
-            orig(self);
-            DawnPlugin.Logger.LogMessage("TEST: Late custom build event!");
-            test.Invoke();
-        };
+            builder.SetKeywords(["lights", "dark", "vow", "help"]);
+            builder.DefineSimpleCommand(simpleBuilder =>
+            {
+                simpleBuilder.SetResultDisplayText(BasicLightsCommand);
+            });
+        }); // Simple Command
 
-        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_input_command"), "DawnLibInputs", builder =>
+        TerminalCommandBasicInformation complexCommandExampleBasicInformation = new TerminalCommandBasicInformation("DawnLibComplexCommand", "Test", "Test complex command", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_complex_command"), complexCommandExampleBasicInformation, builder =>
         {
-            builder.SetEnabled(new SimpleProvider<bool>(true));
-            builder.SetMainText(InputCommandExample);
-            builder.SetKeywords(new SimpleProvider<List<string>>(["input"]));
-            builder.SetCategoryName("Test");
-            builder.SetAcceptInput(true);
-            builder.SetDescription("Takes the player's input and uses it on the next screen.");
-        });
+            builder.SetKeywords(["complex"]);
+            builder.DefineComplexCommand(complexBuilder =>
+            {
+                complexBuilder.SetSecondaryKeywords(["first", "second", "third"]);
+                complexBuilder.SetResultsDisplayText([() => "result 1", () => "result 2", () => "result 3"]);
+            });
+        }); // Complex Command
 
-        DawnEvent<bool> dawnEvent = new();
-        dawnEvent.OnInvoke += continued =>
+        TerminalCommandBasicInformation inputCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibInputs", "Test", "Takes the player's input and uses it on the next screen.", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_input_command"), inputCommandBasicInformation, builder =>
+        {
+            builder.SetKeywords(["input"]);
+            builder.DefineInputCommand(inputBuilder =>
+            {
+                inputBuilder.SetResultDisplayText(InputCommandExample);
+            });
+        }); // Input Command
+
+        Action<bool> dawnEvent = new(continued =>
         {
             if (!continued)
             {
                 GameNetworkManager.Instance.localPlayerController.DamagePlayer(50);
             }
-        };
-        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_query_command"), "DawnLibQuery", builder =>
+        });
+        TerminalCommandBasicInformation queryCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibQueryCommand", "Test", "Test query command with added compatible nouns", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_query_command"), queryCommandBasicInformation, builder =>
         {
-            builder.SetEnabled(new SimpleProvider<bool>(true));
-            builder.SetMainText(() => "You have selected, YES!\n\n");
-            builder.SetKeywords(new SimpleProvider<List<string>>(["qUEry", "version"]));
-            builder.SetCategoryName("Test");
-            builder.SetClearTextFlags(TerminalCommandRegistration.ClearText.Query);
-            builder.SetDescription("Test query command with added compatible nouns");
-            builder.DefineQueryCommand(queryCommandBuilder =>
+            builder.SetKeywords(["qUEry", "version"]);
+            builder.DefineSimpleQueryCommand(queryCommandBuilder =>
             {
-                queryCommandBuilder.SetQuery(() => "This is a test query, respond [YES] or [NO]\n\n");
+                queryCommandBuilder.SetResult(() => "You have selected, YES!\n\n");
+                queryCommandBuilder.SetContinueOrCancel(() => "This is a test query, respond [YES] or [NO]\n\n");
                 queryCommandBuilder.SetCancel(() => "You have selected, NO!\n\n");
-                queryCommandBuilder.SetContinueConditions(new FuncProvider<bool>(() => GameNetworkManager.Instance.localPlayerController.currentlyHeldObjectServer != null));
+                queryCommandBuilder.SetContinueConditions(new Func<bool>(() => GameNetworkManager.Instance.localPlayerController.currentlyHeldObjectServer != null));
                 queryCommandBuilder.SetQueryEvent(dawnEvent);
                 queryCommandBuilder.SetContinueWord("yes");
                 queryCommandBuilder.SetCancelWord("no");
             });
-        });
+        }); // Simple Query Command
+
+        TerminalCommandBasicInformation complexQueryCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibComplexQueryCommand", "Test", "Test complex query command", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_complex_query_command"), complexQueryCommandBasicInformation, builder =>
+        {
+            builder.SetKeywords(["complex query", "please"]);
+            builder.DefineComplexQueryCommand(complexQueryCommandBuilder =>
+            {
+                complexQueryCommandBuilder.SetContinueOrCancelDisplayTexts(() => "This is a test complex query, what's your favourite mod?\n\n");
+                complexQueryCommandBuilder.SetResultDisplayTexts([() => "wow, that's a nice mod", () => "Not a good mod", () => "It's had its ups and downs"]);
+                complexQueryCommandBuilder.SetContinueKeywords(["coderebirth", "surfaced", "biodiversity"]);
+                complexQueryCommandBuilder.SetCancelKeyword("usefulzapgun");
+                complexQueryCommandBuilder.SetCancelDisplayText(() => "That's not a nice mod\n\n");
+            });
+        }); // Complex Query Command
+
+        TerminalCommandBasicInformation eventDrivenCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibEventDrivenCommand", "Test", "Test event driven command", ClearText.Result | ClearText.Query);
+        DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "test_event_driven_command"), eventDrivenCommandBasicInformation, builder =>
+        {
+            builder.SetKeywords(["event driven"]);
+            builder.DefineEventDrivenCommand(eventDrivenCommandBuilder =>
+            {
+                eventDrivenCommandBuilder.SetResultNodeDisplayText(() => "This is a test event driven command, it copies the... eject command... wait what?\n\n");
+                eventDrivenCommandBuilder.SetOnTerminalEvent(VanillaTerminalEvents.EjectPlayersEvent);
+            });
+        }); // Event Driven Command
     }
 
     private static string BasicLightsCommand()
     {
+        if (StartOfRound.Instance == null)
+        {
+            return "Command not Initialized!\n\n";
+        }
+
         StartOfRound.Instance.shipRoomLights.ToggleShipLights();
         if (StartOfRound.Instance.shipRoomLights.areLightsOn)
         {
@@ -88,27 +114,8 @@ internal class DawnTesting
         }
     }
 
-    private static string InputCommandExample()
+    private static string InputCommandExample(string userInput)
     {
-        string cleanedText = TerminalRefs.Instance.screenText.text[^TerminalRefs.Instance.textAdded..];
-        if (string.IsNullOrEmpty(TerminalRefs.Instance.GetLastCommand()))
-        {
-            cleanedText = string.Empty;
-        }
-        else
-        {
-            cleanedText = cleanedText.Replace(TerminalRefs.Instance.GetLastCommand(), "").Trim();
-        }
-        return $"This is a test command displaying user input after the command.\n\nUser input is [ {cleanedText} ]\n\n";
-    }
-
-    private static bool ShouldAddVersion()
-    {
-        return true;
-    }
-
-    private static List<string> LightsKeywords()
-    {
-        return ["lights", "dark", "vow", "help"];
+        return $"This is a test command displaying user input after the command.\n\nUser input is [ {userInput} ]\n\n";
     }
 }

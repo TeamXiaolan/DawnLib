@@ -1,4 +1,46 @@
-# v0.7.15
+# v0.8.5
+
+- Updated to add better compat with LunarConfig MapObject weights.
+
+## v0.8.4
+
+- Fixed issue where extra scan events wouldn't run.
+- Improved terminal writing space for the display text to be bigger.
+
+## v0.8.3
+
+- Added a new command, `SimpleInput` for editor use, uses the Input command but for editor purposes like multiple results with specific inputs, including a failed result.
+- Added a bool for code based terminal commands to decide whether to build the command on terminal awake or manually call `DawnTerminalCommandInfo.InjectCommandIntoTerminal();`.
+
+## v0.8.2
+
+- Forgot to serialize the fields for the custom terminal commands in editor.
+
+## v0.8.1
+
+- Inherited a patch from CruiserImproved (that doesn't work with DawnLib installed) that fixes items from the cruiser close to the ship not being sent to the ship on lobby reload causing them to just float.
+
+## v0.8.0
+
+- Rewrote most of the terminal commands implementation to be simpler (for now) and much more extensible.
+  - Currently possible commands, some of these are not able to created via editor and require code:
+  - Input
+    - Feeds the player input back to them, allowing you to modify the text or running code according to whatever they might have typed, does not have unity editor support.
+  - SimpleQuery
+    - A command that has two outcomes, with a query that lets you type something to end up in either outcome, has unity editor support.
+  - ComplexQuery
+    - Similar to SimpleQuery, but allows you to have as many outcomes as you'd like, has unity editor support.
+  - Simple
+    - A command that displays text, that's it, has unity editor support.
+  - Complex
+    - Similar to Simple, takes in multiple words in one command to display different text, has unity editor support.
+  - EventDriven
+    - A command that has an event that is run when it's activated, does not have unity editor support.
+  - TerminalObject
+    - Used by Hazards, not much is able to be done with this yet, does not have unity editor support.
+- All these commands, when created via code, can have their results edited via a `Func<string>` for different results according to different conditions.
+
+## v0.7.15
 
 - Organised configs a bit more, user auto generated configs using the editor should be under the main configs auto generated now.
 

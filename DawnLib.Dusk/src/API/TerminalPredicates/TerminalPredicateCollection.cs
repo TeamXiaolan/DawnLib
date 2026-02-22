@@ -16,6 +16,7 @@ public class TerminalPredicateCollection : DuskTerminalPredicate
             predicate.Register(namespacedKey);
         }
     }
+
     public override TerminalPurchaseResult CanPurchase()
     {
         foreach (DuskTerminalPredicate predicate in _predicates)

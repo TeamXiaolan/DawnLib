@@ -46,6 +46,12 @@ public class TerminalNodeBuilder
         return this;
     }
 
+    public TerminalNodeBuilder SetDynamicDisplayText(Func<string> func)
+    {
+        _node.SetDynamicDisplayText(func);
+        return this;
+    }
+
     public TerminalNodeBuilder SetClearPreviousText(bool clearPreviousText)
     {
         _node.clearPreviousText = clearPreviousText;
@@ -97,12 +103,6 @@ public class TerminalNodeBuilder
     public TerminalNodeBuilder SetPlaySyncedClip(int clipIndex)
     {
         _node.playSyncedClip = clipIndex;
-        return this;
-    }
-
-    public TerminalNodeBuilder AddNodeFunction(Func<string> _function)
-    {
-        _node.SetNodeFunction(_function);
         return this;
     }
 

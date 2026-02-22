@@ -3,7 +3,6 @@ using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
 using MonoMod.RuntimeDetour;
-using UnityEngine;
 
 namespace Dawn;
 
