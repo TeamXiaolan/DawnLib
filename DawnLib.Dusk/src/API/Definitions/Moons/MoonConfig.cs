@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn.Utils;
 using UnityEngine;
@@ -19,4 +20,21 @@ public class MoonConfig(ConfigContext section, string EntityNameReference) : Dus
     public ConfigEntry<float>? InsideEnemySpawnRange = null;
     public ConfigEntry<float>? OutsideEnemySpawnRange = null;
     public ConfigEntry<float>? DaytimeEnemySpawnRange = null;
+
+    override internal List<ConfigEntryBase?> _configEntries => [
+        Cost,
+        TimeFactor,
+        DisableUnlockRequirements,
+        DisablePricingStrategy,
+        MinMaxScrap,
+        InsideEnemyPowerCount,
+        OutsideEnemyPowerCount,
+        DaytimeEnemyPowerCount,
+        InsideEnemySpawnCurve,
+        OutsideEnemySpawnCurve,
+        DaytimeEnemySpawnCurve,
+        InsideEnemySpawnRange,
+        OutsideEnemySpawnRange,
+        DaytimeEnemySpawnRange
+    ];
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 
 namespace Dusk;
@@ -12,4 +13,15 @@ public class MapObjectConfig(ConfigContext section, string EntityNameReference) 
     public ConfigEntry<bool>? OutsideHazard;
     public ConfigEntry<bool>? InsidePrioritiseMoon;
     public ConfigEntry<bool>? OutsidePrioritiseMoon;
+
+    override internal List<ConfigEntryBase?> _configEntries => [
+        InsideMoonCurveSpawnWeights,
+        InsideInteriorCurveSpawnWeights,
+        InsideHazard,
+        OutsideMoonCurveSpawnWeights,
+        OutsideInteriorCurveSpawnWeights,
+        OutsideHazard,
+        InsidePrioritiseMoon,
+        OutsidePrioritiseMoon
+    ];
 }

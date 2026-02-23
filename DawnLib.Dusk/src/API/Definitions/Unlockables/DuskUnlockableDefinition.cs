@@ -46,6 +46,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateUnlockableConfig(section);
+        BaseConfig = Config;
 
         DawnLib.DefineUnlockable(TypedKey, UnlockableItem, builder =>
         {

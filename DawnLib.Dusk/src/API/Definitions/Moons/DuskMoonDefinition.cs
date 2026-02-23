@@ -56,6 +56,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMoonConfig(section);
+        BaseConfig = Config;
 
         DawnLib.DefineMoon(TypedKey, Level, builder =>
         {

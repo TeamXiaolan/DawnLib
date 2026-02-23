@@ -25,8 +25,10 @@ public class DefaultContentHandler : ContentHandler
                 continue;
             }
 
-            DefaultBundle bundle = new(AssetBundle.LoadFromFile(path));
-            bundle.AssetBundleData = bundleData;
+            DefaultBundle bundle = new(AssetBundle.LoadFromFile(path))
+            {
+                AssetBundleData = bundleData
+            };
             LoadAllContent(bundle);
         }
     }

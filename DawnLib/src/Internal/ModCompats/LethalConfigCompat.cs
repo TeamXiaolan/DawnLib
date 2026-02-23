@@ -25,8 +25,10 @@ static class LethalConfigCompat
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
-        _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "dawnlib.dummy.youshouldneverseethis.cfg"), false);
-        _dummyConfig.SaveOnConfigSet = false;
+        _dummyConfig = new ConfigFile(Path.Combine(Application.persistentDataPath, "dawnlib.dummy.youshouldneverseethis.cfg"), false)
+        {
+            SaveOnConfigSet = false
+        };
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalConfig.AutoConfig.AutoConfigGenerator), "GenerateConfigForEntry"), ExtendGenerateConfigForEntry));
     }
@@ -35,14 +37,18 @@ static class LethalConfigCompat
     {
         try
         {
-            Debuggers.LethalConfig?.Log("On.GenerateConfigForEntry");
             BaseConfigItem result = orig(configEntryBase);
-            Debuggers.LethalConfig?.Log($"result is null? {result == null}");
-
-            if (result != null) return result;
+            if (result != null)
+            {
+                return result;
+            }
 
             // Check if BepInEx still can actually support this type
-            if (!TomlTypeConverter.CanConvert(configEntryBase.SettingType)) return null;
+            if (!TomlTypeConverter.CanConvert(configEntryBase.SettingType))
+            {
+                Debuggers.LethalConfig?.Log($"toml type converter can't support: {configEntryBase.SettingType}");
+                return null;
+            }
             Debuggers.LethalConfig?.Log($"toml type converter can actually support: {configEntryBase.SettingType}");
 
             // Create a poxy entry to spoof it as a string.
@@ -53,6 +59,7 @@ static class LethalConfigCompat
                 configEntryBase.Description.Description
             );
 
+            Debuggers.LethalConfig?.Log($"created proxy entry for {configEntryBase.Definition.Section}.{configEntryBase.Definition.Key} with type {configEntryBase.SettingType} and value {proxyEntry.Value}");
             proxyEntry.SettingChanged += (sender, args) => { configEntryBase.BoxedValue = TomlTypeConverter.ConvertToValue(proxyEntry.Value, configEntryBase.SettingType); };
             _dummyConfig.SettingChanged += (sender, args) =>
             {

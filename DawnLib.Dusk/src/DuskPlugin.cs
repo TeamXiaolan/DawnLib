@@ -15,9 +15,11 @@ public class DuskPlugin : BaseUnityPlugin
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
 
     internal static MainAssets Main { get; private set; } = null!;
+    internal static DuskPlugin Instance { get; private set; } = null!;
 
     private void Awake()
     {
+        Instance = this;
         Logger = base.Logger;
         PersistentData = this.GetPersistentDataContainer();
         Logger.LogInfo("Doing patches");

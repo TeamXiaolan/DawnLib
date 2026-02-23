@@ -100,6 +100,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateEntityReplacementConfig(section);
+        BaseConfig = Config;
 
         List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeightsCompat);
         List<NamespacedConfigWeight> Interiors = NamespacedConfigWeight.ConvertManyFromString(Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeightsCompat);

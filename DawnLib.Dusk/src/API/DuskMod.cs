@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using Dawn;
 using Dawn.Internal;
@@ -19,6 +20,7 @@ public class DuskMod
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
 
     private static readonly List<DuskMod> _allMods = new();
+    internal List<ConfigEntryBase> _configEntries = new();
 
     private readonly string _basePath;
 
@@ -36,21 +38,27 @@ public class DuskMod
 
     internal static DuskMod RegisterNoCodeMod(DuskModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
-        var plugin = modInfo.CreatePluginMetadata();
+        BepInPlugin plugin = modInfo.CreatePluginMetadata();
         Debuggers.Dusk?.Log("Registering no-code mod!");
         ConfigManager configManager = new(ConfigManager.GenerateConfigFile(plugin));
-        DuskMod noCodeMod = new(plugin, mainBundle, basePath, configManager);
-        noCodeMod.ModInformation = modInfo;
-        noCodeMod.Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID);
+        DuskMod noCodeMod = new(plugin, mainBundle, basePath, configManager)
+        {
+            ModInformation = modInfo,
+            Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID)
+        };
         _ = new DefaultContentHandler(noCodeMod);
+        if (DuskLethalConfigCompat.Enabled)
+        {
+            DuskLethalConfigCompat.CreateLethalConfigMod(noCodeMod);
+        }
         return noCodeMod;
     }
 
     private void ResolveCodeModInformation(Assembly assembly)
     {
         ModInformation = ScriptableObject.CreateInstance<DuskModInformation>();
-        var searchDir = Path.GetFullPath(assembly.Location);
-        var parent = Directory.GetParent(searchDir);
+        string searchDir = Path.GetFullPath(assembly.Location);
+        DirectoryInfo parent = Directory.GetParent(searchDir);
 
         while (parent != null && !string.Equals(parent.Name, "plugins", StringComparison.OrdinalIgnoreCase))
         {
@@ -63,10 +71,10 @@ public class DuskMod
 
         try
         {
-            var iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
+            string iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
             ModInformation.ModIcon = LoadIcon(iconPath);
 
-            var manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
+            string manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
             string manifestContents = File.ReadAllText(manifestPath);
             ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
 
@@ -90,11 +98,11 @@ public class DuskMod
         if (iconPath == default)
             return null;
 
-        var iconTex = new Texture2D(256, 256);
+        Texture2D iconTex = new(256, 256);
         if (!iconTex.LoadImage(File.ReadAllBytes(iconPath), true))
             return null;
 
-        var ModIcon = Sprite.Create(iconTex, new Rect(0, 0, iconTex.width, iconTex.height), new Vector2(0.5f, 0.5f), 100);
+        Sprite ModIcon = Sprite.Create(iconTex, new Rect(0, 0, iconTex.width, iconTex.height), new Vector2(0.5f, 0.5f), 100);
         return ModIcon;
     }
 
@@ -119,6 +127,7 @@ public class DuskMod
     }
     public static IReadOnlyList<DuskMod> AllMods => _allMods.AsReadOnly();
 
+    public IReadOnlyList<ConfigEntryBase> ConfigEntries => _configEntries.AsReadOnly(); 
     public ConfigManager ConfigManager { get; }
     public ContentContainer Content { get; }
 

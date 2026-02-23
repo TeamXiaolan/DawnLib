@@ -80,6 +80,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMapObjectConfig(section);
+        BaseConfig = Config;
 
         DawnLib.DefineMapObject(TypedKey, GameObject, builder =>
         {

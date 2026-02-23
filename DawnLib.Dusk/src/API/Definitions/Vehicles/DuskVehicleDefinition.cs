@@ -82,6 +82,7 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateVehicleConfig(section);
+        BaseConfig = Config;
 
         if (GenerateCostConfig && Config.Cost is { } ConfigCost)
         {
