@@ -1,3 +1,5 @@
+// Compatibility Adapter written independently for interoperability with LethalConfig. No LethalConfig source code copied.
+
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;

@@ -105,8 +105,8 @@ static class DungeonRegistrationHandler
         if (!self.checkedForFirstTime)
         {
             self.checkedForFirstTime = true;
-            DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-            if (dungeonInfo.StingerDetail.FirstTimeAudio == null)
+            DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow.GetDawnInfo();
+            if (dungeonInfo == null || dungeonInfo.StingerDetail.FirstTimeAudio == null)
             {
                 orig(self);
                 return;
