@@ -8,7 +8,6 @@ using UnityEngine;
 namespace Dusk;
 public class ShipSpawnHandler
 {
-    /*
     private static ShipSpawnHandler instance = null!;
 
     private ShipSpawnHandler() {}
@@ -20,9 +19,6 @@ public class ShipSpawnHandler
             return instance;
         }
     }
-    */
-
-    public ShipSpawnHandler() { }
 
     /*
     * BE HAPPY PLAN (mel named it)
@@ -65,6 +61,10 @@ public class ShipSpawnHandler
     public Dictionary<string, GameObject> nonCrucialObjectsDict = new();
 
     public NetworkObject newNetworkShipObjects;
+
+    public DawnShipObjectReferences vanilaReferences;
+
+    public List<DawnSceneObjectReference> furnitureRefs; 
 
     public void Initialize()
     {
@@ -117,6 +117,34 @@ public class ShipSpawnHandler
             if (!skip) nonCrucialObjectsDict.Add(obj.name, obj.gameObject);
         }
         #endregion
+
+        vanilaReferences = StartOfRoundRefs.Instance.shipAnimatorObject.gameObject.AddComponent<DawnShipObjectReferences>();
+
+        vanilaReferences.outsideShipSpawnPosition = StartOfRoundRefs.Instance.outsideShipSpawnPosition;
+        vanilaReferences.groundOutsideShipSpawnPosition = StartOfRoundRefs.Instance.groundOutsideShipSpawnPosition;
+        vanilaReferences.rightmostSuitPosition = StartOfRoundRefs.Instance.rightmostSuitPosition;
+        vanilaReferences.ship3DAudio = StartOfRoundRefs.Instance.ship3DAudio;
+        vanilaReferences.shipDoorAudioSource = StartOfRoundRefs.Instance.shipDoorAudioSource;
+        vanilaReferences.shipDoorsAnimator = StartOfRoundRefs.Instance.shipDoorsAnimator;
+        vanilaReferences.shipRoomLights = StartOfRoundRefs.Instance.shipRoomLights;
+        vanilaReferences.closetLeftDoor = StartOfRoundRefs.Instance.closetLeftDoor;
+        vanilaReferences.closetRightDoor = StartOfRoundRefs.Instance.closetRightDoor;
+        vanilaReferences.gameOverCameraHandle = StartOfRoundRefs.Instance.gameOverCameraHandle;
+        vanilaReferences.middleOfShipNode = StartOfRoundRefs.Instance.middleOfShipNode;
+        vanilaReferences.shipDoorNode = StartOfRoundRefs.Instance.shipDoorNode;
+        vanilaReferences.middleOfSpaceNode = StartOfRoundRefs.Instance.middleOfSpaceNode;
+        vanilaReferences.moveAwayFromShipNode = StartOfRoundRefs.Instance.moveAwayFromShipNode;
+        vanilaReferences.shipBounds = StartOfRoundRefs.Instance.shipBounds;
+        vanilaReferences.shipInnerRoomBounds = StartOfRoundRefs.Instance.shipInnerRoomBounds;
+        vanilaReferences.shipStrictInnerRoomBounds = StartOfRoundRefs.Instance.shipStrictInnerRoomBounds;
+
+        foreach (var apts in autoParentToShipArray)
+        {
+            var reference = new GameObject($"{apts.gameObject.name} (Reference)");
+            var component = reference.AddComponent<DawnSceneObjectReference>();
+            component.foundObject = apts.transform;
+        }
+
     }
 
     public NamespacedKey LoadShipFromSave()
@@ -143,12 +171,18 @@ public class ShipSpawnHandler
             foreach (var go in nonCrucialObjectsDict.Values)
                 go.SetActive(true);
 
+            vanilaReferences.ReplaceReferences();
+
             newNetworkShipObjects.Despawn();
         }
         else
         {
             newNetworkShipObjects = LethalContent.Ships[namespacedKey.AsTyped<DawnShipInfo>()].ShipPrefab.GetComponent<NetworkObject>();
             newNetworkShipObjects.Spawn();
+
+            newNetworkShipObjects.GetComponent<DawnShipObjectReferences>().ReplaceReferences();
+
+            newNetworkShipObjects.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject);
 
             foreach (var go in nonCrucialObjectsDict.Values)
                 go.SetActive(false);

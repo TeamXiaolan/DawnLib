@@ -1,14 +1,7 @@
 ﻿using Dawn;
-using Dawn.Interfaces;
 using Dawn.Internal;
-using EasyTextEffects.Editor.MyBoxCopy.Extensions;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 
 namespace Dusk.Internal;
 
@@ -41,9 +34,7 @@ static class ShipRegistrationPatch
     private static void AddShipsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
         List<BuyableShipPreset> buyableShips = new();
-        NamespacedKey currentShip = NamespacedKey.From("lethal_company", "ship");
-        ShipSpawnHandler shipSpawnHandler = new();
-        shipSpawnHandler.Initialize();
+        ShipSpawnHandler.Instance.Initialize();
 
         foreach (DuskShipDefinition shipDefinition in DuskModContent.Ships.Values)
         {
@@ -52,34 +43,35 @@ static class ShipRegistrationPatch
             if (DuskModContent.Ships.IsFrozen)
                 continue;
 
-            //fancy
-            DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From($"{shipDefinition.TypedKey.Namespace}", $"{shipDefinition.BuyableShipPreset.ShipName}QueryCommand"), $"{shipDefinition.BuyableShipPreset.ShipName}Query", builder =>
-            {
-                builder.SetEnabled(new SimpleProvider<bool>(true));
-                builder.SetMainText(() => "confirmed\n\n"); //change that
-                builder.SetKeywords(new SimpleProvider<List<string>>([shipDefinition.BuyableShipPreset.ShipName]));
-                builder.SetCategoryName("ShipShopCategory");
-                builder.SetClearTextFlags(TerminalCommandRegistration.ClearText.Query);
-                builder.SetDescription($"Buy {shipDefinition.BuyableShipPreset.ShipName}.");
-                builder.DefineQueryCommand(queryCommandBuilder =>
-                {
-                    DawnEvent<bool> dawnEvent = new();
-                    dawnEvent.OnInvoke += (bool value) =>
-                    {
-                        shipSpawnHandler.ChangeShip(shipDefinition.Key);
-                    };
+            //TerminalKeyword keyword = new TerminalKeywordBuilder($"{shipDefinition.BuyableShipPreset.ShipName}BuyKeyword", shipDefinition.BuyableShipPreset.ShipName, ITerminalKeyword.DawnKeywordType.Ships)
+            //.SetDefaultVerb(TerminalRefs.BuyKeyword)
+            //.Build();
 
-                    queryCommandBuilder.SetQuery(() => $"Are you sure you want to buy {shipDefinition.BuyableShipPreset.ShipName}?"); //add confirm or deny text
+            //LethalContent.TerminalCommands[TerminalCommandKeys.Buy].CommandKeywords.Add(keyword);
+
+            //fancy
+            //i THINK i should do mess with it and add to BUY command somehow but head hurts
+            TerminalCommandBasicInformation commandBaseInfo = new($"{shipDefinition.BuyableShipPreset.ShipName}Query", "ship category", "test ship api", ClearText.Query);
+            DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From($"{shipDefinition.TypedKey.Namespace}", $"{shipDefinition.BuyableShipPreset.ShipName}QueryCommand"), commandBaseInfo, builder =>
+            {
+                builder.SetKeywords(new List<string>([shipDefinition.BuyableShipPreset.ShipName]));
+                builder.DefineSimpleQueryCommand(queryCommandBuilder =>
+                {
+                    queryCommandBuilder.SetContinueOrCancel(() => $"Are you sure you want to buy {shipDefinition.BuyableShipPreset.ShipName}?"); //add confirm or deny text
                     queryCommandBuilder.SetCancel(() => ""); //change that
                     queryCommandBuilder.SetContinueWord("confirm");
                     queryCommandBuilder.SetCancelWord("deny");
-                    queryCommandBuilder.SetQueryEvent(dawnEvent);
+                    queryCommandBuilder.SetQueryEvent((bool value) => ShipSpawnHandler.Instance.ChangeShip(shipDefinition.Key));
                 });
             });
         }
         
         ((ITerminal)self).BuyableShips = buyableShips;
-        ((ITerminal)self).CurrentShip = shipSpawnHandler.LoadShipFromSave().ToString();
+        NamespacedKey currentShip = ShipSpawnHandler.Instance.LoadShipFromSave();
+        ((ITerminal)self).CurrentShip = currentShip.ToString();
+
+        if (currentShip.IsModded())
+            ShipSpawnHandler.Instance.ChangeShip(currentShip);
 
         DuskModContent.Ships.Freeze();
         orig(self);
