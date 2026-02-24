@@ -14,7 +14,11 @@ static class LCBetterSaveCompat
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static void Init()
     {
-        if (alreadyHooked) return;
+        if (alreadyHooked)
+        {
+            return;
+        }
+
         alreadyHooked = true;
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(DeleteFileButton_BetterSaves), "DeleteFile"), OnFileDeleteSaveDataPatch));
     }

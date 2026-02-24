@@ -1,5 +1,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using BepInEx.Configuration;
+using Dawn;
 
 namespace Dusk;
 public abstract class ContentHandler(DuskMod mod)
@@ -21,8 +23,9 @@ public abstract class ContentHandler(DuskMod mod)
 
         using (ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
         {
-            bool isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true).Value;
-            return isEnabled;
+            ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true);
+            mod._configEntries.Add(isEnabled);
+            return isEnabled.Value;
         }
     }
 
@@ -63,6 +66,7 @@ public abstract class ContentHandler(DuskMod mod)
             definition.AssetBundleData = bundle.AssetBundleData;
             definition.Register(mod);
             definition.RegisterPost(mod);
+            definition.RegisterConfigs(mod);
         }
     }
 

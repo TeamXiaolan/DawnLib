@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 
 namespace Dusk;
@@ -9,4 +10,12 @@ public class UnlockableConfig(ConfigContext section, string EntityNameReference)
     public ConfigEntry<bool>? DisableUnlockRequirement;
     public ConfigEntry<bool>? DisablePricingStrategy;
     public ConfigEntry<bool>? IsShipUpgrade;
+
+    override internal List<ConfigEntryBase?> _configEntries => [
+        Cost,
+        IsDecor,
+        DisableUnlockRequirement,
+        DisablePricingStrategy,
+        IsShipUpgrade
+    ];
 }

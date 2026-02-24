@@ -9,9 +9,11 @@ namespace Dusk;
 // todo: look over this again and see how much can become toml types?
 public class ConfigManager(ConfigFile file)
 {
+    public ConfigFile File { get; } = file;
+
     public ConfigContext CreateConfigSection(string header)
     {
-        return new ConfigContext(file, header);
+        return new ConfigContext(File, header);
     }
 
     public ConfigContext CreateConfigSectionForBundleData(AssetBundleData data)

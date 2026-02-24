@@ -79,6 +79,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateEnemyConfig(section);
+        BaseConfig = Config;
 
         if (GeneratePowerLevelConfig && Config.PowerLevel is { } ConfigPowerLevel)
         {

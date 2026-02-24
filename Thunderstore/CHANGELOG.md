@@ -1,4 +1,8 @@
-# v0.8.5
+# v0.8.6
+
+- Added better LethalConfig compatibility from No-Code/Editor based mods (They used to not show up with no-code/editor based mods but now they do).
+
+## v0.8.5
 
 - Updated to add better compat with LunarConfig MapObject weights.
 

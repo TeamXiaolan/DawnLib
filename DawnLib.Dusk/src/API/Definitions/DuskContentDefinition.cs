@@ -19,6 +19,7 @@ public abstract class DuskContentDefinition : ScriptableObject
     internal List<NamespacedKey> _tags = new();
 
     internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
+    public DuskBaseConfig? BaseConfig { get; set; }
     public DuskMod Mod { get; private set; }
 
     internal AssetBundleData AssetBundleData;
@@ -40,8 +41,24 @@ public abstract class DuskContentDefinition : ScriptableObject
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (DuskDynamicConfig configDefinition in _configEntries)
         {
-            generalConfigs[configDefinition.settingName.CleanStringForConfig()] = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
+            ConfigEntryBase entry = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
+            generalConfigs[configDefinition.settingName.CleanStringForConfig()] = entry;
         }
+    }
+
+    public void RegisterConfigs(DuskMod mod)
+    {
+        foreach (KeyValuePair<string, ConfigEntryBase> entry in generalConfigs)
+        {
+            mod._configEntries.Add(entry.Value);
+        }
+
+        if (BaseConfig == null)
+        {
+            return;
+        }
+
+        mod._configEntries.AddRange(BaseConfig.ConfigEntries());
     }
 
     public abstract void TryNetworkRegisterAssets();

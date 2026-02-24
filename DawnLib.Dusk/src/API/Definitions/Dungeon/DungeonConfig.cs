@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn.Utils;
 
@@ -9,4 +10,11 @@ public class DungeonConfig(ConfigContext section, string EntityNameReference) : 
     public ConfigEntry<string>? WeatherSpawnWeights;
     public ConfigEntry<BoundedRange>? DungeonRangeClamp;
     public ConfigEntry<int>? ExtraScrapGeneration;
+
+    override internal List<ConfigEntryBase?> _configEntries => [
+        MoonSpawnWeights,
+        WeatherSpawnWeights,
+        DungeonRangeClamp,
+        ExtraScrapGeneration
+    ];
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 
 namespace Dusk;
@@ -9,4 +10,12 @@ public class EnemyConfig(ConfigContext section, string EntityNameReference) : Du
     public ConfigEntry<string>? WeatherSpawnWeights;
     public ConfigEntry<float>? PowerLevel;
     public ConfigEntry<int>? MaxSpawnCount;
+
+    override internal List<ConfigEntryBase?> _configEntries => [
+        MoonSpawnWeights,
+        InteriorSpawnWeights,
+        WeatherSpawnWeights,
+        PowerLevel,
+        MaxSpawnCount
+    ];
 }

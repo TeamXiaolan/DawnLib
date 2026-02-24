@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn.Utils;
 
@@ -13,4 +14,16 @@ public class ItemConfig(ConfigContext section, string EntityNameReference) : Dus
     public ConfigEntry<string>? InteriorSpawnWeights;
     public ConfigEntry<string>? WeatherSpawnWeights;
     public ConfigEntry<BoundedRange>? Worth;
+
+    override internal List<ConfigEntryBase?> _configEntries => [
+        Cost,
+        IsScrapItem,
+        IsShopItem,
+        DisableUnlockRequirements,
+        DisablePricingStrategy,
+        MoonSpawnWeights,
+        InteriorSpawnWeights,
+        WeatherSpawnWeights,
+        Worth
+    ];
 }

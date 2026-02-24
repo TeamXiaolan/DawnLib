@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
+using Dawn.Internal;
 
 namespace Dusk;
 
-public class DuskBaseConfig
+public abstract class DuskBaseConfig
 {
     public DuskBaseConfig(ConfigContext section, string EntityNameReference)
     {
@@ -26,5 +28,20 @@ public class DuskBaseConfig
         {
             configEntry.Value = value;
         }
+    }
+
+    abstract internal List<ConfigEntryBase?> _configEntries { get; }
+    public List<ConfigEntryBase> ConfigEntries()
+    {
+        List<ConfigEntryBase> configEntries = [AllowEditingConfig];
+        foreach (ConfigEntryBase? configEntry in _configEntries)
+        {
+            if (configEntry != null)
+            {
+                configEntries.Add(configEntry);
+            }
+        }
+
+        return configEntries;
     }
 }

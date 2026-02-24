@@ -73,6 +73,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateDungeonConfig(section);
+        BaseConfig = Config;
 
         List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeightsCompat);
         List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeightsCompat);
@@ -101,12 +102,13 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
     public DungeonConfig CreateDungeonConfig(ConfigContext section)
     {
-        DungeonConfig dungeonConfig = new(section, EntityNameReference);
-
-        dungeonConfig.MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat) : null;
-        dungeonConfig.WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat) : null;
-        dungeonConfig.ExtraScrapGeneration = GenerateExtraScrapConfig ? section.Bind($"{EntityNameReference} | Extra Scrap Generation", $"Extra scrap generation for {EntityNameReference}.", ExtraScrapGeneration) : null;
-        dungeonConfig.DungeonRangeClamp = GenerateClampConfig ? section.Bind($"{EntityNameReference} | Dungeon Range Clamp", $"Dungeon range clamp for {EntityNameReference}.", DungeonRangeClamp) : null;
+        DungeonConfig dungeonConfig = new(section, EntityNameReference)
+        {
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat) : null,
+            ExtraScrapGeneration = GenerateExtraScrapConfig ? section.Bind($"{EntityNameReference} | Extra Scrap Generation", $"Extra scrap generation for {EntityNameReference}.", ExtraScrapGeneration) : null,
+            DungeonRangeClamp = GenerateClampConfig ? section.Bind($"{EntityNameReference} | Dungeon Range Clamp", $"Dungeon range clamp for {EntityNameReference}.", DungeonRangeClamp) : null
+        };
 
         if (!dungeonConfig.UserAllowedToEdit())
         {
