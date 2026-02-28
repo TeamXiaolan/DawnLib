@@ -9,6 +9,7 @@ public class DawnSceneObjectReference : MonoBehaviour
     public string sceneObjectReferenceSearch;
     public bool keepVisible = false;
 
+    //color prob should be in editor script
     [Space]
     public Color hologramColor = new Color(.15f, .8f, .8f, .25f);
     public Color wireframeColor = new Color(0f, 1f, 1f, .25f);
@@ -22,6 +23,8 @@ public class DawnSceneObjectReference : MonoBehaviour
     {
         //i could assume that root is always Environment but i was thinking about more general aproach 
         //var root = StartOfRound.Instance.shipAnimatorObject.transform.parent;
+        if (foundObject) return true;
+
         var activeScene = SceneManager.GetActiveScene();
         var roots = activeScene.GetRootGameObjects();
         var root = roots.FirstOrDefault(go => go.name == cachedObjectPath.Split('/')[0]);

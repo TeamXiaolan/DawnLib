@@ -26,6 +26,7 @@ public class DawnShipObjectReferences : MonoBehaviour
     public Collider shipBounds;
     public Collider shipInnerRoomBounds;
     public Collider shipStrictInnerRoomBounds;
+    public Transform[] insideShipPositions;
 
     public List<DawnSceneObjectReference> dawnSceneObjectReferences = new();
 
@@ -38,8 +39,8 @@ public class DawnShipObjectReferences : MonoBehaviour
         StartOfRoundRefs.Instance.shipDoorAudioSource = shipDoorAudioSource;
         StartOfRoundRefs.Instance.shipDoorsAnimator = shipDoorsAnimator;
         StartOfRoundRefs.Instance.shipRoomLights = shipRoomLights;
-        StartOfRoundRefs.Instance.closetLeftDoor = closetLeftDoor;
-        StartOfRoundRefs.Instance.closetRightDoor = closetRightDoor;
+        //StartOfRoundRefs.Instance.closetLeftDoor = closetLeftDoor;
+        //StartOfRoundRefs.Instance.closetRightDoor = closetRightDoor;
         StartOfRoundRefs.Instance.gameOverCameraHandle = gameOverCameraHandle;
         StartOfRoundRefs.Instance.middleOfShipNode = middleOfShipNode;
         StartOfRoundRefs.Instance.shipDoorNode = shipDoorNode;
@@ -48,6 +49,7 @@ public class DawnShipObjectReferences : MonoBehaviour
         StartOfRoundRefs.Instance.shipBounds = shipBounds;
         StartOfRoundRefs.Instance.shipInnerRoomBounds = shipInnerRoomBounds;
         StartOfRoundRefs.Instance.shipStrictInnerRoomBounds = shipStrictInnerRoomBounds;
+        StartOfRoundRefs.Instance.insideShipPositions = insideShipPositions;
 
         foreach (var reference in dawnSceneObjectReferences)
         {

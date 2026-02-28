@@ -15,13 +15,15 @@ static class ShipRegistrationPatch
 
     private static string EditTextPostProcess(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
+        if (!node.displayText.Contains("[buyableVehiclesList]"))
+            return orig(self, modifiedDisplayText, node);
+        else if (!node.displayText.Contains("[buyableShipsList]"))
+            node.displayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
+
         if (!modifiedDisplayText.Contains("[buyableShipsList]"))
-        {
             modifiedDisplayText = modifiedDisplayText.Replace("[buyableVehiclesList]", "[buyableVehiclesList]\n[buyableShipsList]");
-        }
 
         modifiedDisplayText = orig(self,modifiedDisplayText, node);
-
         StringBuilder stringBuilder = new();
         foreach (BuyableShipPreset ship in (List<BuyableShipPreset>)((ITerminal)self).BuyableShips)
             stringBuilder.Append("\n* " + ship.ShipName + "  //  Price: $" + ship.Cost);
@@ -39,31 +41,6 @@ static class ShipRegistrationPatch
         foreach (DuskShipDefinition shipDefinition in DuskModContent.Ships.Values)
         {
             buyableShips.Add(shipDefinition.BuyableShipPreset);
-
-            if (DuskModContent.Ships.IsFrozen)
-                continue;
-
-            //TerminalKeyword keyword = new TerminalKeywordBuilder($"{shipDefinition.BuyableShipPreset.ShipName}BuyKeyword", shipDefinition.BuyableShipPreset.ShipName, ITerminalKeyword.DawnKeywordType.Ships)
-            //.SetDefaultVerb(TerminalRefs.BuyKeyword)
-            //.Build();
-
-            //LethalContent.TerminalCommands[TerminalCommandKeys.Buy].CommandKeywords.Add(keyword);
-
-            //fancy
-            //i THINK i should do mess with it and add to BUY command somehow but head hurts
-            TerminalCommandBasicInformation commandBaseInfo = new($"{shipDefinition.BuyableShipPreset.ShipName}Query", "ship category", "test ship api", ClearText.Query);
-            DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From($"{shipDefinition.TypedKey.Namespace}", $"{shipDefinition.BuyableShipPreset.ShipName}QueryCommand"), commandBaseInfo, builder =>
-            {
-                builder.SetKeywords(new List<string>([shipDefinition.BuyableShipPreset.ShipName]));
-                builder.DefineSimpleQueryCommand(queryCommandBuilder =>
-                {
-                    queryCommandBuilder.SetContinueOrCancel(() => $"Are you sure you want to buy {shipDefinition.BuyableShipPreset.ShipName}?"); //add confirm or deny text
-                    queryCommandBuilder.SetCancel(() => ""); //change that
-                    queryCommandBuilder.SetContinueWord("confirm");
-                    queryCommandBuilder.SetCancelWord("deny");
-                    queryCommandBuilder.SetQueryEvent((bool value) => ShipSpawnHandler.Instance.ChangeShip(shipDefinition.Key));
-                });
-            });
         }
         
         ((ITerminal)self).BuyableShips = buyableShips;
@@ -72,6 +49,12 @@ static class ShipRegistrationPatch
 
         if (currentShip.IsModded())
             ShipSpawnHandler.Instance.ChangeShip(currentShip);
+        else
+        {
+            PersistentDataContainer? save = DawnLib.GetCurrentSave();
+            NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
+            save?.Set(currentShipKey, currentShip);
+        }
 
         DuskModContent.Ships.Freeze();
         orig(self);

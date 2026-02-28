@@ -1,3 +1,4 @@
+using Dawn.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -237,6 +238,11 @@ public class TerminalCommandInfoBuilder : BaseInfoBuilder<DawnTerminalCommandInf
             {
                 _onQueryContinuedEvent = new Action<bool>(_ => { });
             }
+
+            //Debuggers.Ships.Log(_parentBuilder == null);
+            //Debuggers.Ships.Log(_parentBuilder.key == null);
+            //Debuggers.Ships.Log(_parentBuilder.key.ToString());
+            //Debuggers.Ships.Log(_parentBuilder.value == null);
 
             TerminalNode _resultNode = new TerminalNodeBuilder($"{_parentBuilder.key}:ResultNode")
                                             .SetDisplayText(_resultDisplayText.Invoke())

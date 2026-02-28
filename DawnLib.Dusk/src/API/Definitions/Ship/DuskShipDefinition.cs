@@ -69,7 +69,28 @@ public class DuskShipDefinition : DuskContentDefinition<DawnShipInfo>, INamespac
             BuyableShipPreset.ShipPrefab,
             BuyableShipPreset.NavmeshPrefab,
             BuyableShipPreset.Cost,
-            null);
+            null
+        );
+
+        //i THINK i should do mess with it and add to BUY command somehow but head hurts
+        TerminalCommandBasicInformation commandBaseInfo = new($"{BuyableShipPreset.ShipName}Query", "ship category", "test ship api", ClearText.Query);
+        NamespacedKey<DawnTerminalCommandInfo> namespacedKey = NamespacedKey<DawnTerminalCommandInfo>.From($"{TypedKey.Namespace}", $"{BuyableShipPreset.ShipName}QueryCommand");
+        DawnLib.DefineTerminalCommand(namespacedKey, commandBaseInfo, builder =>
+        {
+            builder.SetKeywords(new List<string>([BuyableShipPreset.ShipName]));
+            builder.DefineSimpleQueryCommand(queryCommandBuilder =>
+            {
+                queryCommandBuilder.SetContinueOrCancel(() => $"Are you sure you want to buy {BuyableShipPreset.ShipName}?"); //add confirm or deny text
+                queryCommandBuilder.SetCancel(() => ""); //change that
+                queryCommandBuilder.SetContinueWord("confirm");
+                queryCommandBuilder.SetCancelWord("deny");
+                queryCommandBuilder.SetQueryEvent((bool value) => ShipSpawnHandler.Instance.ChangeShip(Key));
+                queryCommandBuilder.SetResult(() => "wider!");
+            });
+        });
+
+        //TODO: prob should move it to dawn
+        LethalContent.Ships.Register(DawnShipInfo);
 
         DuskModContent.Ships.Register(this);
     }

@@ -61,6 +61,7 @@ public class ShipSpawnHandler
     public Dictionary<string, GameObject> nonCrucialObjectsDict = new();
 
     public NetworkObject newNetworkShipObjects;
+    public GameObject newShipObject;
 
     public DawnShipObjectReferences vanilaReferences;
 
@@ -111,10 +112,10 @@ public class ShipSpawnHandler
                     continue;
                 }
 
-                nonCrucialObjectsDict.Add(child.name, child.gameObject);
+                nonCrucialObjectsDict.TryAdd(child.name, child.gameObject);
             }
 
-            if (!skip) nonCrucialObjectsDict.Add(obj.name, obj.gameObject);
+            if (!skip) nonCrucialObjectsDict.TryAdd(obj.name, obj.gameObject);
         }
         #endregion
 
@@ -143,8 +144,8 @@ public class ShipSpawnHandler
             var reference = new GameObject($"{apts.gameObject.name} (Reference)");
             var component = reference.AddComponent<DawnSceneObjectReference>();
             component.foundObject = apts.transform;
+            vanilaReferences.dawnSceneObjectReferences.Add(component);
         }
-
     }
 
     public NamespacedKey LoadShipFromSave()
@@ -154,7 +155,7 @@ public class ShipSpawnHandler
         NamespacedKey? shipKey = NamespacedKey.From("lethal_company", "ship");
 
         if (save != null)
-            save.TryGet(currentShipKey, out shipKey);
+            save.TryGet<NamespacedKey>(currentShipKey, out shipKey);
 
         return shipKey == null ? NamespacedKey.From("lethal_company", "ship") : shipKey;
     }
@@ -177,15 +178,22 @@ public class ShipSpawnHandler
         }
         else
         {
-            newNetworkShipObjects = LethalContent.Ships[namespacedKey.AsTyped<DawnShipInfo>()].ShipPrefab.GetComponent<NetworkObject>();
+            newShipObject = GameObject.Instantiate(LethalContent.Ships[namespacedKey.AsTyped<DawnShipInfo>()].ShipPrefab);
+            newNetworkShipObjects = newShipObject.GetComponent<NetworkObject>();
             newNetworkShipObjects.Spawn();
 
-            newNetworkShipObjects.GetComponent<DawnShipObjectReferences>().ReplaceReferences();
+            newShipObject.GetComponent<DawnShipObjectReferences>().ReplaceReferences();
 
             newNetworkShipObjects.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject);
 
             foreach (var go in nonCrucialObjectsDict.Values)
                 go.SetActive(false);
+
+            LethalContent.Ships[namespacedKey.AsTyped<DawnShipInfo>()].ShipPrefab.GetComponent<DawnShipObjectReferences>().ReplaceReferences();
+
+            PersistentDataContainer? save = DawnLib.GetCurrentSave();
+            NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
+            save?.Set(currentShipKey, namespacedKey);
         }
     }
 }
