@@ -16,8 +16,6 @@ public class DawnShipObjectReferences : MonoBehaviour
     public AudioSource shipDoorAudioSource;
     public Animator shipDoorsAnimator;
     public ShipLights shipRoomLights;
-    public AnimatedObjectTrigger closetLeftDoor;
-    public AnimatedObjectTrigger closetRightDoor;
     public Transform gameOverCameraHandle;
     public Transform middleOfShipNode;
     public Transform shipDoorNode;

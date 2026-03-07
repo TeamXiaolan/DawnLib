@@ -1,6 +1,5 @@
 ﻿using Dawn;
 using Dawn.Internal;
-using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -128,8 +127,6 @@ public class ShipSpawnHandler
         vanilaReferences.shipDoorAudioSource = StartOfRoundRefs.Instance.shipDoorAudioSource;
         vanilaReferences.shipDoorsAnimator = StartOfRoundRefs.Instance.shipDoorsAnimator;
         vanilaReferences.shipRoomLights = StartOfRoundRefs.Instance.shipRoomLights;
-        vanilaReferences.closetLeftDoor = StartOfRoundRefs.Instance.closetLeftDoor;
-        vanilaReferences.closetRightDoor = StartOfRoundRefs.Instance.closetRightDoor;
         vanilaReferences.gameOverCameraHandle = StartOfRoundRefs.Instance.gameOverCameraHandle;
         vanilaReferences.middleOfShipNode = StartOfRoundRefs.Instance.middleOfShipNode;
         vanilaReferences.shipDoorNode = StartOfRoundRefs.Instance.shipDoorNode;
@@ -138,6 +135,7 @@ public class ShipSpawnHandler
         vanilaReferences.shipBounds = StartOfRoundRefs.Instance.shipBounds;
         vanilaReferences.shipInnerRoomBounds = StartOfRoundRefs.Instance.shipInnerRoomBounds;
         vanilaReferences.shipStrictInnerRoomBounds = StartOfRoundRefs.Instance.shipStrictInnerRoomBounds;
+        vanilaReferences.insideShipPositions = StartOfRoundRefs.Instance.insideShipPositions;
 
         foreach (var apts in autoParentToShipArray)
         {
@@ -152,12 +150,19 @@ public class ShipSpawnHandler
     {
         PersistentDataContainer? save = DawnLib.GetCurrentSave();
         NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
-        NamespacedKey? shipKey = NamespacedKey.From("lethal_company", "ship");
+        NamespacedKey shipKey = NamespacedKey.From("lethal_company", "ship");
+        string shipKeyString = "";
 
         if (save != null)
-            save.TryGet<NamespacedKey>(currentShipKey, out shipKey);
+            save.TryGet(currentShipKey, out shipKeyString);
 
-        return shipKey == null ? NamespacedKey.From("lethal_company", "ship") : shipKey;
+        if (string.IsNullOrEmpty(shipKeyString))
+        {
+            string[] namespacedKey = shipKeyString.Split(':');
+            shipKey = NamespacedKey.From(namespacedKey[0], namespacedKey[1]);
+        }
+
+        return shipKey;
     }
 
     public void ChangeShip(NamespacedKey namespacedKey)
@@ -175,6 +180,7 @@ public class ShipSpawnHandler
             vanilaReferences.ReplaceReferences();
 
             newNetworkShipObjects.Despawn();
+            //set vanila ship in save here
         }
         else
         {
@@ -188,8 +194,6 @@ public class ShipSpawnHandler
 
             foreach (var go in nonCrucialObjectsDict.Values)
                 go.SetActive(false);
-
-            LethalContent.Ships[namespacedKey.AsTyped<DawnShipInfo>()].ShipPrefab.GetComponent<DawnShipObjectReferences>().ReplaceReferences();
 
             PersistentDataContainer? save = DawnLib.GetCurrentSave();
             NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
