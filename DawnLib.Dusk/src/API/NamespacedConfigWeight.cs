@@ -88,7 +88,7 @@ public class NamespacedConfigWeight
         {
             NamespacedKey = namespacedKey,
             MathOperation = operation,
-            Weight = weight
+            Weight = Mathf.Abs(weight)
         };
         Debuggers.Weights?.Log($"Converted NamespacedConfigWeight: {ConvertToString(result)}");
         return result;

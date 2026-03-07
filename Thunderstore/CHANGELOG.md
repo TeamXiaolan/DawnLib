@@ -1,4 +1,8 @@
-# v0.8.6
+# v0.8.7
+
+- Fixed an issue with negative weights being read as `--` hence a positive (basically -999 was being read as a substraction operation with a value of -999, hence --999).
+
+## v0.8.6
 
 - Added better LethalConfig compatibility from No-Code/Editor based mods (They used to not show up with no-code/editor based mods but now they do).
 
