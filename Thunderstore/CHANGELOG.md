@@ -1,6 +1,8 @@
 # v0.8.8
 
 - Added DungeonGenerationPlus compat!
+- Fixed compat with mods like TwoRadarMap.
+- Fixed compat related to terminal issues with having terminalevents and store items with similar names.
 
 ## v0.8.7
 

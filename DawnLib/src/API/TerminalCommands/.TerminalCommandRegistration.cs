@@ -269,7 +269,6 @@ static class TerminalCommandRegistration
             if (onTerminalEvent == null)
                 return false;
 
-            node.terminalEvent = string.Empty;
             eventDrivenCommandInfo = new DawnEventDrivenCommandInfo(node, onTerminalEvent);
             return true;
         }
