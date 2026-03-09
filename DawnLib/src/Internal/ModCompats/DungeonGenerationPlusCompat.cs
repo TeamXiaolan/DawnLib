@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using DunGen.Graph;
@@ -8,7 +9,8 @@ namespace Dawn.Internal;
 
 static class DungeonGenerationPlusCompat
 {
-    public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus");
+    internal const string VERSION = "1.4.1";
+    public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus") && Version.Parse(VERSION) < Chainloader.PluginInfos["dev.ladyalice.dungenplus"].Metadata.Version;
 
 
     private static object? extenderObject = null;

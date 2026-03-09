@@ -471,7 +471,7 @@ Not entirely sure how those happened but they did ig.
 
 - Added MaterialPropertiesReplacement to EntityReplacements.
 - Added ScanNodeReplacement to EntityReplacements.
-- Gave devs support to NetworkVariable<bool> and NetworkVariable<float>.
+- Gave devs support to `NetworkVariable<bool>` and `NetworkVariable<float>`.
 - Added tag: `#dawn_lib:has_buying_percent` to make your moon have the buying percentage similar to company.
 - Fixed some lag issues in the Editor.dll.
 - Fixed replacing blank SO's of all the ones that LLL replaced (and more) in DawnLib content.
