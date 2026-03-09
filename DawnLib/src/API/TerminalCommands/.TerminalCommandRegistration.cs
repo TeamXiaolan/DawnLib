@@ -33,19 +33,23 @@ static class TerminalCommandRegistration
         On.Terminal.ParseWord += ParseWordPrefix;
     }
 
-    [HarmonyLib.HarmonyPatch(typeof(Terminal), nameof(Terminal.RunTerminalEvents)), HarmonyLib.HarmonyPrefix, HarmonyLib.HarmonyPriority(int.MaxValue)]
-    static bool OverrideVanillaTerminalsAndRunDawnEvents(Terminal __instance, TerminalNode node)
+    [HarmonyLib.HarmonyPatch(typeof(Terminal), nameof(Terminal.RunTerminalEvents)), HarmonyLib.HarmonyPrefix]
+    private static bool RunDawnLibTerminalEvents(Terminal __instance, TerminalNode node)
     {
-        if (node.HasDawnInfo())
+        if (node.TryGetDawnInfo(out DawnTerminalCommandInfo? terminalCommandInfo))
         {
-            DawnEventDrivenCommandInfo? eventDrivenCommandInfo = node.GetDawnInfo().EventDrivenCommandInfo;
-            if (eventDrivenCommandInfo != null)
+            if (!terminalCommandInfo.ShouldSkipIgnoreOverride())
             {
-                eventDrivenCommandInfo.OnTerminalEvent(__instance, node);
+                DawnEventDrivenCommandInfo? eventDrivenCommandInfo = terminalCommandInfo.EventDrivenCommandInfo;
+                if (eventDrivenCommandInfo != null)
+                {
+                    eventDrivenCommandInfo.OnTerminalEvent(__instance, node);
+                }
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     private static void AssignNodeProperDisplayText(On.Terminal.orig_LoadNewNode orig, Terminal self, TerminalNode node)
