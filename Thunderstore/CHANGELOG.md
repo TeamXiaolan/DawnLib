@@ -1,4 +1,8 @@
-# v0.8.7
+# v0.8.8
+
+- Added DungeonGenerationPlus compat!
+
+## v0.8.7
 
 - Fixed an issue with negative weights being read as `--` hence a positive (basically -999 was being read as a substraction operation with a value of -999, hence --999).
 
