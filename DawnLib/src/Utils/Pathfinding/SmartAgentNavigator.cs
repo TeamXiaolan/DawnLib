@@ -21,13 +21,19 @@ public struct GenericPath<T>(T generic, float pathLength)
 [AddComponentMenu($"{DawnConstants.MenuName}/Smart Agent Navigator")]
 public class SmartAgentNavigator : NetworkBehaviour
 {
+    [Header("Events")]
     public UnityEvent<bool> OnUseEntranceTeleport = new();
     public UnityEvent<bool> OnEnableOrDisableAgent = new();
+
+    [Header("Extra Settings")]
+    [SerializeField]
+    public bool CanTryToFlyToDestination = true;
 
     [HideInInspector]
     public EntranceTeleport? lastUsedEntranceTeleport = null;
 
-    private Vector3 pointToGo = Vector3.zero;
+    internal Vector3 pointToGo = Vector3.zero;
+    internal Vector3 pointToStart = Vector3.zero;
 
     private bool cantMove = false;
     private SmartPathTask? pathingTask = null;
@@ -64,6 +70,14 @@ public class SmartAgentNavigator : NetworkBehaviour
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
         SmartPathfinding.RegisterSmartAgent(agent);
+    }
+
+    public void Update()
+    {
+        if (pointToGo != Vector3.zero && pointToStart != Vector3.zero)
+        {
+            HandleDisabledAgentPathing();
+        }
     }
 
     public bool IsAgentOutside()
@@ -108,14 +122,45 @@ public class SmartAgentNavigator : NetworkBehaviour
         }
 
         if (cantMove)
-            return false;
-
-        if (!agent.enabled)
         {
-            HandleDisabledAgentPathing();
             return false;
         }
+
+        if (pointToGo != Vector3.zero && pointToStart != Vector3.zero)
+        {
+            return false;
+        }
+
         GoToDestinationResult result = GoToDestination(destination);
+        if (result == GoToDestinationResult.Failure)
+        {
+            if (DetermineIfNeedToDisableAgent(destination))
+            {
+                return false;
+            }
+        }
+        return result == GoToDestinationResult.Success || result == GoToDestinationResult.InProgress;
+    }
+
+    public bool TryDoPathingToDestination(Vector3 destination, out GoToDestinationResult result)
+    {
+        result = GoToDestinationResult.InProgress;
+        if (_searchRoutine != null)
+        {
+            StopSearchRoutine();
+        }
+
+        if (cantMove)
+        {
+            return false;
+        }
+
+        if (pointToGo != Vector3.zero && pointToStart != Vector3.zero)
+        {
+            return false;
+        }
+
+        result = GoToDestination(destination);
         if (result == GoToDestinationResult.Failure)
         {
             if (DetermineIfNeedToDisableAgent(destination))
@@ -278,11 +323,13 @@ public class SmartAgentNavigator : NetworkBehaviour
     private void HandleDisabledAgentPathing()
     {
         Vector3 targetPosition = pointToGo;
-        float arcHeight = 10f;  // Adjusted arc height for a more pronounced arc
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+        float currentDistanceToTarget = Vector3.Distance(transform.position, targetPosition);
 
-        if (Vector3.Distance(transform.position, targetPosition) <= 1f)
+        if (currentDistanceToTarget <= 1f)
         {
+            pointToStart = Vector3.zero;
+            pointToGo = Vector3.zero;
+
             OnEnableOrDisableAgent.Invoke(true);
             agent.enabled = true;
             agent.Warp(targetPosition);
@@ -299,15 +346,17 @@ public class SmartAgentNavigator : NetworkBehaviour
         }
 
         // Calculate the new position in an arcing motion
-        float normalizedDistance = Mathf.Clamp01(Vector3.Distance(transform.position, targetPosition) / distanceToTarget);
         Vector3 newPosition = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * 10f);
-        newPosition.y += Mathf.Sin(normalizedDistance * Mathf.PI) * arcHeight;
-
         transform.SetPositionAndRotation(newPosition, Quaternion.LookRotation(targetPosition - transform.position));
     }
 
     private bool DetermineIfNeedToDisableAgent(Vector3 destination)
     {
+        if (!CanTryToFlyToDestination)
+        {
+            return false;
+        }
+
         float distanceToDest = Vector3.Distance(transform.position, destination);
         if (distanceToDest <= agent.stoppingDistance + 5f)
         {
@@ -318,11 +367,14 @@ public class SmartAgentNavigator : NetworkBehaviour
         {
             return false;
         }
+
         Vector3 lastValidPoint = FindClosestValidPoint();
         agent.SetDestination(lastValidPoint);
         if (Vector3.Distance(agent.transform.position, lastValidPoint) <= agent.stoppingDistance)
         {
             pointToGo = hit.position;
+            pointToStart = transform.position;
+
             OnEnableOrDisableAgent.Invoke(false);
             agent.enabled = false;
             Debuggers.Pathfinding?.Log($"Pathing to initial destination {destination} failed, going to fallback position {hit.position} instead.");

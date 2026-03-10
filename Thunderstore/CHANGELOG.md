@@ -1,4 +1,10 @@
-# v0.8.8
+# v0.8.9
+
+- Added `TryDoPathingToDestination` to `SmartAgentNavigator` for better info to caller when trying to path to a position.
+- Added `CanTryToFlyToDestination` to `SmartAgentNavigator` to allow for a custom check to see if the agent can fly to a position if it cannot path to it.
+- Improved `EnemyAI`'s handling with the FlyToDestination parts of `SmartAgentNavigator`.
+
+## v0.8.8
 
 - Added DungeonGenerationPlus compat!
 - Fixed compat with mods like TwoRadarMap.
