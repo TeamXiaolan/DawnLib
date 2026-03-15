@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Dawn.Utils;
@@ -118,6 +117,62 @@ public static class StringExtensions
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Replace matching string with a replacement string
+    /// </summary>
+    /// <param name="value">Full string being modified</param>
+    /// <param name="indexStyle">This will determine what matching text values are modified.</param>
+    /// <param name="matching">This is the matching string we are finding and replacing</param>
+    /// <param name="replacement">This is the string content we are replacing the matching string with</param>
+    public static string TextReplacer(this string value, TextIndex indexStyle, string matching, string replacement)
+    {
+        if (string.IsNullOrEmpty(value) || !value.Contains(matching))
+        {
+            //DawnPlugin.Logger.LogWarning($"TextReplacer: Unable to find expected text - {textToReplace} in string - {value}. Text remains unchanged");
+            return value;
+        }
+
+        if (indexStyle is TextIndex.EveryIndex)
+        {
+            // replace every instance of our matching string
+            return value.Replace(matching, replacement);
+        }
+        else
+        {
+            // depending on the style will either return the first or last index value of the textToReplace
+            int index = (indexStyle is TextIndex.FirstIndex) ? value.IndexOf(matching) : value.LastIndexOf(matching);
+            return value.Remove(index, matching.Length).Insert(index, replacement);
+        }
+    }
+
+    /// <summary>
+    /// Add text after a matching string value
+    /// </summary>
+    /// <param name="value">Full string being modified</param>
+    /// <param name="indexStyle">This will determine what matching text values are modified.</param>
+    /// <param name="matching">This is the matching string we are finding and adding content after</param>
+    /// <param name="addedContent">This is the string content we are adding after the matching string</param>
+    public static string TextAdder(this string value, TextIndex indexStyle, string matching, string addedContent)
+    {
+        if (string.IsNullOrEmpty(value) || !value.Contains(matching))
+        {
+            //DawnPlugin.Logger.LogWarning($"TextAdder: Unable to find expected text - {textToFind} in string - {value}. Text remains unchanged");
+            return value;
+        }
+
+        if (indexStyle is TextIndex.EveryIndex)
+        {
+            // add content to every instance of our matching string
+            return value.Replace(matching, matching + addedContent);
+        }
+        else
+        {
+            // depending on the style will either return the first or last index value of the textToFind
+            int index = (indexStyle is TextIndex.FirstIndex) ? value.IndexOf(matching) : value.LastIndexOf(matching);
+            return value.Insert(index + matching.Length, addedContent);
+        }
     }
 
     private static readonly Regex ConfigCleanerRegex = new(@"[\n\t""`\[\]']");

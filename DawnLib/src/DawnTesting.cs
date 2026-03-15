@@ -6,6 +6,23 @@ internal class DawnTesting
 {
     internal static void TestCommands()
     {
+        TerminalTextModifier changeAll = new("planet", new SimpleProvider<string>("<mark=#ffff001A>moon</mark>"));
+        TerminalTextModifier insertAll = new TerminalTextModifier("the list", new SimpleProvider<string>("<i>ing</i>"))
+            .SetReplaceText(false);
+        TerminalTextModifier InsertFirst = new TerminalTextModifier("\n\n\n", new SimpleProvider<string>("<align=\"center\">---</align>\n"))
+            .SetReplaceText(false)
+            .SetIndexStyle(TextIndex.FirstIndex);
+        TerminalTextModifier ReplaceLast = new TerminalTextModifier("\n", new SimpleProvider<string>("\n<align=\"center\">----</align>\n\n"))
+            .SetIndexStyle(TextIndex.LastIndex);
+
+
+        // regex example, will make sure to capture the specific line containing record regardless of what kind of changes the other modifiers make
+        // text to add must use $& to keep the existing text
+        TerminalTextModifier helpAdd = new TerminalTextModifier("record.*\\S", new SimpleProvider<string>("$&\n\n>VERSION\nDisplay Dawnlib's current version"))
+            .SetReplaceText(true)
+            .UseRegexPattern(true)
+            .SetNodeFromKeyword("help");
+
         TerminalCommandBasicInformation versionCommandBasicInformation = new TerminalCommandBasicInformation("DawnLibVersionCommand", "Test", "Prints the version of DawnLib!", ClearText.Result | ClearText.Query);
         DawnLib.DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo>.From("dawn_lib", "version_command"), versionCommandBasicInformation, builder =>
         {

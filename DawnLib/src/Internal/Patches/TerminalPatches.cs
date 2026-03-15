@@ -7,10 +7,14 @@ using MonoMod.Cil;
 namespace Dawn.Internal;
 static class TerminalPatches
 {
+    // below delegate/event is used for TerminalTextModifiers
+    internal delegate void TextPostProcess(ref string currentText, TerminalNode node);
+    internal static event TextPostProcess OnProcessNodeText = null!;
     internal static void Init()
     {
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         On.Terminal.TextPostProcess += UpdateItemPrices;
+        On.Terminal.TextPostProcess += HandleTerminalTextModifiers;
         IL.Terminal.TextPostProcess += HideResults;
         IL.Terminal.TextPostProcess += UseFailedNameResults;
     }
@@ -102,6 +106,15 @@ static class TerminalPatches
         c.Emit(OpCodes.Brfalse, c.Instrs[targetIndex]);
     }
 
+    private static string HandleTerminalTextModifiers(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
+    {
+        modifieddisplaytext = orig(self, modifieddisplaytext, node);
+
+        // all text modifiers are invoked here sequentially. So the last modifier to invoke may have vastly different text from the original
+        OnProcessNodeText?.Invoke(ref modifieddisplaytext, node);
+
+        return modifieddisplaytext;
+    }
 
     private static string UpdateItemPrices(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
