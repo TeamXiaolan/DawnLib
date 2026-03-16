@@ -4,8 +4,15 @@ using UnityEngine;
 
 namespace Dawn.Utils;
 [Serializable]
-public class HUDDisplayTip(string header, string body, HUDDisplayTip.AlertType type = HUDDisplayTip.AlertType.Hint) : INetworkSerializable
+public class HUDDisplayTip : INetworkSerializable
 {
+    public HUDDisplayTip(string header, string body, AlertType type)
+    {
+        (_header, _body, _alertType) = (header, body, type);
+    }
+
+    public HUDDisplayTip() : this(string.Empty, string.Empty, AlertType.Hint) { }
+
     public enum AlertType
     {
         Hint,
@@ -13,10 +20,10 @@ public class HUDDisplayTip(string header, string body, HUDDisplayTip.AlertType t
     }
 
     [SerializeField]
-    private AlertType _alertType = type;
+    private AlertType _alertType;
 
-    [SerializeField]
-    private string _header = header, _body = body;
+    [SerializeField, TextArea(2, 5)]
+    private string _header, _body;
 
     public string Header => _header;
     public string Body => _body;

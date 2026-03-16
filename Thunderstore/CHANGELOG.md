@@ -1,4 +1,8 @@
-# v0.8.9
+# v0.8.10
+
+- Little fix for HUDDisplayTip not having a default constructor which only didn't work sometimes? not sure what the issue honestly is.
+
+## v0.8.9
 
 - Added `TryDoPathingToDestination` to `SmartAgentNavigator` for better info to caller when trying to path to a position.
 - Added `CanTryToFlyToDestination` to `SmartAgentNavigator` to allow for a custom check to see if the agent can fly to a position if it cannot path to it.
