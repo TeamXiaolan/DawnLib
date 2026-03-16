@@ -59,7 +59,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     private void OnNewRoundStart()
     {
         _entrancePoints = FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.InstanceID);
-        foreach (EntranceTeleport? entrance in EntrancePoints)
+        foreach (EntranceTeleport? entrance in _entrancePoints)
         {
             if (!entrance.FindExitPoint())
             {

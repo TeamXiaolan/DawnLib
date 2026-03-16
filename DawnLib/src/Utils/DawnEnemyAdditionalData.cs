@@ -11,6 +11,7 @@ public class DawnEnemyAdditionalData : MonoBehaviour
     private List<EnemyAICollisionDetect> _enemyAICollisionDetects = new();
 
     public IReadOnlyList<EnemyAICollisionDetect> EnemyAICollisionDetects => _enemyAICollisionDetects.AsReadOnly();
+    public SmartAgentNavigator? SmartAgentNavigator { get; internal set; }
     public PlayerControllerB? PlayerThatLastHit { get; internal set; }
     public bool KilledByPlayer { get; internal set; }
 
@@ -29,6 +30,7 @@ public class DawnEnemyAdditionalData : MonoBehaviour
         data = enemyAI.gameObject.AddComponent<DawnEnemyAdditionalData>();
         data._enemy = enemyAI;
         data._enemyAICollisionDetects = enemyAI.GetComponentsInChildren<EnemyAICollisionDetect>().ToList();
+        data.SmartAgentNavigator = enemyAI.GetComponent<SmartAgentNavigator>();
         _additionalData[enemyAI] = data;
         return data;
     }

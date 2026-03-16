@@ -1,10 +1,17 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class TerminalNodeExtensions
 {
+    public static bool TryGetDawnInfo(this TerminalNode terminalNode, [NotNullWhen(true)] out DawnTerminalCommandInfo? terminalCommandInfo)
+    {
+        terminalCommandInfo = (DawnTerminalCommandInfo)((IDawnObject)terminalNode).DawnInfo;
+        return terminalCommandInfo != null;
+    }
+
     public static DawnTerminalCommandInfo GetDawnInfo(this TerminalNode terminalNode)
     {
         DawnTerminalCommandInfo terminalCommandInfo = (DawnTerminalCommandInfo)((IDawnObject)terminalNode).DawnInfo;

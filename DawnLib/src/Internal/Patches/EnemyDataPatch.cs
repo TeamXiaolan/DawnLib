@@ -1,5 +1,6 @@
 using GameNetcodeStuff;
 using Dawn.Utils;
+using UnityEngine;
 
 namespace Dawn.Internal;
 
@@ -9,6 +10,24 @@ static class EnemyDataPatch
     {
         On.EnemyAI.Start += CreateAdditionalEnemyData;
         On.EnemyAI.HitEnemy += HandleEnemyDeathData;
+        On.EnemyAI.SetClientCalculatingAI += HandleClientCalculatingAI;
+    }
+
+    private static void HandleClientCalculatingAI(On.EnemyAI.orig_SetClientCalculatingAI orig, EnemyAI self, bool enable)
+    {
+        if (self.agent == null)
+        {
+            orig(self, enable);
+            return;
+        }
+
+        bool agentEnabledState = self.agent.enabled;
+        orig(self, enable);
+        DawnEnemyAdditionalData data = DawnEnemyAdditionalData.CreateOrGet(self);
+        if (data.SmartAgentNavigator != null && data.SmartAgentNavigator.CanTryToFlyToDestination && data.SmartAgentNavigator.pointToGo != Vector3.zero && data.SmartAgentNavigator.pointToStart != Vector3.zero)
+        {
+            self.agent.enabled = agentEnabledState;
+        }
     }
 
     private static void HandleEnemyDeathData(On.EnemyAI.orig_HitEnemy orig, EnemyAI self, int force, PlayerControllerB playerWhoHit, bool playHitSFX, int hitID)
