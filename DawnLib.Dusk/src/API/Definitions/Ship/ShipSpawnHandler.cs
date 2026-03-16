@@ -54,10 +54,10 @@ public class ShipSpawnHandler
     //objects that i cant remove and should not be changed(except position and etc)
     //any AutoParrentToShip(exception?: LightSwitchContainer), RightmostSuitPlacement, StartGameLever, ShipModels2b (?), Cameras (?), MagnetLever, GiantCylinderMagnet
     //other objects should be in nonCrucialObjectDict
-    public Dictionary<string, DawnSceneObjectReference> crucialObjectsDict = new();
+    public Dictionary<string, DawnSceneObjectReference> crucialObjectsDict;
 
     //when ship is vanila then all objects should be enabled, otherwise - disabled 
-    public Dictionary<string, GameObject> nonCrucialObjectsDict = new();
+    public Dictionary<string, GameObject> nonCrucialObjectsDict;
 
     public NetworkObject newNetworkShipObjects;
     public GameObject newShipObject;
@@ -87,6 +87,7 @@ public class ShipSpawnHandler
         list.Add(magnetLever);
         list.Add(magnet);
 
+        crucialObjectsDict = new();
         foreach (var gotransform in list)
         {
             var temp = gotransform.gameObject.AddComponent<DawnSceneObjectReference>();
@@ -97,6 +98,8 @@ public class ShipSpawnHandler
         #endregion
 
         #region fill up nonCrucialObjectsDict
+
+        nonCrucialObjectsDict = new();
         foreach (Transform obj in StartOfRoundRefs.Instance.shipAnimatorObject.transform)
         {
             bool skip = false;
@@ -151,12 +154,12 @@ public class ShipSpawnHandler
         PersistentDataContainer? save = DawnLib.GetCurrentSave();
         NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
         NamespacedKey shipKey = NamespacedKey.From("lethal_company", "ship");
-        string shipKeyString = "";
+        string? shipKeyString = "";
 
         if (save != null)
             save.TryGet(currentShipKey, out shipKeyString);
 
-        if (string.IsNullOrEmpty(shipKeyString))
+        if (!string.IsNullOrEmpty(shipKeyString))
         {
             string[] namespacedKey = shipKeyString.Split(':');
             shipKey = NamespacedKey.From(namespacedKey[0], namespacedKey[1]);
@@ -180,7 +183,6 @@ public class ShipSpawnHandler
             vanilaReferences.ReplaceReferences();
 
             newNetworkShipObjects.Despawn();
-            //set vanila ship in save here
         }
         else
         {
@@ -194,10 +196,12 @@ public class ShipSpawnHandler
 
             foreach (var go in nonCrucialObjectsDict.Values)
                 go.SetActive(false);
-
-            PersistentDataContainer? save = DawnLib.GetCurrentSave();
-            NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
-            save?.Set(currentShipKey, namespacedKey);
         }
+
+        StartOfRound.Instance.PositionSuitsOnRack();
+
+        PersistentDataContainer? save = DawnLib.GetCurrentSave();
+        NamespacedKey currentShipKey = NamespacedKey.From("dawn_lib", "current_ship");
+        save?.Set(currentShipKey, namespacedKey.ToString());
     }
 }
