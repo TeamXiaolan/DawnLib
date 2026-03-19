@@ -1,25 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Dawn;
 
 internal class DawnTesting
 {
+    private static string AdjectivesExample()
+    {
+        List<string> values = ["VERY ", "MANY ", "INCREDIBLY "];
+        var rand = new Random();
+        return values[rand.Next(0, values.Count)];
+    }
+
     internal static void TestCommands()
     {
+        // replaces any mention of the word planet for the word moon with a yellowish highlight in any node
         TerminalTextModifier changeAll = new("planet", new SimpleProvider<string>("<mark=#ffff001A>moon</mark>"));
-        TerminalTextModifier insertAll = new TerminalTextModifier("the list", new SimpleProvider<string>("<i>ing</i>"))
-            .SetReplaceText(false);
-        TerminalTextModifier InsertFirst = new TerminalTextModifier("\n\n\n", new SimpleProvider<string>("<align=\"center\">---</align>\n"))
-            .SetReplaceText(false)
-            .SetIndexStyle(TextIndex.FirstIndex);
-        TerminalTextModifier ReplaceLast = new TerminalTextModifier("\n", new SimpleProvider<string>("\n<align=\"center\">----</align>\n\n"))
-            .SetIndexStyle(TextIndex.LastIndex);
 
+        // inserts quotes before and after any mention of the word commands in any node
+        TerminalTextModifier insertBeforeAndAfter = new TerminalTextModifier("commands", new SimpleProvider<string>("\""))
+            .SetInsertStyle(MatchInsert.Before | MatchInsert.After);
+
+        // inserts a random adjective from a set list before the word useful in any node
+        TerminalTextModifier insertBefore = new TerminalTextModifier("useful", new FuncProvider<string>(AdjectivesExample))
+            .SetInsertStyle(MatchInsert.Before);
+
+        // inserts an italicized ing after any mention of the phrase "the list" in any node
+        TerminalTextModifier insertAll = new TerminalTextModifier("the list", new SimpleProvider<string>("<i>ing</i>"))
+            .SetInsertStyle(MatchInsert.After);
+
+        // inserts some stylized dashes after the first 3 newlines of any node shown in the terminal (top of the screen)
+        TerminalTextModifier InsertFirst = new TerminalTextModifier("\n\n\n", new SimpleProvider<string>("<align=\"center\">---</align>\n"))
+            .SetInsertStyle(MatchInsert.After)
+            .SetIndexStyle(MatchIndex.First);
+
+        // replaces the last new line of any node with some stylized dashes
+        TerminalTextModifier ReplaceLast = new TerminalTextModifier("\n", new SimpleProvider<string>("\n<align=\"center\">----</align>\n\n"))
+            .SetIndexStyle(MatchIndex.Last);
 
         // regex example, will make sure to capture the specific line containing record regardless of what kind of changes the other modifiers make
         // text to add must use $& to keep the existing text
         TerminalTextModifier helpAdd = new TerminalTextModifier("record.*\\S", new SimpleProvider<string>("$&\n\n>VERSION\nDisplay Dawnlib's current version"))
-            .SetReplaceText(true)
             .UseRegexPattern(true)
             .SetNodeFromKeyword("help");
 

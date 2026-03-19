@@ -9,7 +9,7 @@ static class TerminalPatches
 {
     // below delegate/event is used for TerminalTextModifiers
     internal delegate void TextPostProcess(ref string currentText, TerminalNode node);
-    internal static event TextPostProcess OnProcessNodeText = null!;
+    internal static event TextPostProcess? OnProcessNodeText;
     internal static void Init()
     {
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
