@@ -1,4 +1,8 @@
-# v0.8.11
+# v0.8.12
+
+- Fixed an issue with unlockables list on store not displaying some unlockables if they have the same display name (different buy name).
+
+## v0.8.11
 
 - Rewrote the outside hazard system to be more reliable with the amount that should be spawning.
 - Correctly applied some unapplied moon tags.

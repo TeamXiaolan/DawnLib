@@ -174,7 +174,7 @@ static class UnlockableRegistrationHandler
             TerminalPurchaseResult result = unlockableInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
             if (result is TerminalPurchaseResult.FailedPurchaseResult failed && !string.IsNullOrWhiteSpace(failed.OverrideName))
             {
-                overrides[vanillaName] = failed.OverrideName!;
+                overrides[vanillaName] = failed.OverrideName;
             }
         }
 
@@ -199,10 +199,10 @@ static class UnlockableRegistrationHandler
             if (string.IsNullOrWhiteSpace(vanillaName))
                 continue;
 
-            string displayName = overrides.TryGetValue(vanillaName, out string overridden) ? overridden : vanillaName;
-
-            if (existingNames.Contains(vanillaName) || existingNames.Contains(displayName))
+            if (existingNames.Contains(vanillaName))
                 continue;
+
+            string displayName = overrides.TryGetValue(vanillaName, out string overridden) ? overridden : vanillaName;
 
             int cost = unlockableInfo.RequestNode?.itemCost ?? 0;
             linesToAdd.Add($"* {displayName}    //    Price: ${cost}");
