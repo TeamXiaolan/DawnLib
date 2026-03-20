@@ -176,25 +176,22 @@ public class TerminalTextModifier
         {
             Regex regex = new(TextToFind);
 
-            // uncomment below if any issues are encountered with text modification via regex
-            /* DawnPlugin.Logger.LogDebug($"""
+            Debuggers.Terminal?.Log($"""
             Processing text modifier (regex) on node - {terminalNode}
             Regex ({TextToFind}) matches found {regex.Matches(TextToFind).Count}
             AddedText - {textToAdd} (before regex format conversion)
-            """); */
+            """);
 
             currentText = regex.Replace(currentText, textToAdd);
             return;
         }
 
-        // uncomment below if any issues are encountered with text modification
-
-        /* DawnPlugin.Logger.LogDebug($"""
+        Debuggers.Terminal?.Log($"""
             Processing text modifier (non-regex) on node - {terminalNode}
             IndexStyle - {IndexStyle}
             TextToFind - {TextToFind}
             AddedText - {textToAdd}
-            """); */
+            """);
 
         currentText = currentText.TextModify(IndexStyle, InsertStyle, TextToFind, textToAdd);
     }

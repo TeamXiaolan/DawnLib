@@ -376,8 +376,12 @@ static class MapObjectRegistrationHandler
 
         float objectWidth = outsideInfo.ObjectWidth;
 
-        for (int i = 0; i < randomNumberToSpawn; i++)
+        int attemptsDone = 0;
+        int initialRandomNumberToSpawn = randomNumberToSpawn;
+        while (randomNumberToSpawn > 0 && attemptsDone < 10 * initialRandomNumberToSpawn)
         {
+            Debuggers.MapObjects?.Log($"Attempt number: {attemptsDone} with {randomNumberToSpawn} left to spawn with initial number: {initialRandomNumberToSpawn}.");
+            attemptsDone++;
             System.Random rng = mapObjectInfo.HasNetworkObject ? serverOnlyRandom : everyoneRandom;
 
             GameObject? node = RoundManager.Instance.outsideAINodes[rng.Next(0, RoundManager.Instance.outsideAINodes.Length)];
@@ -479,6 +483,8 @@ static class MapObjectRegistrationHandler
                 if (blocked)
                     continue;
             }
+
+            randomNumberToSpawn--;
 
             occupiedPositions.Add(finalPos);
 

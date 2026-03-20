@@ -4,7 +4,6 @@ using Dawn;
 using Dawn.Utils;
 using Dusk.Utils;
 using Dusk.Weights;
-using LethalLib.Modules;
 using UnityEngine;
 
 namespace Dusk;
@@ -95,6 +94,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             builder.OverrideEnemyPowerCount(Config.InsideEnemyPowerCount?.Value ?? Level.maxEnemyPowerCount, Config.OutsideEnemyPowerCount?.Value ?? Level.maxOutsideEnemyPowerCount, Config.DaytimeEnemyPowerCount?.Value ?? Level.maxDaytimeEnemyPowerCount);
             builder.OverrideEnemySpawnCurves(Config.InsideEnemySpawnCurve?.Value ?? Level.enemySpawnChanceThroughoutDay, Config.OutsideEnemySpawnCurve?.Value ?? Level.outsideEnemySpawnChanceThroughDay, Config.DaytimeEnemySpawnCurve?.Value ?? Level.daytimeEnemySpawnChanceThroughDay);
             builder.OverrideEnemySpawnRanges(Config.InsideEnemySpawnRange?.Value ?? Level.spawnProbabilityRange, Config.OutsideEnemySpawnRange?.Value ?? OutsideEnemiesSpawnProbabilityRange, Config.DaytimeEnemySpawnRange?.Value ?? Level.daytimeEnemiesProbabilityRange);
+            ApplyTagsTo(builder);
         });
     }
 

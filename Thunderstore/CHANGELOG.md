@@ -1,4 +1,10 @@
-# v0.8.10
+# v0.8.11
+
+- Rewrote the outside hazard system to be more reliable with the amount that should be spawning.
+- Correctly applied some unapplied moon tags.
+- Implemented another PR by Darmuh for the terminal allowing editing text in different terminal display texts.
+
+## v0.8.10
 
 - Little fix for HUDDisplayTip not having a default constructor which only didn't work sometimes? not sure what the issue honestly is.
 
