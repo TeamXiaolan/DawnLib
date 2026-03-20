@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Dawn.Utils;
@@ -118,6 +117,48 @@ public static class StringExtensions
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Modify a string to insert/replace added content at the position of a specific matching string
+    /// </summary>
+    /// <param name="value">Full string being modified</param>
+    /// <param name="indexStyle">This will determine what matching text values are modified.</param>
+    /// <param name="insertStyle">This will determine whether we replace the matching string completely or insert our text before/after it</param>
+    /// <param name="matching">This is the matching string we are searching for to add our content.</param>
+    /// <param name="addedContent">This is the string content we are adding.</param>
+    public static string TextModify(this string value, MatchIndex indexStyle, MatchInsert insertStyle, string matching, string addedContent)
+    {
+        if (string.IsNullOrEmpty(value) || !value.Contains(matching))
+        {
+            return value;
+        }
+
+        if (indexStyle is MatchIndex.All)
+        {
+            return insertStyle switch
+            {
+                MatchInsert.ReplaceMatch => value.Replace(matching, addedContent),
+                MatchInsert.Before => value.Replace(matching, addedContent + matching),
+                MatchInsert.After => value.Replace(matching, matching + addedContent),
+                MatchInsert.Before | MatchInsert.After => value.Replace(matching, addedContent + matching + addedContent),
+                _ => value,
+            };
+        }
+        else
+        {
+            // depending on the style will either return the first or last index value of the textToFind
+            int index = (indexStyle is MatchIndex.First) ? value.IndexOf(matching) : value.LastIndexOf(matching);
+
+            return insertStyle switch
+            {
+                MatchInsert.ReplaceMatch => value.Remove(index, matching.Length).Insert(index, addedContent),
+                MatchInsert.Before => value.Insert(index, addedContent),
+                MatchInsert.After => value.Insert(index + matching.Length, addedContent),
+                MatchInsert.Before | MatchInsert.After => value.Remove(index, matching.Length).Insert(index, addedContent + matching + addedContent),
+                _ => value,
+            };
+        }
     }
 
     private static readonly Regex ConfigCleanerRegex = new(@"[\n\t""`\[\]']");
