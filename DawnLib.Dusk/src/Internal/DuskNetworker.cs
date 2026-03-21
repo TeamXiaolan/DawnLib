@@ -38,7 +38,8 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
     {
         PlayerControllerB player = requester;
         DawnPlugin.Logger.LogDebug($"Sending states of progressive unlockables for player: '{player.playerUsername}'");
-        bool[] values = new bool[expectedOrder.Length];
+        bool[] unlockedStates = new bool[expectedOrder.Length];
+        bool[] hiddenStates = new bool[expectedOrder.Length];
 
         for (int i = 0; i < expectedOrder.Length; i++)
         {
@@ -46,17 +47,19 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
             ProgressivePredicate? predicate = ProgressivePredicate.AllProgressiveItems.FirstOrDefault(it => { return it.NetworkID == unlockableNetworkId; });
             if (predicate)
             {
-                values[i] = predicate.IsUnlocked;
-                Debuggers.Progressive?.Log($"set values[{i}] = {values[i]}");
+                unlockedStates[i] = predicate.ProgressiveStates.IsUnlocked;
+                hiddenStates[i] = predicate.ProgressiveStates.IsHidden;
+                Debuggers.Progressive?.Log($"set unlockedStates[{i}] = {unlockedStates[i]}");
             }
             else
             {
                 DawnPlugin.Logger.LogError($"client requested progressive data status of a non-existing unlockable!!! (index: {i}, networkID: {unlockableNetworkId})");
-                values[i] = false;
+                unlockedStates[i] = false;
+                hiddenStates[i] = false;
             }
         }
 
-        ProgressiveUnlockableStateResponseClientRpc(values,
+        ProgressiveUnlockableStateResponseClientRpc(unlockedStates, hiddenStates,
             new ClientRpcParams
             {
                 Send =
@@ -67,13 +70,13 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
     }
 
     [ClientRpc]
-    private void ProgressiveUnlockableStateResponseClientRpc(bool[] states, ClientRpcParams rpcParams = default)
+    private void ProgressiveUnlockableStateResponseClientRpc(bool[] unlockedStates, bool[] hiddenStates, ClientRpcParams rpcParams = default)
     {
         ProgressivePredicate[] definitions = ProgressivePredicate.AllProgressiveItems.ToArray();
         for (int i = 0; i < definitions.Length; i++)
         {
             ProgressivePredicate predicate = definitions[i];
-            predicate.SetFromServer(states[i]);
+            predicate.SetFromServer(unlockedStates[i], hiddenStates[i]);
         }
     }
 

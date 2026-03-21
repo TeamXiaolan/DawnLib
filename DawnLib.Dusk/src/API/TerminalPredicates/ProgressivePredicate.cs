@@ -7,6 +7,14 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dusk;
+
+[Serializable]
+public class ProgressiveStates(bool isUnlocked, bool isHidden)
+{
+    public bool IsUnlocked { get; internal set; } = isUnlocked;
+    public bool IsHidden { get; internal set; } = isHidden;
+}
+
 [CreateAssetMenu(menuName = $"{DuskModConstants.TerminalPredicates}/Progressive Unlockable", fileName = "New Progressive Predicate", order = DuskModConstants.PredicateOrder)]
 public class ProgressivePredicate : DuskTerminalPredicate
 {
@@ -22,8 +30,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
     [SerializeField]
     private TerminalNode _failNode;
 
-    public bool IsUnlocked { get; private set; }
-
+    public ProgressiveStates ProgressiveStates { get; private set; }
     private NamespacedKey _namespacedKey;
     internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(_namespacedKey.ToString()), 0);
 
@@ -33,25 +40,27 @@ public class ProgressivePredicate : DuskTerminalPredicate
         {
             _failNode = CreateDefaultProgressiveDenyNode();
         }
+
         _namespacedKey = namespacedKey;
+        ProgressiveStates = new ProgressiveStates(!_isLocked, _isHidden);
         AllProgressiveItems.Add(this);
         Debuggers.Progressive?.Log($"Registering unlockable: {_namespacedKey}.");
     }
 
     public override TerminalPurchaseResult CanPurchase()
     {
-        if (_isHidden && IsUnlocked)
+        if (ProgressiveStates.IsHidden && ProgressiveStates.IsUnlocked)
         {
             return TerminalPurchaseResult.Hidden()
                 .SetFailure(false);
         }
-        else if (_isHidden)
+        else if (ProgressiveStates.IsHidden)
         {
             return TerminalPurchaseResult.Hidden()
                 .SetFailure(true)
                 .SetFailNode(_failNode);
         }
-        else if (!IsUnlocked && _isLocked)
+        else if (!ProgressiveStates.IsUnlocked && _isLocked)
         {
             return TerminalPurchaseResult.Fail(_failNode)
                 .SetOverrideName(_lockedName);
@@ -61,10 +70,10 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     public void Unlock(HUDDisplayTip? displayTip = null)
     {
-        if (IsUnlocked)
+        if (ProgressiveStates.IsUnlocked)
             return;
 
-        IsUnlocked = true;
+        ProgressiveStates.IsUnlocked = true;
 
         if (displayTip != null)
         {
@@ -72,16 +81,27 @@ public class ProgressivePredicate : DuskTerminalPredicate
         }
     }
 
+    public void Unhide()
+    {
+        ProgressiveStates.IsHidden = false;
+    }
+
     public void Load(IDataContainer dataContainer)
     {
-        IsUnlocked = dataContainer.GetOrSetDefault(_namespacedKey, false);
-        Debuggers.Progressive?.Log($"IsUnlocked: {IsUnlocked}, Loaded unlockable: {_namespacedKey} with saveID: {_namespacedKey}");
+        if (dataContainer.TryGet(_namespacedKey, out bool isUnlocked))
+        {
+            ProgressiveStates.IsUnlocked = isUnlocked;
+            Debuggers.Progressive?.Log($"Used older save data for unlockable: {_namespacedKey} for unlocked: {ProgressiveStates.IsUnlocked} with saveID: {_namespacedKey}");
+            return;
+        }
+        ProgressiveStates = dataContainer.GetOrSetDefault(_namespacedKey, new ProgressiveStates(!_isLocked, _isHidden));
+        Debuggers.Progressive?.Log($"IsUnlocked: {ProgressiveStates.IsUnlocked}, IsHidden: {ProgressiveStates.IsHidden}, Loaded unlockable: {_namespacedKey} with saveID: {_namespacedKey}");
     }
 
     public void Save(IDataContainer dataContainer)
     {
-        Debuggers.Progressive?.Log($"Saving unlockable: {_namespacedKey} that is unlocked: {IsUnlocked} with saveID: {_namespacedKey}");
-        dataContainer.Set(_namespacedKey, IsUnlocked);
+        Debuggers.Progressive?.Log($"Saving unlockable: {_namespacedKey} that is unlocked: {ProgressiveStates.IsUnlocked} with saveID: {_namespacedKey}");
+        dataContainer.Set(_namespacedKey, ProgressiveStates);
     }
 
     internal static List<ProgressivePredicate> AllProgressiveItems = new();
@@ -104,10 +124,11 @@ public class ProgressivePredicate : DuskTerminalPredicate
         }
     }
 
-    internal void SetFromServer(bool isUnlocked)
+    internal void SetFromServer(bool isUnlocked, bool isHidden)
     {
         Debuggers.Progressive?.Log($"{_namespacedKey} is being set from the server; unlocked = {isUnlocked}");
-        IsUnlocked = isUnlocked;
+        ProgressiveStates.IsUnlocked = isUnlocked;
+        ProgressiveStates.IsHidden = isHidden;
     }
 
     private static TerminalNode CreateDefaultProgressiveDenyNode()

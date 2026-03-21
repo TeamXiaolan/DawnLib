@@ -1,4 +1,8 @@
-# v0.8.13
+# v0.8.14
+
+- Fixed another small issue with setting progressive predicates to be unhidden not saving that unhidden state.
+
+## v0.8.13
 
 - Fixed an issue where making a hidden decoration would cause the terminal to crash in some rare scenarios.
 
