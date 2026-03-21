@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Dawn;
 public interface IDataContainer
 {
+    bool Has<T>(NamespacedKey key);
     bool TryGet<T>(NamespacedKey key, [NotNullWhen(true)] out T? value);
     T GetOrSetDefault<T>(NamespacedKey key, T defaultValue);
     T GetOrCreateDefault<T>(NamespacedKey key) where T : new();

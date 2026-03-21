@@ -88,9 +88,9 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     public void Load(IDataContainer dataContainer)
     {
-        if (dataContainer.TryGet(_namespacedKey, out bool isUnlocked))
+        if (dataContainer.Has<bool>(_namespacedKey))
         {
-            ProgressiveStates.IsUnlocked = isUnlocked;
+            ProgressiveStates.IsUnlocked = dataContainer.GetOrSetDefault(_namespacedKey, !_isLocked);
             Debuggers.Progressive?.Log($"Used older save data for unlockable: {_namespacedKey} for unlocked: {ProgressiveStates.IsUnlocked} with saveID: {_namespacedKey}");
             return;
         }

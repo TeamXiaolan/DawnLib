@@ -1,4 +1,8 @@
-# v0.8.14
+# v0.8.15
+
+- This has not been a good day for me, adjusted the progressive predicate thing to add a `Has` option.
+
+## v0.8.14
 
 - Fixed another small issue with setting progressive predicates to be unhidden not saving that unhidden state.
 

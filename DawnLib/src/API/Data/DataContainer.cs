@@ -91,6 +91,11 @@ public class DataContainer : IDataContainer
     public virtual void MarkDirty() { } // marking dirty does nothing here
     public virtual IDisposable CreateEditContext() => new NoOpDisposable();
 
+    public bool Has<T>(NamespacedKey key)
+    {
+        return dictionary.ContainsKey(key) && dictionary[key] is T;
+    }
+
     class NoOpDisposable : IDisposable
     {
         public void Dispose()

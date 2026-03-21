@@ -43,4 +43,9 @@ public class FrozenEmptyDataContainer : IDataContainer
     {
         throw new RegistryFrozenException();
     }
+
+    public bool Has<T>(NamespacedKey key)
+    {
+        throw new NotImplementedException();
+    }
 }
