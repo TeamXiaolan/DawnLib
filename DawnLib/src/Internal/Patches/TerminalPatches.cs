@@ -73,8 +73,11 @@ static class TerminalPatches
         c.GotoNext(
             i => i.MatchBlt(out loopStart)
         );
-        targetIndex = c.Index + 2;
+        targetIndex = c.Index - 2;
 
+        Debuggers.Patching?.Log($"decors target index = {targetIndex}");
+
+        Debuggers.Patching?.Log($"decors loopStart = {loopStart}, decors target = {loopStart.Target}, decors offset = {loopStart.Target.Offset}");
         c.GotoLabel(loopStart);
 
         c.Emit(OpCodes.Ldarg_0);

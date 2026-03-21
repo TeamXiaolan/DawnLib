@@ -1,4 +1,8 @@
-# v0.8.12
+# v0.8.13
+
+- Fixed an issue where making a hidden decoration would cause the terminal to crash in some rare scenarios.
+
+## v0.8.12
 
 - Fixed an issue with unlockables list on store not displaying some unlockables if they have the same display name (different buy name).
 
