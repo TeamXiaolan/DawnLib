@@ -108,7 +108,9 @@ public class NamespacedConfigWeight
     public static List<NamespacedConfigWeight> ConvertManyFromString(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return new List<NamespacedConfigWeight>();
+        }
 
         string[] inputList = input.Split(',', StringSplitOptions.RemoveEmptyEntries);
         List<NamespacedConfigWeight> result = new List<NamespacedConfigWeight>(inputList.Length);

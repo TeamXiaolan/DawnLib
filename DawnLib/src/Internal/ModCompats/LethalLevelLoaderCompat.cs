@@ -86,10 +86,10 @@ static class LethalLevelLoaderCompat
             }
         }
         DungeonFlow? dungeonFlow = extendedDungeonFlowOfInterest?.DungeonFlow;
-        if (dungeonFlow != null && dungeonFlow.HasDawnInfo() && !dungeonFlow.GetDawnInfo().ShouldSkipRespectOverride())
+        if (dungeonFlow != null && dungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo) && !dungeonInfo.ShouldSkipRespectOverride())
         {
-            SpawnWeightContext ctx = new(extendedLevel.SelectableLevel.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(extendedLevel.SelectableLevel)?.GetDawnInfo());
-            return dungeonFlow.GetDawnInfo().Weights.GetFor(ctx.Moon!, ctx) ?? 0;
+            SpawnWeightContext ctx = new(extendedLevel.SelectableLevel.GetDawnInfo(), dungeonInfo, TimeOfDayRefs.GetCurrentWeatherEffect(extendedLevel.SelectableLevel)?.GetDawnInfo());
+            return dungeonInfo.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
         }
         return orig(self, extendedLevel);
     }

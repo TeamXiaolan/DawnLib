@@ -104,12 +104,40 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
-        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeightsCompat);
-        List<NamespacedConfigWeight> Interiors = NamespacedConfigWeight.ConvertManyFromString(Config.InteriorSpawnWeights?.Value ?? InteriorSpawnWeightsCompat);
-        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeightsCompat);
+        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(MoonSpawnWeightsCompat);
+        if (MoonSpawnWeightsConfig.Count > 0)
+        {
+            Moons = MoonSpawnWeightsConfig;
+        }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, Interiors.Count > 0 ? Interiors : InteriorSpawnWeightsConfig, Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
+        if (Config.MoonSpawnWeights != null)
+        {
+            Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
+        }
 
+        List<NamespacedConfigWeight> Interiors = NamespacedConfigWeight.ConvertManyFromString(InteriorSpawnWeightsCompat);
+        if (InteriorSpawnWeightsConfig.Count > 0)
+        {
+            Interiors = InteriorSpawnWeightsConfig;
+        }
+
+        if (Config.InteriorSpawnWeights != null)
+        {
+            Interiors = NamespacedConfigWeight.ConvertManyFromString(Config.InteriorSpawnWeights.Value);
+        }
+
+        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherSpawnWeightsCompat);
+        if (WeatherSpawnWeightsConfig.Count > 0)
+        {
+            Weathers = WeatherSpawnWeightsConfig;
+        }
+
+        if (Config.WeatherSpawnWeights != null)
+        {
+            Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
+        }
+
+        SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
         DawnLib.DefineItem(TypedKey, Item, builder =>
         {
             if (Config.IsScrapItem?.Value ?? IsScrap)

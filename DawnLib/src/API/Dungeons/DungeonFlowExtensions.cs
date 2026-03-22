@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
 using DunGen.Graph;
 
@@ -10,6 +11,13 @@ public static class DungeonFlowExtensions
         object newObject = dungeonFlow;
         DawnDungeonInfo dungeonInfo = (DawnDungeonInfo)((IDawnObject)newObject).DawnInfo;
         return dungeonInfo;
+    }
+
+    public static bool TryGetDawnInfo(this DungeonFlow dungeonFlow, [NotNullWhen(true)] out DawnDungeonInfo? dungeonInfo)
+    {
+        object newObject = dungeonFlow;
+        dungeonInfo = (DawnDungeonInfo)((IDawnObject)newObject).DawnInfo;
+        return dungeonInfo != null;
     }
 
     internal static bool HasDawnInfo(this DungeonFlow dungeonFlow)

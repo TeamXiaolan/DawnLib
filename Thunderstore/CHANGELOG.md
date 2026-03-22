@@ -1,4 +1,9 @@
-# v0.8.15
+# v0.8.16
+
+- Fixed an issue with DuskDefinitions defaulting to mod dev defined weights if none are defined in the config.
+- Fixed issues with interior weights not being applied to enemies.
+
+## v0.8.15
 
 - This has not been a good day for me, adjusted the progressive predicate thing to add a `Has` option.
 

@@ -75,10 +75,29 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         Config = CreateDungeonConfig(section);
         BaseConfig = Config;
 
-        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights?.Value ?? MoonSpawnWeightsCompat);
-        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights?.Value ?? WeatherSpawnWeightsCompat);
+        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(MoonSpawnWeightsCompat);
+        if (MoonSpawnWeightsConfig.Count > 0)
+        {
+            Moons = MoonSpawnWeightsConfig;
+        }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons.Count > 0 ? Moons : MoonSpawnWeightsConfig, new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig);
+        if (Config.MoonSpawnWeights != null)
+        {
+            Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
+        }
+
+        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherSpawnWeightsCompat);
+        if (WeatherSpawnWeightsConfig.Count > 0)
+        {
+            Weathers = WeatherSpawnWeightsConfig;
+        }
+
+        if (Config.WeatherSpawnWeights != null)
+        {
+            Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
+        }
+
+        SpawnWeights.SetupSpawnWeightsPreset(Moons, [], Weathers);
         DawnLib.DefineDungeon(TypedKey, DungeonFlowReference.FlowAssetName, builder =>
         {
             foreach (var mapping in DungeonFlowReference.ArchetypeTileSets)

@@ -87,7 +87,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
             if (Config.InsideHazard?.Value ?? IsInsideHazard)
             {
                 string moonStringToUse = Config.InsideMoonCurveSpawnWeights?.Value ?? DefaultInsideCurveSpawnWeightsCompat;
-                if (string.IsNullOrWhiteSpace(moonStringToUse))
+                if (Config.InsideMoonCurveSpawnWeights == null)
                 {
                     foreach (NamespacedKeyWithAnimationCurve curve in InsideMoonCurveSpawnWeights)
                     {
@@ -99,7 +99,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                     }
                 }
                 string interiorStringToUse = Config.InsideInteriorCurveSpawnWeights?.Value ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(interiorStringToUse))
+                if (Config.InsideInteriorCurveSpawnWeights == null)
                 {
                     foreach (NamespacedKeyWithAnimationCurve curve in InsideInteriorCurveSpawnWeights)
                     {
@@ -129,7 +129,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
             if (Config.OutsideHazard?.Value ?? IsOutsideHazard)
             {
                 string moonStringToUse = Config.OutsideMoonCurveSpawnWeights?.Value ?? DefaultOutsideCurveSpawnWeightsCompat;
-                if (string.IsNullOrWhiteSpace(moonStringToUse))
+                if (Config.OutsideMoonCurveSpawnWeights == null)
                 {
                     foreach (NamespacedKeyWithAnimationCurve curve in OutsideMoonCurveSpawnWeights)
                     {
@@ -141,7 +141,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                     }
                 }
                 string interiorStringToUse = Config.OutsideInteriorCurveSpawnWeights?.Value ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(interiorStringToUse))
+                if (Config.OutsideInteriorCurveSpawnWeights == null)
                 {
                     foreach (NamespacedKeyWithAnimationCurve curve in OutsideInteriorCurveSpawnWeights)
                     {

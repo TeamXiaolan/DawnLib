@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
+using DunGen.Graph;
 using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
@@ -269,6 +270,7 @@ static class EnemyRegistrationHandler
         if (!LethalContent.Weathers.IsFrozen || !LethalContent.Enemies.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
+        DungeonFlow? dungeonFlow = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow;
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (enemyInfo.ShouldSkipRespectOverride())
@@ -287,7 +289,7 @@ static class EnemyRegistrationHandler
                     };
                     level.OutsideEnemies.Add(spawnableEnemyWithRarity);
                 }
-                SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+                SpawnWeightContext ctx = new(level.GetDawnInfo(), dungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
                 spawnableEnemyWithRarity.rarity = enemyInfo.Outside.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
             }
 
@@ -303,7 +305,7 @@ static class EnemyRegistrationHandler
                     };
                     level.Enemies.Add(spawnableEnemyWithRarity);
                 }
-                SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+                SpawnWeightContext ctx = new(level.GetDawnInfo(), dungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
                 int rarity = enemyInfo.Inside.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
                 spawnableEnemyWithRarity.rarity = rarity;
             }
@@ -321,7 +323,7 @@ static class EnemyRegistrationHandler
                     level.DaytimeEnemies.Add(spawnableEnemyWithRarity);
                 }
 
-                SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
+                SpawnWeightContext ctx = new(level.GetDawnInfo(), dungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
                 spawnableEnemyWithRarity.rarity = enemyInfo.Daytime.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
             }
         }
