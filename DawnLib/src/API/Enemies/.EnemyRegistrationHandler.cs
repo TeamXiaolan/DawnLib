@@ -62,7 +62,7 @@ static class EnemyRegistrationHandler
                 continue;
 
             SpawnWeightContext ctx = new(self.currentLevel.GetDawnInfo(), self.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(self.currentLevel)?.GetDawnInfo());
-            if (enemyInfo.Inside.Weights.GetFor(ctx.Moon!, ctx) != 0)
+            if (enemyInfo.Inside.Weights.GetFor(ctx.Moon!, ctx) > 0)
                 continue;
 
             enemyType.spawningDisabled = true;

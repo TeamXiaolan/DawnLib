@@ -361,7 +361,7 @@ static class DungeonRegistrationHandler
 
             SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
             int newRarity = dungeonInfo.Weights?.GetFor(level.GetDawnInfo(), ctx) ?? 0;
-            intWithRarity.rarity = newRarity;
+            intWithRarity.rarity = newRarity.Clamp0();
         }
     }
 

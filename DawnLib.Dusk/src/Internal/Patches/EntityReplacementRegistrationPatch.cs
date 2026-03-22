@@ -10,6 +10,7 @@ using MonoMod.RuntimeDetour;
 using UnityEngine;
 using OpCodes = Mono.Cecil.Cil.OpCodes;
 using Random = System.Random;
+using Dawn.Utils;
 
 namespace Dusk.Internal;
 
@@ -354,10 +355,10 @@ static class EntityReplacementRegistrationPatch
 
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
+        int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskItemReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= replacement.Weights.GetFor(currentMoon, ctx) ?? 0;
+            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 
@@ -494,10 +495,10 @@ static class EntityReplacementRegistrationPatch
 
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
+        int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
-            chosenWeight -= replacement.Weights.GetFor(currentMoon, ctx) ?? 0;
+            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 
@@ -572,10 +573,10 @@ static class EntityReplacementRegistrationPatch
 
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight.Value);
+        int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= replacement.Weights.GetFor(currentMoon, ctx) ?? 0;
+            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 

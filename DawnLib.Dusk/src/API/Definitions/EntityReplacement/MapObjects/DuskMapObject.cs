@@ -6,6 +6,7 @@ using Dawn.Interfaces;
 using Dusk.Internal;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using Dawn.Utils;
 
 namespace Dusk;
 
@@ -78,10 +79,10 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
 
         EntityReplacementRegistrationPatch.replacementRandom ??= new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
 
-        int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value);
+        int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskMapObjectReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= replacement.Weights.GetFor(currentMoon, ctx) ?? 0;
+            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 
