@@ -2,6 +2,7 @@
 
 - Fixed an issue with DuskDefinitions defaulting to mod dev defined weights if none are defined in the config.
 - Fixed issues with interior weights not being applied to enemies.
+- Fixed issues relating to ship upgrades not being completely picked up by DawnLib, also cleaned up the unlockable terminal code a bit.
 
 ## v0.8.15
 

@@ -134,113 +134,67 @@ static class UnlockableRegistrationHandler
         terminal.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
         orig(self);
     }
-
     private static readonly Regex UpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)(?<tail>\s+//\s+Price:\s+\$\d+.*)$", RegexOptions.Compiled);
 
     private static readonly Regex AnyUpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)\s+//\s+Price:\s+\$\d+.*$", RegexOptions.Compiled);
-
     private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
         string text = orig(self, modifiedDisplayText, node);
 
-        int headerIdx = text.IndexOf("Ship upgrades", StringComparison.OrdinalIgnoreCase);
-        if (headerIdx < 0)
-            return text;
-
-        int blockStart = text.IndexOf('\n', headerIdx);
-        if (blockStart < 0)
-            return text;
-
-        int blockEnd = text.IndexOf("\n\n>", blockStart, StringComparison.Ordinal);
-        if (blockEnd < 0)
+        int start = text.IndexOf("SHIP UPGRADES:");
+        if (start < 0)
         {
-            blockEnd = text.Length;
+            return text;
         }
 
-        string before = text[..blockStart];
-        string block = text[blockStart..blockEnd];
-        string after = text[blockEnd..];
+        if (start >= 0)
+        {
+            int end = text.IndexOf("The selection of ship decor rotates per-quota.", start);
+            if (end >= 0)
+            {
+                text = text.Remove(start, end - start);
+            }
+        }
 
-        Dictionary<string, string> overrides = new(StringComparer.OrdinalIgnoreCase);
+        List<string> linesToAdd = ["SHIP UPGRADES:\n"];
 
-        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values.OrderBy(x => x.UnlockableItem.unlockableName).OrderByDescending(x => x.Key.IsVanilla()))
         {
             UpdateUnlockablePrices(unlockableInfo);
-
-            string vanillaName = unlockableInfo.UnlockableItem.unlockableName ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(vanillaName))
+            if (!unlockableInfo.UnlockableItem.alwaysInStock)
+            {
                 continue;
+            }
+
+            string nameToUse = unlockableInfo.UnlockableItem.unlockableName;
+            if (string.IsNullOrWhiteSpace(nameToUse))
+            {
+                string? alternateName = unlockableInfo.BuyKeyword != null ? unlockableInfo.BuyKeyword.word : null;
+                if (!string.IsNullOrWhiteSpace(alternateName))
+                {
+                    DawnPlugin.Logger.LogWarning($"Unlockable '{alternateName}' has no .unlockableName name.");
+                }
+                continue;
+            }
 
             TerminalPurchaseResult result = unlockableInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
+            if (result is TerminalPurchaseResult.HiddenPurchaseResult hidden)
+            {
+                continue;
+            }
+
             if (result is TerminalPurchaseResult.FailedPurchaseResult failed && !string.IsNullOrWhiteSpace(failed.OverrideName))
             {
-                overrides[vanillaName] = failed.OverrideName;
+                nameToUse = failed.OverrideName;
             }
+
+            int cost = unlockableInfo.DawnPurchaseInfo.Cost.Provide();
+            linesToAdd.Add($"* {nameToUse}    //    Price: ${cost}\n");
         }
 
-        HashSet<string> existingNames = new(StringComparer.OrdinalIgnoreCase);
-        foreach (Match match in AnyUpgradeLineRegex.Matches(block))
-        {
-            string name = match.Groups["name"].Value.Trim();
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                existingNames.Add(name);
-            }
-        }
+        text = text.Insert(start, string.Join("", linesToAdd));
 
-        List<string> linesToAdd = new();
-
-        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
-        {
-            if (!unlockableInfo.UnlockableItem.alwaysInStock)
-                continue;
-
-            string vanillaName = unlockableInfo.UnlockableItem.unlockableName ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(vanillaName))
-                continue;
-
-            if (existingNames.Contains(vanillaName))
-                continue;
-
-            string displayName = overrides.TryGetValue(vanillaName, out string overridden) ? overridden : vanillaName;
-
-            int cost = unlockableInfo.RequestNode?.itemCost ?? 0;
-            linesToAdd.Add($"* {displayName}    //    Price: ${cost}");
-            existingNames.Add(displayName);
-        }
-
-        if (overrides.Count > 0)
-        {
-            block = UpgradeLineRegex.Replace(block, m =>
-            {
-                string currentName = m.Groups["name"].Value.Trim();
-                if (overrides.TryGetValue(currentName, out string newName))
-                {
-                    return $"* {newName}{m.Groups["tail"].Value}";
-                }
-
-                return m.Value;
-            });
-        }
-
-        if (linesToAdd.Count > 0)
-        {
-            string insertion = "\n" + string.Join("\n", linesToAdd);
-
-            MatchCollection matches = AnyUpgradeLineRegex.Matches(block);
-            if (matches.Count > 0)
-            {
-                Match last = matches[^1];
-                int insertPos = last.Index + last.Length;
-                block = block.Insert(insertPos, insertion);
-            }
-            else
-            {
-                block += insertion;
-            }
-        }
-
-        return before + block + after;
+        return text;
     }
 
     internal static void UpdateAllUnlockablePrices()
@@ -277,8 +231,9 @@ static class UnlockableRegistrationHandler
             return;
         }
 
-        foreach (UnlockableItem unlockableItem in StartOfRoundRefs.Instance.unlockablesList.unlockables)
+        for (int i = 0; i < StartOfRoundRefs.Instance.unlockablesList.unlockables.Count; i++)
         {
+            UnlockableItem unlockableItem = StartOfRoundRefs.Instance.unlockablesList.unlockables[i];
             if (unlockableItem.HasDawnInfo())
                 continue;
 
@@ -323,12 +278,21 @@ static class UnlockableRegistrationHandler
             }
 
             TerminalNode? requestNode = unlockableItem.shopSelectionNode;
-            TerminalNode? confirmNode = unlockableItem.shopSelectionNode?.terminalOptions?.FirstOrDefault()?.result;
+            if (requestNode == null)
+            {
+                requestNode = TerminalRefs.BuyKeyword.compatibleNouns.Where(x => x.result.shipUnlockableID == i)?.Select(x => x.result).FirstOrDefault();
+            }
+
+            TerminalNode? confirmNode = null;
             TerminalKeyword? unlockableBuyKeyword = null;
+
             if (requestNode != null)
             {
                 unlockableBuyKeyword = TerminalRefs.BuyKeyword.compatibleNouns.Where(x => x.result == requestNode).Select(x => x.noun).FirstOrDefault();
+                confirmNode = requestNode.terminalOptions?.FirstOrDefault()?.result;
+                cost = requestNode.itemCost;
             }
+
             TerminalNode? infoNode = null;
             if (requestNode != null)
             {

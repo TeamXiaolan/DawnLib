@@ -122,6 +122,7 @@ static class TerminalPatches
     private static string UpdateItemPrices(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
         ItemRegistrationHandler.UpdateAllShopItemPrices();
+        UnlockableRegistrationHandler.UpdateAllUnlockablePrices();
         MoonRegistrationHandler.UpdateAllPrices();
         return orig(self, modifieddisplaytext, node);
     }
