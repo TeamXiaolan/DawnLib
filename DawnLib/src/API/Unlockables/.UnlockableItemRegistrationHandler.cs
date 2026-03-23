@@ -134,9 +134,7 @@ static class UnlockableRegistrationHandler
         terminal.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
         orig(self);
     }
-    private static readonly Regex UpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)(?<tail>\s+//\s+Price:\s+\$\d+.*)$", RegexOptions.Compiled);
 
-    private static readonly Regex AnyUpgradeLineRegex = new(@"(?m)^\* (?<name>.+?)\s+//\s+Price:\s+\$\d+.*$", RegexOptions.Compiled);
     private static string AddShipUpgradesToTerminal(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifiedDisplayText, TerminalNode node)
     {
         string text = orig(self, modifiedDisplayText, node);
