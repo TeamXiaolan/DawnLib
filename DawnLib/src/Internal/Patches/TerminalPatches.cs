@@ -14,9 +14,18 @@ static class TerminalPatches
     {
         On.Terminal.LoadNewNodeIfAffordable += HandlePredicate;
         On.Terminal.TextPostProcess += UpdateItemPrices;
+        On.Terminal.LoadNewNode += UpdateItemPrices;
         On.Terminal.TextPostProcess += HandleTerminalTextModifiers;
         IL.Terminal.TextPostProcess += HideResults;
         IL.Terminal.TextPostProcess += UseFailedNameResults;
+    }
+
+    private static void UpdateItemPrices(On.Terminal.orig_LoadNewNode orig, Terminal self, TerminalNode node)
+    {
+        ItemRegistrationHandler.UpdateAllShopItemPrices();
+        UnlockableRegistrationHandler.UpdateAllUnlockablePrices();
+        MoonRegistrationHandler.UpdateAllPrices();
+        orig(self, node);
     }
 
     // this is currently a separate function because this is very specific to vanilla
@@ -86,6 +95,7 @@ static class TerminalPatches
         c.EmitCallvirt<List<TerminalNode>>("get_Item");
         c.EmitDelegate((TerminalNode unlockableNode) =>
         {
+            Debuggers.Items?.Log($"Checking {unlockableNode.creatureName}");
             if (unlockableNode.shipUnlockableID < 0 || unlockableNode.shipUnlockableID > StartOfRound.Instance.unlockablesList.unlockables.Count)
             {
                 DawnPlugin.Logger.LogWarning($"{unlockableNode.creatureName} ({unlockableNode.name}) has a ship unlockable id of {unlockableNode.shipUnlockableID} which doesn't make sense.");

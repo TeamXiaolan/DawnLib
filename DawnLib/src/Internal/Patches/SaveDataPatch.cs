@@ -53,6 +53,11 @@ static class SaveDataPatch
             return;
         }
 
+        if (!NetworkManager.Singleton.IsServer)
+        {
+            return;
+        }
+
         self.parentObject.NetworkObject.OnSpawn(() =>
         {
             if (!self.parentObject.NetworkObject.TrySetParent(StartOfRoundRefs.Instance.shipAnimatorObject, true))
