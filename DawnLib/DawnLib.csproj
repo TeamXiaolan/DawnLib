@@ -79,61 +79,79 @@
       </Reference>
 
       <Reference Include="Unity.Netcode.Runtime.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Netcode.Runtime.dll</HintPath>
       </Reference>
       <Reference Include="Unity.Netcode.Components.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Netcode.Components.dll</HintPath>
       </Reference>
       <Reference Include="DunGen.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\DunGen.dll</HintPath>
       </Reference>
       <Reference Include="DunGen.Integration.UnityNav.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\DunGen.Integration.UnityNav.dll</HintPath>
       </Reference>
       <Reference Include="Facepunch.Steamworks.Win64.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Facepunch.Steamworks.Win64.dll</HintPath>
       </Reference>
       <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
       </Reference>
 
       <Reference Include="Unity.InputSystem.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.InputSystem.dll</HintPath>
       </Reference>
       <Reference Include="Unity.TextMeshPro.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.TextMeshPro.dll</HintPath>
       </Reference>
 
       <Reference Include="UnityEngine.UI.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\UnityEngine.UI.dll</HintPath>
       </Reference>
 
       <Reference Include="MMHOOK_DunGen.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\MMHOOK_DunGen.dll</HintPath>
       </Reference>
   
       <Reference Include="Assembly-CSharp-firstpass.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Assembly-CSharp-firstpass.dll</HintPath>
       </Reference>
       <Reference Include="Unity.Mathematics.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Mathematics.dll</HintPath>
       </Reference>
       <Reference Include="DunGenPlus.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\DunGenPlus.dll</HintPath>
       </Reference>
       <Reference Include="MMHOOK_Unity.TextMeshPro.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\MMHOOK_Unity.TextMeshPro.dll</HintPath>
       </Reference>
       <Reference Include="MMHOOK_Assembly-CSharp">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="MMHOOK_BepInEx">
+        <PrivateAssets>all</PrivateAssets>
           <HintPath>deps\MMHOOK_BepInEx.dll</HintPath>
       </Reference>
       <Reference Include="MMHOOK_BepInEx.Preloader">
+        <PrivateAssets>all</PrivateAssets>
           <HintPath>deps\MMHOOK_BepInEx.Preloader.dll</HintPath>
       </Reference>
       <Reference Include="MMHOOK_Unity.Netcode.Runtime">
+        <PrivateAssets>all</PrivateAssets>
           <HintPath>deps\MMHOOK_Unity.Netcode.Runtime.dll</HintPath>
       </Reference>
         

@@ -62,20 +62,25 @@
       </Reference>
 
       <Reference Include="Unity.Netcode.Runtime.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Netcode.Runtime.dll</HintPath>
       </Reference>
       <Reference Include="Unity.Netcode.Components.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Netcode.Components.dll</HintPath>
       </Reference>
       <Reference Include="DunGen.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\DunGen.dll</HintPath>
       </Reference>
 
       <Reference Include="Unity.TextMeshPro.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.TextMeshPro.dll</HintPath>
       </Reference>
 
       <Reference Include="UnityEngine.UI.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\UnityEngine.UI.dll</HintPath>
       </Reference>
 

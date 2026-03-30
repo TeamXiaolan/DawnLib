@@ -20,16 +20,20 @@
       </Reference>
 
       <Reference Include="Unity.Netcode.Runtime.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Netcode.Runtime.dll</HintPath>
       </Reference>
       <Reference Include="Unity.Netcode.Components.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Netcode.Components.dll</HintPath>
       </Reference>
       <Reference Include="DunGen.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\DunGen.dll</HintPath>
       </Reference>
 
       <Reference Include="Newtonsoft.Json.dll" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Newtonsoft.Json.dll</HintPath>
       </Reference>
 
