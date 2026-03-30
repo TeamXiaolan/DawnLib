@@ -1,5 +1,4 @@
 using Dawn;
-using Dusk.Weights.Transformers;
 
 namespace Dusk.Weights;
 

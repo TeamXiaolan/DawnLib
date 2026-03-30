@@ -132,11 +132,7 @@ static class ItemRegistrationHandler
             SpawnableItemWithRarity? spawnableItemWithRarity = level.spawnableScrap.FirstOrDefault(x => x.spawnableItem == itemInfo.Item);
             if (spawnableItemWithRarity == null)
             {
-                spawnableItemWithRarity = new()
-                {
-                    spawnableItem = itemInfo.Item,
-                    rarity = 0
-                };
+                spawnableItemWithRarity = new(itemInfo.Item, 0);
                 level.spawnableScrap.Add(spawnableItemWithRarity);
             }
             SpawnWeightContext ctx = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo() ?? null);
@@ -227,11 +223,7 @@ static class ItemRegistrationHandler
                     .SetMaxCharactersToType(25)
                     .Build();
 
-                CompatibleNoun compatibleNounMissing = new()
-                {
-                    noun = buyKeywordOfSignificance,
-                    result = infoNode
-                };
+                CompatibleNoun compatibleNounMissing = new(buyKeywordOfSignificance, infoNode);
                 List<CompatibleNoun> newCompatibleNouns = infoKeyword.compatibleNouns.ToList();
                 newCompatibleNouns.Add(compatibleNounMissing);
                 infoKeyword.compatibleNouns = newCompatibleNouns.ToArray();
@@ -328,11 +320,7 @@ static class ItemRegistrationHandler
                 if (alreadyExists)
                     continue;
 
-                SpawnableItemWithRarity spawnDef = new()
-                {
-                    spawnableItem = itemInfo.Item,
-                    rarity = 0
-                };
+                SpawnableItemWithRarity spawnDef = new(itemInfo.Item, 0);
                 level.spawnableScrap.Add(spawnDef);
             }
         }
@@ -405,28 +393,12 @@ static class ItemRegistrationHandler
         requestNode.overrideOptions = true;
         requestNode.terminalOptions =
         [
-            new CompatibleNoun()
-            {
-                noun = confirmPurchaseKeyword,
-                result = receiptNode
-            },
-            new CompatibleNoun()
-            {
-                noun = denyPurchaseKeyword,
-                result = cancelPurchaseNode
-            }
+            new CompatibleNoun(confirmPurchaseKeyword, receiptNode),
+            new CompatibleNoun(denyPurchaseKeyword, cancelPurchaseNode)
         ];
 
-        newBuyCompatibleNouns.Add(new CompatibleNoun()
-        {
-            noun = buyItemKeyword,
-            result = requestNode
-        });
-        newInfoCompatibleNouns.Add(new CompatibleNoun()
-        {
-            noun = buyItemKeyword,
-            result = shopInfo.InfoNode
-        });
+        newBuyCompatibleNouns.Add(new CompatibleNoun(buyItemKeyword, requestNode));
+        newInfoCompatibleNouns.Add(new CompatibleNoun(buyItemKeyword, shopInfo.InfoNode));
 
         TerminalRefs.Instance.buyableItemsList = newBuyableList.ToArray(); // this needs to be restored on lobby reload
         infoKeyword.compatibleNouns = newInfoCompatibleNouns.ToArray(); // SO so it sticks

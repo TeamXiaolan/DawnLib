@@ -29,7 +29,6 @@
         <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all"/>
         <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all"/>
-        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all"/>
         <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.25.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -42,6 +41,22 @@
         <Reference Include="loaforcsSoundAPI">
             <HintPath>deps\me.loaforc.soundapi.dll</HintPath>
         </Reference>
+
+      <Reference Include="Assembly-CSharp.dll">
+        <PrivateAssets>all</PrivateAssets>
+        <Publicize>true</Publicize>
+        <HintPath>deps\Assembly-CSharp.dll</HintPath>
+      </Reference>
+
+      <Reference Include="Unity.Netcode.Runtime.dll" Publicize="true">
+        <HintPath>deps\Unity.Netcode.Runtime.dll</HintPath>
+      </Reference>
+      <Reference Include="Unity.Netcode.Components.dll" Publicize="true">
+        <HintPath>deps\Unity.Netcode.Components.dll</HintPath>
+      </Reference>
+      <Reference Include="DunGen.dll" Publicize="true">
+        <HintPath>deps\DunGen.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

@@ -33,20 +33,12 @@ public sealed class DawnComplexQueryCommandInfo
 
         for (int i = 0; i < ContinueKeywords.Count; i++)
         {
-            compatibleNouns[i] = new CompatibleNoun()
-            {
-                noun = ContinueKeywords[i],
-                result = ResultNodes[i]
-            };
+            compatibleNouns[i] = new CompatibleNoun(ContinueKeywords[i], ResultNodes[i]);
         }
 
         if (CancelKeyword != null)
         {
-            compatibleNouns[^1] = new CompatibleNoun()
-            {
-                noun = CancelKeyword,
-                result = CancelNode
-            };
+            compatibleNouns[^1] = new CompatibleNoun(CancelKeyword, CancelNode);
         }
 
         ContinueOrCancelNode.terminalOptions = compatibleNouns;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +49,7 @@ static class MoonRegistrationHandler
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
 
-        IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
+        // IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
 
         if (!MoonDaySpeedMultiplierPatcherCompat.Enabled)
         {
@@ -68,7 +67,7 @@ static class MoonRegistrationHandler
             i => i.MatchLdloc(5),
             i => i.MatchLdcR4(3f)))
         {
-            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch");
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch (1)");
             return;
         }
 
@@ -212,26 +211,14 @@ static class MoonRegistrationHandler
             moonInfo.ReceiptNode.buyRerouteToMoon = moonInfo.Level.levelID;
             moonInfo.RouteNode.displayPlanetInfo = moonInfo.Level.levelID;
 
-            routeNouns.Add(new CompatibleNoun()
-            {
-                noun = moonInfo.NameKeyword,
-                result = moonInfo.RouteNode
-            });
+            routeNouns.Add(new CompatibleNoun(moonInfo.NameKeyword, moonInfo.RouteNode));
             allKeywords.Add(moonInfo.NameKeyword);
             moonInfo.NameKeyword.defaultVerb = TerminalRefs.RouteKeyword;
 
             moonInfo.RouteNode.overrideOptions = true;
             moonInfo.RouteNode.terminalOptions = [
-                new CompatibleNoun()
-                {
-                    noun = TerminalRefs.DenyKeyword,
-                    result = TerminalRefs.CancelRouteNode
-                },
-                new CompatibleNoun()
-                {
-                    noun = TerminalRefs.ConfirmPurchaseKeyword,
-                    result = moonInfo.ReceiptNode
-                }
+                new CompatibleNoun(TerminalRefs.DenyKeyword, TerminalRefs.CancelRouteNode),
+                new CompatibleNoun(TerminalRefs.ConfirmPurchaseKeyword, moonInfo.ReceiptNode)
             ];
 
             if (moonInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase() is not TerminalPurchaseResult.HiddenPurchaseResult)

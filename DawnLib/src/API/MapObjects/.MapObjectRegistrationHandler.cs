@@ -25,12 +25,12 @@ static class MapObjectRegistrationHandler
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), AddPrefabsToRandomMapObjects));
 
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
-        IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
+        // IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
 
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
 
-        LethalContent.Moons.OnFreeze += RegisterMapObjects;
+        // LethalContent.Moons.OnFreeze += RegisterMapObjects;
         LethalContent.MapObjects.OnFreeze += FixMapObjectBlanks;
     }
 
@@ -307,7 +307,11 @@ static class MapObjectRegistrationHandler
 
     private static void UpdateMapObjectSpawnWeights(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
     {
-        UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
+        // UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
+        if (self.currentLevel.indoorMapHazards == null)
+        {
+            self.currentLevel.indoorMapHazards = [];
+        }
         orig(self);
     }
 
@@ -524,7 +528,7 @@ static class MapObjectRegistrationHandler
     private static void UpdateMapObjectSpawnWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
     {
         orig(self, connectedPlayersOnServer);
-        UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
+        // UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
         UpdateOutsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
     }
 

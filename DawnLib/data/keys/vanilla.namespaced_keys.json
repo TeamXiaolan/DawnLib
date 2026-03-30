@@ -118,7 +118,7 @@
     "Magnifyingglass": "lethal_company:magnifying_glass",
     "Mapper": "lethal_company:mapper",
     "Metalsheet": "lethal_company:metal_sheet",
-    "Cookiemoldpan": "lethal_company:cookie_mold_pan",
+    "Cookiepan": "lethal_company:cookie_pan",
     "Mug": "lethal_company:mug",
     "Perfumebottle": "lethal_company:perfume_bottle",
     "Oldphone": "lethal_company:old_phone",
@@ -202,6 +202,9 @@
     "MineshaftTunnelEnd": "lethal_company:mineshaft_tunnel_end_tiles",
     "MineshaftTunnel": "lethal_company:mineshaft_tunnel_tiles",
     "MineshaftStartRooms": "lethal_company:mineshaft_start_rooms",
+    "MineshaftCaveBranch": "lethal_company:mineshaft_cave_branch_tiles",
+    "MineshaftEndTunnel": "lethal_company:mineshaft_end_tunnel_tiles",
+    "MineshaftEndTunnelBranchCaps": "lethal_company:mineshaft_end_tunnel_branch_caps_tiles",
     "StartRooms": "lethal_company:start_rooms"
   },
   "DungeonArchetypeKeys": {
@@ -210,8 +213,9 @@
     "FacilityMaze": "lethal_company:facility_maze_archetype",
     "MansionB": "lethal_company:mansion_b_archetype",
     "MansionC": "lethal_company:mansion_c_archetype",
-    "MineshaftCaves": "lethal_company:mineshaft_tunnels_archetype",
-    "MineshaftTunnels": "lethal_company:mineshaft_cave_archetype"
+    "MineshaftCaves": "lethal_company:mineshaft_caves_archetype",
+    "MineshaftTunnels": "lethal_company:mineshaft_tunnels_archetype",
+    "MineshaftEndTunnels": "lethal_company:mineshaft_end_tunnels_archetype"
   },
   "MapObjectKeys": {
     "__type": "DawnMapObjectInfo",

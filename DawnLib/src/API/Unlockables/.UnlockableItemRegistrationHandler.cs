@@ -107,18 +107,10 @@ static class UnlockableRegistrationHandler
 
             if (unlockableInfo.InfoNode != null)
             {
-                newInfoCompatibleNouns.Add(new CompatibleNoun()
-                {
-                    noun = unlockableInfo.BuyKeyword,
-                    result = unlockableInfo.InfoNode
-                });
+                newInfoCompatibleNouns.Add(new CompatibleNoun(unlockableInfo.BuyKeyword, unlockableInfo.InfoNode));
             }
 
-            newBuyCompatibleNouns.Add(new CompatibleNoun()
-            {
-                noun = unlockableInfo.BuyKeyword,
-                result = unlockableInfo.RequestNode
-            });
+            newBuyCompatibleNouns.Add(new CompatibleNoun(unlockableInfo.BuyKeyword, unlockableInfo.RequestNode));
 
 
             PlaceableShipObject? placeableShipObject = unlockableInfo.UnlockableItem.prefabObject?.GetComponentInChildren<PlaceableShipObject>();

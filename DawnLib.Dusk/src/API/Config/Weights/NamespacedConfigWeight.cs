@@ -7,9 +7,9 @@ using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
 
-namespace Dusk;
+namespace Dusk.Weights;
 [Serializable]
-public class NamespacedConfigWeight
+public class NamespacedConfigWeight : IOperationWithValue
 {
     [field: SerializeField]
     [field: InspectorName("Namespace")]
@@ -105,6 +105,11 @@ public class NamespacedConfigWeight
     }
 
     private static Regex _splitRegex = new(@"\s+");
+
+    public MathOperation Operation => MathOperation;
+
+    public float Value => Weight;
+
     public static List<NamespacedConfigWeight> ConvertManyFromString(string input)
     {
         if (string.IsNullOrWhiteSpace(input))

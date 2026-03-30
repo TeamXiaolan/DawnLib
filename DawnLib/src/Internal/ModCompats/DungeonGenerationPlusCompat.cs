@@ -31,8 +31,8 @@ static class DungeonGenerationPlusCompat
             }
 
             extenderObject = extenders[0];
-            ((DunGenExtender)extenderObject).DungeonFlow = dungeonFlow;
-            DunGenPlus.API.AddDunGenExtender(dungeonFlow, (DunGenExtender)extenderObject);
+            // ((DunGenExtender)extenderObject).DungeonFlow = dungeonFlow;
+            // DunGenPlus.API.AddDunGenExtender(dungeonFlow, (DunGenExtender)extenderObject);
         }
         else
         {
@@ -41,7 +41,7 @@ static class DungeonGenerationPlusCompat
                 return;
             }
 
-            DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
+            // DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
             extenderObject = null;
         }
     }

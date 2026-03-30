@@ -1,7 +1,7 @@
 using System;
 using Dawn.Internal;
 
-namespace Dusk.Weights.Transformers;
+namespace Dusk.Weights;
 
 [Serializable]
 public abstract class WeightTransformer<TContext>
@@ -9,13 +9,13 @@ public abstract class WeightTransformer<TContext>
     public abstract float GetNewWeight(float currentWeight, TContext context);
     public abstract MathOperation GetOperation(TContext context);
 
-    protected float DoOperation(float currentValue, (MathOperation operation, float value) previousValueWithOperation)
+    protected float DoOperation<U>(float currentValue, U previousValueWithOperation) where U : IOperationWithValue
     {
-        Debuggers.Weights?.Log($"Operation: {previousValueWithOperation.operation}");
-        Debuggers.Weights?.Log($"Value: {previousValueWithOperation.value}");
+        Debuggers.Weights?.Log($"Operation: {previousValueWithOperation.Operation}");
+        Debuggers.Weights?.Log($"Value: {previousValueWithOperation.Value}");
 
-        MathOperation operation = previousValueWithOperation.operation;
-        float previousValue = previousValueWithOperation.value;
+        MathOperation operation = previousValueWithOperation.Operation;
+        float previousValue = previousValueWithOperation.Value;
 
         return operation switch
         {

@@ -1,4 +1,6 @@
-﻿namespace Dusk;
+﻿using System;
+
+namespace Dusk;
 public enum LogicOperation
 {
     And,
@@ -11,4 +13,14 @@ public enum MathOperation
     Subtractive,
     Multiplicative,
     Divisive
+}
+
+public enum ComparisonOperation
+{
+    Equal,
+    NotEqual,
+    Greater,
+    Less,
+    GreaterOrEqual,
+    LessOrEqual
 }

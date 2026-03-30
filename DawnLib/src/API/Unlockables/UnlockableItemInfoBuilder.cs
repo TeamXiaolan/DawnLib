@@ -122,8 +122,8 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
     {
         if (!value.alreadyUnlocked && !value.shopSelectionNode)
         {
-            CompatibleNoun confirmBuyCompatibleNoun = new();
-            CompatibleNoun cancelDenyCompatibleNoun = new();
+            CompatibleNoun confirmBuyCompatibleNoun = new(null, null);
+            CompatibleNoun cancelDenyCompatibleNoun = new(null, null);
 
             value.shopSelectionNode = new TerminalNodeBuilder($"{value.unlockableName}ShopSelectionNode")
                 .SetDisplayText($"You have requested to order {value.unlockableName}.\nTotal cost of item: [totalCost].\n\nPlease CONFIRM or DENY.\n")

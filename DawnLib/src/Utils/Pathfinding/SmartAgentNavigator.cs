@@ -107,10 +107,10 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     private void UseTeleport(EntranceTeleport teleport)
     {
-        if (teleport.exitPoint == null || !teleport.FindExitPoint())
+        if (teleport.exitScript == null || !teleport.FindExitPoint() || teleport.exitPointDoesntExist)
             return;
 
-        agent.Warp(teleport.exitPoint.position);
+        agent.Warp(teleport.exitScript.entrancePoint.position);
         SetSmartAgentOutsideServerRpc(new NetworkBehaviourReference(teleport));
     }
 

@@ -12,12 +12,15 @@ using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using Unity.Netcode;
 using UnityEngine;
+using DunGen.Adapters;
 using static Dawn.Internal.DawnMoonNetworker;
 using static DunGen.Graph.DungeonFlow;
 
 namespace Dawn;
 
+[HarmonyPatch]
 static class DungeonRegistrationHandler
 {
     internal static void Init()
@@ -38,7 +41,6 @@ static class DungeonRegistrationHandler
         LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
-        IL.RoundManager.Generator_OnGenerationStatusChanged += FixVanillaGenerationStatusChangedBug;
         On.MenuManager.Awake += DeleteLLLTranspilerAndEnsureDelayedDungeon;
         IL.RoundManager.SpawnScrapInLevel += MakeExtraScrapGenerationMoreModular;
         On.RoundManager.GenerateNewFloor += (orig, self) =>
@@ -61,6 +63,39 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+    }
+
+    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewLevelClientRpc)), HarmonyPrefix, HarmonyPriority(100)] // Stole this from paco and pushed it before he could
+    internal static void GenerateNewLevelClientRpc_Prefix(RoundManager __instance)
+    {
+        // Don't run on the server.
+        if (__instance.__rpc_exec_stage != NetworkBehaviour.__RpcExecStage.Send)
+        {
+            return;
+        }
+
+        RestoreRuntimeDungeon();
+    }
+
+    private static void RestoreRuntimeDungeon()
+    {
+        GameObject dungeonGeneratorContainer = GameObject.FindGameObjectWithTag("DungeonGenerator");
+        if (!dungeonGeneratorContainer.TryGetComponent(out RuntimeDungeon _))
+        {
+            RuntimeDungeon dungeon = dungeonGeneratorContainer.AddComponent<RuntimeDungeon>();
+            UnityNavMeshAdapter navMeshAdapter = dungeon.gameObject.AddComponent<UnityNavMeshAdapter>();
+
+            Transform dungeonGeneratorRoot = dungeon.transform.GetParent().GetChild(1);
+            if (dungeonGeneratorRoot == null) return; // Messed with LevelGeneration hierarchy -> Cooked...
+            dungeon.Root = dungeonGeneratorRoot.gameObject;
+
+            navMeshAdapter.BakeMode = UnityNavMeshAdapter.RuntimeNavMeshBakeMode.FullDungeonBake;
+            navMeshAdapter.LayerMask = LayerMask.GetMask("Default", "Room", "Colliders", "NavigationSurface"); // 35072
+
+            DungeonGenerator dungeonGenerator = dungeon.Generator;
+            dungeonGenerator.AllowTilePooling = true; // Yippee!
+            dungeonGenerator.GenerateAsynchronously = true;
+        }
     }
 
     private static void MakeExtraScrapGenerationMoreModular(ILContext il)
@@ -179,48 +214,6 @@ static class DungeonRegistrationHandler
             IL.RoundManager.GenerateNewFloor += DelayDungeonGeneration;
             _alreadyPatched = true;
         }
-    }
-
-    public static void FixVanillaGenerationStatusChangedBug(ILContext il)
-    {
-        ILCursor c = new ILCursor(il);
-        if (!c.TryGotoNext(
-                MoveType.After,
-                i => i.MatchLdarg(2),
-                i => i.MatchLdcI4(6),
-                i => i.MatchBneUn(out _)))
-        {
-            DawnPlugin.Logger.LogError("Failed to find the bne instruction in Generator_OnGenerationStatusChanged");
-            return;
-        }
-
-        Instruction bneInstruction = c.Previous;
-
-        c.Goto(0);
-
-        if (!c.TryGotoNext(
-                MoveType.After,
-                i => i.MatchLdarg(0),
-                i => i.MatchLdfld<RoundManager>("dungeonCompletedGenerating"),
-                i => i.MatchBrtrue(out _)))
-        {
-            DawnPlugin.Logger.LogError("Failed to find brtrue instruction in Generator_OnGenerationStatusChanged");
-            return;
-        }
-
-        Instruction brtrueInstruction = c.Previous;
-
-        if (!c.TryGotoNext(
-                MoveType.After,
-                i => i.MatchRet()))
-        {
-            DawnPlugin.Logger.LogError("Failed to find ret instruction in Generator_OnGenerationStatusChanged");
-            return;
-        }
-
-        Instruction retInstruction = c.Previous;
-        brtrueInstruction.Operand = retInstruction;
-        bneInstruction.Operand = retInstruction;
     }
 
     private static void CleanDawnDungeonReferences()
@@ -376,11 +369,7 @@ static class DungeonRegistrationHandler
                     continue;
 
                 int id = Array.IndexOf(RoundManagerRefs.Instance.dungeonFlowTypes.Select(t => t.dungeonFlow).ToArray(), dungeonInfo.DungeonFlow);
-                IntWithRarity intWithRarity = new()
-                {
-                    id = id,
-                    rarity = 0
-                };
+                IntWithRarity intWithRarity = new(id, 0, null);
                 intsWithRarity.Add(intWithRarity);
             }
             moonInfo.Level.dungeonFlowTypes = intsWithRarity.ToArray();
@@ -395,12 +384,7 @@ static class DungeonRegistrationHandler
             if (dungeonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            IndoorMapType indoorMapType = new()
-            {
-                dungeonFlow = dungeonInfo.DungeonFlow,
-                MapTileSize = dungeonInfo.MapTileSize,
-                firstTimeAudio = dungeonInfo.StingerDetail.FirstTimeAudio,
-            };
+            IndoorMapType indoorMapType = new(dungeonInfo.DungeonFlow, dungeonInfo.MapTileSize, dungeonInfo.StingerDetail.FirstTimeAudio);
             newIndoorMapTypes.Add(indoorMapType);
         }
         RoundManagerRefs.Instance.dungeonFlowTypes = newIndoorMapTypes.ToArray();
@@ -504,7 +488,7 @@ static class DungeonRegistrationHandler
                     archetypeKey = DungeonArchetypeKeys.GetByReflection(name);
                     if (archetypeKey == null)
                     {
-                        DawnPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
+                        DawnPlugin.Logger.LogWarning($"archetype: '{dungeonArchetype.name}' (part of {dungeonInfo.Key}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey, archetype has formatted name: {name}!");
                         continue;
                     }
                 }
@@ -541,7 +525,7 @@ static class DungeonRegistrationHandler
                         tileSetKey = DungeonTileSetKeys.GetByReflection(name);
                         if (tileSetKey == null)
                         {
-                            DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey!");
+                            DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey, tileset has formatted name: {name}!");
                             continue;
                         }
                     }

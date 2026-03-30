@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Dawn;
 using Dawn.Internal;
 
-namespace Dusk.Weights.Transformers;
+namespace Dusk.Weights;
 
 [Serializable]
 public class MoonWeightTransformer : WeightTransformer<DawnMoonInfo>
@@ -25,29 +25,27 @@ public class MoonWeightTransformer : WeightTransformer<DawnMoonInfo>
         MatchingMoonsWithWeightAndOperationDict.Clear();
         foreach (NamespacedConfigWeight configWeight in _moonConfig)
         {
-            MatchingMoonsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
+            MatchingMoonsWithWeightAndOperationDict[configWeight.NamespacedKey] = configWeight;
         }
     }
 
-    public Dictionary<NamespacedKey, (MathOperation operation, float weight)> MatchingMoonsWithWeightAndOperationDict = new();
+    public Dictionary<NamespacedKey, NamespacedConfigWeight> MatchingMoonsWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight, DawnMoonInfo moonInfo)
     {
-        return WeightTransformerTagLogic.ApplyByKeyOrTags(
-            currentWeight,
-            moonInfo.TypedKey,
-            moonInfo.AllTags(),
-            MatchingMoonsWithWeightAndOperationDict,
-            DoOperation,
-            Debuggers.Weights
-        );
+        if (!WeightTransformerTagLogic.TryApplyByKey(currentWeight, moonInfo.TypedKey, MatchingMoonsWithWeightAndOperationDict, DoOperation, out float result, Debuggers.Weights))
+        {
+            result = WeightTransformerTagLogic.ApplyByTags(currentWeight, moonInfo.AllTags(), MatchingMoonsWithWeightAndOperationDict, DoOperation, Debuggers.Weights);
+        }
+
+        return result;
     }
 
     public override MathOperation GetOperation(DawnMoonInfo moonInfo)
     {
-        if (MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out var opWithWeight))
+        if (MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out NamespacedConfigWeight opWithWeight))
         {
-            return opWithWeight.operation;
+            return opWithWeight.Operation;
         }
 
         return MathOperation.Additive;

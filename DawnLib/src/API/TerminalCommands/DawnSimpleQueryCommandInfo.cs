@@ -30,16 +30,8 @@ public sealed class DawnSimpleQueryCommandInfo
         ContinueOrCancelNode.overrideOptions = true;
         ContinueOrCancelNode.terminalOptions =
         [
-            new()
-            {
-                noun = ContinueKeyword,
-                result = ResultNode
-            },
-            new()
-            {
-                noun = CancelKeyword,
-                result = CancelNode
-            }
+            new CompatibleNoun(ContinueKeyword, ResultNode),
+            new CompatibleNoun(CancelKeyword, CancelNode)
         ];
 
         ResultNode.SetDawnInfo(ParentInfo);

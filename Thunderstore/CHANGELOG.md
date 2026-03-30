@@ -1,4 +1,11 @@
-# v0.8.16
+# v0.9.0
+
+- Updated for v80 beta, please do not use this version on v73.
+- It is currently 2:36pm, I missed my class on 1pm for this and update came out 6am, I've been working on fixing stuff since probably 6:30am
+- Inside hazards are broken for now, I need to sleep it's been 25 hours.
+- WIP route price configuration.
+
+## v0.8.16
 
 - Fixed an issue with DuskDefinitions defaulting to mod dev defined weights if none are defined in the config.
 - Fixed issues with interior weights not being applied to enemies.

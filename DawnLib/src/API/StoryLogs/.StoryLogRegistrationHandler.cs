@@ -37,14 +37,10 @@ static class StoryLogRegistrationHandler
             storyLogInfo.StoryLogTerminalKeyword.defaultVerb = TerminalRefs.ViewKeyword;
 
             int index = self.logEntryFiles.Count - 1;
-            storyLogInfo.StoryLogGameObject.GetComponent<StoryLog>().SetStoryLogID(index);
+            storyLogInfo.StoryLogGameObject!.GetComponent<StoryLog>().SetStoryLogID(index);
             storyLogInfo.StoryLogTerminalNode.storyLogFileID = index;
 
-            CompatibleNoun compatibleNoun = new()
-            {
-                noun = storyLogInfo.StoryLogTerminalKeyword,
-                result = storyLogInfo.StoryLogTerminalNode
-            };
+            CompatibleNoun compatibleNoun = new CompatibleNoun(storyLogInfo.StoryLogTerminalKeyword, storyLogInfo.StoryLogTerminalNode);
 
             viewCompatibleNouns.Add(compatibleNoun);
             newTerminalKeywords.Add(storyLogInfo.StoryLogTerminalKeyword);

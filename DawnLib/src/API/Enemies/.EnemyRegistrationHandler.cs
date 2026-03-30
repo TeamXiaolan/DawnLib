@@ -135,11 +135,7 @@ static class EnemyRegistrationHandler
 
         nameKeyword.defaultVerb = TerminalRefs.InfoKeyword;
         allKeywords.Add(nameKeyword);
-        itemInfoNouns.Add(new CompatibleNoun()
-        {
-            noun = nameKeyword,
-            result = bestiaryNode
-        });
+        itemInfoNouns.Add(new CompatibleNoun(nameKeyword, bestiaryNode));
 
         TerminalRefs.InfoKeyword.compatibleNouns = itemInfoNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
@@ -153,11 +149,7 @@ static class EnemyRegistrationHandler
             if (enemyInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            SpawnableEnemyWithRarity spawnDef = new()
-            {
-                enemyType = enemyInfo.EnemyType,
-                rarity = 0
-            };
+            SpawnableEnemyWithRarity spawnDef = new(enemyInfo.EnemyType, 0);
 
             if (enemyInfo.Inside != null && testLevel.Enemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
@@ -283,11 +275,7 @@ static class EnemyRegistrationHandler
                 SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.OutsideEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
-                    spawnableEnemyWithRarity = new()
-                    {
-                        enemyType = enemyInfo.EnemyType,
-                        rarity = 0
-                    };
+                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
                     level.OutsideEnemies.Add(spawnableEnemyWithRarity);
                 }
                 SpawnWeightContext ctx = new(level.GetDawnInfo(), dungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
@@ -300,11 +288,7 @@ static class EnemyRegistrationHandler
                 SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.Enemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
-                    spawnableEnemyWithRarity = new()
-                    {
-                        enemyType = enemyInfo.EnemyType,
-                        rarity = 0
-                    };
+                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
                     level.Enemies.Add(spawnableEnemyWithRarity);
                 }
                 SpawnWeightContext ctx = new(level.GetDawnInfo(), dungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
@@ -317,11 +301,7 @@ static class EnemyRegistrationHandler
                 SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.DaytimeEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
-                    spawnableEnemyWithRarity = new()
-                    {
-                        enemyType = enemyInfo.EnemyType,
-                        rarity = 0
-                    };
+                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
                     level.DaytimeEnemies.Add(spawnableEnemyWithRarity);
                 }
 
@@ -513,11 +493,7 @@ static class EnemyRegistrationHandler
             }
         }
 
-        SpawnableEnemyWithRarity spawnDef = new()
-        {
-            enemyType = enemyInfo.EnemyType,
-            rarity = 0
-        };
+        SpawnableEnemyWithRarity spawnDef = new(enemyInfo.EnemyType, 0);
         list.Add(spawnDef);
     }
 }

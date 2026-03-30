@@ -32,7 +32,7 @@ static class LethalLevelLoaderCompat
     public static BoundedRange GetDungeonClamp(DungeonFlow dungeonFlow)
     {
         BoundedRange dungeonRangeClamp;
-        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
+        /*if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
         {
             if (extendedDungeonFlow.IsDynamicDungeonSizeRestrictionEnabled)
             {
@@ -40,7 +40,7 @@ static class LethalLevelLoaderCompat
                 return dungeonRangeClamp;
             }
             return new BoundedRange(0, 999);
-        }
+        }*/
         return new BoundedRange(0, 999);
     }
 
@@ -59,15 +59,15 @@ static class LethalLevelLoaderCompat
                 continue;
 
             int rarity = extendedDungeonFlow.LevelMatchingProperties.GetDynamicRarity(extendedLevel);
-            IntWithRarity intWithRarity = new IntWithRarity();
+            IntWithRarity intWithRarity = new(0, 0, null);
             for (int i = 0; i < RoundManagerRefs.Instance.dungeonFlowTypes.Length; i++)
             {
-                if (RoundManagerRefs.Instance.dungeonFlowTypes[i].dungeonFlow == extendedDungeonFlow.DungeonFlow)
+                /*if (RoundManagerRefs.Instance.dungeonFlowTypes[i].dungeonFlow == extendedDungeonFlow.DungeonFlow)
                 {
                     intWithRarity.id = i;
                     intWithRarity.rarity = rarity;
                     break;
-                }
+                }*/
             }
             intsWithRarity.Add(intWithRarity);
         }
@@ -85,7 +85,7 @@ static class LethalLevelLoaderCompat
                 break;
             }
         }
-        DungeonFlow? dungeonFlow = extendedDungeonFlowOfInterest?.DungeonFlow;
+        DungeonFlow? dungeonFlow = null; // extendedDungeonFlowOfInterest?.DungeonFlow;
         if (dungeonFlow != null && dungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo) && !dungeonInfo.ShouldSkipRespectOverride())
         {
             SpawnWeightContext ctx = new(extendedLevel.SelectableLevel.GetDawnInfo(), dungeonInfo, TimeOfDayRefs.GetCurrentWeatherEffect(extendedLevel.SelectableLevel)?.GetDawnInfo());
@@ -129,11 +129,11 @@ static class LethalLevelLoaderCompat
     public static bool TryGetExtendedDungeonModName(DungeonFlow dungeonFlow, out string modName)
     {
         modName = "lethal_level_loader";
-        if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
+        /*if (LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
         {
             modName = extendedDungeonFlow.ModName;
             return true;
-        }
+        }*/
         return false;
     }
 
@@ -187,7 +187,7 @@ static class LethalLevelLoaderCompat
     public static bool TryGetAllTagsWithModNames(DungeonFlow dungeonFlow, out List<(string modName, string tagName)> allTagsWithModNames)
     {
         allTagsWithModNames = new();
-        if (!LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
+        /*if (!LethalLevelLoader.DungeonManager.TryGetExtendedDungeonFlow(dungeonFlow, out ExtendedDungeonFlow extendedDungeonFlow))
         {
             return false;
         }
@@ -195,7 +195,7 @@ static class LethalLevelLoaderCompat
         foreach (ContentTag contentTag in extendedDungeonFlow.ContentTags)
         {
             allTagsWithModNames.Add((extendedDungeonFlow.ModName, contentTag.contentTagName));
-        }
+        }*/
         return true;
     }
 

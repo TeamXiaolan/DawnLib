@@ -20,11 +20,7 @@ public sealed class DawnComplexCommandInfo
 
         for (int i = 0; i < SecondaryTerminalKeywords.Count; i++)
         {
-            compatibleNouns[i] = new CompatibleNoun()
-            {
-                noun = SecondaryTerminalKeywords[i],
-                result = ResultNodes[i]
-            };
+            compatibleNouns[i] = new CompatibleNoun(SecondaryTerminalKeywords[i], ResultNodes[i]);
         }
 
         foreach (TerminalKeyword commandKeyword in ParentInfo.CommandKeywords)

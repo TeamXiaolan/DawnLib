@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Dawn;
 using Dawn.Internal;
 
-namespace Dusk.Weights.Transformers;
+namespace Dusk.Weights;
 
 [Serializable]
 public class InteriorWeightTransformer : WeightTransformer<DawnDungeonInfo>
@@ -25,29 +25,27 @@ public class InteriorWeightTransformer : WeightTransformer<DawnDungeonInfo>
         MatchingInteriorsWithWeightAndOperationDict.Clear();
         foreach (NamespacedConfigWeight configWeight in _dungeonConfig)
         {
-            MatchingInteriorsWithWeightAndOperationDict[configWeight.NamespacedKey] = (configWeight.MathOperation, configWeight.Weight);
+            MatchingInteriorsWithWeightAndOperationDict[configWeight.NamespacedKey] = configWeight;
         }
     }
 
-    public Dictionary<NamespacedKey, (MathOperation operation, float weight)> MatchingInteriorsWithWeightAndOperationDict = new();
+    public Dictionary<NamespacedKey, NamespacedConfigWeight> MatchingInteriorsWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight, DawnDungeonInfo dungeonInfo)
     {
-        return WeightTransformerTagLogic.ApplyByKeyOrTags(
-            currentWeight,
-            dungeonInfo.TypedKey,
-            dungeonInfo.AllTags(),
-            MatchingInteriorsWithWeightAndOperationDict,
-            DoOperation,
-            Debuggers.Weights
-        );
+        if (!WeightTransformerTagLogic.TryApplyByKey(currentWeight, dungeonInfo.TypedKey, MatchingInteriorsWithWeightAndOperationDict, DoOperation, out float result, Debuggers.Weights))
+        {
+            result = WeightTransformerTagLogic.ApplyByTags(currentWeight, dungeonInfo.AllTags(), MatchingInteriorsWithWeightAndOperationDict, DoOperation, Debuggers.Weights);
+        }
+
+        return result;
     }
 
     public override MathOperation GetOperation(DawnDungeonInfo dungeonInfo)
     {
-        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out var opWithWeight))
+        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out NamespacedConfigWeight opWithWeight))
         {
-            return opWithWeight.operation;
+            return opWithWeight.Operation;
         }
 
         return MathOperation.Additive;

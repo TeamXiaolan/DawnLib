@@ -232,16 +232,8 @@ static class VehicleRegistrationPatch
 
             CompatibleNoun[] buyNodeNouns =
             [
-                new CompatibleNoun
-                {
-                    noun = confirmPurchaseKeyword,
-                    result = vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode
-                },
-                new CompatibleNoun
-                {
-                    noun = denyPurchaseKeyword,
-                    result = cancelPurchaseNode
-                },
+                new CompatibleNoun(confirmPurchaseKeyword, vehicleDefinition.DawnVehicleInfo.ConfirmPurchaseNode),
+                new CompatibleNoun(denyPurchaseKeyword, cancelPurchaseNode)
             ];
             TerminalNode buyDuskNode = new TerminalNodeBuilder($"{vehicleDefinition.name}BuyNode")
                 .SetDisplayText(!string.IsNullOrWhiteSpace(vehicleDefinition.BuyableVehiclePreset.DisplayNodeText) ? vehicleDefinition.BuyableVehiclePreset.DisplayNodeText : $"You have requested to order the {vehicleDefinition.VehicleDisplayName}.\n[warranty] Total cost of items: [totalCost].\n\nPlease CONFIRM or DENY.\n")
@@ -254,20 +246,12 @@ static class VehicleRegistrationPatch
                 .SetTerminalOptions(buyNodeNouns)
                 .Build();
             vehicleDefinition.DawnVehicleInfo.BuyNode = buyDuskNode;
-            CompatibleNoun buyDuskNoun = new()
-            {
-                noun = buyDuskKeyword,
-                result = buyDuskNode
-            };
+            CompatibleNoun buyDuskNoun = new CompatibleNoun(buyDuskKeyword, buyDuskNode);
             allBuyKeywordNounsList.Add(buyDuskNoun);
 
             if (vehicleDefinition.DawnVehicleInfo.InfoNode != null)
             {
-                CompatibleNoun infoCompatibleNoun = new()
-                {
-                    noun = vehicleDefinition.DawnVehicleInfo.BuyKeyword,
-                    result = vehicleDefinition.DawnVehicleInfo.InfoNode
-                };
+                CompatibleNoun infoCompatibleNoun = new CompatibleNoun(vehicleDefinition.DawnVehicleInfo.BuyKeyword, vehicleDefinition.DawnVehicleInfo.InfoNode);
                 allInfoKeywordNounsList.Add(infoCompatibleNoun);
             }
 
