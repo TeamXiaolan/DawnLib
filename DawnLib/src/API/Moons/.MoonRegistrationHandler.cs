@@ -240,6 +240,13 @@ static class MoonRegistrationHandler
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyPriority(-999)]
     private static void FreezeMoonRegistry()
     {
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.Level.indoorMapHazards == null)
+            {
+                moonInfo.Level.indoorMapHazards = [];
+            }
+        }
         LethalContent.Moons.Freeze();
     }
 

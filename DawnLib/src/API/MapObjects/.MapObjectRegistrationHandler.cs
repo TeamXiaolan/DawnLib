@@ -252,10 +252,6 @@ static class MapObjectRegistrationHandler
     private static void UpdateMapObjectSpawnWeights(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
     {
         UpdateIndoorMapHazardSpawnWeightsOnLevel(self.currentLevel);
-        if (self.currentLevel.indoorMapHazards == null) // Fix custom moons that haven't been updated for v80
-        {
-            self.currentLevel.indoorMapHazards = [];
-        }
         orig(self);
     }
 

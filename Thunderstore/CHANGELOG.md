@@ -1,6 +1,7 @@
 # v0.9.1
 
 - Fixed inside hazards not working and massively updated the code quality, thanks zeekerss for changing how they work like I asked :p
+- Some breaking changes were made to how DawnMapObjectInfo is written so please keep that in mind for any mods trying to be compatible with DawnLib.
 - Restored additional missing functionality such as LLL compatibility for some things.
 - Added the vanilla keys for the new additions into the registries.
 - Gave the new custom entities etc some tags I felt appropriate.
