@@ -49,7 +49,7 @@ static class MoonRegistrationHandler
 
         On.Terminal.TextPostProcess += DynamicMoonCatalogue;
 
-        // IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
+        IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
 
         if (!MoonDaySpeedMultiplierPatcherCompat.Enabled)
         {
@@ -63,8 +63,8 @@ static class MoonRegistrationHandler
     {
         ILCursor c = new(il);
         if (!c.TryGotoNext(MoveType.After,
-            i => i.MatchLdloc(8),
-            i => i.MatchLdloc(5),
+            i => i.MatchLdloc(out _),
+            i => i.MatchLdloc(out _),
             i => i.MatchLdcR4(3f)))
         {
             DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch (1)");
@@ -76,7 +76,7 @@ static class MoonRegistrationHandler
 
         if (!c.TryGotoNext(MoveType.After,
             i => i.MatchConvI4(),
-            i => i.MatchLdloc(4),
+            i => i.MatchLdloc(out _),
             i => i.MatchLdcR4(3f)))
         {
             DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch (2)");
@@ -89,7 +89,12 @@ static class MoonRegistrationHandler
 
     private static float GetMoonOutsideEnemyProbabilitySpawnRange()
     {
-        return StartOfRound.Instance?.currentLevel?.GetDawnInfo()?.OutsideEnemiesProbabilityRange ?? 3f;
+        if (StartOfRound.Instance == null || StartOfRound.Instance.currentLevel == null || !StartOfRound.Instance.currentLevel.HasDawnInfo())
+        {
+            return 3f;
+        }
+
+        return StartOfRound.Instance.currentLevel.GetDawnInfo().OutsideEnemiesProbabilityRange;
     }
 
     private static void MultiplyGlobalTimeMultiplierToDaySpeedMultiplier(ILContext il)

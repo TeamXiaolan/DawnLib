@@ -92,7 +92,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
         DebugPrintRegistryResult("Items", LethalContent.Items, itemInfo => itemInfo.Item.itemName);
         DebugPrintRegistryResult("Unlockables", LethalContent.Unlockables, unlockableInfo => unlockableInfo.UnlockableItem.unlockableName);
-        DebugPrintRegistryResult("Map Objects", LethalContent.MapObjects, mapObjectInfo => mapObjectInfo.MapObject.name);
+        DebugPrintRegistryResult("Map Objects", LethalContent.MapObjects, mapObjectInfo => mapObjectInfo.GetMapObjectPrefab().name);
         DebugPrintRegistryResult("Weathers", LethalContent.Weathers, weatherInfo => weatherInfo.WeatherEffect.name);
         DebugPrintRegistryResult("Tile Sets", LethalContent.TileSets, tileInfo => tileInfo.TileSet.name);
         DebugPrintRegistryResult("Dungeons", LethalContent.Dungeons, dungeonInfo => dungeonInfo.DungeonFlow.name);

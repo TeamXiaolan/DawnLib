@@ -239,10 +239,10 @@ static class EntityReplacementRegistrationPatch
 
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
-            if (mapObjectInfo.MapObject.GetComponent<DuskMapObject>())
+            if (mapObjectInfo.GetMapObjectPrefab().GetComponent<DuskMapObject>())
                 continue;
 
-            mapObjectInfo.MapObject.AddComponent<DuskMapObject>();
+            mapObjectInfo.GetMapObjectPrefab().AddComponent<DuskMapObject>();
         }
     }
 

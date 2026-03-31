@@ -10,7 +10,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
         private MapObjectInfoBuilder _parentBuilder;
 
         // maybe replace this (vvv) with a SpawnableMapObject Builder?
-        private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances; // this feels like it should be one SO or some data thing instead of a million bools
+        private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances, _allowInMineshaft; // this feels like it should be one SO or some data thing instead of a million bools
         private ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>? _weights;
 
         internal InsideBuilder(MapObjectInfoBuilder parent)
@@ -32,7 +32,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
 
         public InsideBuilder OverrideSpawnWithBackToWall(bool spawnWWithBackToWall)
         {
-            _spawnWWithBackToWall = spawnWWithBackToWall;
+            _spawnWithBackToWall = spawnWWithBackToWall;
             return this;
         }
 
@@ -54,6 +54,12 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             return this;
         }
 
+        public InsideBuilder OverrideAllowInMineshaft(bool allowInMineshaft)
+        {
+            _allowInMineshaft = allowInMineshaft;
+            return this;
+        }
+
         public InsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
         {
             CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
@@ -69,7 +75,16 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
                 _weights = ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>.Empty();
             }
-            return new DawnInsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances);
+
+            IndoorMapHazardType indoorMapHazardType = ScriptableObject.CreateInstance<IndoorMapHazardType>();
+            indoorMapHazardType.spawnFacingAwayFromWall = _spawnFacingAwayFromWall;
+            indoorMapHazardType.spawnFacingWall = _spawnFacingWall;
+            indoorMapHazardType.spawnWithBackToWall = _spawnWithBackToWall;
+            indoorMapHazardType.spawnWithBackFlushAgainstWall = _spawnWithBackFlushAgainstWall;
+            indoorMapHazardType.requireDistanceBetweenSpawns = _requireDistanceBetweenSpawns;
+            indoorMapHazardType.disallowSpawningNearEntrances = _disallowSpawningNearEntrances;
+            indoorMapHazardType.allowInMineshaft = _allowInMineshaft;
+            return new DawnInsideMapObjectInfo(indoorMapHazardType, _weights);
         }
     }
 
@@ -77,7 +92,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
     {
         private MapObjectInfoBuilder _parentBuilder;
 
-        private bool _alignWithTerrain, _spawnFacingAwayFromWall = false;
+        private bool _alignWithTerrain, _destroyTrees, _spawnFacingAwayFromWall = false;
         private int _objectWidth = 6, _minimumNodeSpawnRequirement = 0;
         private Vector3 _rotationOffset = Vector3.zero;
         private string[] _spawnableFloorTags = Array.Empty<string>();
@@ -125,6 +140,12 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             return this;
         }
 
+        public OutsideBuilder OverrideDestroyTrees(bool destroyTrees)
+        {
+            _destroyTrees = destroyTrees;
+            return this;
+        }
+
         public OutsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
         {
             CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
@@ -140,7 +161,14 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
                 _weights = ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>.Empty();
             }
-            return new DawnOutsideMapObjectInfo(_weights, _spawnFacingAwayFromWall, _objectWidth, _spawnableFloorTags, _rotationOffset, _alignWithTerrain, _minimumNodeSpawnRequirement);
+
+            SpawnableOutsideObject spawnableOutsideObject = ScriptableObject.CreateInstance<SpawnableOutsideObject>();
+            spawnableOutsideObject.spawnFacingAwayFromWall = _spawnFacingAwayFromWall;
+            spawnableOutsideObject.rotationOffset = _rotationOffset;
+            spawnableOutsideObject.destroyTrees = _destroyTrees;
+            spawnableOutsideObject.spawnableFloorTags = _spawnableFloorTags;
+            spawnableOutsideObject.objectWidth = _objectWidth;
+            return new DawnOutsideMapObjectInfo(spawnableOutsideObject, _weights, _alignWithTerrain, _minimumNodeSpawnRequirement);
         }
     }
 
@@ -169,6 +197,6 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
 
     override internal DawnMapObjectInfo Build()
     {
-        return new DawnMapObjectInfo(key, tags, value, _insideInfo, _outsideInfo, customData);
+        return new DawnMapObjectInfo(key, tags, _insideInfo, _outsideInfo, customData);
     }
 }

@@ -119,6 +119,7 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                     insideBuilder.OverrideDisallowSpawningNearEntrances(InsideMapObjectSettings.disallowSpawningNearEntrances);
                     insideBuilder.OverrideSpawnWithBackToWall(InsideMapObjectSettings.spawnWithBackToWall);
                     insideBuilder.OverrideSpawnWithBackFlushAgainstWall(InsideMapObjectSettings.spawnWithBackFlushAgainstWall);
+                    insideBuilder.OverrideAllowInMineshaft(InsideMapObjectSettings.allowInMineshaft);
                     insideBuilder.SetWeights(weightBuilder =>
                     {
                         weightBuilder.SetGlobalCurve(InsideSpawnMechanics);
@@ -155,12 +156,13 @@ public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
                 MapObjectSpawnMechanics OutsideSpawnMechanics = new(moonStringToUse, interiorStringToUse, Config.OutsidePrioritiseMoon?.Value ?? OutsidePrioritiseMoonConfig);
                 builder.DefineOutside(outsideBuilder =>
                 {
-                    outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.AlignWithTerrain);
-                    outsideBuilder.OverrideMinimumNodeSpawnRequirement(OutsideMapObjectSettings.MinimumAINodeSpawnRequirement);
-                    outsideBuilder.OverrideObjectWidth(OutsideMapObjectSettings.ObjectWidth);
-                    outsideBuilder.OverrideRotationOffset(OutsideMapObjectSettings.RotationOffset);
-                    outsideBuilder.OverrideSpawnFacingAwayFromWall(OutsideMapObjectSettings.SpawnFacingAwayFromWall);
-                    outsideBuilder.OverrideSpawnableFloorTags(OutsideMapObjectSettings.SpawnableFloorTags);
+                    outsideBuilder.OverrideAlignWithTerrain(OutsideMapObjectSettings.alignWithTerrain);
+                    outsideBuilder.OverrideMinimumNodeSpawnRequirement(OutsideMapObjectSettings.minimumAINodeSpawnRequirement);
+                    outsideBuilder.OverrideObjectWidth(OutsideMapObjectSettings.objectWidth);
+                    outsideBuilder.OverrideRotationOffset(OutsideMapObjectSettings.rotationOffset);
+                    outsideBuilder.OverrideSpawnFacingAwayFromWall(OutsideMapObjectSettings.spawnFacingAwayFromWall);
+                    outsideBuilder.OverrideSpawnableFloorTags(OutsideMapObjectSettings.spawnableFloorTags);
+                    outsideBuilder.OverrideDestroyTrees(OutsideMapObjectSettings.destroyTrees);
                     outsideBuilder.SetWeights(weightBuilder =>
                     {
                         weightBuilder.SetGlobalCurve(OutsideSpawnMechanics);

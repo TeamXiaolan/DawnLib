@@ -1,4 +1,12 @@
-# v0.9.0
+# v0.9.1
+
+- Fixed inside hazards not working and massively updated the code quality, thanks zeekerss for changing how they work like I asked :p
+- Restored additional missing functionality such as LLL compatibility for some things.
+- Added the vanilla keys for the new additions into the registries.
+- Gave the new custom entities etc some tags I felt appropriate.
+- Added Carjack Bloke.
+
+## v0.9.0
 
 - Updated for v80 beta, please do not use this version on v73.
 - It is currently 2:36pm, I missed my class on 1pm for this and update came out 6am, I've been working on fixing stuff since probably 6:30am

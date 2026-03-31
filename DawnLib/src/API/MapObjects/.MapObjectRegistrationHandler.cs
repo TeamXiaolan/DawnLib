@@ -13,25 +13,19 @@ namespace Dawn;
 static class MapObjectRegistrationHandler
 {
     private static int _spawnedObjects;
-    private static List<GameObject> _vanillaMapObjects = new();
 
     internal static void Init()
     {
-        using (new DetourContext(priority: int.MaxValue))
-        {
-            On.StartOfRound.Awake += CollectVanillaMapObjects;
-        }
-
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), AddPrefabsToRandomMapObjects));
 
         On.RoundManager.SpawnOutsideHazards += SpawnOutsideMapObjects;
-        // IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
+        IL.RoundManager.SpawnOutsideHazards += RegenerateNavMeshTranspiler;
 
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
 
-        // LethalContent.Moons.OnFreeze += RegisterMapObjects;
-        LethalContent.MapObjects.OnFreeze += FixMapObjectBlanks;
+        LethalContent.Moons.OnFreeze += RegisterMapObjects;
+        LethalContent.MapObjects.OnFreeze += FixMapObjectBlanksOnDawnMoons;
     }
 
     private static void AddPrefabsToRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
@@ -41,39 +35,21 @@ static class MapObjectRegistrationHandler
             if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride() || !mapObjectInfo.HasNetworkObject)
                 continue;
 
-            self.spawnablePrefabs.Add(mapObjectInfo.MapObject);
+            self.spawnablePrefabs.Add(mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn);
         }
         orig(self);
     }
 
-    private static void CollectVanillaMapObjects(On.StartOfRound.orig_Awake orig, StartOfRound self)
-    {
-        if (LethalContent.MapObjects.IsFrozen)
-        {
-            orig(self);
-            return;
-        }
-
-        foreach (SelectableLevel selectableLevel in self.levels)
-        {
-            Debuggers.MapObjects?.Log($"Collecting vanilla map objects from supposedly vanilla level {selectableLevel.name}");
-            _vanillaMapObjects.AddRange(selectableLevel.spawnableMapObjects.Select(x => x.prefabToSpawn));
-            _vanillaMapObjects.AddRange(selectableLevel.spawnableOutsideObjects.Select(x => x.spawnableObject.prefabToSpawn));
-        }
-        _vanillaMapObjects = _vanillaMapObjects.Distinct().ToList();
-        orig(self);
-    }
-
-    private static void FixMapObjectBlanks()
+    private static void FixMapObjectBlanksOnDawnMoons()
     {
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            foreach (SpawnableMapObject spawnableMapObject in moonInfo.Level.spawnableMapObjects)
+            foreach (IndoorMapHazard indoorMapHazard in moonInfo.Level.indoorMapHazards)
             {
-                if (spawnableMapObject.prefabToSpawn == null)
+                if (indoorMapHazard.hazardType == null || indoorMapHazard.hazardType.prefabToSpawn == null)
                     continue;
 
                 foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
@@ -81,23 +57,17 @@ static class MapObjectRegistrationHandler
                     if (mapObjectInfo.InsideInfo == null)
                         continue;
 
-                    if (mapObjectInfo.MapObject.name != spawnableMapObject.prefabToSpawn.name)
-                        continue;
-
-                    spawnableMapObject.prefabToSpawn = mapObjectInfo.MapObject;
-                    spawnableMapObject.spawnFacingAwayFromWall = mapObjectInfo.InsideInfo.SpawnFacingAwayFromWall;
-                    spawnableMapObject.spawnFacingWall = mapObjectInfo.InsideInfo.SpawnFacingWall;
-                    spawnableMapObject.spawnWithBackToWall = mapObjectInfo.InsideInfo.SpawnWithBackToWall;
-                    spawnableMapObject.spawnWithBackFlushAgainstWall = mapObjectInfo.InsideInfo.SpawnWithBackFlushAgainstWall;
-                    spawnableMapObject.requireDistanceBetweenSpawns = mapObjectInfo.InsideInfo.RequireDistanceBetweenSpawns;
-                    spawnableMapObject.disallowSpawningNearEntrances = mapObjectInfo.InsideInfo.DisallowSpawningNearEntrances;
-                    break;
+                    if (mapObjectInfo.InsideInfo.IndoorMapHazardType.name == indoorMapHazard.hazardType.name || mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn.name == indoorMapHazard.hazardType.prefabToSpawn.name)
+                    {
+                        indoorMapHazard.hazardType = mapObjectInfo.InsideInfo.IndoorMapHazardType;
+                        break;
+                    }
                 }
             }
 
             foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObjectWithRarity in moonInfo.Level.spawnableOutsideObjects)
             {
-                if (spawnableOutsideObjectWithRarity.spawnableObject?.prefabToSpawn == null)
+                if (spawnableOutsideObjectWithRarity.spawnableObject == null || spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn == null)
                     continue;
 
                 foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
@@ -105,17 +75,11 @@ static class MapObjectRegistrationHandler
                     if (mapObjectInfo.OutsideInfo == null)
                         continue;
 
-                    if (mapObjectInfo.MapObject.name != spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn.name)
-                        continue;
-
-                    spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn = mapObjectInfo.MapObject;
-                    spawnableOutsideObjectWithRarity.spawnableObject.spawnFacingAwayFromWall = mapObjectInfo.OutsideInfo.SpawnFacingAwayFromWall;
-                    spawnableOutsideObjectWithRarity.spawnableObject.objectWidth = mapObjectInfo.OutsideInfo.ObjectWidth;
-                    spawnableOutsideObjectWithRarity.spawnableObject.spawnableFloorTags = mapObjectInfo.OutsideInfo.SpawnableFloorTags;
-                    spawnableOutsideObjectWithRarity.spawnableObject.rotationOffset = mapObjectInfo.OutsideInfo.RotationOffset;
-                    SpawnWeightContext context = new(moonInfo.Level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(moonInfo.Level)?.GetDawnInfo());
-                    spawnableOutsideObjectWithRarity.randomAmount = mapObjectInfo.OutsideInfo.SpawnWeights.GetFor(moonInfo, context) ?? AnimationCurve.Constant(0, 1, 0);
-                    break;
+                    if (mapObjectInfo.OutsideInfo.SpawnableOutsideObject.name == spawnableOutsideObjectWithRarity.spawnableObject.name || mapObjectInfo.OutsideInfo.SpawnableOutsideObject.prefabToSpawn.name == spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn.name)
+                    {
+                        spawnableOutsideObjectWithRarity.spawnableObject = mapObjectInfo.OutsideInfo.SpawnableOutsideObject;
+                        break;
+                    }
                 }
             }
         }
@@ -125,14 +89,28 @@ static class MapObjectRegistrationHandler
     {
         ILCursor c = new ILCursor(il);
 
-        c.GotoNext(
+        if (!c.TryGotoNext(
             i => i.MatchLdloc(out _), // num2
             i => i.MatchLdcI4(0), // 0
-            i => i.MatchBle(out _), // >
+            i => i.MatchBgt(out _) // >
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnOutsideHazards patch (1)!");
+            return;
+        }
 
+        if (!c.TryGotoNext(
             // further matching so that it doesn't need to be updated with the game as much hopefully
-            i => i.MatchLdstr("OutsideLevelNavMesh")
-        );
+            i => i.MatchLdstr("OutsideLevelNavMesh")))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnOutsideHazards patch (2)!");
+            return;
+        }
+
+        c.GotoPrev(MoveType.Before,
+            i => i.MatchLdloc(out _), // num2
+            i => i.MatchLdcI4(0), // 0
+            i => i.MatchBgt(out _)); // >
 
         c.Index++;
         c.EmitDelegate((int spawned) => spawned + _spawnedObjects);
@@ -140,85 +118,51 @@ static class MapObjectRegistrationHandler
 
     private static void FreezeMapObjectContents()
     {
-        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> insideWeightsByPrefab = new();
-        Dictionary<GameObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> outsideWeightsByPrefab = new();
-
-        Dictionary<string, InsideMapObjectSettings> insidePlacementByPrefab = new();
-        Dictionary<string, OutsideMapObjectSettings> outsidePlacementByPrefab = new();
+        Dictionary<IndoorMapHazardType, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> insideWeightsByHazardType = new();
+        Dictionary<SpawnableOutsideObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> outsideWeightsByOutsideObject = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            SelectableLevel level = moonInfo.Level;
-            foreach (SpawnableMapObject mapObject in level.spawnableMapObjects)
+            SelectableLevel selectableLevel = moonInfo.Level;
+            foreach (IndoorMapHazard indoorMapHazard in selectableLevel.indoorMapHazards)
             {
-                GameObject? prefab = mapObject.prefabToSpawn;
-                if (prefab == null)
-                    continue;
-
-                foreach (GameObject gameObject in _vanillaMapObjects)
+                IndoorMapHazardType? indoorMapHazardType = indoorMapHazard.hazardType;
+                if (indoorMapHazardType == null || indoorMapHazardType.prefabToSpawn == null)
                 {
-                    if (gameObject.name == prefab.name)
-                    {
-                        prefab = gameObject;
-                        break;
-                    }
+                    continue;
                 }
 
-                if (!insideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
+                if (indoorMapHazardType.HasDawnInfo())
+                {
+                    continue;
+                }
+
+                if (!insideWeightsByHazardType.TryGetValue(indoorMapHazardType, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
                 {
                     builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-                    insideWeightsByPrefab[prefab] = builder;
-
-                    if (!insidePlacementByPrefab.ContainsKey(prefab.name))
-                    {
-                        insidePlacementByPrefab[prefab.name] = new InsideMapObjectSettings()
-                        {
-                            spawnFacingAwayFromWall = mapObject.spawnFacingAwayFromWall,
-                            spawnFacingWall = mapObject.spawnFacingWall,
-                            spawnWithBackToWall = mapObject.spawnWithBackToWall,
-                            spawnWithBackFlushAgainstWall = mapObject.spawnWithBackFlushAgainstWall,
-                            requireDistanceBetweenSpawns = mapObject.requireDistanceBetweenSpawns,
-                            disallowSpawningNearEntrances = mapObject.disallowSpawningNearEntrances
-                        };
-                    }
+                    insideWeightsByHazardType[indoorMapHazardType] = builder;
                 }
 
-                builder.AddCurve(moonInfo.TypedKey, mapObject.numberToSpawn);
+                builder.AddCurve(moonInfo.TypedKey, indoorMapHazard.numberToSpawn);
             }
 
-            foreach (SpawnableOutsideObjectWithRarity outsideMapObject in level.spawnableOutsideObjects)
+            foreach (SpawnableOutsideObjectWithRarity outsideMapObject in selectableLevel.spawnableOutsideObjects)
             {
-                SpawnableOutsideObject? spawnable = outsideMapObject.spawnableObject;
-                if (spawnable == null || spawnable.prefabToSpawn == null)
-                    continue;
-
-                GameObject prefab = spawnable.prefabToSpawn;
-                foreach (GameObject gameObject in _vanillaMapObjects)
+                SpawnableOutsideObject? spawnableOutsideObject = outsideMapObject.spawnableObject;
+                if (spawnableOutsideObject == null || spawnableOutsideObject.prefabToSpawn == null)
                 {
-                    if (gameObject.name == prefab.name)
-                    {
-                        prefab = gameObject;
-                        break;
-                    }
+                    continue;
                 }
 
-                if (!outsideWeightsByPrefab.TryGetValue(prefab, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
+                if (spawnableOutsideObject.HasDawnInfo())
+                {
+                    continue;
+                }
+
+                if (!outsideWeightsByOutsideObject.TryGetValue(spawnableOutsideObject, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
                 {
                     builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-                    outsideWeightsByPrefab[prefab] = builder;
-
-                    if (!outsidePlacementByPrefab.ContainsKey(prefab.name))
-                    {
-                        outsidePlacementByPrefab[prefab.name] = new OutsideMapObjectSettings()
-                        {
-                            AlignWithTerrain = false,
-                            MinimumAINodeSpawnRequirement = 0,
-                            ObjectWidth = spawnable.objectWidth,
-                            SpawnFacingAwayFromWall = spawnable.spawnFacingAwayFromWall,
-                            SpawnableFloorTags = spawnable.spawnableFloorTags,
-                            RotationOffset = spawnable.rotationOffset
-                        };
-                    }
+                    outsideWeightsByOutsideObject[spawnableOutsideObject] = builder;
                 }
 
                 builder.AddCurve(moonInfo.TypedKey, outsideMapObject.randomAmount);
@@ -226,44 +170,34 @@ static class MapObjectRegistrationHandler
         }
 
         Dictionary<GameObject, DawnInsideMapObjectInfo> realInsideMapObjectsDict = new();
-        foreach (var kvp in insideWeightsByPrefab)
+        foreach (KeyValuePair<IndoorMapHazardType, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> kvp in insideWeightsByHazardType)
         {
-            GameObject prefab = kvp.Key;
+            IndoorMapHazardType indoorMapHazardType = kvp.Key;
             ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> table = kvp.Value.Build();
-            insidePlacementByPrefab.TryGetValue(prefab.name, out InsideMapObjectSettings mapObjectSettings);
             DawnInsideMapObjectInfo insideInfo = new(
-                table,
-                mapObjectSettings.spawnFacingAwayFromWall,
-                mapObjectSettings.spawnFacingWall,
-                mapObjectSettings.spawnWithBackToWall,
-                mapObjectSettings.spawnWithBackFlushAgainstWall,
-                mapObjectSettings.requireDistanceBetweenSpawns,
-                mapObjectSettings.disallowSpawningNearEntrances
+                kvp.Key,
+                table
             );
 
-            realInsideMapObjectsDict[prefab] = insideInfo;
+            realInsideMapObjectsDict[indoorMapHazardType.prefabToSpawn] = insideInfo;
         }
 
         Dictionary<GameObject, DawnOutsideMapObjectInfo> realOutsideMapObjectsDict = new();
-        foreach (var kvp in outsideWeightsByPrefab)
+        foreach (KeyValuePair<SpawnableOutsideObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> kvp in outsideWeightsByOutsideObject)
         {
-            GameObject prefab = kvp.Key;
+            SpawnableOutsideObject spawnableOutsideObject = kvp.Key;
             ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> table = kvp.Value.Build();
-            outsidePlacementByPrefab.TryGetValue(prefab.name, out OutsideMapObjectSettings mapObjectSettings);
             DawnOutsideMapObjectInfo outsideInfo = new(
+                spawnableOutsideObject,
                 table,
-                mapObjectSettings.SpawnFacingAwayFromWall,
-                mapObjectSettings.ObjectWidth + 6,
-                mapObjectSettings.SpawnableFloorTags ?? [],
-                mapObjectSettings.RotationOffset,
-                mapObjectSettings.AlignWithTerrain,
-                mapObjectSettings.MinimumAINodeSpawnRequirement
+                false,
+                0
             );
-            realOutsideMapObjectsDict[prefab] = outsideInfo;
+            realOutsideMapObjectsDict[spawnableOutsideObject.prefabToSpawn] = outsideInfo;
         }
 
-        List<GameObject> realMapObjects = insideWeightsByPrefab.Keys
-            .Concat(outsideWeightsByPrefab.Keys)
+        List<GameObject> realMapObjects = insideWeightsByHazardType.Keys.Select(x => x.prefabToSpawn)
+            .Concat(outsideWeightsByOutsideObject.Keys.Select(x => x.prefabToSpawn))
             .Distinct()
             .ToList();
 
@@ -297,9 +231,19 @@ static class MapObjectRegistrationHandler
             realInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
             realOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
-            DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], mapObject, insideMapObjectInfo, outsideMapObjectInfo, null);
+            DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], insideMapObjectInfo, outsideMapObjectInfo, null);
             DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
             container.Value = key;
+            if (insideMapObjectInfo != null)
+            {
+                insideMapObjectInfo.IndoorMapHazardType.SetDawnInfo(mapObjectInfo);
+            }
+
+            if (outsideMapObjectInfo != null)
+            {
+                outsideMapObjectInfo.SpawnableOutsideObject.SetDawnInfo(mapObjectInfo);
+            }
+
             LethalContent.MapObjects.Register(mapObjectInfo);
         }
         LethalContent.MapObjects.Freeze();
@@ -307,8 +251,8 @@ static class MapObjectRegistrationHandler
 
     private static void UpdateMapObjectSpawnWeights(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
     {
-        // UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
-        if (self.currentLevel.indoorMapHazards == null)
+        UpdateIndoorMapHazardSpawnWeightsOnLevel(self.currentLevel);
+        if (self.currentLevel.indoorMapHazards == null) // Fix custom moons that haven't been updated for v80
         {
             self.currentLevel.indoorMapHazards = [];
         }
@@ -335,7 +279,7 @@ static class MapObjectRegistrationHandler
 
             if (outsideInfo.ParentInfo == null)
             {
-                DawnPlugin.Logger.LogError($"Failed to get outside parent info for {mapObjectInfo.MapObject.name}");
+                DawnPlugin.Logger.LogError($"Failed to get outside parent info for {outsideInfo.SpawnableOutsideObject.prefabToSpawn.name}");
                 continue;
             }
 
@@ -355,7 +299,7 @@ static class MapObjectRegistrationHandler
         SelectableLevel level = RoundManager.Instance.currentLevel;
         DawnMapObjectInfo mapObjectInfo = outsideInfo.ParentInfo;
 
-        GameObject prefabToSpawn = mapObjectInfo.MapObject;
+        GameObject prefabToSpawn = outsideInfo.SpawnableOutsideObject.prefabToSpawn;
         SpawnWeightContext context = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
         AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
 
@@ -378,7 +322,7 @@ static class MapObjectRegistrationHandler
 
         Debuggers.MapObjects?.Log($"Spawning {randomNumberToSpawn} of {prefabToSpawn.name} for level {level}");
 
-        float objectWidth = outsideInfo.ObjectWidth;
+        float objectWidth = outsideInfo.SpawnableOutsideObject.objectWidth;
 
         int attemptsDone = 0;
         int initialRandomNumberToSpawn = randomNumberToSpawn;
@@ -404,7 +348,7 @@ static class MapObjectRegistrationHandler
             if (!hit.collider)
                 continue;
 
-            string[] floorTags = outsideInfo.SpawnableFloorTags;
+            string[] floorTags = outsideInfo.SpawnableOutsideObject.spawnableFloorTags;
             if (floorTags != null && floorTags.Length > 0)
             {
                 bool validFloor = false;
@@ -503,7 +447,7 @@ static class MapObjectRegistrationHandler
 
             Vector3 euler = spawnedPrefab.transform.eulerAngles;
 
-            if (outsideInfo.SpawnFacingAwayFromWall)
+            if (outsideInfo.SpawnableOutsideObject.spawnFacingAwayFromWall)
             {
                 float yRot = RoundManager.Instance.YRotationThatFacesTheFarthestFromPosition(finalPos + Vector3.up * 0.2f, 25f, 6);
                 euler.y = yRot;
@@ -515,7 +459,7 @@ static class MapObjectRegistrationHandler
             }
 
             spawnedPrefab.transform.eulerAngles = euler;
-            spawnedPrefab.transform.localEulerAngles += outsideInfo.RotationOffset;
+            spawnedPrefab.transform.localEulerAngles += outsideInfo.SpawnableOutsideObject.rotationOffset;
 
             _spawnedObjects++;
             if (!mapObjectInfo.HasNetworkObject)
@@ -528,11 +472,11 @@ static class MapObjectRegistrationHandler
     private static void UpdateMapObjectSpawnWeights(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
     {
         orig(self, connectedPlayersOnServer);
-        // UpdateInsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
+        UpdateIndoorMapHazardSpawnWeightsOnLevel(self.currentLevel);
         UpdateOutsideMapObjectSpawnWeightsOnLevel(self.currentLevel);
     }
 
-    internal static void UpdateInsideMapObjectSpawnWeightsOnLevel(SelectableLevel level)
+    internal static void UpdateIndoorMapHazardSpawnWeightsOnLevel(SelectableLevel level)
     {
         if (!LethalContent.Weathers.IsFrozen || !LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
@@ -543,28 +487,23 @@ static class MapObjectRegistrationHandler
             if (insideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                 continue;
 
-            Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
-            SpawnableMapObject? spawnableMapObject = level.spawnableMapObjects.FirstOrDefault(mapObject => mapObject.prefabToSpawn == mapObjectInfo.MapObject);
-            if (spawnableMapObject == null)
+            Debuggers.MapObjects?.Log($"Updating weights for {insideInfo.IndoorMapHazardType.prefabToSpawn.name} on level {level.PlanetName}");
+            IndoorMapHazard? indoorMapHazard = level.indoorMapHazards.FirstOrDefault(mapObject => mapObject.hazardType == insideInfo.IndoorMapHazardType);
+            if (indoorMapHazard == null)
             {
-                spawnableMapObject = new()
+                indoorMapHazard = new()
                 {
-                    prefabToSpawn = mapObjectInfo.MapObject,
-                    spawnFacingAwayFromWall = insideInfo.SpawnFacingAwayFromWall,
-                    spawnFacingWall = insideInfo.SpawnFacingWall,
-                    spawnWithBackFlushAgainstWall = insideInfo.SpawnWithBackFlushAgainstWall,
-                    spawnWithBackToWall = insideInfo.SpawnWithBackToWall,
-                    requireDistanceBetweenSpawns = insideInfo.RequireDistanceBetweenSpawns,
-                    disallowSpawningNearEntrances = insideInfo.DisallowSpawningNearEntrances,
+                    hazardType = insideInfo.IndoorMapHazardType,
                     numberToSpawn = AnimationCurve.Constant(0, 1, 0)
                 };
-                List<SpawnableMapObject> newSpawnableMapObjects = level.spawnableMapObjects.ToList();
-                newSpawnableMapObjects.Add(spawnableMapObject);
-                level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
+
+                List<IndoorMapHazard> newIndoorMapHazard = level.indoorMapHazards.ToList();
+                newIndoorMapHazard.Add(indoorMapHazard);
+                level.indoorMapHazards = newIndoorMapHazard.ToArray();
             }
 
             SpawnWeightContext context = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
-            spawnableMapObject.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
+            indoorMapHazard.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 
@@ -579,13 +518,13 @@ static class MapObjectRegistrationHandler
             if (outsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                 continue;
 
-            SpawnableOutsideObjectWithRarity? spawnableOutsideObjectWithRarity = level.spawnableOutsideObjects.FirstOrDefault(mapObject => mapObject.spawnableObject.prefabToSpawn == mapObjectInfo.MapObject);
+            SpawnableOutsideObjectWithRarity? spawnableOutsideObjectWithRarity = level.spawnableOutsideObjects.FirstOrDefault(mapObject => mapObject.spawnableObject.prefabToSpawn == outsideInfo.SpawnableOutsideObject.prefabToSpawn);
             if (spawnableOutsideObjectWithRarity != null)
             {
-                var newSpawnableMapObjects = level.spawnableOutsideObjects.ToList();
+                List<SpawnableOutsideObjectWithRarity> newSpawnableMapObjects = level.spawnableOutsideObjects.ToList();
                 newSpawnableMapObjects.Remove(spawnableOutsideObjectWithRarity);
                 level.spawnableOutsideObjects = newSpawnableMapObjects.ToArray();
-                Debuggers.MapObjects?.Log($"Updating weights for {mapObjectInfo.MapObject.name} on level {level.PlanetName}");
+                Debuggers.MapObjects?.Log($"Updating weights for {outsideInfo.SpawnableOutsideObject.prefabToSpawn.name} on level {level.PlanetName}");
             }
         }
     }
@@ -594,28 +533,22 @@ static class MapObjectRegistrationHandler
     {
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
-            List<SpawnableMapObject> newSpawnableMapObjects = moonInfo.Level.spawnableMapObjects.ToList();
+            List<IndoorMapHazard> newIndoorMapHazards = moonInfo.Level.indoorMapHazards.ToList();
             foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
             {
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                     continue;
 
-                SpawnableMapObject spawnableMapObject = new()
+                IndoorMapHazard indoorMapHazard = new()
                 {
-                    prefabToSpawn = mapObjectInfo.MapObject,
-                    spawnFacingAwayFromWall = mapObjectInfo.InsideInfo.SpawnFacingAwayFromWall,
-                    spawnFacingWall = mapObjectInfo.InsideInfo.SpawnFacingWall,
-                    spawnWithBackFlushAgainstWall = mapObjectInfo.InsideInfo.SpawnWithBackFlushAgainstWall,
-                    spawnWithBackToWall = mapObjectInfo.InsideInfo.SpawnWithBackToWall,
-                    requireDistanceBetweenSpawns = mapObjectInfo.InsideInfo.RequireDistanceBetweenSpawns,
-                    disallowSpawningNearEntrances = mapObjectInfo.InsideInfo.DisallowSpawningNearEntrances,
+                    hazardType = mapObjectInfo.InsideInfo.IndoorMapHazardType,
                     numberToSpawn = AnimationCurve.Constant(0, 1, 0)
                 };
 
-                newSpawnableMapObjects.Add(spawnableMapObject);
+                newIndoorMapHazards.Add(indoorMapHazard);
             }
 
-            moonInfo.Level.spawnableMapObjects = newSpawnableMapObjects.ToArray();
+            moonInfo.Level.indoorMapHazards = newIndoorMapHazards.ToArray();
         }
         FreezeMapObjectContents();
     }

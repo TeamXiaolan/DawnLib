@@ -11,4 +11,5 @@ public class InsideMapObjectSettings
     public bool spawnWithBackFlushAgainstWall;
     public bool requireDistanceBetweenSpawns;
     public bool disallowSpawningNearEntrances;
+    public bool allowInMineshaft;
 }

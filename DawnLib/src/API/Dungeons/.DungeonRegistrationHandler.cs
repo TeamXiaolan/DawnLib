@@ -187,11 +187,19 @@ static class DungeonRegistrationHandler
             for (int i = 0; i < self.spawnablePrefabs.Count; i++)
             {
                 if (self.spawnablePrefabs[i] == null)
-                    continue;
-
-                if (self.spawnablePrefabs[i].name.Equals(mapObjectInfo.MapObject.name, StringComparison.OrdinalIgnoreCase))
                 {
-                    self.spawnablePrefabs[i] = mapObjectInfo.MapObject;
+                    continue;
+                }
+
+                GameObject? mapObject = mapObjectInfo.GetMapObjectPrefab();
+                if (mapObject == null)
+                {
+                    continue;
+                }
+
+                if (self.spawnablePrefabs[i].name.Equals(mapObject.name, StringComparison.OrdinalIgnoreCase))
+                {
+                    self.spawnablePrefabs[i] = mapObject;
                     break;
                 }
             }

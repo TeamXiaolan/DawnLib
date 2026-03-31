@@ -15,6 +15,8 @@ namespace Dawn.Interfaces;
 [InjectInterface(typeof(BuyableVehicle))]
 [InjectInterface(typeof(FootstepSurface))]
 [InjectInterface(typeof(TerminalNode))]
+[InjectInterface(typeof(IndoorMapHazardType))]
+[InjectInterface(typeof(SpawnableOutsideObject))]
 public interface IDawnObject
 {
     object DawnInfo { get; set; }

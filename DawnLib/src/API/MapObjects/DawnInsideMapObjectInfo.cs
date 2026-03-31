@@ -6,22 +6,12 @@ public sealed class DawnInsideMapObjectInfo
 {
     public DawnMapObjectInfo ParentInfo { get; internal set; }
 
-    internal DawnInsideMapObjectInfo(ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> spawnWeights, bool spawnFacingAwayFromWall, bool spawnFacingWall, bool spawnWithBackToWall, bool spawnWithBackFlushAgainstWall, bool requireDistanceBetweenSpawns, bool disallowSpawningNearEntrances)
+    internal DawnInsideMapObjectInfo(IndoorMapHazardType indoorMapHazardType, ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> spawnWeights)
     {
+        IndoorMapHazardType = indoorMapHazardType;
         SpawnWeights = spawnWeights;
-        SpawnFacingAwayFromWall = spawnFacingAwayFromWall;
-        SpawnFacingWall = spawnFacingWall;
-        SpawnWithBackToWall = spawnWithBackToWall;
-        SpawnWithBackFlushAgainstWall = spawnWithBackFlushAgainstWall;
-        RequireDistanceBetweenSpawns = requireDistanceBetweenSpawns;
-        DisallowSpawningNearEntrances = disallowSpawningNearEntrances;
     }
 
+    public IndoorMapHazardType IndoorMapHazardType { get; set; }
     public ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> SpawnWeights { get; private set; }
-    public bool SpawnFacingAwayFromWall { get; private set; }
-    public bool SpawnFacingWall { get; private set; }
-    public bool SpawnWithBackToWall { get; private set; }
-    public bool SpawnWithBackFlushAgainstWall { get; private set; }
-    public bool RequireDistanceBetweenSpawns { get; private set; }
-    public bool DisallowSpawningNearEntrances { get; private set; }
 }

@@ -144,7 +144,17 @@ public static class DawnLib
         callback(builder);
         DawnMapObjectInfo info = builder.Build();
         DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
-        container.Value = info.TypedKey;
+        container.Value = info.Key;
+        if (info.InsideInfo != null)
+        {
+            info.InsideInfo.IndoorMapHazardType.SetDawnInfo(info);
+        }
+
+        if (info.OutsideInfo != null)
+        {
+            info.OutsideInfo.SpawnableOutsideObject.SetDawnInfo(info);
+        }
+
         LethalContent.MapObjects.Register(info);
         return info;
     }

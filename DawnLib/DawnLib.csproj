@@ -50,7 +50,7 @@
     
     <!-- Other mod dependencies -->
     <ItemGroup>
-        <PackageReference Include="IAmBatby-LethalLevelLoader" Publicize="true" Version="1.6.8" PrivateAssets="all" />
+        <PackageReference Include="IAmBatby-LethalLevelLoader" Publicize="true" Version="1.6.9" PrivateAssets="all" />
         <PackageReference Include="Evaisa.LethalLib" Publicize="true" Version="1.*" PrivateAssets="all" />
         <PackageReference Include="mrov.WeatherRegistry" Publicize="true" Version="0.8.0" PrivateAssets="all" />
         <PackageReference Include="mrov.MrovLib" Publicize="true" Version="*" PrivateAssets="all" />

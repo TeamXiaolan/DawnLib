@@ -26,7 +26,7 @@ public class SpawnSyncedDawnLibObject : MonoBehaviour
         {
             if (LethalContent.MapObjects.TryGetValue(objectTypeWithRarity.NamespacedMapObjectKey, out DawnMapObjectInfo info))
             {
-                spawnableObjectsList.Add((info.MapObject, objectTypeWithRarity.Rarity));
+                spawnableObjectsList.Add((info.GetMapObjectPrefab(), objectTypeWithRarity.Rarity));
             }
         }
 
