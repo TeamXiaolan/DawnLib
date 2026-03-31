@@ -29,7 +29,11 @@
     "Redpill": "lethal_company:red_pill",
     "BunkerSpider": "lethal_company:bunker_spider",
     "EarthLeviathan": "lethal_company:earth_leviathan",
-    "Spring": "lethal_company:spring"
+    "Spring": "lethal_company:spring",
+    "Stingray": "lethal_company:stingray",
+    "Feiopar": "lethal_company:feiopar",
+    "CadaverGrowths": "lethal_company:cadaver_growths",
+    "CadaverBloom": "lethal_company:cadaver_bloom"
   },
   "UnlockableItemKeys": {
     "__type": "DawnUnlockableItemInfo",
@@ -254,14 +258,15 @@
     "BehindTheWallSepFour": "lethal_company:behind_the_wall__sep_four",
     "GoodbyeSepSeven": "lethal_company:goodbye__sep_seven",
     "ScreamsSepOneThree": "lethal_company:screams__sep_onethree",
-    "GoldenplanetAug": "lethal_company:golden_planet__aug_",
+    "GoldenplanetSep": "lethal_company:golden_planet__sep_",
     "IdeaSepOneEight": "lethal_company:idea__sep_oneeight",
     "NonsenseSepTwoSeven": "lethal_company:nonsense__sep_twoseven",
     "HidingSepThreeZero": "lethal_company:hiding__sep_threezero",
     "RealJobOctOne": "lethal_company:real_job__oct_one",
-    "DesmondOctNine": "lethal_company:desmond__oct_nine",
+    "DesmondOctSeven": "lethal_company:desmond__oct_seven",
     "TeamSynergyOctOneZero": "lethal_company:team_synergy__oct_onezero",
-    "LetterOfResignationOctOneThree": "lethal_company:letter_of_resignation__oct_onethree"
+    "LetterOfResignationOctOneThree": "lethal_company:letter_of_resignation__oct_onethree",
+    "WorkOctOneSix": "lethal_company:work__oct_onesix"
   },
   "SurfaceKeys": {
     "__type": "DawnSurfaceInfo",
@@ -276,7 +281,9 @@
     "Snow": "lethal_company:snow",
     "Carpet": "lethal_company:carpet",
     "Untagged": "lethal_company:untagged",
-    "Wood": "lethal_company:wood"
+    "Wood": "lethal_company:wood",
+    "Slime": "lethal_company:slime",
+    "Tree": "lethal_company:tree"
   },
   "TerminalCommandKeys": {
     "__type": "DawnTerminalCommandInfo",
