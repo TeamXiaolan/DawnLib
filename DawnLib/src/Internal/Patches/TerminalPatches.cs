@@ -74,10 +74,10 @@ static class TerminalPatches
 
         c.Index = 0;
         c.GotoNext(
-            i => i.MatchLdloc(14),
+            i => i.MatchLdloc(15),
             i => i.MatchLdcI4(1),
             i => i.MatchAdd(),
-            i => i.MatchStloc(14)
+            i => i.MatchStloc(15)
         );
         c.GotoNext(
             i => i.MatchBlt(out loopStart)
@@ -91,7 +91,7 @@ static class TerminalPatches
 
         c.Emit(OpCodes.Ldarg_0);
         c.EmitLdfld<Terminal>(nameof(Terminal.ShipDecorSelection));
-        c.EmitLdloc(14);
+        c.EmitLdloc(15);
         c.EmitCallvirt<List<TerminalNode>>("get_Item");
         c.EmitDelegate((TerminalNode unlockableNode) =>
         {

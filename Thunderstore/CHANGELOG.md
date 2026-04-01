@@ -1,4 +1,8 @@
-# v0.9.1
+# v0.9.2
+
+- Updated for latest V80 beta.
+
+## v0.9.1
 
 - Fixed inside hazards not working and massively updated the code quality, thanks zeekerss for changing how they work like I asked :p
 - Some breaking changes were made to how DawnMapObjectInfo is written so please keep that in mind for any mods trying to be compatible with DawnLib.
