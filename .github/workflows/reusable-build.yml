@@ -28,6 +28,11 @@ jobs:
       run: |
         dotnet build --no-restore --configuration Release
 
+    - name: Run tests
+      # except those which contain `.IntegrationTests`
+      run: |
+        dotnet test --no-build --no-restore --configuration Release --verbosity normal --filter 'FullyQualifiedName!~.IntegrationTests'
+
     - name: Upload Thunderstore artifact
       uses: actions/upload-artifact@v4
       with:

@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/DawnLib.SourceGen.IntegrationTests/DawnLib.SourceGen.IntegrationTests.csproj" />
+    <Project Path="tests/DawnLib.SourceGen.Tests/DawnLib.SourceGen.Tests.csproj" />
+  </Folder>
   <Project Path="DawnLib.Compatibility/DawnLib.Compatibility.csproj" />
   <Project Path="DawnLib.Dusk/DawnLib.Dusk.csproj" />
   <Project Path="DawnLib.Interfaces/DawnLib.Interfaces.csproj" />
