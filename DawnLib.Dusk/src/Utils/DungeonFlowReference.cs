@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 namespace Dusk.Utils;
+
 [Serializable]
 public class DungeonFlowReference
 {

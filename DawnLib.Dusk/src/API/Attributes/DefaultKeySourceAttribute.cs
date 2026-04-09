@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 namespace Dusk;
+
 [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
 public sealed class DefaultKeySourceAttribute(string memberName, bool normalize = true) : PropertyAttribute
 {

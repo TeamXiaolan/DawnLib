@@ -3,6 +3,7 @@ using Dawn.Internal;
 using Dawn.Utils;
 
 namespace Dawn;
+
 public sealed class DawnInputCommandInfo
 {
     public DawnTerminalCommandInfo ParentInfo { get; internal set; }

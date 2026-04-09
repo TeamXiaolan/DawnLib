@@ -3,6 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
 [Serializable]
 public class HUDDisplayTip : INetworkSerializable
 {

@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dusk.Utils;
+
 static class MenuUtils
 {
     //Thanks to LethalConfig and LethalPhones

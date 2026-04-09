@@ -9,6 +9,7 @@ using Dusk.Weights;
 using UnityEngine;
 
 namespace Dusk;
+
 [Serializable]
 public class IntComparison
 {
@@ -103,8 +104,8 @@ public class IntComparisonConfigWeight : IOperationWithValue
         {
             "==" => ComparisonOperation.Equal,
             "!=" => ComparisonOperation.NotEqual,
-            "<"  => ComparisonOperation.Less,
-            ">"  => ComparisonOperation.Greater,
+            "<" => ComparisonOperation.Less,
+            ">" => ComparisonOperation.Greater,
             "<=" => ComparisonOperation.Less | ComparisonOperation.Equal,
             ">=" => ComparisonOperation.Greater | ComparisonOperation.Equal,
             _ => ComparisonOperation.Equal

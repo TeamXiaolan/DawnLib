@@ -3,6 +3,7 @@ using GameNetcodeStuff;
 using Unity.Netcode;
 
 namespace Dawn.Utils;
+
 public class PlayerControllerReference : INetworkSerializable, IEquatable<PlayerControllerReference>
 {
     private int _playerID;

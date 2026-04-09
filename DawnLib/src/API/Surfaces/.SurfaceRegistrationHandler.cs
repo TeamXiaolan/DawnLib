@@ -8,6 +8,7 @@ using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dawn;
 
@@ -20,9 +21,72 @@ static class SurfaceRegistrationHandler
         {
             On.StartOfRound.Awake += RegisterDawnSurfaces;
         }
+
+        IL.GameNetcodeStuff.PlayerControllerB.GetCurrentMaterialStandingOn += PlayerGetCurrentMaterialStandingOn;
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditGravityDirection;
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditFallValueForGravity;
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditUncappedFallValueForGravity;
+
+        SceneManager.sceneLoaded += OnVowOrMarchLoaded;
+    }
+
+    private static void OnVowOrMarchLoaded(Scene arg0, LoadSceneMode arg1)
+    {
+        if (StartOfRound.Instance == null)
+        {
+            return;
+        }
+
+        SelectableLevel level = RoundManager.Instance.currentLevel;
+        if (level == LethalContent.Moons[MoonKeys.March].Level)
+        {
+            GameObject marchTerrain = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh").transform.Find("Map/MarchTerrainNew").gameObject;
+            DawnSurface surface = marchTerrain.AddComponent<DawnSurface>();
+            surface.NamespacedKeysForTerrain.AddRange([NamespacedKey.From("lethal_company", "grass"), NamespacedKey.From("lethal_company", "rock"), NamespacedKey.From("lethal_company", "gravel")]);
+        }
+        else if (level == LethalContent.Moons[MoonKeys.Vow].Level)
+        {
+            GameObject vowTerrain = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh").transform.Find("VowTerrain").gameObject;
+            DawnSurface surface = vowTerrain.AddComponent<DawnSurface>();
+            surface.NamespacedKeysForTerrain.AddRange([NamespacedKey.From("lethal_company", "grass"), NamespacedKey.From("lethal_company", "snow"), NamespacedKey.From("lethal_company", "rock")]);
+        }
+    }
+
+    private static void PlayerGetCurrentMaterialStandingOn(ILContext il)
+    {
+        ILCursor cursor = new(il);
+
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            instr => instr.MatchCall(AccessTools.Method(typeof(StartOfRound), "get_Instance")),
+            instr => instr.MatchLdfld(AccessTools.Field(typeof(StartOfRound), "walkableSurfacesMask")),
+            instr => instr.MatchLdcI4(1),
+            instr => instr.MatchCall(AccessTools.Method(typeof(Physics), "Raycast", [typeof(Ray), typeof(RaycastHit).MakeByRefType(), typeof(float), typeof(int), typeof(QueryTriggerInteraction)])),
+            instr => instr.MatchBrfalse(out _)
+            ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.GetCurrentMaterialStandingOn IL.");
+            return;
+        }
+
+        // This label should point to the FIRST ORIGINAL instruction of the vanilla body.
+        ILLabel runVanillaLogic = cursor.DefineLabel();
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_1);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+        cursor.EmitLdflda<PlayerControllerB>(nameof(PlayerControllerB.hit));
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+        cursor.EmitLdflda<PlayerControllerB>(nameof(PlayerControllerB.currentFootstepSurfaceIndex));
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndexPlayer)));
+        // false => continue into original vanilla code
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Brfalse, runVanillaLogic);
+
+        // true => we handled it, leave method
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ret);
+
+        // Mark the next ORIGINAL instruction as the vanilla fallback entry point
+        cursor.MarkLabel(runVanillaLogic);
     }
 
     private static void EditUncappedFallValueForGravity(ILContext il)
@@ -189,28 +253,6 @@ static class SurfaceRegistrationHandler
         LethalContent.Surfaces.Freeze();
     }
 
-    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.GetCurrentMaterialStandingOn)), HarmonyTranspiler]
-    private static IEnumerable<CodeInstruction> GetCurrentMaterialStandingOn(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-    {
-        return new CodeMatcher(instructions, generator).MatchForward(useEnd: false,
-                new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
-                new(OpCodes.Call, AccessTools.Method(typeof(RaycastHit), "get_collider")),
-                new(OpCodes.Call, AccessTools.Method(typeof(StartOfRound), "get_Instance")),
-                new(OpCodes.Ldfld, AccessTools.Field(typeof(StartOfRound), nameof(StartOfRound.footstepSurfaces))))
-            .CreateLabel(out Label vanillaFootstep)
-            .Insert(
-                new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.hit))),
-                new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldflda, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex))),
-                new(OpCodes.Call, AccessTools.Method(typeof(SurfaceRegistrationHandler), nameof(TryGetAndSetDawnSurfaceIndexPlayer))),
-                new(OpCodes.Brfalse_S, vanillaFootstep),
-                new(OpCodes.Ret))
-            .InstructionEnumeration();
-    }
-
     [HarmonyPatch(typeof(MaskedPlayerEnemy), nameof(MaskedPlayerEnemy.GetMaterialStandingOn)), HarmonyTranspiler]
     private static IEnumerable<CodeInstruction> GetMaterialStandingOn(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
@@ -233,17 +275,22 @@ static class SurfaceRegistrationHandler
             .InstructionEnumeration();
     }
 
-    private static bool TryGetAndSetDawnSurfaceIndexPlayer(PlayerControllerB playerControllerB, ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
+    private static bool TryGetAndSetDawnSurfaceIndexPlayer(PlayerControllerB playerControllerB, bool checkStandingOnTerrain, ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
     {
-        if (hit.collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
+        if (hit.collider.TryGetComponent(out DawnSurface surface) && (surface.SurfaceIndex > -1 || surface.TerrainIndices.Count > 0))
         {
             playerControllerB.SetCurrentDawnSurface(surface);
-            currentFootstepSurfaceIndex = surface.SurfaceIndex;
+            if (surface.TryGetFootstepIndex(playerControllerB.hit.point, checkStandingOnTerrain, out int footstepSurfaceIndex, playerControllerB))
+            {
+                currentFootstepSurfaceIndex = footstepSurfaceIndex;
+            }
+
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
             if (surfaceInfo.SurfaceVFXPrefab != null)
             {
                 FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
             }
+
             return true; // DawnSurface found, return early!
         }
 
@@ -253,10 +300,14 @@ static class SurfaceRegistrationHandler
 
     private static bool TryGetAndSetDawnSurfaceIndexMasked(MaskedPlayerEnemy maskedPlayerEnemy, ref RaycastHit hit, ref int currentFootstepSurfaceIndex)
     {
-        if (hit.collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > 0)
+        if (hit.collider.TryGetComponent(out DawnSurface surface) && surface.SurfaceIndex > -1)
         {
             maskedPlayerEnemy.SetCurrentDawnSurface(surface);
-            currentFootstepSurfaceIndex = surface.SurfaceIndex;
+            if (surface.TryGetFootstepIndex(hit.point, false, out int footstepSurfaceIndex))
+            {
+                currentFootstepSurfaceIndex = footstepSurfaceIndex;
+            }
+
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
             if (surfaceInfo.SurfaceVFXPrefab != null)
             {

@@ -8,6 +8,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk.Internal;
+
 public class DuskNetworker : NetworkSingleton<DuskNetworker>
 {
     public IEnumerator Start()
@@ -15,7 +16,7 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         yield return new WaitUntil(() => NetworkObject.IsSpawned);
         yield return new WaitUntil(() => GameNetworkManager.Instance.localPlayerController != null);
         DawnPlugin.Logger.LogDebug($"{nameof(DuskNetworker)} started.");
-        DawnNetworker.Instance.OnSave += SaveData;
+        DawnNetworker.Instance!.OnSave += SaveData;
 
         if (IsHost || IsServer)
         {

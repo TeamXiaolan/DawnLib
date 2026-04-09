@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Dawn;
+
 public class FrozenEmptyDataContainer : IDataContainer
 {
     public static FrozenEmptyDataContainer Instance { get; private set; } = new();

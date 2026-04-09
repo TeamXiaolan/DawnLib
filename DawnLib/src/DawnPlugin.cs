@@ -59,7 +59,10 @@ public class DawnPlugin : BaseUnityPlugin
 
         ExtendedTOML.Init();
         PersistentDataHandler.Init();
-        NetworkVariableInitalizer.Init();
+        if (!DawnConfig.VanillaCompatibility.Value)
+        {
+            NetworkVariableInitalizer.Init();
+        }
 
         SurfaceRegistrationHandler.Init();
         StoryLogRegistrationHandler.Init();
@@ -73,6 +76,7 @@ public class DawnPlugin : BaseUnityPlugin
         HandleCorruptedDataPatch.Init();
         TerminalCommandRegistration.Init();
 
+        MoreLayerMasks.Init();
         EnemyDataPatch.Init();
         ExtraItemEventsPatch.Init();
         MiscFixesPatch.Init();
@@ -80,6 +84,8 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
         ExtraScanEventsPatch.Init();
+        DawnSurface.Init();
+        DawnCommands.Init();
 
         // Testing
         // DawnTesting.TestCommands();

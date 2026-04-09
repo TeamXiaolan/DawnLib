@@ -4,6 +4,7 @@ using Unity.Netcode.Components;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 static class NetworkVariableInitalizer
 {
     internal static void Init()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Dawn;
+
 public class RegistryFrozenException() : Exception("Registry is frozen")
 {
 }

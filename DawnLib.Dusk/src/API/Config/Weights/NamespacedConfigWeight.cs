@@ -8,6 +8,7 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dusk.Weights;
+
 [Serializable]
 public class NamespacedConfigWeight : IOperationWithValue
 {

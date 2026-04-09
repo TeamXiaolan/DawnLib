@@ -2,6 +2,7 @@
 using loaforcsSoundAPI.SoundPacks.Data.Conditions;
 
 namespace Dawn.Compatibility;
+
 class DawnTaggableCondition(Func<ITaggable?> generator) : Condition
 {
     public string Value { get; private set; }

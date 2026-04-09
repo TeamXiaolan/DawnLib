@@ -16,20 +16,14 @@ static class NetworkerPatch
     private static void CreateNetworker(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         orig(self);
-        MoreLayerMasks.Init();
         if (NetworkManager.Singleton.IsServer || NetworkManager.Singleton.IsHost)
         {
             if (!DawnNetworker.Instance)
             {
-                GameObject networkerInstance = Object.Instantiate(DuskPlugin.Main.NetworkerPrefab);
+                GameObject networkerInstance = Object.Instantiate(DuskPlugin.DawnLibMainNetwork.NetworkerPrefab);
                 SceneManager.MoveGameObjectToScene(networkerInstance, self.gameObject.scene);
                 networkerInstance.GetComponent<NetworkObject>().Spawn();
             }
-        }
-
-        if (AchievementUIGetCanvas.Instance == null)
-        {
-            Object.Instantiate(DuskPlugin.Main.AchievementGetUICanvasPrefab);
         }
     }
 }

@@ -2,6 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
 [AddComponentMenu($"{DawnConstants.MiscUtils}/StoryLog Spawner")]
 public class DawnStoryLogSpawner : MonoBehaviour
 {

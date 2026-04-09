@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 
 namespace Dawn.Internal;
+
 static class ExtraScanEventsPatch
 {
     internal static void Init()

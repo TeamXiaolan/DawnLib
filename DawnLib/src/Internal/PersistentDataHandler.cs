@@ -4,6 +4,7 @@ using BepInEx;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 static class PersistentDataHandler
 {
     private static Dictionary<BaseUnityPlugin, PersistentDataContainer> _containers = [];

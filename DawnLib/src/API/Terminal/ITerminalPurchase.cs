@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 
 namespace Dawn;
+
 public interface ITerminalPurchase
 {
     IProvider<int> Cost { get; }

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
 [Serializable]
 public class AudioClipsWithTime
 {

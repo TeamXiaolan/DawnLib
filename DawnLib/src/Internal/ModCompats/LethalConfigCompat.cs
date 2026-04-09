@@ -13,6 +13,7 @@ using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 static class LethalConfigCompat
 {
     internal const string VERSION = "1.4.6";

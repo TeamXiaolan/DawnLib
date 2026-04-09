@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using Dawn;
 
 namespace Dusk;
+
 public abstract class ContentHandler(DuskMod mod)
 {
     [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]

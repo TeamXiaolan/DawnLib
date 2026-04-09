@@ -40,7 +40,15 @@ source = "../DawnLib/data"
 target = "BepInEx/plugins/DawnLib/data/"
 
 [[build.copy]]
-source = "../DawnLib/res/dawnlibmain"
+source = "../DawnLib/res/dawnlibmainnetwork"
+target = "BepInEx/plugins/DawnLib/Assets/"
+
+[[build.copy]]
+source = "../DawnLib/res/dawnlibmainvanilla"
+target = "BepInEx/plugins/DawnLib/Assets/"
+
+[[build.copy]]
+source = "../DawnLib/res/dusklibmain"
 target = "BepInEx/plugins/DawnLib/Assets/"
 
 [[build.copy]]

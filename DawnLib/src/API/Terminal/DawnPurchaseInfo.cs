@@ -1,4 +1,5 @@
 namespace Dawn;
+
 public sealed class DawnPurchaseInfo : ITerminalPurchase
 {
     internal DawnPurchaseInfo(IProvider<int> cost, ITerminalPurchasePredicate purchasePredicate)

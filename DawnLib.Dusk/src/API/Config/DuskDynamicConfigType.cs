@@ -1,4 +1,5 @@
 ﻿namespace Dusk;
+
 public enum DuskDynamicConfigType
 {
     String,
@@ -7,4 +8,6 @@ public enum DuskDynamicConfigType
     Bool,
     BoundedRange,
     AnimationCurve,
+    Vector3,
+    Color
 }

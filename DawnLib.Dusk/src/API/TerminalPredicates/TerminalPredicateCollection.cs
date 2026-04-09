@@ -3,6 +3,7 @@ using Dawn;
 using UnityEngine;
 
 namespace Dusk;
+
 [CreateAssetMenu(menuName = $"{DuskModConstants.TerminalPredicates}/Terminal Predicate Collection", fileName = "New Terminal Predicate Collection", order = DuskModConstants.PredicateOrder)]
 public class TerminalPredicateCollection : DuskTerminalPredicate
 {

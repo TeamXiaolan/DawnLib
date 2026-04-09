@@ -1,5 +1,6 @@
 ﻿
 namespace Dawn;
+
 public abstract class TerminalPurchaseResult
 {
     public static SuccessPurchaseResult Success()

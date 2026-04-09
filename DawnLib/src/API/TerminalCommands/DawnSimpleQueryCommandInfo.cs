@@ -1,6 +1,7 @@
 using System;
 
 namespace Dawn;
+
 public sealed class DawnSimpleQueryCommandInfo
 {
     public DawnTerminalCommandInfo ParentInfo { get; internal set; }

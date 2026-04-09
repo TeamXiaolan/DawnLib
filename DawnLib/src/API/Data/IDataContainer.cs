@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Dawn;
+
 public interface IDataContainer
 {
     bool Has<T>(NamespacedKey key);

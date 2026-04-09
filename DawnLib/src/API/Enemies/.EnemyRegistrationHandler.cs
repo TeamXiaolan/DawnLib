@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
@@ -36,6 +37,28 @@ static class EnemyRegistrationHandler
 
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
+        LethalContent.Enemies.OnFreeze += FixDawnEnemyReferences;
+    }
+
+    private static void FixDawnEnemyReferences()
+    {
+        CadaverGrowthAI cadaverGrowthAI = LethalContent.Enemies[EnemyKeys.CadaverGrowths].EnemyType.enemyPrefab.GetComponent<CadaverGrowthAI>();
+        GameObject FaceSporesPrefab = cadaverGrowthAI.faceSporesPrefab;
+        GameObject CadaverSporesParticlePrefab = cadaverGrowthAI.CadaverSporesParticle;
+
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            if (enemyInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            if (!enemyInfo.EnemyType.enemyPrefab.TryGetComponent(out CadaverGrowthAI growthAI))
+            {
+                continue;
+            }
+
+            growthAI.faceSporesPrefab = FaceSporesPrefab;
+            growthAI.CadaverSporesParticle = CadaverSporesParticlePrefab;
+        }
     }
 
     private static bool CheckIfEnemyCanSpawn(On.RoundManager.orig_AssignRandomEnemyToVent orig, RoundManager self, EnemyVent vent, float spawnTime)

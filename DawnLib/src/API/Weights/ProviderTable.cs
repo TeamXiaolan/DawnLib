@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Dawn;
+
 public class ProviderTable<T, TBase> where TBase : INamespaced<TBase>
 {
     private List<IContextualProvider<T, TBase>> _providers;

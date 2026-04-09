@@ -2,6 +2,7 @@
 using DunGen;
 
 namespace Dawn;
+
 public class DawnTileSetInfo : DawnBaseInfo<DawnTileSetInfo>
 {
     internal DawnTileSetInfo(NamespacedKey<DawnTileSetInfo> key, HashSet<NamespacedKey> tags, IPredicate injectionRule, TileSet tileSet, bool isBranchCap, bool isRegular, IDataContainer? customData) : base(key, tags, customData)

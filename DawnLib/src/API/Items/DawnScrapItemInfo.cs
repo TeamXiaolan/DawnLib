@@ -1,4 +1,5 @@
 ﻿namespace Dawn;
+
 public sealed class DawnScrapItemInfo
 {
     public DawnItemInfo ParentInfo { get; internal set; }

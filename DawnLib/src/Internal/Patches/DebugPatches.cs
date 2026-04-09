@@ -1,6 +1,7 @@
 using Dawn.Utils;
 
 namespace Dawn.Internal;
+
 static class DebugPatches
 {
     internal static void Init()

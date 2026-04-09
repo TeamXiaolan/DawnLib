@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 namespace Dawn.Internal;
+
 static class DawnNetworkSceneManager
 {
     private static readonly Dictionary<string, uint> _pathToHash = [];

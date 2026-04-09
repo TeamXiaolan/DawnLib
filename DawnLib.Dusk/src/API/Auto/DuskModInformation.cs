@@ -3,6 +3,7 @@ using BepInEx;
 using UnityEngine;
 
 namespace Dusk;
+
 [CreateAssetMenu(fileName = "Mod Information", menuName = $"{DuskModConstants.MenuName}/Mod Information", order = DuskModConstants.DuskModInfoOrder)]
 public class DuskModInformation : ScriptableObject
 {

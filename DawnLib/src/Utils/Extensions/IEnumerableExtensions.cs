@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
 public static class IEnumerableExtensions
 {
     public static VertexGradient ToVertexGradient(this IEnumerable<Color> colors)

@@ -2,6 +2,7 @@
 using Dawn.Internal;
 
 namespace Dawn;
+
 public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEvents where T : DawnBaseInfo<T>
 {
     private HashSet<NamespacedKey> _tags;

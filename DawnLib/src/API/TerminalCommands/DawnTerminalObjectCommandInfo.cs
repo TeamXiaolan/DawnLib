@@ -1,4 +1,5 @@
 namespace Dawn;
+
 public sealed class DawnTerminalObjectCommandInfo
 {
     public DawnTerminalCommandInfo ParentInfo { get; internal set; }

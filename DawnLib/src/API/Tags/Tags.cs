@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Dawn.Internal;
 
 namespace Dawn;
+
 public static partial class Tags
 {
     internal static void AddToList(this HashSet<NamespacedKey> namespacedKeys, IEnumerable<(string @namespace, string key)> tagsWithModNames, DebugLogSource? debugLogSource = null, string? objectName = null)

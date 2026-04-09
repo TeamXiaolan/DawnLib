@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 static class HandleCorruptedDataPatch
 {
     internal static void Init()

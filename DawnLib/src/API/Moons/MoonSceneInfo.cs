@@ -2,6 +2,7 @@
 using UnityEngine;
 
 namespace Dawn;
+
 public interface IMoonSceneInfo : INamespaced<IMoonSceneInfo>
 {
     string SceneName { get; }

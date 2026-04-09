@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dawn.Internal;
+
 public class PlayerNameplateUI : MonoBehaviour
 {
     [SerializeField] RawImage _image;

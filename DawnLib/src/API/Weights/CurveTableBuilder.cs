@@ -2,6 +2,7 @@
 using UnityEngine;
 
 namespace Dawn;
+
 public class CurveTableBuilder<TBase, TContext> where TBase : INamespaced<TBase>, ITaggable
 {
     private List<IContextualProvider<AnimationCurve?, TBase, TContext>> _baseProviders = [];

@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 namespace Dawn.Utils;
+
 [RequireComponent(typeof(EnemyAI))]
 [AddComponentMenu($"{DawnConstants.ExtraEvents}/Extra Enemy Events")]
 public class ExtraEnemyEvents : MonoBehaviour

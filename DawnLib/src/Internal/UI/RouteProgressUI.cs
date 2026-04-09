@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dawn.Internal;
+
 public class RouteProgressUI : Singleton<RouteProgressUI>
 {
     [Serializable]

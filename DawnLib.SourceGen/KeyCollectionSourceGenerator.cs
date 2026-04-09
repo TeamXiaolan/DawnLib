@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
 
 namespace Dawn.SourceGen;
+
 [Generator]
 public class KeyCollectionSourceGenerator : ISourceGenerator
 {

@@ -6,6 +6,7 @@ using DunGen.Graph;
 using UnityEngine;
 
 namespace Dawn;
+
 public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFlow, DungeonFlowInfoBuilder>
 {
     private float _mapTileSize = 0f;

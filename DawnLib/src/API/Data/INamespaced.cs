@@ -1,4 +1,5 @@
 ﻿namespace Dawn;
+
 public interface INamespaced
 {
     NamespacedKey Key { get; }

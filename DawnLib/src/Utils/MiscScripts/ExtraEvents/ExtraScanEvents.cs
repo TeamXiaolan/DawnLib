@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 namespace Dawn.Utils;
+
 [RequireComponent(typeof(ScanNodeProperties))]
 [AddComponentMenu($"{DawnConstants.ExtraEvents}/Extra Scan Events")]
 public class ExtraScanEvents : MonoBehaviour

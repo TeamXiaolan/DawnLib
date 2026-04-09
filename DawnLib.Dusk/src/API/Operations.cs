@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace Dusk;
+
 public enum LogicOperation
 {
     And,

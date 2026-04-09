@@ -1,4 +1,5 @@
 ﻿namespace Dawn.Internal;
+
 class NamespacedKeyConverter : TOMLConverter<NamespacedKey>
 {
     protected override string ConvertToString(NamespacedKey value)

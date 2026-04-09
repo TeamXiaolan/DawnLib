@@ -3,6 +3,7 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dusk;
+
 [Serializable]
 public class DuskDynamicConfig
 {
@@ -15,6 +16,8 @@ public class DuskDynamicConfig
     public bool defaultBool;
     public BoundedRange defaultBoundedRange;
     public AnimationCurve defaultAnimationCurve;
+    public Vector3 defaultVector3;
+    public Color defaultColor;
 
     public string Description;
 }

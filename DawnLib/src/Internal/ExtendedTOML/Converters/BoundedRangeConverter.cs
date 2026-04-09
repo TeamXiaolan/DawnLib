@@ -2,6 +2,7 @@
 using Dawn.Utils;
 
 namespace Dawn.Internal;
+
 class BoundedRangeConverter : TOMLConverter<BoundedRange>
 {
     protected override string ConvertToString(BoundedRange range)

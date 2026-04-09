@@ -1,6 +1,7 @@
 ﻿using Dawn.Internal;
 
 namespace Dawn;
+
 public sealed class DawnShopItemInfo
 {
     public DawnItemInfo ParentInfo { get; internal set; }

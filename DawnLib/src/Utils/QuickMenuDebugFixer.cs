@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dawn.Utils;
+
 public class TMPDropDownFixer : MonoBehaviour
 {
     private float normalizedScrollPosition = 1;

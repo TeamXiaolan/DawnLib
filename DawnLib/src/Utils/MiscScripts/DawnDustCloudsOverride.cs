@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 namespace Dawn.Utils;
+
 [AddComponentMenu($"{DawnConstants.MoonUtils}/Dust Clouds Override")]
 public class DawnDustCloudsOverride : MonoBehaviour
 {

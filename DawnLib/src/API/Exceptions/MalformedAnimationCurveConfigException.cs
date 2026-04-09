@@ -4,6 +4,7 @@ using System.Linq;
 using BepInEx.Logging;
 
 namespace Dawn;
+
 public class MalformedAnimationCurveConfigException(string pair) : Exception
 {
     public string Pair { get; } = pair;

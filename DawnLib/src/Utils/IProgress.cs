@@ -1,4 +1,5 @@
 namespace Dawn.Utils;
+
 public interface IProgress
 {
     float MaxProgress { get; }

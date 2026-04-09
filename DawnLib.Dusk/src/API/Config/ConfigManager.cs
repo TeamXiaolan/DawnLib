@@ -36,6 +36,8 @@ public class ConfigManager(ConfigFile file)
             DuskDynamicConfigType.Float => Bind(configDefinition.defaultFloat),
             DuskDynamicConfigType.BoundedRange => Bind(configDefinition.defaultBoundedRange),
             DuskDynamicConfigType.AnimationCurve => Bind(configDefinition.defaultAnimationCurve),
+            DuskDynamicConfigType.Vector3 => Bind(configDefinition.defaultVector3),
+            DuskDynamicConfigType.Color => Bind(configDefinition.defaultColor),
             _ => throw new ArgumentOutOfRangeException($"DynamicConfigType of '{configDefinition.DynamicConfigType}' is not yet internally implemented!!"),
         };
     }
@@ -70,5 +72,11 @@ public class ConfigManager(ConfigFile file)
     internal static ConfigFile GenerateConfigFile(BepInPlugin plugin)
     {
         return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, plugin.GUID + ".cfg"), false, plugin);
+    }
+
+    public static ConfigEntryBase? FindEntry(ConfigFile file, string section, string key)
+    {
+        ConfigDefinition definition = new(section, key);
+        return file.GetConfigEntries().FirstOrDefault(x => x.Definition == definition);
     }
 }

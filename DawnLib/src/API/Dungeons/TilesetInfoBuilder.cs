@@ -1,6 +1,7 @@
 ﻿using DunGen;
 
 namespace Dawn;
+
 public class TilesetInfoBuilder : BaseInfoBuilder<DawnTileSetInfo, TileSet, TilesetInfoBuilder>
 {
     private bool _branchCap, _regular = true;

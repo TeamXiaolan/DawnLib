@@ -13,6 +13,7 @@ using UnityEngine.Video;
 using Object = UnityEngine.Object;
 
 namespace Dusk;
+
 public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoader : AssetBundleLoader<TLoader>
 {
     private readonly bool _hasNonPreloadAudioClips;

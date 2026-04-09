@@ -4,6 +4,7 @@ using System.Reflection;
 using BepInEx.Configuration;
 
 namespace Dawn.Utils;
+
 public static class ConfigFileExtensions
 {
     public static void ClearUnusedEntries(this ConfigFile configFile)

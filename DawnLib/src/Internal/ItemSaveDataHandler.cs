@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 public static class ItemSaveDataHandler
 {
     internal static GrabbableObject[] AllShipItems = [];

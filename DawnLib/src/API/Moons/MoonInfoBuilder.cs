@@ -3,6 +3,7 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dawn;
+
 public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, MoonInfoBuilder>
 {
     private TerminalNode? _routeNode, _receiptNode;

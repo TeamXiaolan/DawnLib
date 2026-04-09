@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Dawn.Utils;
@@ -40,6 +41,31 @@ public static class StringExtensions
         }
 
         return returnString;
+    }
+
+    private static readonly Regex LeadingNumberRegex = new(@"^[0-9]+");
+
+    public static string RemoveLeadingNumbers(this string input)
+    {
+        return LeadingNumberRegex.Replace(input, string.Empty);
+    }
+
+    public static string ReplaceNumbersWithWords(this string input)
+    {
+        return string.Concat(input.Select(c => c switch
+        {
+            '0' => "zero",
+            '1' => "one",
+            '2' => "two",
+            '3' => "three",
+            '4' => "four",
+            '5' => "five",
+            '6' => "six",
+            '7' => "seven",
+            '8' => "eight",
+            '9' => "nine",
+            _ => c.ToString()
+        }));
     }
 
     public static bool CompareStringsInvariant(this string input, string str2, bool ignoreCase = true)

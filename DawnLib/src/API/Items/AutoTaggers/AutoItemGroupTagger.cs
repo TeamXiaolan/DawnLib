@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 
 namespace Dawn;
+
 public class AutoItemGroupTagger(NamespacedKey tag, string itemGroupName) : IAutoTagger<DawnItemInfo>
 {
 

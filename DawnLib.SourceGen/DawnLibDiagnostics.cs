@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 
 namespace Dawn.SourceGen;
+
 public static class DawnLibDiagnostics
 {
     public static readonly DiagnosticDescriptor MissingRootNamespace = new DiagnosticDescriptor(

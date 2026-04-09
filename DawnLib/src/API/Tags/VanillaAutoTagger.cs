@@ -1,4 +1,5 @@
 ﻿namespace Dawn;
+
 public class VanillaAutoTagger<T> : IAutoTagger<T> where T : INamespaced<T>, ITaggable
 {
     public NamespacedKey Tag => Tags.Vanilla;

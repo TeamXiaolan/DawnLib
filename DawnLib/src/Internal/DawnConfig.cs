@@ -2,9 +2,12 @@ using BepInEx.Configuration;
 using Dawn.Utils;
 
 namespace Dawn.Internal;
+
 static class DawnConfig
 {
     public static ConfigEntry<CompatibilityBool> LethalConfigCompatibility;
+
+    public static ConfigEntry<bool> VanillaCompatibility;
 
     public static ConfigEntry<bool> CreateTagExport;
 
@@ -20,6 +23,13 @@ static class DawnConfig
 
     internal static void Bind(ConfigFile file)
     {
+        VanillaCompatibility = file.CleanedBind(
+            "Compatibility",
+            "Vanilla Compatibility",
+            false,
+            "Enable compatibility with vanilla"
+        );
+
         LethalConfigCompatibility = file.CleanedBind(
             "Compatibility",
             "Extend LethalConfig Support",

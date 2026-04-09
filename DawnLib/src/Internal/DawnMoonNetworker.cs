@@ -9,6 +9,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 {
     // Moon loading stuff:

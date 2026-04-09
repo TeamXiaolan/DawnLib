@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Dawn;
+
 public class WeightTableBuilder<TBase, TContext> where TBase : INamespaced<TBase>, ITaggable
 {
     private List<IContextualProvider<int?, TBase, TContext>> _baseProviders = [];

@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using loaforcsSoundAPI;
 
 namespace Dawn.Compatibility;
+
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(DawnLib.PLUGIN_GUID)]
 [BepInDependency(SoundAPI.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]

@@ -1,4 +1,5 @@
 ﻿namespace Dawn;
+
 static class DawnConstants
 {
     internal const string MenuName = "DawnLib";

@@ -3,6 +3,7 @@ using BepInEx;
 using UnityEngine;
 
 namespace Dusk;
+
 public class DefaultContentHandler : ContentHandler
 {
     public DefaultContentHandler(DuskMod mod) : base(mod)

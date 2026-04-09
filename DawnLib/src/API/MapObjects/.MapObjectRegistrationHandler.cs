@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
@@ -261,8 +262,8 @@ static class MapObjectRegistrationHandler
 
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
-        List<Vector3> occupiedPositions = new();
-        EntranceTeleport[] entranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        List<(DawnOutsideMapObjectInfo outsideMapObjectInfo, Vector3 position)> occupiedPositions = new();
+        EntranceTeleport[] entranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
         Transform[] shipSpawnPathPoints = RoundManager.Instance.shipSpawnPathPoints;
         GameObject[] spawnDenialPoints = GameObject.FindGameObjectsWithTag("SpawnDenialPoint");
         GameObject itemShipLandingNode = GameObject.FindGameObjectWithTag("ItemShipLandingNode");
@@ -285,7 +286,7 @@ static class MapObjectRegistrationHandler
         _spawnedObjects = 0;
     }
 
-    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<Vector3> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom, EntranceTeleport[] entranceTeleports, Transform[] shipSpawnPathPoints, GameObject[] spawnDenialPoints, GameObject itemShipLandingNode)
+    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<(DawnOutsideMapObjectInfo outsideMapObjectInfo, Vector3 position)> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom, EntranceTeleport[] entranceTeleports, Transform[] shipSpawnPathPoints, GameObject[] spawnDenialPoints, GameObject itemShipLandingNode)
     {
         if (RoundManager.Instance.outsideAINodes.Length <= outsideInfo.MinimumAINodeSpawnRequirement)
         {
@@ -350,9 +351,24 @@ static class MapObjectRegistrationHandler
                 bool validFloor = false;
                 Transform hitTransform = hit.collider.transform;
 
+                int footstepSurfaceIndex = -1;
+                if (hitTransform.TryGetComponent(out DawnSurface surface) && (surface.SurfaceIndex > -1 || surface.TerrainIndices.Count > 0))
+                {
+                    surface.TryGetFootstepIndex(hit.point, false, out footstepSurfaceIndex);
+                }
+
                 for (int t = 0; t < floorTags.Length; t++)
                 {
-                    if (hitTransform.CompareTag(floorTags[t]))
+                    if (footstepSurfaceIndex != -1)
+                    {
+                        DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[footstepSurfaceIndex].GetDawnInfo();
+                        if (surfaceInfo.Surface.surfaceTag.Equals(floorTags[t], StringComparison.OrdinalIgnoreCase))
+                        {
+                            validFloor = true;
+                            break;
+                        }
+                    }
+                    else if (hitTransform.CompareTag(floorTags[t]))
                     {
                         validFloor = true;
                         break;
@@ -417,7 +433,7 @@ static class MapObjectRegistrationHandler
             {
                 for (int p = 0; p < occupiedPositions.Count; p++)
                 {
-                    if (Vector3.Distance(finalPos, occupiedPositions[p]) < objectWidth)
+                    if (Vector3.Distance(finalPos, occupiedPositions[p].position) < objectWidth)
                     {
                         blocked = true;
                         break;
@@ -430,9 +446,9 @@ static class MapObjectRegistrationHandler
 
             randomNumberToSpawn--;
 
-            occupiedPositions.Add(finalPos);
+            occupiedPositions.Add((outsideInfo, finalPos));
 
-            GameObject spawnedPrefab = Object.Instantiate(prefabToSpawn, finalPos, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
+            GameObject spawnedPrefab = GameObject.Instantiate(prefabToSpawn, finalPos, Quaternion.identity, RoundManager.Instance.mapPropsContainer.transform);
 
             Debuggers.MapObjects?.Log($"Spawning {spawnedPrefab.name} at {finalPos}");
 
@@ -462,6 +478,28 @@ static class MapObjectRegistrationHandler
                 continue;
 
             spawnedPrefab.GetComponent<NetworkObject>().Spawn(true);
+        }
+
+        if (!NetworkManager.Singleton.IsServer)
+        {
+            return;
+        }
+
+        List<GameObject> trees = GameObject.FindGameObjectsWithTag("Tree").ToList();
+        for (int i = 0; i < occupiedPositions.Count; i++)
+        {
+            if (occupiedPositions[i].outsideMapObjectInfo.SpawnableOutsideObject.destroyTrees)
+            {
+                for (int j = trees.Count - 1; j >= 0; j--)
+                {
+                    float distanceTreeToOccupiedPosition = Vector3.Distance(trees[j].transform.position, occupiedPositions[i].position);
+                    if (distanceTreeToOccupiedPosition < occupiedPositions[i].outsideMapObjectInfo.SpawnableOutsideObject.objectWidth)
+                    {
+                        RoundManager.Instance.DestroyTreeAtPosition(trees[j].transform.position);
+                        trees.RemoveAt(j);
+                    }
+                }
+            }
         }
     }
 

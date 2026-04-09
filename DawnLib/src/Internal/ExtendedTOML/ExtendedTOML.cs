@@ -6,6 +6,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 
 namespace Dawn.Internal;
+
 static class ExtendedTOML
 {
     private static readonly TypeConverter _namespacedKeyConverter = WrapConverter(new NamespacedKeyConverter());

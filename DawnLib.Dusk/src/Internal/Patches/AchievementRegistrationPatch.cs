@@ -1,5 +1,6 @@
 using Dawn.Internal;
 using Dusk.Utils;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 
 namespace Dusk.Internal;
@@ -8,9 +9,24 @@ static class AchievementRegistrationPatch
 {
     internal static void Init()
     {
+        using (new DetourContext(priority: 9999))
+        {
+            On.StartOfRound.Awake += CreateAchievementUI;
+        }
+
         On.GameNetworkManager.SaveLocalPlayerValues += SaveAchievementData;
         On.MenuManager.Start += LoadAchievementDataWithUI;
         On.StartOfRound.AutoSaveShipData += SaveAchievementData;
+    }
+
+    private static void CreateAchievementUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        if (AchievementUIGetCanvas.Instance == null)
+        {
+            Object.Instantiate(DuskPlugin.DuskMain.AchievementGetUICanvasPrefab);
+        }
+
+        orig(self);
     }
 
     private static void SaveAchievementData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
@@ -31,11 +47,13 @@ static class AchievementRegistrationPatch
 
     private static void DoAchievementUI(MenuManager menuManager)
     {
-        var canvas = GameObject.Instantiate(DuskPlugin.Main.AchievementUICanvasPrefab, menuManager.transform.parent.Find("MenuContainer"));
+        var canvas = GameObject.Instantiate(DuskPlugin.DuskMain.AchievementUICanvasPrefab, menuManager.transform.parent.Find("MenuContainer"));
         canvas.GetComponent<AchievementUICanvas>()._menuManager = menuManager;
 
         if (AchievementUIGetCanvas.Instance == null)
-            Object.Instantiate(DuskPlugin.Main.AchievementGetUICanvasPrefab);
+        {
+            Object.Instantiate(DuskPlugin.DuskMain.AchievementGetUICanvasPrefab);
+        }
 
         var menuContainer = GameObject.Find("MenuContainer");
         if (!menuContainer)

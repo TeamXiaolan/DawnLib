@@ -77,6 +77,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             }
 
             IndoorMapHazardType indoorMapHazardType = ScriptableObject.CreateInstance<IndoorMapHazardType>();
+            indoorMapHazardType.name = _parentBuilder.key.Key;
             indoorMapHazardType.prefabToSpawn = _parentBuilder.value;
             indoorMapHazardType.spawnFacingAwayFromWall = _spawnFacingAwayFromWall;
             indoorMapHazardType.spawnFacingWall = _spawnFacingWall;
@@ -164,6 +165,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             }
 
             SpawnableOutsideObject spawnableOutsideObject = ScriptableObject.CreateInstance<SpawnableOutsideObject>();
+            spawnableOutsideObject.name = _parentBuilder.key.Key;
             spawnableOutsideObject.prefabToSpawn = _parentBuilder.value;
             spawnableOutsideObject.spawnFacingAwayFromWall = _spawnFacingAwayFromWall;
             spawnableOutsideObject.rotationOffset = _rotationOffset;

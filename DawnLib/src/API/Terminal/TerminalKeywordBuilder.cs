@@ -6,6 +6,7 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dawn;
+
 public class TerminalKeywordBuilder
 {
     private static List<TerminalKeyword> _keywordsAdded = [];

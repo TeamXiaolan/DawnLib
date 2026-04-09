@@ -2,6 +2,7 @@
 using System;
 
 namespace Dawn;
+
 public interface IProvider<out T>
 {
     T Provide();

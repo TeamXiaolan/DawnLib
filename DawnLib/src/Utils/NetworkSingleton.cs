@@ -1,6 +1,7 @@
 using Unity.Netcode;
 
 namespace Dawn.Utils;
+
 public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSingleton<T>
 {
     private static T? _instance;

@@ -4,6 +4,7 @@ using Dawn.Utils;
 using UnityEngine;
 
 namespace Dusk;
+
 public class MoonConfig(ConfigContext section, string EntityNameReference) : DuskBaseConfig(section, EntityNameReference)
 {
     public ConfigEntry<int>? Cost = null;

@@ -1,4 +1,5 @@
 namespace Dusk.Weights;
+
 public interface IOperationWithValue
 {
     abstract MathOperation Operation { get; }

@@ -230,6 +230,10 @@
     "GreyRockGroupingTwo": "lethal_company:greyrockgroupingtwo",
     "GreyRockGroupingFour": "lethal_company:greyrockgroupingfour",
     "GiantPumpkin": "lethal_company:giantpumpkin",
+    "LargeRockOneGrey": "lethal_company:largerockonegrey",
+    "LargeRockTwoGrey": "lethal_company:largerocktwogrey",
+    "LargeRockThreeGrey": "lethal_company:largerockthreegrey",
+    "LargeRockFourGrey": "lethal_company:largerockfourgrey",
     "TreeLeaflessZeroZeroTwoLODZero": "lethal_company:treeleaflesszerozerotwo_lodzero",
     "LargeRockOne": "lethal_company:largerockone",
     "LargeRockTwo": "lethal_company:largerocktwo",
@@ -266,7 +270,7 @@
     "DesmondOctSeven": "lethal_company:desmond__oct_seven",
     "TeamSynergyOctOneZero": "lethal_company:team_synergy__oct_onezero",
     "LetterOfResignationOctOneThree": "lethal_company:letter_of_resignation__oct_onethree",
-    "WorkOctOneSix": "lethal_company:work__oct_onesix"
+    "WorkOctOneFive": "lethal_company:work__oct_onefive"
   },
   "SurfaceKeys": {
     "__type": "DawnSurfaceInfo",

@@ -11,6 +11,7 @@ using LethalConfig.ConfigItems;
 using LethalConfig.Mods;
 
 namespace Dawn.Internal;
+
 static class DuskLethalConfigCompat
 {
     internal const string VERSION = "1.4.6";

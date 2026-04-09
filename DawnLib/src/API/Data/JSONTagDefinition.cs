@@ -1,4 +1,5 @@
 ﻿namespace Dawn;
+
 public class JSONTagDefinition
 {
     public string Tag;

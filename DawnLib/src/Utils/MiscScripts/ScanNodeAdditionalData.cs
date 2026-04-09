@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Dawn.Utils;
+
 public class ScanNodeAdditionalData
 {
     private static readonly Dictionary<RectTransform, ScanNodeAdditionalData> _additionalData = new();

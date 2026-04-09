@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Dawn;
+
 public sealed class DawnComplexQueryCommandInfo
 {
     public DawnTerminalCommandInfo ParentInfo { get; internal set; }

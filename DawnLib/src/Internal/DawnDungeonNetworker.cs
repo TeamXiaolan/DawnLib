@@ -11,6 +11,7 @@ using UnityEngine;
 using static Dawn.Internal.DawnMoonNetworker;
 
 namespace Dawn.Internal;
+
 public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 {
     // Dungeon loading stuff:
@@ -302,14 +303,15 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             foreach (TileSet tileSet in fakeFlow.GetUsedTileSets())
             {
-                Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
+                string tileSetName = tileSet.name.RemoveLeadingNumbers().ReplaceNumbersWithWords().Replace(" ", "_");
+                Debuggers.Dungeons?.Log($"tileSetName: {tileSet.name}");
                 foreach (DawnTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
                 {
                     Debuggers.Dungeons?.Log($"tileSetInfo.Key.Key: {tileSetInfo.Key.Key}");
                     if (tileSetInfo.ShouldSkipIgnoreOverride())
                         continue;
 
-                    if (tileSet.name.Replace(" ", "_").Equals(tileSetInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
+                    if (tileSetName.Equals(tileSetInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
                     {
                         tileSet.SetDawnInfo(tileSetInfo);
                         break;
@@ -319,7 +321,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             foreach (DungeonArchetype dungeonArchetype in fakeFlow.GetUsedArchetypes())
             {
-                Debuggers.Dungeons?.Log($"dungeonArchetype.name: {dungeonArchetype.name}");
+                string archetypeName = dungeonArchetype.name.RemoveLeadingNumbers().ReplaceNumbersWithWords().Replace(" ", "_");
+                Debuggers.Dungeons?.Log($"archetypeName: {archetypeName}");
                 foreach (DawnArchetypeInfo archetypeInfo in LethalContent.Archetypes.Values)
                 {
                     if (archetypeInfo.ShouldSkipIgnoreOverride())
@@ -327,7 +330,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
                     Debuggers.Dungeons?.Log($"archetypeInfo.Key.Key: {archetypeInfo.Key.Key}");
 
-                    if (dungeonArchetype.name.Replace(" ", "_").Equals(archetypeInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
+                    if (archetypeName.Equals(archetypeInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
                     {
                         dungeonArchetype.SetDawnInfo(archetypeInfo);
                         break;

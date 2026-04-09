@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 namespace Dawn.Utils;
+
 [AddComponentMenu($"{DawnConstants.AudioComponents}/Ambient Noise Player")]
 public class AmbientNoisePlayer : MonoBehaviour
 {

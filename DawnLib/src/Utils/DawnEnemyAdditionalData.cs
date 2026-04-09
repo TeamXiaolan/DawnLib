@@ -4,6 +4,7 @@ using GameNetcodeStuff;
 using UnityEngine;
 
 namespace Dawn.Utils;
+
 public class DawnEnemyAdditionalData : MonoBehaviour
 {
     private static readonly Dictionary<EnemyAI, DawnEnemyAdditionalData> _additionalData = new();

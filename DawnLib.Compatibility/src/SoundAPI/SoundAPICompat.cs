@@ -3,6 +3,7 @@ using BepInEx.Bootstrap;
 using loaforcsSoundAPI;
 
 namespace Dawn.Compatibility;
+
 static class SoundAPICompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(SoundAPI.PLUGIN_GUID);

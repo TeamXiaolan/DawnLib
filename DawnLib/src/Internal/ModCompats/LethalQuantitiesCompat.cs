@@ -10,6 +10,7 @@ using UnityEngine;
 using TomlTypeConverter = On.BepInEx.Configuration.TomlTypeConverter;
 
 namespace Dawn.Internal;
+
 static class LethalQuantitiesCompat
 {
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(LethalQuantities.PluginInfo.PLUGIN_GUID);

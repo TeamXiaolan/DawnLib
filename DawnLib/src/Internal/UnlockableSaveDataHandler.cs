@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 public static class UnlockableSaveDataHandler
 {
     internal static List<PlaceableShipObject> placeableShipObjects = new();

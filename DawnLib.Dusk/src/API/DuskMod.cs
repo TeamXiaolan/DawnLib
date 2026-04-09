@@ -127,7 +127,7 @@ public class DuskMod
     }
     public static IReadOnlyList<DuskMod> AllMods => _allMods.AsReadOnly();
 
-    public IReadOnlyList<ConfigEntryBase> ConfigEntries => _configEntries.AsReadOnly(); 
+    public IReadOnlyList<ConfigEntryBase> ConfigEntries => _configEntries.AsReadOnly();
     public ConfigManager ConfigManager { get; }
     public ContentContainer Content { get; }
 

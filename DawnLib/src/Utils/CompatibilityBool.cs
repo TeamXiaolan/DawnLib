@@ -1,6 +1,7 @@
 using System;
 
 namespace Dawn.Utils;
+
 public enum CompatibilityBool
 {
     Never,

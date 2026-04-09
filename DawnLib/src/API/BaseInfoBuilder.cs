@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 namespace Dawn;
+
 public abstract class BaseInfoBuilder
 {
     // todo: better name!?!?

@@ -3,6 +3,7 @@ using Dawn;
 using UnityEngine;
 
 namespace Dusk;
+
 [Serializable]
 public class NamespacedKeyWithAnimationCurve
 {

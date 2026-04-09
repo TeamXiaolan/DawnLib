@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 namespace Dawn;
+
 public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, UnlockableItem, UnlockableInfoBuilder>
 {
     public class SuitBuilder

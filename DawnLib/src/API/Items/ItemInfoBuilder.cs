@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace Dawn;
+
 public class ItemInfoBuilder : BaseInfoBuilder<DawnItemInfo, Item, ItemInfoBuilder>
 {
     public class ScrapBuilder

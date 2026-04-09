@@ -2,6 +2,7 @@
 using Dawn.Internal;
 
 namespace Dawn.Utils;
+
 public static class BepInPluginExtensions
 {
     public static PersistentDataContainer GetPersistentDataContainer(this BaseUnityPlugin plugin)

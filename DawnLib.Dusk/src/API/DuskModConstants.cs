@@ -1,4 +1,5 @@
 ﻿namespace Dusk;
+
 static class DuskModConstants
 {
     internal const string MenuName = "DawnLib";

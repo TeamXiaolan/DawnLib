@@ -2,6 +2,7 @@
 using DunGen;
 
 namespace Dawn;
+
 public class DawnArchetypeInfo : DawnBaseInfo<DawnArchetypeInfo>
 {
     public DungeonArchetype DungeonArchetype { get; }

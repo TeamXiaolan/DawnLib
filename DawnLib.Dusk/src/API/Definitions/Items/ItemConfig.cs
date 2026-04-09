@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using Dawn.Utils;
 
 namespace Dusk;
+
 public class ItemConfig(ConfigContext section, string EntityNameReference) : DuskBaseConfig(section, EntityNameReference)
 {
     public ConfigEntry<int>? Cost;

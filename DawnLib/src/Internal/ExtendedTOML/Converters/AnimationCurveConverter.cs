@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 namespace Dawn.Internal;
+
 class AnimationCurveConverter : TOMLConverter<AnimationCurve>
 {
     protected override string ConvertToString(AnimationCurve value)

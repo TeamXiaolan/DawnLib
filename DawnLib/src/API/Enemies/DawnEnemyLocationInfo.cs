@@ -1,4 +1,5 @@
 ﻿namespace Dawn;
+
 public sealed class DawnEnemyLocationInfo
 {
     public DawnEnemyInfo ParentInfo { get; internal set; }

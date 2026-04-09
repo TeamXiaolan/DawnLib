@@ -5,6 +5,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 
 namespace Dawn.Internal;
+
 static class TerminalPatches
 {
     // below delegate/event is used for TerminalTextModifiers

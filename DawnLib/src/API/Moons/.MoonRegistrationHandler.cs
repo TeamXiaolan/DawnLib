@@ -15,7 +15,7 @@ namespace Dawn;
 [HarmonyPatch]
 static class MoonRegistrationHandler
 {
-    private static IMoonGroupAlgorithm _groupAlgorithm = new RankGroupAlgorithm();
+    public static MainGroupAlgorithm MoonGroupAlgorithm = new MainGroupAlgorithm();
 
     // See DuskPlugin
     internal static GameObject RouteProgressUIPrefab;
@@ -33,23 +33,29 @@ static class MoonRegistrationHandler
         {
             On.StartOfRound.Awake += CollectTestLevel;
             On.StartOfRound.Awake += CollectLevels;
-            On.StartOfRound.Awake += SpawnRouteProgressUI;
-            On.Terminal.Awake += RegisterDawnLevels;
+            if (!DawnConfig.VanillaCompatibility.Value)
+            {
+                On.StartOfRound.Awake += SpawnRouteProgressUI;
+                On.Terminal.Awake += RegisterDawnLevels;
+            }
         }
 
         LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
         LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
         LethalContent.Items.OnFreeze += FixDawnMoonItems;
 
-        On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
-        On.StartOfRound.OnClientConnect += StartOfRoundOnClientConnect;
-        On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
+        if (!DawnConfig.VanillaCompatibility.Value)
+        {
+            On.StartOfRound.ChangeLevel += StartOfRoundOnChangeLevel;
+            On.StartOfRound.OnClientConnect += StartOfRoundOnClientConnect;
+            On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
 
-        On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
+            On.StartOfRound.TravelToLevelEffects += DelayTravelEffects;
 
-        On.Terminal.TextPostProcess += DynamicMoonCatalogue;
+            On.Terminal.TextPostProcess += DynamicMoonCatalogue;
 
-        IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
+            IL.RoundManager.PredictAllOutsideEnemies += ReplaceStaticOutsideEnemyProbabilityRange;
+        }
 
         if (!MoonDaySpeedMultiplierPatcherCompat.Enabled)
         {
@@ -142,7 +148,10 @@ static class MoonRegistrationHandler
             if (!moonInfo.TypedKey.IsVanilla())
                 continue;
 
-            if (moonInfo.Level.levelAmbienceClips != null) vanillaLevelAmbienceLibraries.Add(moonInfo.Level.levelAmbienceClips);
+            if (moonInfo.Level.levelAmbienceClips != null)
+            {
+                vanillaLevelAmbienceLibraries.Add(moonInfo.Level.levelAmbienceClips);
+            }
             vanillaLevelAmbienceLibraries.AddRange(moonInfo.Level.dungeonFlowTypes.Select(dungeonFlowType => dungeonFlowType.overrideLevelAmbience).Where(x => x != null));
         }
         vanillaLevelAmbienceLibraries = vanillaLevelAmbienceLibraries.Distinct().ToList();
@@ -176,6 +185,7 @@ static class MoonRegistrationHandler
             }
         }
 
+        ambiencesToDestroy = ambiencesToDestroy.Where(x => !vanillaLevelAmbienceLibraries.Contains(x)).Distinct().ToList();
         for (int i = ambiencesToDestroy.Count - 1; i >= 0; i--)
         {
             ScriptableObject.Destroy(ambiencesToDestroy[i]);
@@ -366,7 +376,7 @@ static class MoonRegistrationHandler
         }
     }
 
-    // todo: i eventually want to rewrite this so its more extensible and a lot better, but oh well!
+    // I think I wrote this nicely, I hope you're proud of me Bongo
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
         if (node != TerminalRefs.MoonCatalogueNode)
@@ -379,7 +389,7 @@ static class MoonRegistrationHandler
             .Where(it => !it.HasTag(Tags.Unimplemented))
             .OrderByDescending(it => it.HasTag(Tags.Vanilla));
 
-        List<MoonGroup> groups = _groupAlgorithm.Group(validMoons);
+        List<MoonGroup> groups = MoonGroupAlgorithm.Group(validMoons);
 
         foreach (MoonGroup group in groups)
         {
@@ -393,12 +403,6 @@ static class MoonRegistrationHandler
             foreach (DawnMoonInfo moonInfo in group.Moons)
             {
                 TerminalPurchaseResult result = moonInfo.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
-
-                if (result is TerminalPurchaseResult.HiddenPurchaseResult)
-                {
-                    continue;
-                }
-
                 builder.AppendLine(FormatMoonEntry(moonInfo, result));
             }
         }
@@ -448,7 +452,7 @@ static class MoonRegistrationHandler
             yield return enumerator.Current;
             if (enumerator.Current is WaitForSeconds wfs && Mathf.Approximately(wfs.m_Seconds, self.currentLevel.timeToArrive))
             {
-                yield return new WaitUntil(() => DawnMoonNetworker.Instance.allPlayersDone);
+                yield return new WaitUntil(() => DawnMoonNetworker.Instance!.allPlayersDone);
             }
         }
         self.shipTravelCoroutine = null;

@@ -2,6 +2,7 @@ using Dawn;
 using UnityEngine;
 
 namespace Dusk;
+
 public interface IStation : IAnchorModule
 {
     NamespacedKey StationKey { get; }

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Dawn;
+
 public static class DawnLib
 {
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;

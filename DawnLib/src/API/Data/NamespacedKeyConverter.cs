@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Dawn;
+
 public class NamespacedKeyConverter : JsonConverter
 {
 

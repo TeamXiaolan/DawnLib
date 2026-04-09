@@ -8,6 +8,7 @@ namespace Dawn.Internal;
 internal static class Debuggers
 {
     internal static DebugLogSource? ReplaceThis;
+    internal static DebugLogSource? Configs;
     internal static DebugLogSource? EntityReplacements;
     internal static DebugLogSource? Sounds;
     internal static DebugLogSource? Weathers;

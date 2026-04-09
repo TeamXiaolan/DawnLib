@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dawn;
+
 public class TerminalNodeBuilder
 {
     internal static List<TerminalNode> _terminalNodes = new();
