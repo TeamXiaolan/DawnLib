@@ -84,7 +84,6 @@ public class DawnPlugin : BaseUnityPlugin
         TerminalPatches.Init();
         DebugPatches.Init();
         ExtraScanEventsPatch.Init();
-        DawnSurface.Init();
         DawnCommands.Init();
 
         // Testing

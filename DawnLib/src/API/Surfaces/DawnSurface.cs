@@ -28,24 +28,10 @@ public class DawnSurface : MonoBehaviour
     public List<int> TerrainIndices { get; private set; } = new();
     public bool IsTerrain { get; private set; } = false;
 
-    internal static void Init()
-    {
-        On.UnityEngine.Transform.Rotate_Vector3_Space += Transform_Rotate_Vector3_Space;
-    }
-
-    private static void Transform_Rotate_Vector3_Space(On.UnityEngine.Transform.orig_Rotate_Vector3_Space orig, Transform self, Vector3 eulers, Space relativeTo)
-    {
-        if (GameNetworkManager.Instance != null && GameNetworkManager.Instance.localPlayerController != null && StartOfRound.Instance != null && relativeTo == Space.Self && GameNetworkManager.Instance.localPlayerController.TryGetCurrentDawnSurface(out DawnSurface? currentDawnSurface) && currentDawnSurface.GravityCenter != null)
-        {
-            PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
-            DawnPlugin.Logger.LogInfo($"Player is rotating in a surface");
-        }
-        orig(self, eulers, relativeTo);
-    }
-
     public void Start()
     {
         IsTerrain = this.gameObject.GetComponent<TerrainCollider>() != null;
+
         foreach (NamespacedKey key in NamespacedKeysForTerrain)
         {
             if (LethalContent.Surfaces.TryGetValue(key, out DawnSurfaceInfo terrainSurfaceInfo))
@@ -78,6 +64,7 @@ public class DawnSurface : MonoBehaviour
     public bool TryGetFootstepIndex(Vector3 point, bool checkStandingOnTerrain, out int footstepIndex, PlayerControllerB? playerControllerB = null)
     {
         footstepIndex = -1;
+
         if (IsTerrain)
         {
             if (playerControllerB != null)
@@ -92,11 +79,13 @@ public class DawnSurface : MonoBehaviour
 
             Terrain activeTerrain = Terrain.activeTerrain;
             TerrainData terrainData = activeTerrain.terrainData;
+
             if (!StartOfRound.Instance.gotCurrentTerrainAlphamaps)
             {
                 StartOfRound.Instance.gotCurrentTerrainAlphamaps = true;
                 StartOfRound.Instance.currentTerrainAlphaMaps = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight);
             }
+
             Vector3 splatMapCoordinate = ConvertToSplatMapCoordinate(point, activeTerrain);
 
             int dominantTextureIndex = 0;
@@ -125,6 +114,7 @@ public class DawnSurface : MonoBehaviour
                 {
                     return false;
                 }
+
                 footstepIndex = SurfaceIndex;
             }
             else
@@ -142,21 +132,12 @@ public class DawnSurface : MonoBehaviour
 
     private static Vector3 ConvertToSplatMapCoordinate(Vector3 worldPosition, Terrain terrain)
     {
-        Vector3 vector = default(Vector3);
-        Vector3 position = terrain.transform.position;
-        vector.x = (worldPosition.x - position.x) / terrain.terrainData.size.x * (float)terrain.terrainData.alphamapWidth;
-        vector.z = (worldPosition.z - position.z) / terrain.terrainData.size.z * (float)terrain.terrainData.alphamapHeight;
+        Vector3 vector = default;
+        Vector3 terrainPosition = terrain.transform.position;
+
+        vector.x = (worldPosition.x - terrainPosition.x) / terrain.terrainData.size.x * terrain.terrainData.alphamapWidth;
+        vector.z = (worldPosition.z - terrainPosition.z) / terrain.terrainData.size.z * terrain.terrainData.alphamapHeight;
+
         return vector;
     }
-    /*public void Update() // todo
-    {
-        PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
-        if (GravityCenter == null || !localPlayer.TryGetCurrentDawnSurface(out DawnSurface? currentDawnSurface) || currentDawnSurface != this)
-        {
-            return;
-        }
-
-        Transform localPlayerMesh = GameNetworkManager.Instance.localPlayerController.meshContainer;
-        localPlayerMesh.transform.up = (GameNetworkManager.Instance.localPlayerController.meshContainer.position - GravityCenter.transform.position).normalized;
-    }*/
 }
