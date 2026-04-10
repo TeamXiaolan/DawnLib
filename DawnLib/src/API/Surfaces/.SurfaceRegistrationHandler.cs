@@ -28,6 +28,52 @@ static class SurfaceRegistrationHandler
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditUncappedFallValueForGravity;
 
         SceneManager.sceneLoaded += OnVowOrMarchLoaded;
+        SceneManager.sceneLoaded += TryFixMoonTerrainFootsteps;
+    }
+
+    private static void TryFixMoonTerrainFootsteps(Scene arg0, LoadSceneMode arg1)
+    {
+        if (StartOfRound.Instance == null)
+        {
+            return;
+        }
+
+        if (RoundManager.Instance.currentLevel == null)
+        {
+            return;
+        }
+
+        DawnMoonInfo moonInfo = RoundManager.Instance.currentLevel.GetDawnInfo();
+        if (moonInfo == null || moonInfo.TypedKey.IsVanilla())
+        {
+            return;
+        }
+
+        TerrainCollider terrainCollider = GameObject.FindAnyObjectByType<TerrainCollider>();
+        if (terrainCollider == null || terrainCollider.terrainData == null || terrainCollider.terrainData.alphamapTextureCount == 0 || !terrainCollider.gameObject.activeSelf || !terrainCollider.enabled || !terrainCollider.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
+        if (terrainCollider.gameObject.CompareTag("Untagged"))
+        {
+            return;
+        }
+
+        DawnSurface surface = terrainCollider.gameObject.AddComponent<DawnSurface>();
+        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+        {
+            if (!surfaceInfo.Surface.surfaceTag.Equals(terrainCollider.gameObject.tag, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            TerrainData terrainData = terrainCollider.terrainData;
+            for (int i = 0; i < terrainData.alphamapTextureCount; i++)
+            {
+                surface.NamespacedKeysForTerrain.Add(surfaceInfo.Key);
+            }
+        }
     }
 
     private static void OnVowOrMarchLoaded(Scene arg0, LoadSceneMode arg1)

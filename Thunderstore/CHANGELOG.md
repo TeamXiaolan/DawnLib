@@ -1,4 +1,11 @@
-# v0.9.3
+# v0.9.4
+
+- Added compatibility with latest `TestAccount666.GoodItemScan` update.
+- Addded more logging related to achievements.
+- Possibly fixed issues relating to making more TileSets attached to interiors.
+- Tried to fix old moons with terrain colliders not having proper footsteps.
+
+## v0.9.3
 
 - Updated the editor dll for the following changes:
   - Long-awaited visualisers for scrap and hazard spawning.

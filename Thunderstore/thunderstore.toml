@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "TeamXiaolan"
 name = "DawnLib"
-description = "A modern API for Lethal Company content and all sizes of mods [V80]"
+description = "A modern API for Lethal Company content and all sizes of mods [V81]"
 websiteUrl = "https://github.com/TeamXiaolan/DawnLib"
 containsNsfwContent = false
 [package.dependencies]

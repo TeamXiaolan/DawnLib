@@ -22,6 +22,7 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     public TileSet TilesToAdd { get; private set; }
 
     [field: SerializeField]
+    [field: UnlockedNamespacedKey]
     public List<NamespacedKey<DawnArchetypeInfo>> archetypeKeys = new();
 
     [field: SerializeField]

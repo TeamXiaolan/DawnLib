@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
+using GoodItemScan;
 using UnityEngine;
 
 namespace Dawn.Internal;
@@ -26,11 +27,17 @@ static class GoodItemScanCompat
             return false;
         }
 
-        if (GoodItemScan.GoodItemScan.scanner._scanNodes.TryGetValue(scanNodeProperties, out int index))
+        foreach (GoodItemScan.ScannedNode scannedNode in GoodItemScan.GoodItemScan.scanner.activeNodes)
         {
-            rectTransform = GoodItemScan.GoodItemScan.scanner._scannedNodes[index].rectTransform;
+            if (scannedNode.ScanNodeProperties != scanNodeProperties)
+            {
+                continue;
+            }
+
+            rectTransform = scannedNode.rectTransform;
             return true;
         }
+
         return false;
     }
 
@@ -43,15 +50,14 @@ static class GoodItemScanCompat
             return false;
         }
 
-        foreach ((ScanNodeProperties scanNode, int index) in GoodItemScan.GoodItemScan.scanner._scanNodes)
+        foreach (ScannedNode scannedNode in GoodItemScan.GoodItemScan.scanner.activeNodes)
         {
-            GoodItemScan.ScannedNode scannedNode = GoodItemScan.GoodItemScan.scanner._scannedNodes[index];
             if (rectTransform != scannedNode.rectTransform)
             {
                 continue;
             }
 
-            scanNodeProperties = scanNode;
+            scanNodeProperties = scannedNode.ScanNodeProperties;
             return true;
         }
 

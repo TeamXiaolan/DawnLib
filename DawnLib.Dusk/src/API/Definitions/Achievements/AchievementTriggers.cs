@@ -1,3 +1,4 @@
+using Dawn.Internal;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -14,6 +15,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryCompleteAchievement()
     {
+        Debuggers.Achievements?.Log($"Trying to complete achievement: {_reference.TypedKey}");
         if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
             return;
 
@@ -25,6 +27,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryIncrementAchievement(float amountToIncrement)
     {
+        Debuggers.Achievements?.Log($"Trying to increment achievement: {_reference.TypedKey} by {amountToIncrement}");
         if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
             return;
 
@@ -36,6 +39,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void TryDiscoverMoreProgressAchievement(string uniqueStringID)
     {
+        Debuggers.Achievements?.Log($"Trying to discover more progress for achievement: {_reference.TypedKey} with unique string id: {uniqueStringID}");
         if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
             return;
 
@@ -47,6 +51,7 @@ public class AchievementTriggers : MonoBehaviour
 
     public void ResetAllAchievementProgress()
     {
+        Debuggers.Achievements?.Log($"Trying to reset all progress for achievement: {_reference.TypedKey}");
         if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
             return;
 
