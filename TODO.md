@@ -9,7 +9,6 @@
 - Move vehicle registration to Dawn from dusk.
 - Add a vehicle thing for despawning by hooking onto DespawnPropsAtEndOfRound and collecting items maybe?
 - LL rewritten to use DawnLib in its backend.
-- DawnLib.Editor updated for scrap and hazard visualisers.
 - Rewrite the spawn weight stuff to be more expandable for future use.
 
 less important:

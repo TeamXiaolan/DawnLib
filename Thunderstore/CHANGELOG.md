@@ -2,7 +2,7 @@
 
 - Updated the editor dll for the following changes:
   - Long-awaited visualisers for scrap and hazard spawning.
-  - Visualisers for DunGen DoorWays and Tiles.
+  - Visualisers for DunGen Doorways.
   - A dropdown on the top of the screen that generates every single Blank ScriptableObject you'll need, which will auto account for future updates.
   - A button on every DuskDefinition that will generate basic weights for every vanilla moon, interior, weather and a selection of tags: `none, low, medium, high, ultra_high`.
   - Visualisation added to the moon if redlocustbees can spawn (which shows the radius for hives reduced price).
@@ -12,6 +12,8 @@
   - Currently only supports string, float, int, bool, BoundedRange, Vector3, Color and AnimationCurve.
 - OutsideObjects from DawnLib break trees if setup to like vanilla OutsideObjects now.
 - Simulate and Filter commands added.
+  - Simulate supports typing an interior or moon name.
+  - Filter supports being fed a tag name.
 - General code quality improvements.
 
 ## v0.9.2
