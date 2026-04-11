@@ -4,6 +4,7 @@
 - Addded more logging related to achievements.
 - Possibly fixed issues relating to making more TileSets attached to interiors.
 - Tried to fix old moons with terrain colliders not having proper footsteps.
+- Fixed an issue with lobby reloads in relation to footstep surfaces.
 
 ## v0.9.3
 

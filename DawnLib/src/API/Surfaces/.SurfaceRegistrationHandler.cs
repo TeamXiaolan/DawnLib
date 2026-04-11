@@ -264,11 +264,6 @@ static class SurfaceRegistrationHandler
 
     private static void CollectVanillaSurfaces(StartOfRound startOfRound)
     {
-        if (LethalContent.Surfaces.IsFrozen)
-        {
-            return;
-        }
-
         for (int i = 0; i < startOfRound.footstepSurfaces.Length; i++)
         {
             FootstepSurface? surface = startOfRound.footstepSurfaces[i];
@@ -295,6 +290,11 @@ static class SurfaceRegistrationHandler
             DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.SetDawnInfo(surfaceInfo);
+        }
+
+        if (LethalContent.Surfaces.IsFrozen)
+        {
+            return;
         }
         LethalContent.Surfaces.Freeze();
     }
@@ -332,6 +332,7 @@ static class SurfaceRegistrationHandler
             }
 
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
+            DawnPlugin.Logger.LogFatal($"currentFootstepSurfaceIndex: {currentFootstepSurfaceIndex}");
             if (surfaceInfo.SurfaceVFXPrefab != null)
             {
                 FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
