@@ -94,7 +94,7 @@ static class SurfaceRegistrationHandler
         {
             GameObject vowTerrain = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh").transform.Find("VowTerrain").gameObject;
             DawnSurface surface = vowTerrain.AddComponent<DawnSurface>();
-            surface.NamespacedKeysForTerrain.AddRange([NamespacedKey.From("lethal_company", "grass"), NamespacedKey.From("lethal_company", "snow"), NamespacedKey.From("lethal_company", "rock")]);
+            surface.NamespacedKeysForTerrain.AddRange([NamespacedKey.From("lethal_company", "grass"), NamespacedKey.From("lethal_company", "gravel"), NamespacedKey.From("lethal_company", "rock")]);
         }
     }
 
