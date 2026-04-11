@@ -1,45 +1,76 @@
 using System;
 using System.Collections.Generic;
-using Dawn.Internal;
+using System.Linq;
 
 namespace Dusk.Weights;
 
 [Serializable]
 public class RoutePriceWeightTransformer : WeightTransformer<int>
 {
+    private readonly List<IntComparisonConfigWeight> _routePriceConfig = new();
+
     public RoutePriceWeightTransformer(List<IntComparisonConfigWeight> routePriceConfig)
     {
         if (routePriceConfig.Count <= 0)
             return;
 
         _routePriceConfig = routePriceConfig;
-        foreach (IntComparisonConfigWeight configWeight in _routePriceConfig)
-        {
-            MatchingRoutePricesWithWeightAndOperationDict[configWeight.IntComparison.Value] = configWeight;
-        }
     }
-
-    private List<IntComparisonConfigWeight> _routePriceConfig = new();
-
-    public Dictionary<int, IntComparisonConfigWeight> MatchingRoutePricesWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight, int routePrice)
     {
-        if (!WeightTransformerTagLogic.TryApplyByKey(currentWeight, routePrice, MatchingRoutePricesWithWeightAndOperationDict, DoOperation, out float result, Debuggers.Weights))
+        List<IntComparisonConfigWeight> matches = GetOrderedMatches(routePrice);
+
+        foreach (IntComparisonConfigWeight match in matches)
         {
-            return 0;
+            currentWeight = DoOperation(currentWeight, match);
         }
 
-        return result;
+        return currentWeight;
     }
 
     public override MathOperation GetOperation(int routePrice)
     {
-        if (MatchingRoutePricesWithWeightAndOperationDict.TryGetValue(routePrice, out IntComparisonConfigWeight opWithWeight))
+        List<IntComparisonConfigWeight> matches = GetOrderedMatches(routePrice);
+
+        if (matches.Count == 0)
         {
-            return opWithWeight.Operation;
+            return MathOperation.Additive;
         }
 
-        return MathOperation.Additive;
+        return matches[0].Operation;
+    }
+
+    private List<IntComparisonConfigWeight> GetOrderedMatches(int routePrice)
+    {
+        List<IntComparisonConfigWeight> matches = new();
+
+        foreach (IntComparisonConfigWeight config in _routePriceConfig)
+        {
+            if (Matches(routePrice, config.IntComparison))
+            {
+                matches.Add(config);
+            }
+        }
+
+        return matches
+            .OrderByDescending(x =>
+                x.Operation == MathOperation.Additive ||
+                x.Operation == MathOperation.Subtractive)
+            .ToList();
+    }
+
+    private static bool Matches(int routePrice, IntComparison comparison)
+    {
+        return comparison.ComparisonOperation switch
+        {
+            ComparisonOperation.Equal => routePrice == comparison.Value,
+            ComparisonOperation.NotEqual => routePrice != comparison.Value,
+            ComparisonOperation.Greater => routePrice > comparison.Value,
+            ComparisonOperation.Less => routePrice < comparison.Value,
+            ComparisonOperation.GreaterOrEqual => routePrice >= comparison.Value,
+            ComparisonOperation.LessOrEqual => routePrice <= comparison.Value,
+            _ => false
+        };
     }
 }

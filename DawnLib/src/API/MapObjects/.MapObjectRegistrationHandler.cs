@@ -297,8 +297,14 @@ static class MapObjectRegistrationHandler
         DawnMapObjectInfo mapObjectInfo = outsideInfo.ParentInfo;
 
         GameObject prefabToSpawn = outsideInfo.SpawnableOutsideObject.prefabToSpawn;
-        SpawnWeightContext context = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
-        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
+
+        SpawnWeightContext ctx = new SpawnWeightContext(
+            level.GetDawnInfo(),
+            RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
+            TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+
+        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
 
         int randomNumberToSpawn;
         if (mapObjectInfo.HasNetworkObject)
@@ -536,8 +542,13 @@ static class MapObjectRegistrationHandler
                 level.indoorMapHazards = newIndoorMapHazard.ToArray();
             }
 
-            SpawnWeightContext context = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
-            indoorMapHazard.numberToSpawn = insideInfo.SpawnWeights.GetFor(level.GetDawnInfo(), context) ?? AnimationCurve.Constant(0, 1, 0);
+            SpawnWeightContext ctx = new SpawnWeightContext(
+                level.GetDawnInfo(),
+                RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
+                TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+
+            indoorMapHazard.numberToSpawn = insideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 

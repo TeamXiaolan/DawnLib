@@ -135,8 +135,14 @@ static class ItemRegistrationHandler
                 spawnableItemWithRarity = new(itemInfo.Item, 0);
                 level.spawnableScrap.Add(spawnableItemWithRarity);
             }
-            SpawnWeightContext ctx = new(level.GetDawnInfo(), RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo() ?? null);
-            int rarity = scrapInfo.Weights.GetFor(ctx.Moon!, ctx) ?? 0;
+
+            SpawnWeightContext ctx = new SpawnWeightContext(
+                level.GetDawnInfo(),
+                RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
+                TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+
+            int rarity = scrapInfo.Weights.GetFor(ctx) ?? 0;
             spawnableItemWithRarity.rarity = rarity.Clamp0();
         }
     }

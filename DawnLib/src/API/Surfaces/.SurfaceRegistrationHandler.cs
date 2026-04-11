@@ -332,7 +332,6 @@ static class SurfaceRegistrationHandler
             }
 
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
-            DawnPlugin.Logger.LogFatal($"currentFootstepSurfaceIndex: {currentFootstepSurfaceIndex}");
             if (surfaceInfo.SurfaceVFXPrefab != null)
             {
                 FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);

@@ -43,6 +43,8 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     public List<NamespacedConfigWeight> InteriorSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
+    [field: SerializeField]
+    public List<IntComparisonConfigWeight> RouteSpawnWeightsConfig { get; private set; } = new();
 
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
@@ -123,8 +125,19 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
+        List<IntComparisonConfigWeight> Routes = IntComparisonConfigWeight.ConvertManyFromString(string.Empty);
+        if (RouteSpawnWeightsConfig.Count > 0)
+        {
+            Routes = RouteSpawnWeightsConfig;
+        }
 
+        if (Config.RouteSpawnWeights != null)
+        {
+            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
+        }
+
+        SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
+        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
         DawnLib.DefineEnemy(TypedKey, EnemyType, builder =>
         {
             if (SpawnTable.HasFlag(SpawnTable.Daytime))
@@ -177,6 +190,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             DuskBaseConfig.AssignValueIfNotNull(enemyConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(enemyConfig.InteriorSpawnWeights, InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(enemyConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat);
+            DuskBaseConfig.AssignValueIfNotNull(enemyConfig.RouteSpawnWeights, IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig));
 
             DuskBaseConfig.AssignValueIfNotNull(enemyConfig.PowerLevel, EnemyType.PowerLevel);
             DuskBaseConfig.AssignValueIfNotNull(enemyConfig.MaxSpawnCount, EnemyType.MaxCount);

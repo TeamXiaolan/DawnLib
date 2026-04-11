@@ -10,7 +10,7 @@ internal static class WeightTransformerTagLogic
 {
     public static bool TryApplyByKey<T, U>(float currentWeight, T typedKey, Dictionary<T, U> dict, Func<float, U, float> doOperation, out float newWeight, DebugLogSource? log = null) where U : IOperationWithValue
     {
-        if (dict.TryGetValue(typedKey, out var opWithWeight))
+        if (dict.TryGetValue(typedKey, out U opWithWeight))
         {
             log?.Log($"NamespacedKey: {typedKey}");
             newWeight = doOperation(currentWeight, opWithWeight);

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Dawn;
 using Dawn.Internal;
 using Dawn.Utils;
 using Dusk.Weights;
@@ -36,16 +35,7 @@ public class IntComparisonConfigWeight : IOperationWithValue
     public static string ConvertToString(IntComparisonConfigWeight input)
     {
         // End Result: {Comparison}{Value}={Operation}{Weight}
-
-        string Operation;
-        Operation = input.MathOperation switch
-        {
-            MathOperation.Additive => "+",
-            MathOperation.Subtractive => "-",
-            MathOperation.Multiplicative => "*",
-            MathOperation.Divisive => "/",
-            _ => "+",
-        };
+        // End Result: <=100=+9999;
 
         string Comparison = input.IntComparison.ComparisonOperation switch
         {
@@ -56,6 +46,16 @@ public class IntComparisonConfigWeight : IOperationWithValue
             ComparisonOperation.GreaterOrEqual => ">=",
             ComparisonOperation.LessOrEqual => "<=",
             _ => "==",
+        };
+
+        string Operation;
+        Operation = input.MathOperation switch
+        {
+            MathOperation.Additive => "+",
+            MathOperation.Subtractive => "-",
+            MathOperation.Multiplicative => "*",
+            MathOperation.Divisive => "/",
+            _ => "+",
         };
 
         string result = $"{Comparison}{input.IntComparison.Value}={Operation}{input.Weight}";

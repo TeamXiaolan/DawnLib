@@ -84,8 +84,12 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
-        SpawnWeightContext ctx = new(currentMoon, null, null);
-        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon, ctx));
+        SpawnWeightContext ctx = new SpawnWeightContext(
+            currentMoon,
+            null,
+            null);
+
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));
         if (totalWeight == null)
         {
             return;
@@ -96,7 +100,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
         int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskUnlockableReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
+            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 

@@ -34,6 +34,10 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     public List<NamespacedConfigWeight> InteriorSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
+    [field: SerializeField]
+    public List<IntComparisonConfigWeight> RouteSpawnWeightsConfig { get; private set; } = new();
+
+    [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
     [field: Header("Configs | Scrap")]
@@ -137,7 +141,19 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
             Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
+        List<IntComparisonConfigWeight> Routes = IntComparisonConfigWeight.ConvertManyFromString(string.Empty);
+        if (RouteSpawnWeightsConfig.Count > 0)
+        {
+            Routes = RouteSpawnWeightsConfig;
+        }
+
+        if (Config.RouteSpawnWeights != null)
+        {
+            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
+        }
+
         SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
+        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
         DawnLib.DefineItem(TypedKey, Item, builder =>
         {
             if (Config.IsScrapItem?.Value ?? IsScrap)
@@ -202,6 +218,7 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
             DuskBaseConfig.AssignValueIfNotNull(itemConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(itemConfig.InteriorSpawnWeights, InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(itemConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat);
+            DuskBaseConfig.AssignValueIfNotNull(itemConfig.RouteSpawnWeights, IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig));
 
             DuskBaseConfig.AssignValueIfNotNull(itemConfig.DisableUnlockRequirements, false);
             DuskBaseConfig.AssignValueIfNotNull(itemConfig.DisablePricingStrategy, false);

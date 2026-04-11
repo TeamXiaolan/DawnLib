@@ -41,6 +41,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public List<NamespacedConfigWeight> InteriorSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
+    [field: SerializeField]
+    public List<IntComparisonConfigWeight> RouteSpawnWeightsConfig { get; private set; } = new();
 
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
@@ -135,7 +137,19 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
+        List<IntComparisonConfigWeight> Routes = IntComparisonConfigWeight.ConvertManyFromString(string.Empty);
+        if (RouteSpawnWeightsConfig.Count > 0)
+        {
+            Routes = RouteSpawnWeightsConfig;
+        }
+
+        if (Config.RouteSpawnWeights != null)
+        {
+            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
+        }
+
         SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
+        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
 
         Weights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>()
             .SetGlobalWeight(SpawnWeights)
@@ -169,6 +183,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.InteriorSpawnWeights, InteriorSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(InteriorSpawnWeightsConfig) : InteriorSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat);
+            DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.RouteSpawnWeights, IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig));
 
             DuskBaseConfig.AssignValueIfNotNull(entityReplacementConfig.DisableDateCheck, false);
         }

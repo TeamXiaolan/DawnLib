@@ -8,6 +8,8 @@ public class EntityReplacementConfig(ConfigContext section, string EntityNameRef
     public ConfigEntry<string>? MoonSpawnWeights;
     public ConfigEntry<string>? InteriorSpawnWeights;
     public ConfigEntry<string>? WeatherSpawnWeights;
+    public ConfigEntry<string>? RouteSpawnWeights;
+
     public ConfigEntry<bool>? DisableDateCheck;
 
     override internal List<ConfigEntryBase?> _configEntries => [

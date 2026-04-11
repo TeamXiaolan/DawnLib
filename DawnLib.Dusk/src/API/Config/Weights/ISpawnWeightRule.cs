@@ -31,3 +31,42 @@ public class WeatherRule(WeatherWeightTransformer transformer) : ISpawnWeightRul
     public MathOperation GetOperation(in SpawnWeightContext ctx) => transformer.GetOperation(ctx.Weather!);
     public float Apply(float currentWeight, in SpawnWeightContext ctx) => transformer.GetNewWeight(currentWeight, ctx.Weather!);
 }
+
+public class ExtraValueRule<T>(NamespacedKey extraKey, WeightTransformer<T> transformer) : ISpawnWeightRule
+{
+    private readonly NamespacedKey _extraKey = extraKey;
+    private readonly WeightTransformer<T> _transformer = transformer;
+
+    public bool CanApply(in SpawnWeightContext ctx)
+    {
+        return ctx.Extras.TryGet<T>(_extraKey, out _);
+    }
+
+    public MathOperation GetOperation(in SpawnWeightContext ctx)
+    {
+        if (ctx.Extras.TryGet(_extraKey, out T? value))
+        {
+            return _transformer.GetOperation(value);
+        }
+
+        return MathOperation.Additive;
+    }
+
+    public float Apply(float currentWeight, in SpawnWeightContext ctx)
+    {
+        if (ctx.Extras.TryGet(_extraKey, out T? value))
+        {
+            return _transformer.GetNewWeight(currentWeight, value);
+        }
+
+        return currentWeight;
+    }
+}
+
+public sealed class RoutePriceRule : ExtraValueRule<int>
+{
+    public RoutePriceRule(RoutePriceWeightTransformer transformer)
+        : base(SpawnWeightExtraKeys.RoutingPriceKey, transformer)
+    {
+    }
+}

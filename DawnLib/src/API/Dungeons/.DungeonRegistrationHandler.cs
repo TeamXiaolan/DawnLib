@@ -360,8 +360,13 @@ static class DungeonRegistrationHandler
             if (dungeonInfo.ShouldSkipRespectOverride())
                 continue;
 
-            SpawnWeightContext ctx = new(level.GetDawnInfo(), null, TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo());
-            int newRarity = dungeonInfo.Weights?.GetFor(level.GetDawnInfo(), ctx) ?? 0;
+            SpawnWeightContext ctx = new SpawnWeightContext(
+                level.GetDawnInfo(),
+                null,
+                TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+
+            int newRarity = dungeonInfo.Weights?.GetFor(ctx) ?? 0;
             intWithRarity.rarity = newRarity.Clamp0();
         }
     }

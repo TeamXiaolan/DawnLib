@@ -4,7 +4,6 @@ using Dawn;
 using Dawn.Internal;
 using Dawn.Interfaces;
 using Dusk.Internal;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using Dawn.Utils;
 
@@ -70,8 +69,14 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
-        SpawnWeightContext ctx = new(currentMoon, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo());
-        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon, ctx));
+
+        SpawnWeightContext ctx = new SpawnWeightContext(
+            currentMoon,
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
+            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
+
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));
         if (totalWeight == null)
         {
             return;
@@ -82,7 +87,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
         int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskMapObjectReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
+            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 

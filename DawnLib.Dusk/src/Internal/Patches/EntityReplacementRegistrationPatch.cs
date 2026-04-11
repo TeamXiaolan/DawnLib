@@ -345,8 +345,13 @@ static class EntityReplacementRegistrationPatch
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
 
-        SpawnWeightContext ctx = new(currentMoon, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo());
-        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon, ctx));
+        SpawnWeightContext ctx = new SpawnWeightContext(
+            currentMoon,
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
+            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
+
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));
         if (totalWeight == null)
         {
             orig(self);
@@ -358,7 +363,7 @@ static class EntityReplacementRegistrationPatch
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskItemReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
+            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 
@@ -486,8 +491,13 @@ static class EntityReplacementRegistrationPatch
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
-        SpawnWeightContext ctx = new(currentMoon, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo());
-        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(currentMoon, ctx));
+        SpawnWeightContext ctx = new SpawnWeightContext(
+            currentMoon,
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
+            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
+
+        int? totalWeight = replacements.Sum(it => it.Weights.GetFor(ctx));
         if (totalWeight == null)
         {
             return;
@@ -498,7 +508,7 @@ static class EntityReplacementRegistrationPatch
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
+            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 
@@ -550,7 +560,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        List<DuskEnemyReplacementDefinition> newReplacements = new List<DuskEnemyReplacementDefinition>(replacements);
+        List<DuskEnemyReplacementDefinition> newReplacements = new(replacements);
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskEnemyReplacementDefinition replacement = newReplacements[i];
@@ -564,8 +574,13 @@ static class EntityReplacementRegistrationPatch
         }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
-        SpawnWeightContext ctx = new(currentMoon, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(), TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo());
-        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(currentMoon, ctx));
+        SpawnWeightContext ctx = new SpawnWeightContext(
+            currentMoon,
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
+            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
+
+        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));
         if (totalWeight == null)
         {
             return;
@@ -576,7 +591,7 @@ static class EntityReplacementRegistrationPatch
         int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(currentMoon, ctx) ?? 0).Clamp0();
+            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
             if (chosenWeight > 0)
                 continue;
 

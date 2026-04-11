@@ -53,3 +53,16 @@ public sealed class ProviderTable<T, TBase, TContext> where TBase : INamespaced<
 
     public static ProviderTable<T, TBase, TContext> Empty() => new([]);
 }
+
+public static class ProviderTableSpawnWeightExtensions
+{
+    public static T? GetFor<T>(this ProviderTable<T, DawnMoonInfo, SpawnWeightContext> table, in SpawnWeightContext ctx)
+    {
+        if (ctx.Moon == null)
+        {
+            return default;
+        }
+
+        return table.GetFor(ctx.Moon, ctx);
+    }
+}

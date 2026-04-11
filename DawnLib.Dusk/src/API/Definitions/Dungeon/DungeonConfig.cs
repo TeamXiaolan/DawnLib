@@ -8,6 +8,8 @@ public class DungeonConfig(ConfigContext section, string EntityNameReference) : 
 {
     public ConfigEntry<string>? MoonSpawnWeights;
     public ConfigEntry<string>? WeatherSpawnWeights;
+    public ConfigEntry<string>? RouteSpawnWeights;
+
     public ConfigEntry<BoundedRange>? DungeonRangeClamp;
     public ConfigEntry<int>? ExtraScrapGeneration;
 

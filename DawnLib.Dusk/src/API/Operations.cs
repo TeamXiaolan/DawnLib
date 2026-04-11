@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dusk;
+﻿namespace Dusk;
 
 public enum LogicOperation
 {

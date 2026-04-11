@@ -88,8 +88,13 @@ static class LethalLevelLoaderCompat
         DungeonFlow? dungeonFlow = extendedDungeonFlowOfInterest?.DungeonFlow;
         if (dungeonFlow != null && dungeonFlow.TryGetDawnInfo(out DawnDungeonInfo? dungeonInfo) && !dungeonInfo.ShouldSkipRespectOverride())
         {
-            SpawnWeightContext ctx = new(extendedLevel.SelectableLevel.GetDawnInfo(), dungeonInfo, TimeOfDayRefs.GetCurrentWeatherEffect(extendedLevel.SelectableLevel)?.GetDawnInfo());
-            return (dungeonInfo.Weights.GetFor(ctx.Moon!, ctx) ?? 0).Clamp0();
+            SpawnWeightContext ctx = new SpawnWeightContext(
+                extendedLevel.SelectableLevel.GetDawnInfo(),
+                dungeonInfo,
+                TimeOfDayRefs.GetCurrentWeatherEffect(extendedLevel.SelectableLevel)?.GetDawnInfo())
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, extendedLevel.SelectableLevel.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+
+            return (dungeonInfo.Weights.GetFor(ctx) ?? 0).Clamp0();
         }
         return orig(self, extendedLevel);
     }

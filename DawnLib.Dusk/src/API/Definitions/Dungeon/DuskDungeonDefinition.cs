@@ -22,6 +22,9 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     public List<NamespacedConfigWeight> MoonSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
+    [field: SerializeField]
+    public List<IntComparisonConfigWeight> RouteSpawnWeightsConfig { get; private set; } = new();
+
     [field: Space(2f)]
     [field: SerializeField]
     public int ExtraScrapGeneration { get; private set; } = 0;
@@ -97,7 +100,19 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
+        List<IntComparisonConfigWeight> Routes = IntComparisonConfigWeight.ConvertManyFromString(string.Empty);
+        if (RouteSpawnWeightsConfig.Count > 0)
+        {
+            Routes = RouteSpawnWeightsConfig;
+        }
+
+        if (Config.RouteSpawnWeights != null)
+        {
+            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
+        }
+
         SpawnWeights.SetupSpawnWeightsPreset(Moons, [], Weathers);
+        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
         DawnLib.DefineDungeon(TypedKey, DungeonFlowReference.FlowAssetName, builder =>
         {
             foreach (var mapping in DungeonFlowReference.ArchetypeTileSets)
@@ -133,6 +148,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         {
             DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat);
             DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat);
+            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.RouteSpawnWeights, IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig));
 
             DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.ExtraScrapGeneration, ExtraScrapGeneration);
             DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.DungeonRangeClamp, DungeonRangeClamp);

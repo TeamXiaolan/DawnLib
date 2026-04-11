@@ -1,4 +1,9 @@
-# v0.9.4
+# v0.9.5
+
+- Added Routeprice configurability to items, enemies, interiors and entity replacements.
+- Got rid of my logging on vow and march from last update, whoops.
+
+## v0.9.4
 
 - Added compatibility with latest `TestAccount666.GoodItemScan` update.
 - Addded more logging related to achievements.
