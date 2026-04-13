@@ -1,7 +1,14 @@
-# v0.9.5
+# v0.9.6
+
+- Fixed a couple issues relating to Vanilla compatibility config.
+- Fixed some localisation issues with BoundedRange.
+- Simplified some custom interior code.
+
+## v0.9.5
 
 - Added Routeprice configurability to items, enemies, interiors and entity replacements.
 - Got rid of my logging on vow and march from last update, whoops.
+- Fixed vow making snow sounds on near fire exit.
 
 ## v0.9.4
 

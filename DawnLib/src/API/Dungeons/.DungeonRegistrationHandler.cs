@@ -273,12 +273,19 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator UnloadDungeonBundleForAllPlayers(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
-        IEnumerator unloadIEnumerator = DawnDungeonNetworker.Instance!.UnloadExisting();
-        while (unloadIEnumerator.MoveNext())
+        if (DawnDungeonNetworker.Instance != null)
         {
-            yield return unloadIEnumerator.Current;
+            IEnumerator unloadIEnumerator = DawnDungeonNetworker.Instance.UnloadExisting();
+            while (unloadIEnumerator.MoveNext())
+            {
+                yield return unloadIEnumerator.Current;
+            }
+            DawnDungeonNetworker.Instance.PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
         }
-        DawnDungeonNetworker.Instance.PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+        else if (!DawnConfig.VanillaCompatibility.Value)
+        {
+            DawnPlugin.Logger.LogError($"DawnDungeonNetworker is null, but VanillaCompatibility is false! This is a bug!");
+        }
 
         IEnumerator origIEnumerator = orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
         while (origIEnumerator.MoveNext())

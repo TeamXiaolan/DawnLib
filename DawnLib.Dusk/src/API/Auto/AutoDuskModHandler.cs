@@ -28,7 +28,7 @@ public class AutoDuskModHandler
             }
 
             DawnPlugin.Logger.LogInfo($"AuthorName: {modInformation[0].AuthorName}, ModName: {modInformation[0].ModName}, Version: {modInformation[0].Version}");
-            DuskMod.RegisterNoCodeMod(modInformation[0], mainBundle, Path.GetDirectoryName(path)!);
+            DuskMod.RegisterNoCodeMod(modInformation[0], mainBundle, Path.GetDirectoryName(path));
         }
     }
 }

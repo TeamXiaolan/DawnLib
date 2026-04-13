@@ -28,8 +28,67 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
             return;
 
         sockets = new();
-        var tileSets = DungeonFlow.TileInjectionRules.Select(it => it.TileSet).Concat(DungeonFlow.GetUsedTileSets()).Distinct();
-        tiles = tileSets.Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
+        List<TileSet> tileSets = new();
+        foreach (TileSet tileSet in DungeonFlow.GetUsedTileSets())
+        {
+            if (tileSet == null)
+            {
+                DawnPlugin.Logger.LogWarning("TileSet is null in dungeonflow: " + DungeonFlow.name);
+                continue;
+            }
+
+            if (tileSets.Contains(tileSet))
+            {
+                continue;
+            }
+
+            tileSets.Add(tileSet);
+        }
+
+        foreach (TileInjectionRule tileInjectionRule in DungeonFlow.TileInjectionRules)
+        {
+            if (tileInjectionRule.TileSet == null)
+            {
+                DawnPlugin.Logger.LogWarning("TileSet is null in a tileInjectionRule");
+                continue;
+            }
+
+            if (tileSets.Contains(tileInjectionRule.TileSet))
+            {
+                continue;
+            }
+
+            tileSets.Add(tileInjectionRule.TileSet);
+        }
+
+        foreach (TileSet tileSet in tileSets)
+        {
+            foreach (GameObjectChance gameObjectChance in tileSet.TileWeights.Weights)
+            {
+                if (gameObjectChance.Value == null)
+                {
+                    DawnPlugin.Logger.LogWarning("GameObject is null in tileSet: " + tileSet.name);
+                    continue;
+                }
+
+                foreach (Tile tile in gameObjectChance.Value.GetComponentsInChildren<Tile>())
+                {
+                    if (tile == null)
+                    {
+                        DawnPlugin.Logger.LogWarning("Tile is null in tileSet: " + tileSet.name);
+                        continue;
+                    }
+
+                    if (tiles.Contains(tile))
+                    {
+                        continue;
+                    }
+
+                    tiles.Add(tile);
+                }
+            }
+        }
+
         doorways = new();
         spawnSyncedObjects = new();
 
