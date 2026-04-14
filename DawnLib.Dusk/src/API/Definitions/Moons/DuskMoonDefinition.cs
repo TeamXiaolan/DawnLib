@@ -65,7 +65,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
                     sceneData.Key,
                     sceneData.ShipLandingOverrideAnimation,
                     sceneData.ShipTakeoffOverrideAnimation,
-                    sceneData.Weight(),
+                    sceneData.Weight(section, _scenes.Count),
                     mod.GetRelativePath("Assets", sceneData.BundleName),
                     sceneData.Scene.ScenePath
                 );
@@ -170,28 +170,49 @@ public class DuskMoonSceneData
     [field: Header("Configs | SpawnWeights")]
     [field: SerializeField]
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
-
-    [field: Header("Configs | Obsolete")]
     [field: SerializeField]
-    [field: DontDrawIfEmpty]
-    [Obsolete]
-    public string WeatherWeights { get; private set; }
-
-#pragma warning disable CS0612
-    internal string WeatherWeightsCompat => WeatherWeights;
-#pragma warning restore CS0612
+    public bool GenerateWeightsConfig { get; private set; } = true;
 
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> _weights;
 
-    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weight() // TODO: make this configurable
-    {
-        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherWeightsCompat);
+    public MoonSceneConfig MoonSceneConfig { get; private set; }
 
-        SpawnWeights.SetupSpawnWeightsPreset(new(), new(), Weathers.Count > 0 ? Weathers : WeatherSpawnWeightsConfig, BaseWeight);
-        WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weight(ConfigContext section, int sceneCount)
+    {
+        if (sceneCount > 1)
+        {
+            GenerateWeightsConfig = false;
+        }
+
+        MoonSceneConfig = CreateMoonSceneConfig(section);
+
+        List<NamespacedConfigWeight> Weathers = WeatherSpawnWeightsConfig;
+        if (MoonSceneConfig.WeatherSpawnWeights != null)
+        {
+            Weathers = NamespacedConfigWeight.ConvertManyFromString(MoonSceneConfig.WeatherSpawnWeights.Value);
+        }
+
+        SpawnWeights.SetupSpawnWeightsPreset([], [], Weathers, BaseWeight);
+        WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new();
         builder.SetGlobalWeight(SpawnWeights);
         _weights = builder.Build();
         return _weights;
+    }
+
+    public MoonSceneConfig CreateMoonSceneConfig(ConfigContext section)
+    {
+        MoonSceneConfig moonSceneConfig = new(section, SceneName)
+        {
+            BaseWeight = GenerateWeightsConfig ? section.Bind($"{SceneName} | Base Weight", $"Base Weight for Moon Scene: {SceneName}.", BaseWeight) : null,
+            WeatherSpawnWeights = GenerateWeightsConfig ? section.Bind($"{SceneName} | Weather Spawn Weights", $"Weather Weights for Moon Scene: {SceneName}.", NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig)) : null,
+        };
+
+        if (!moonSceneConfig.UserAllowedToEdit())
+        {
+            DuskBaseConfig.AssignValueIfNotNull(moonSceneConfig.BaseWeight, BaseWeight);
+            DuskBaseConfig.AssignValueIfNotNull(moonSceneConfig.WeatherSpawnWeights, NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig));
+        }
+        return moonSceneConfig;
     }
 }
