@@ -103,6 +103,12 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 
                 if (!Sockets.Contains(dungeonDoorway.socket))
                 {
+                    if (dungeonDoorway.socket == null)
+                    {
+                        DawnPlugin.Logger.LogWarning($"DungeonFlow: {DungeonFlow.name} has a null socket in doorway: {dungeonDoorway.name} from Tile: {dungeonTile.name}");
+                        continue;
+                    }
+
                     sockets.Add(dungeonDoorway.socket);
                 }
 

@@ -201,8 +201,10 @@ static class MiscFixesPatch
         Dictionary<string, DoorwaySocket> mapped = new(); // improve performance
         foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
+            Debuggers.Dungeons?.Log($"Mapping sockets for {dungeonInfo.Key}");
             foreach (DoorwaySocket socket in dungeonInfo.Sockets)
             {
+                Debuggers.Dungeons?.Log($" - {socket.name}");
                 mapped[socket.name] = socket;
             }
         }
