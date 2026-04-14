@@ -26,12 +26,12 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
     [field: SerializeField]
     public AudioClip[] AudioClips { get; private set; } = [];
 
-    public override IEnumerator Apply(EnemyAI ai)
+    public override IEnumerator Apply(EnemyAI ai, bool immediate = false)
     {
         yield break;
     }
 
-    public virtual IEnumerator ApplyNest(EnemyAINestSpawnObject nest)
+    public virtual IEnumerator ApplyNest(EnemyAINestSpawnObject nest, bool immediate = false)
     {
         EnemyType type = nest.enemyType;
         if (type.useMinEnemyThresholdForNest)
@@ -41,7 +41,14 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
 
         foreach (Hierarchy hierarchyReplacement in NestRendererReplacements)
         {
-            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(nest.transform));
+            if (immediate)
+            {
+                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(nest.transform, immediate));
+            }
+            else
+            {
+                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(nest.transform, immediate));
+            }
         }
 
         nest.SetNestReplacement(this);
@@ -51,13 +58,20 @@ public class DuskEnemyReplacementDefinition : DuskEntityReplacementDefinition<En
 public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDefinition where T : EnemyAI
 {
     protected abstract void ApplyTyped(T enemyAI);
-    public override IEnumerator Apply(EnemyAI enemyAI)
+    public override IEnumerator Apply(EnemyAI enemyAI, bool immediate = false)
     {
         yield return base.Apply(enemyAI);
         enemyAI.SetEnemyReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(enemyAI.transform));
+            if (immediate)
+            {
+                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(enemyAI.transform, immediate));
+            }
+            else
+            {
+                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(enemyAI.transform, immediate));
+            }
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)

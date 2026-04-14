@@ -7,7 +7,7 @@ namespace Dusk;
 
 public class DuskMapObjectReplacementDefinition : DuskEntityReplacementDefinition<DuskMapObject>
 {
-    public override IEnumerator Apply(DuskMapObject ai)
+    public override IEnumerator Apply(DuskMapObject ai, bool immediate = false)
     {
         yield break;
     }
@@ -16,13 +16,20 @@ public class DuskMapObjectReplacementDefinition : DuskEntityReplacementDefinitio
 public abstract class DuskMapObjectReplacementDefinition<T> : DuskMapObjectReplacementDefinition where T : DuskMapObject
 {
     protected abstract void ApplyTyped(T dawnMapObject);
-    public override IEnumerator Apply(DuskMapObject dawnMapObject)
+    public override IEnumerator Apply(DuskMapObject dawnMapObject, bool immediate = false)
     {
         yield return base.Apply(dawnMapObject);
         dawnMapObject.SetMapObjectReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnMapObject.transform));
+            if (immediate)
+            {
+                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnMapObject.transform, immediate));
+            }
+            else
+            {
+                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnMapObject.transform, immediate));
+            }
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)

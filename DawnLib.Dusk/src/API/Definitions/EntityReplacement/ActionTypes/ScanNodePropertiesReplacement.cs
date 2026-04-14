@@ -27,9 +27,13 @@ public class ScanNodePropertiesReplacement : Hierarchy
     [field: SerializeField]
     public int NodeType { get; private set; } = -1;
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         ScanNodeProperties scanNodeProperties = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<ScanNodeProperties>() : rootTransform.GetComponent<ScanNodeProperties>();
         if (MaxRange > -1) scanNodeProperties.maxRange = MaxRange;
         if (MinRange > -1) scanNodeProperties.minRange = MinRange;

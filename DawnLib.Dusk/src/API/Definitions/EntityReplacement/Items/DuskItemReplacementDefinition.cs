@@ -34,7 +34,7 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
     [field: SerializeField]
     public Vector3 PositionOffset { get; private set; }
 
-    public override IEnumerator Apply(GrabbableObject ai)
+    public override IEnumerator Apply(GrabbableObject ai, bool immediate = false)
     {
         yield break;
     }
@@ -43,18 +43,30 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
 public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefinition where T : GrabbableObject
 {
     protected abstract void ApplyTyped(T grabbableObject);
-    public override IEnumerator Apply(GrabbableObject grabbableObject)
+    public override IEnumerator Apply(GrabbableObject grabbableObject, bool immediate = false)
     {
-        yield return base.Apply(grabbableObject);
-        grabbableObject.SetGrabbableObjectReplacement(this);
+        Transform grabbableTransform = grabbableObject.transform;
+        // yield return base.Apply(grabbableObject);
+        if (grabbableObject != null)
+        {
+            grabbableObject.SetGrabbableObjectReplacement(this);
+        }
+
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(grabbableObject.transform));
+            if (immediate)
+            {
+                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(grabbableTransform, immediate));
+            }
+            else
+            {
+                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(grabbableTransform, immediate));
+            }
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
-            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? grabbableObject.transform.Find(gameObjectAddon.PathToGameObject).gameObject : grabbableObject.gameObject;
+            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? grabbableTransform.Find(gameObjectAddon.PathToGameObject).gameObject : grabbableTransform.gameObject;
             if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
                 continue;
 
@@ -66,6 +78,12 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
             networkObject.AutoObjectParentSync = false;
             networkObject.Spawn();
         }
+
+        if (grabbableObject == null)
+        {
+            yield break;
+        }
+
         ApplyTyped((T)grabbableObject);
     }
 }

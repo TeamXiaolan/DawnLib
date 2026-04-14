@@ -18,9 +18,13 @@ public class GameObjectEditorAction : Hierarchy
     [field: SerializeField]
     public Vector3 RotationOffset { get; private set; }
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         GameObject gameObject = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
         if (DeleteGameObject)
         {

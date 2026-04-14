@@ -9,9 +9,13 @@ public class ParticleSystemReplacement : Hierarchy
     [field: SerializeField]
     public ParticleSystem NewParticleSystem { get; private set; }
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         GameObject oldGameObject = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
         GameObject newGameObject = GameObject.Instantiate(NewParticleSystem.gameObject, oldGameObject.transform.parent);
         newGameObject.name = oldGameObject.name;

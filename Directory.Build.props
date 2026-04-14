@@ -1,6 +1,6 @@
 ﻿<Project>
     <PropertyGroup>
-        <Version>0.9.6</Version>
+        <Version>0.9.7</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -54,7 +54,7 @@ namespace Dawn
     <!-- Netcode Patcher -->
     <PropertyGroup>
         <NetcodePatcherUnityVersion>2022.3.62</NetcodePatcherUnityVersion>
-        <NetcodePatcherNetcodeVersion>1.12.0</NetcodePatcherNetcodeVersion>
+        <NetcodePatcherNetcodeVersion>1.12.2</NetcodePatcherNetcodeVersion>
         <NetcodePatcherTransportVersion>1.0.0</NetcodePatcherTransportVersion>
     </PropertyGroup>
 </Project>

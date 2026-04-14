@@ -10,9 +10,13 @@ public class VisualEffectReplacement : Hierarchy
     [field: SerializeField]
     public VisualEffectAsset VisualEffectAssetReplacement { get; private set; }
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         VisualEffect visualEffect = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
         visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
     }

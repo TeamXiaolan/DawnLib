@@ -11,6 +11,7 @@ using UnityEngine;
 using OpCodes = Mono.Cecil.Cil.OpCodes;
 using Random = System.Random;
 using Dawn.Utils;
+using System.Reflection;
 
 namespace Dusk.Internal;
 
@@ -108,6 +109,8 @@ static class EntityReplacementRegistrationPatch
         IL.GrabbableObject.Update += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.LateUpdate += DynamicallyReplaceItemProperties;
 
+        IL.HUDManager.DisplayNewScrapFound += ReplaceModelShown;
+
         IL.CaveDwellerPhysicsProp.Update += DynamicallyReplaceItemProperties;
         IL.CaveDwellerPhysicsProp.LateUpdate += DynamicallyReplaceItemProperties;
 
@@ -115,6 +118,66 @@ static class EntityReplacementRegistrationPatch
         IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
 
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+
+    private static void ReplaceModelShown(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+
+        if (!c.TryGotoNext(MoveType.Before,
+            c => c.MatchLdloc(0),
+            c => c.MatchCallvirt<GameObject>(nameof(GameObject.GetComponent)),
+            c => c.MatchCall(typeof(UnityEngine.Object), nameof(UnityEngine.Object.Destroy)),
+            c => c.MatchLdloc(0)))
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name}");
+            return;
+        }
+
+        c.Emit(OpCodes.Ldarg_0);
+        c.Emit(OpCodes.Ldfld, typeof(HUDManager).GetField(nameof(HUDManager.itemsToBeDisplayed)));
+        c.Emit(OpCodes.Ldc_I4_0);
+        c.Emit(OpCodes.Ldloc_0);
+        c.Emit(OpCodes.Call, AccessTools.Method(typeof(EntityReplacementRegistrationPatch), nameof(ReplaceNewlySpawnedItemWithSkin)));
+
+        if (!c.TryGotoNext(MoveType.Before,
+            c => c.MatchLdfld<GrabbableObject>(nameof(GrabbableObject.itemProperties)),
+            c => c.MatchLdfld<Item>(nameof(Item.itemName)),
+            c => c.MatchLdstr(" collected!"),
+            c => c.MatchCall(typeof(String), nameof(String.Concat))))
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name} 2");
+            return;
+        }
+        c.Index -= 4;
+        c.RemoveRange(8);
+
+        c.Emit(OpCodes.Ldarg_0);
+        c.Emit(OpCodes.Ldfld, typeof(HUDManager).GetField(nameof(HUDManager.itemsToBeDisplayed)));
+        c.Emit(OpCodes.Ldc_I4_0);
+        c.Emit(OpCodes.Call, AccessTools.Method(typeof(EntityReplacementRegistrationPatch), nameof(ReplaceShipCollectText)));
+    }
+
+    private static string ReplaceShipCollectText(List<GrabbableObject> grabbableObjects, int index)
+    {
+        GrabbableObject grabbableObject = grabbableObjects[index];
+        if (!grabbableObject.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? itemReplacementDefinition))
+        {
+            return grabbableObject.itemProperties.itemName + " collected!";
+        }
+
+        return itemReplacementDefinition.SkinName + " collected!";
+    }
+
+    private static void ReplaceNewlySpawnedItemWithSkin(List<GrabbableObject> grabbableObjects, int index, GameObject newlyCreatedGameObject)
+    {
+        GrabbableObject grabbableObject = grabbableObjects[index];
+        if (!grabbableObject.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? itemReplacementDefinition))
+        {
+            return;
+        }
+
+        StartOfRoundRefs.Instance.StartCoroutine(itemReplacementDefinition.Apply(newlyCreatedGameObject.GetComponent<GrabbableObject>(), true));
     }
 
     private static void RegisterDuskUnlockables(On.Terminal.orig_Awake orig, Terminal self)
@@ -149,7 +212,7 @@ static class EntityReplacementRegistrationPatch
         orig(self);
     }
 
-    // note!!! this transpiler should only be used on enemy AIs!
+    // note!!! this transpiler should only be used on GrabbableObjects!
     private static readonly Dictionary<string, Func<GrabbableObject, Vector3, Vector3>> offsetReplacerFunctions = new()
     {
         { nameof(Item.restingRotation), GenerateOffsetReplacer(it => it.RestingRotation) },
@@ -317,13 +380,20 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (!self.itemProperties.GetDawnInfo().CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? replacements))
+        // todo: save the current skin and try to restore it if this runs in orbit
+        /*if (StartOfRound.Instance.inShipPhase)
         {
             orig(self);
             return;
-        }
+        }*/
 
-        List<DuskItemReplacementDefinition> newReplacements = new List<DuskItemReplacementDefinition>(replacements);
+        SetReplacement(self);
+        orig(self);
+    }
+
+    private static List<DuskItemReplacementDefinition> GetValidReplacements(List<DuskItemReplacementDefinition> replacements, SpawnWeightContext ctx)
+    {
+        List<DuskItemReplacementDefinition> newReplacements = new(replacements);
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskItemReplacementDefinition replacement = newReplacements[i];
@@ -333,47 +403,57 @@ static class EntityReplacementRegistrationPatch
             if (!replacement.DatePredicate.Evaluate())
             {
                 newReplacements.RemoveAt(i);
+                continue;
+            }
+
+            int? weight = replacement.Weights.GetFor(ctx);
+            if (weight == null || weight <= 0)
+            {
+                newReplacements.RemoveAt(i);
+                continue;
             }
         }
 
-        // todo: save the current skin and try to restore it if this runs in orbit
-        /*if (StartOfRound.Instance.inShipPhase)
+        return newReplacements;
+    }
+
+    private static void SetReplacement(GrabbableObject grabbableObject)
+    {
+        if (!grabbableObject.itemProperties.GetDawnInfo().CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? replacements))
         {
-            orig(self);
             return;
-        }*/
+        }
 
         DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
-
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
             RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
             TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
-        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));
-        if (totalWeight == null)
+        List<DuskItemReplacementDefinition> newReplacements = GetValidReplacements(replacements, ctx);
+        if (newReplacements.Count == 0)
         {
-            orig(self);
             return;
         }
 
+        int totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx) ?? 0);
+
         replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
+        int chosenWeight = replacementRandom.Next(0, totalWeight);
         foreach (DuskItemReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
+            chosenWeight -= replacement.Weights.GetFor(ctx) ?? 0;
             if (chosenWeight > 0)
                 continue;
 
             if (replacement.IsDefault)
                 break;
 
-            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(grabbableObject));
             break;
         }
-        orig(self);
     }
 
     private static void ReplaceEnemyEntityUsingNest(On.EnemyAI.orig_UseNestSpawnObject orig, EnemyAI self, EnemyAINestSpawnObject nestSpawnObject)

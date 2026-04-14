@@ -7,7 +7,7 @@ namespace Dusk;
 
 public class DuskUnlockableReplacementDefinition : DuskEntityReplacementDefinition<DuskUnlockable>
 {
-    public override IEnumerator Apply(DuskUnlockable ai)
+    public override IEnumerator Apply(DuskUnlockable ai, bool immediate = false)
     {
         yield break;
     }
@@ -16,13 +16,20 @@ public class DuskUnlockableReplacementDefinition : DuskEntityReplacementDefiniti
 public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableReplacementDefinition where T : DuskUnlockable
 {
     protected abstract void ApplyTyped(T dawnUnlockable);
-    public override IEnumerator Apply(DuskUnlockable dawnUnlockable)
+    public override IEnumerator Apply(DuskUnlockable dawnUnlockable, bool immediate = false)
     {
         yield return base.Apply(dawnUnlockable);
         dawnUnlockable.SetUnlockableReplacement(this);
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
-            yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnUnlockable.transform));
+            if (immediate)
+            {
+                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnUnlockable.transform, immediate));
+            }
+            else
+            {
+                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnUnlockable.transform, immediate));
+            }
         }
 
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)

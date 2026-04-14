@@ -15,9 +15,13 @@ public class AnimationClipReplacement : Hierarchy
     [field: SerializeField]
     public List<AnimationEventAddition> PotentialAnimationEvents { get; private set; } = new();
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         Animator animator = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
         AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
         foreach (AnimationEventAddition animationEventAddition in PotentialAnimationEvents)

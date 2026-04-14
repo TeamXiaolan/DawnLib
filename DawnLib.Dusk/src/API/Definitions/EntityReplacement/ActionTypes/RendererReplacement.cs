@@ -11,9 +11,13 @@ public class SkinnedMeshReplacement : Hierarchy
     [field: SerializeField]
     public SkinnedMeshRenderer ReplacementRenderer { get; private set; }
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         ReplaceSkinnedMeshRenderer(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>() : rootTransform.GetComponent<SkinnedMeshRenderer>());
     }
 
@@ -77,9 +81,13 @@ public class MeshReplacement : Hierarchy
     [field: SerializeField]
     public Mesh ReplacementMesh { get; private set; }
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         ReplaceMeshRenderer(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>() : rootTransform.GetComponent<MeshRenderer>(), !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>() : rootTransform.GetComponent<MeshFilter>());
     }
 
@@ -96,9 +104,13 @@ public class MaterialsReplacement : Hierarchy
     [field: SerializeField]
     public List<MaterialWithIndex> ReplacementMaterials { get; private set; } = new();
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         ReplaceMaterials(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
@@ -159,9 +171,13 @@ public class TextureReplacement : Hierarchy
     [field: SerializeField]
     public List<MaterialPropertiesWithIndex> ReplacementMaterialProperties { get; private set; } = new();
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return null;
+        if (!immediate)
+        {
+            yield return null;
+        }
+
         ReplaceMaterials(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 

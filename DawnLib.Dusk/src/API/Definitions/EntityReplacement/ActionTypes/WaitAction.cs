@@ -12,8 +12,11 @@ public class WaitAction : Hierarchy
     [field: HideInInspector]
     public new string HierarchyPath { get; private set; }
 
-    public override IEnumerator Apply(Transform rootTransform)
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
-        yield return new WaitForSeconds(WaitTime);
+        if (!immediate)
+        {
+            yield return new WaitForSeconds(WaitTime);
+        }
     }
 }

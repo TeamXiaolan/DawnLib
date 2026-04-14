@@ -11,8 +11,11 @@ namespace Dusk;
 
 public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, INamespaced<DuskEntityReplacementDefinition>
 {
-    [field: SerializeField, InspectorName("Namespace"), UnlockedNamespacedKey]
+    [field: SerializeField, InspectorName("Namespace"), DefaultKeySource("GetDefaultKey", false)]
     private NamespacedKey<DuskEntityReplacementDefinition> _typedKey;
+
+    [field: SerializeField]
+    public string SkinName { get; private set; }
 
     [field: SerializeField, InspectorName("Entity to be Replaced"), UnlockedNamespacedKey, Space(5)]
     public NamespacedKey EntityToReplaceKey { get; private set; }
@@ -191,10 +194,10 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         return entityReplacementConfig;
     }
 
-    protected override string EntityNameReference => TypedKey.Key;
+    protected override string EntityNameReference => SkinName;
 }
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
-    public abstract IEnumerator Apply(TAI ai);
+    public abstract IEnumerator Apply(TAI ai, bool immediate = false);
 }
