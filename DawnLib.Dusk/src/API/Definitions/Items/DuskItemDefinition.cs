@@ -59,18 +59,17 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     public bool GenerateDisableUnlockConfig { get; private set; } = true;
     [field: SerializeField]
     public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
-    [field: Header("Configs | Obsolete")]
     [field: SerializeField]
     [Obsolete]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     public string MoonSpawnWeights { get; private set; }
     [field: SerializeField]
     [Obsolete]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     public string InteriorSpawnWeights { get; private set; }
     [field: SerializeField]
     [Obsolete]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     public string WeatherSpawnWeights { get; private set; }
 
 #pragma warning disable CS0612

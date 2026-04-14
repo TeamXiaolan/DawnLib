@@ -1,6 +1,7 @@
 # v0.9.7
 
 - Improved item entity skins to show up on the collect display when bringing item back to ship.
+- Improved editor looks regarding obsolete fields and headers.
 
 ## v0.9.6
 

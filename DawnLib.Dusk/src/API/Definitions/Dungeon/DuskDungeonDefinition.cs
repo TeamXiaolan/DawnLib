@@ -48,13 +48,12 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     [field: Range(0, 100)]
     public float StingerPlayChance { get; private set; }
 
-    [field: Header("Configs | Obsolete")]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     [field: SerializeField]
-    [field: DontDrawIfEmpty]
     [Obsolete]
     public string MoonSpawnWeights { get; private set; }
     [field: SerializeField]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     [Obsolete]
     public string WeatherSpawnWeights { get; private set; }
 

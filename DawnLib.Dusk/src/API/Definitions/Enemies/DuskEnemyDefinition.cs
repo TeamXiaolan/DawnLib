@@ -53,17 +53,16 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     [field: SerializeField]
     public bool GenerateMaxSpawnCountConfig { get; private set; } = true;
 
-    [field: Header("Configs | Obsolete")]
     [field: SerializeField]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     [Obsolete]
     public string MoonSpawnWeights { get; private set; }
     [field: SerializeField]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     [Obsolete]
     public string InteriorSpawnWeights { get; private set; }
     [field: SerializeField]
-    [field: DontDrawIfEmpty]
+    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
     [Obsolete]
     public string WeatherSpawnWeights { get; private set; }
 
