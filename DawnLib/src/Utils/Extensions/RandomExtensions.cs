@@ -65,4 +65,20 @@ public static class RandomExtensions
         }
         return chosen;
     }
+
+    public static T NextContextualWeighted<T, TContext>(this Random random, IList<T> list, TContext context) where T : IContextualWeighted<TContext>
+    {
+        int totalWeight = list.Sum(it => it.GetWeight(context));
+        int chosenWeight = random.Next(0, totalWeight + 1);
+
+        T chosen = list.First();
+        foreach (T weighted in list)
+        {
+            chosen = weighted;
+            chosenWeight -= weighted.GetWeight(context);
+            if (chosenWeight <= 0)
+                break;
+        }
+        return chosen;
+    }
 }

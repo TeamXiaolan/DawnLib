@@ -7,25 +7,22 @@ namespace Dusk.Weights;
 
 public class SpawnWeightsPreset : IWeighted, IContextualWeighted<SpawnWeightContext>
 {
-    public MoonWeightTransformer MoonSpawnWeightsTransformer { get; private set; } = null!;
-    public InteriorWeightTransformer InteriorSpawnWeightsTransformer { get; private set; } = null!;
-    public WeatherWeightTransformer WeatherSpawnWeightsTransformer { get; private set; } = null!;
-
     private readonly List<ISpawnWeightRule> _rules = new();
     private int _baseWeightIncrease;
     private bool _isSetup;
 
+    public IReadOnlyList<ISpawnWeightRule> Rules => _rules;
+    public int BaseWeightIncrease => _baseWeightIncrease;
+    public bool IsSetup => _isSetup;
+
     public void SetupSpawnWeightsPreset(List<NamespacedConfigWeight> moonConfig, List<NamespacedConfigWeight> interiorConfig, List<NamespacedConfigWeight> weatherConfig, int baseWeightIncrease = 0)
     {
-        MoonSpawnWeightsTransformer = new MoonWeightTransformer(moonConfig);
-        InteriorSpawnWeightsTransformer = new InteriorWeightTransformer(interiorConfig);
-        WeatherSpawnWeightsTransformer = new WeatherWeightTransformer(weatherConfig);
         _baseWeightIncrease = baseWeightIncrease;
 
         _rules.Clear();
-        _rules.Add(new MoonRule(MoonSpawnWeightsTransformer));
-        _rules.Add(new InteriorRule(InteriorSpawnWeightsTransformer));
-        _rules.Add(new WeatherRule(WeatherSpawnWeightsTransformer));
+        _rules.Add(new MoonRule(new MoonWeightTransformer(moonConfig)));
+        _rules.Add(new InteriorRule(new InteriorWeightTransformer(interiorConfig)));
+        _rules.Add(new WeatherRule(new WeatherWeightTransformer(weatherConfig)));
 
         _isSetup = true;
     }
@@ -49,7 +46,7 @@ public class SpawnWeightsPreset : IWeighted, IContextualWeighted<SpawnWeightCont
 
         for (int i = 0; i < _rules.Count; i++)
         {
-            var rule = _rules[i];
+            ISpawnWeightRule rule = _rules[i];
             if (!rule.CanApply(ctx))
                 continue;
 
@@ -63,7 +60,7 @@ public class SpawnWeightsPreset : IWeighted, IContextualWeighted<SpawnWeightCont
             return p != 0 ? p : a.index.CompareTo(b.index);
         });
 
-        foreach (var (priority, _, rule) in applicable)
+        foreach ((int priority, int _, ISpawnWeightRule rule) in applicable)
         {
             Debuggers.Weights?.Log($"Old Weight: {weight}");
             weight = rule.Apply(weight, ctx);
