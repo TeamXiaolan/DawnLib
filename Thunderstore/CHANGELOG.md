@@ -3,6 +3,8 @@
 - Fixed a couple issues relating to Vanilla compatibility config.
 - Fixed some localisation issues with BoundedRange.
 - Simplified some custom interior code.
+- Added some debugging in case of invalid doorway sockets.
+- Allowed configuring the weights of different scenes on a moon.
 
 ## v0.9.5
 
