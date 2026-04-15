@@ -1,7 +1,12 @@
-# v0.9.7
+# v0.9.8
+
+- Started saving item skins into the savefile.
+
+## v0.9.7
 
 - Improved item entity skins to show up on the collect display when bringing item back to ship.
 - Improved editor looks regarding obsolete fields and headers.
+- Fixed Skins not working in editor for new version.
 
 ## v0.9.6
 

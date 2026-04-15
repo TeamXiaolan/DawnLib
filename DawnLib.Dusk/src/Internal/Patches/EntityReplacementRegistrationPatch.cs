@@ -380,7 +380,6 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        // todo: save the current skin and try to restore it if this runs in orbit
         /*if (StartOfRound.Instance.inShipPhase)
         {
             orig(self);

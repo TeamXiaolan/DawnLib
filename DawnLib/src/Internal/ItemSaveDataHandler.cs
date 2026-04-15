@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Dawn.Interfaces;
+using Dawn.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -70,12 +71,15 @@ public static class ItemSaveDataHandler
                 itemSave = ((IDawnSaveData)item).GetDawnDataToSave() ?? 0;
             }
 
+            JObject extraSaveData = DawnItemSaveEvents.Collect(item);
+            JToken extraSaveToken = extraSaveData.HasValues ? extraSaveData : 0;
+
             Vector3 worldPos = item.transform.position;
             Vector3 savePos = new(worldPos.x, worldPos.y - item.itemProperties.verticalOffset + 0.02f, worldPos.z);
             Vector3 rotation = item.transform.rotation.eulerAngles;
 
             // Row format:
-            // [ keyIndex, px, py, pz, rx, ry, rz, scrap, itemSavedData ]
+            // [ keyIndex, px, py, pz, rx, ry, rz, scrap, itemSavedData, extraData ]
             JArray row = new()
             {
                 keyIndex,          // 0
@@ -86,7 +90,8 @@ public static class ItemSaveDataHandler
                 rotation.y,        // 5
                 rotation.z,        // 6
                 item.scrapValue,   // 7
-                itemSave           // 8
+                itemSave,          // 8
+                extraSaveToken     // 9
             };
 
             itemsArray.Add(row);
@@ -121,7 +126,7 @@ public static class ItemSaveDataHandler
                 continue;
             }
 
-            int keyIndex = row[0]!.ToObject<int>();
+            int keyIndex = row[0].ToObject<int>();
             if (keyIndex < 0 || keyIndex >= keysArray.Count)
             {
                 DawnPlugin.Logger.LogWarning($"Invalid key index {keyIndex} in save; skipping.");
@@ -154,6 +159,7 @@ public static class ItemSaveDataHandler
             int scrap = row[7].ToObject<int>();
 
             JToken itemSavedData = row.Count > 8 ? row[8] : 0;
+            JToken extraSaveData = row.Count > 9 ? row[9] : 0;
 
             if (!StartOfRoundRefs.Instance.shipInnerRoomBounds.bounds.Contains(spawnPosition))
             {
@@ -171,6 +177,11 @@ public static class ItemSaveDataHandler
             if (grabbable.itemProperties.saveItemVariable && itemSavedData is not null && itemSavedData.Type != JTokenType.Null && !(itemSavedData.Type == JTokenType.Integer && itemSavedData.Value<int>() == 0))
             {
                 ((IDawnSaveData)grabbable).LoadDawnSaveData(itemSavedData);
+            }
+
+            if (extraSaveData is not null && extraSaveData.Type != JTokenType.Null && !(extraSaveData.Type == JTokenType.Integer && extraSaveData.Value<int>() == 0))
+            {
+                DawnItemSaveEvents.Restore(grabbable, extraSaveData);
             }
 
             grabbable.NetworkObject.Spawn(false);
@@ -283,7 +294,8 @@ public static class ItemSaveDataHandler
                 legacy.SavedSpawnRotation.y,        // 5
                 legacy.SavedSpawnRotation.z,        // 6
                 legacy.ScrapValue,                  // 7
-                itemSavedData                       // 8
+                itemSavedData,                      // 8
+                0                                   // 9
             };
 
             itemsArray.Add(row);
@@ -312,5 +324,26 @@ public static class ItemSaveDataHandler
         yield return null;
         yield return null;
         transform.rotation = Quaternion.Euler(rotation);
+    }
+}
+
+public static class DawnItemSaveEvents
+{
+    public static event Action<GrabbableObject, JObject>? OnCollectExtraSaveData;
+    public static event Action<GrabbableObject, JObject>? OnLoadExtraSaveData;
+
+    internal static JObject Collect(GrabbableObject item)
+    {
+        JObject obj = new();
+        OnCollectExtraSaveData?.Invoke(item, obj);
+        return obj;
+    }
+
+    internal static void Restore(GrabbableObject item, JToken? token)
+    {
+        if (token is not JObject obj)
+            return;
+
+        OnLoadExtraSaveData?.Invoke(item, obj);
     }
 }
