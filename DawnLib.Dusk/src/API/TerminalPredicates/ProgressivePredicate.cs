@@ -32,7 +32,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
     public ProgressiveStates ProgressiveStates { get; private set; }
     private NamespacedKey _namespacedKey;
-    internal uint NetworkID => BitConverter.ToUInt32(Encoding.UTF8.GetBytes(_namespacedKey.ToString()), 0);
+    internal ulong NetworkID => _namespacedKey.NetworkID;
 
     public override void Register(NamespacedKey namespacedKey)
     {

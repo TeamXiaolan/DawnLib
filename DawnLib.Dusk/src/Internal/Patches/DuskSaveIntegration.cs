@@ -1,13 +1,13 @@
 using Dawn.Internal;
-using Dawn.Interfaces;
 using Newtonsoft.Json.Linq;
 using Dawn;
+using Unity.Netcode;
 
 namespace Dusk.Internal;
 
-internal static class DuskItemSaveIntegration
+internal static class DuskSaveIntegration
 {
-    private static readonly NamespacedKey SaveKey = NamespacedKey.From("dusk", "entity_replacement_skin");
+    private static readonly string EntitySaveKey = "dusk_entity_replacement_skin_key";
 
     internal static void Init()
     {
@@ -27,18 +27,18 @@ internal static class DuskItemSaveIntegration
             ["replacementKey"] = replacement.Key.ToString()
         };
 
-        extraData[SaveKey] = skinData;
+        extraData[EntitySaveKey] = skinData;
     }
 
-    private static void OnLoadExtraSaveData(GrabbableObject item, JObject extraData)
+    private static void OnLoadExtraSaveData(GrabbableObject grabbableObject, JObject extraData)
     {
-        if (extraData[SaveKey] is not JObject skinData)
+        if (extraData[EntitySaveKey] is not JObject skinData)
         {
             return;
         }
 
-        NamespacedKey? replacementKey = skinData["replacementKey"]?.ToObject<NamespacedKey>();
-        if (replacementKey == null)
+        string? replacementKeyString = skinData["replacementKey"]?.ToObject<string>();
+        if (string.IsNullOrWhiteSpace(replacementKeyString) || !NamespacedKey.TryParse(replacementKeyString, out NamespacedKey? replacementKey))
         {
             return;
         }
@@ -53,7 +53,6 @@ internal static class DuskItemSaveIntegration
             return;
         }
 
-        ((ICurrentEntityReplacement)item).CurrentEntityReplacement = itemReplacement;
-        StartOfRoundRefs.Instance.StartCoroutine(itemReplacement.Apply(item));
+        StartOfRoundRefs.Instance.StartCoroutine(itemReplacement.Apply(grabbableObject));
     }
 }

@@ -95,9 +95,12 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             return;
         }
 
-        EntityReplacementRegistrationPatch.replacementRandom ??= new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
+        if (EntityReplacementRegistrationPatch.unlockableReplacementRandom == null)
+        {
+            EntityReplacementRegistrationPatch.unlockableReplacementRandom = new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
+        }
 
-        int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value.Clamp0());
+        int chosenWeight = EntityReplacementRegistrationPatch.unlockableReplacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskUnlockableReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();

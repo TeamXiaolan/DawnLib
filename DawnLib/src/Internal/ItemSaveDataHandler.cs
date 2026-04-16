@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Dawn.Interfaces;
 using Dawn.Utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -15,20 +14,12 @@ public static class ItemSaveDataHandler
 
     private static readonly NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
 
-    private static readonly NamespacedKey _itemKeyMapNamespacedKey = NamespacedKey.From("dawn_lib", "ship_items_key_map");
-
     internal static void LoadSavedItems(PersistentDataContainer dataContainer)
     {
-        JObject? root = TryGetNewFormat(dataContainer);
-
+        JObject? root = TryGetCurrentFormat(dataContainer);
         if (root == null)
         {
-            root = TryMigrateLegacyFormat(dataContainer);
-
-            if (root == null)
-            {
-                return;
-            }
+            return;
         }
 
         LoadFromRoot(root);
@@ -49,7 +40,7 @@ public static class ItemSaveDataHandler
             {
                 if (item.NetworkObject.IsSceneObject == null || !item.NetworkObject.IsSceneObject.Value)
                 {
-                    DawnPlugin.Logger.LogError($"Item: {item.name} doesn't have a DawnItemInfo; cannot save. " + "Contact the developer of this item.");
+                    DawnPlugin.Logger.LogError($"Item: {item.name} doesn't have a DawnItemInfo; cannot save. Contact the developer of this item.");
                 }
                 continue;
             }
@@ -106,15 +97,11 @@ public static class ItemSaveDataHandler
         using (dataContainer.CreateEditContext())
         {
             dataContainer.Set(_namespacedKey, root);
-            dataContainer.Remove(_itemKeyMapNamespacedKey);
         }
     }
 
     private static void LoadFromRoot(JObject root)
     {
-        if (root == null)
-            return;
-
         JArray keysArray = root["keys"] as JArray ?? [];
         JArray itemsArray = root["items"] as JArray ?? [];
 
@@ -166,7 +153,11 @@ public static class ItemSaveDataHandler
                 spawnPosition = StartOfRoundRefs.Instance.playerSpawnPositions[1].position;
             }
 
-            GrabbableObject grabbable = GameObject.Instantiate(itemInfo.Item.spawnPrefab, spawnPosition, Quaternion.Euler(rotation), StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
+            GrabbableObject grabbable = GameObject.Instantiate(
+                itemInfo.Item.spawnPrefab,
+                spawnPosition,
+                Quaternion.Euler(rotation),
+                StartOfRoundRefs.Instance.elevatorTransform).GetComponent<GrabbableObject>();
 
             grabbable.fallTime = 0f;
             grabbable.scrapPersistedThroughRounds = true;
@@ -179,17 +170,19 @@ public static class ItemSaveDataHandler
                 ((IDawnSaveData)grabbable).LoadDawnSaveData(itemSavedData);
             }
 
-            if (extraSaveData is not null && extraSaveData.Type != JTokenType.Null && !(extraSaveData.Type == JTokenType.Integer && extraSaveData.Value<int>() == 0))
-            {
-                DawnItemSaveEvents.Restore(grabbable, extraSaveData);
-            }
-
             grabbable.NetworkObject.Spawn(false);
+            grabbable.NetworkObject.OnSpawn(() =>
+            {
+                if (extraSaveData is not null && extraSaveData.Type != JTokenType.Null && !(extraSaveData.Type == JTokenType.Integer && extraSaveData.Value<int>() == 0))
+                {
+                    DawnItemSaveEvents.Restore(grabbable, extraSaveData);
+                }
+            });
             StartOfRound.Instance.StartCoroutine(EnsureItemRotatedCorrectly(grabbable.transform, rotation));
         }
     }
 
-    private static JObject? TryGetNewFormat(PersistentDataContainer dataContainer)
+    private static JObject? TryGetCurrentFormat(PersistentDataContainer dataContainer)
     {
         JObject root;
 
@@ -199,12 +192,14 @@ public static class ItemSaveDataHandler
         }
         catch (Exception e)
         {
-            DawnPlugin.Logger.LogWarning($"Failed to read ship items as new-format JObject; " + $"will try legacy migration. ({e.GetType().Name}: {e.Message})");
+            DawnPlugin.Logger.LogWarning($"Failed to read ship items save data. ({e.GetType().Name}: {e.Message})");
             return null;
         }
 
         if (root == null || root.Type != JTokenType.Object)
+        {
             return null;
+        }
 
         JToken? keysToken = root["keys"];
         JToken? itemsToken = root["items"];
@@ -217,103 +212,19 @@ public static class ItemSaveDataHandler
         }
 
         if (keysToken is null)
+        {
             root["keys"] = new JArray();
+        }
 
         if (itemsToken is null)
+        {
             root["items"] = new JArray();
+        }
 
         if (root["keys"] is not JArray || root["items"] is not JArray)
-            return null;
-
-        return root;
-    }
-
-    public struct ItemSaveData(ushort itemKeyId, Vector3 savePosition, Vector3 saveRotation, int scrapValue, JToken itemSavedData)
-    {
-        public ushort ItemKeyId = itemKeyId;
-
-        [JsonConverter(typeof(Vector3Converter))]
-        public Vector3 SavedSpawnPosition = savePosition;
-
-        [JsonConverter(typeof(Vector3Converter))]
-        public Vector3 SavedSpawnRotation = saveRotation;
-
-        public int ScrapValue = scrapValue;
-        public JToken ItemSavedData = itemSavedData;
-    }
-
-    private static JObject? TryMigrateLegacyFormat(PersistentDataContainer dataContainer)
-    {
-        List<ItemSaveData> legacyItems;
-        Dictionary<ushort, NamespacedKey> legacyKeyMap;
-
-        try
         {
-            legacyItems = dataContainer.GetOrCreateDefault<List<ItemSaveData>>(_namespacedKey);
-            legacyKeyMap = dataContainer.GetOrCreateDefault<Dictionary<ushort, NamespacedKey>>(_itemKeyMapNamespacedKey);
-        }
-        catch (Exception e)
-        {
-            DawnPlugin.Logger.LogWarning($"Failed to read legacy ship items for migration: {e.GetType().Name}: {e.Message}");
             return null;
         }
-
-        if (legacyItems == null || legacyItems.Count == 0)
-            return null;
-
-        DawnPlugin.Logger.LogInfo($"Migrating {legacyItems.Count} legacy ship items to new compact format.");
-
-        List<string> keysList = new();
-        Dictionary<NamespacedKey, int> keyIndexLookup = new();
-        JArray itemsArray = new();
-
-        foreach (ItemSaveData legacy in legacyItems)
-        {
-            if (!legacyKeyMap.TryGetValue(legacy.ItemKeyId, out NamespacedKey itemKey))
-            {
-                DawnPlugin.Logger.LogWarning($"Legacy item key id {legacy.ItemKeyId} not found in map; skipping.");
-                continue;
-            }
-
-            if (!keyIndexLookup.TryGetValue(itemKey, out int keyIndex))
-            {
-                keyIndex = keysList.Count;
-                keysList.Add(itemKey.ToString());
-                keyIndexLookup[itemKey] = keyIndex;
-            }
-
-            JToken itemSavedData = legacy.ItemSavedData ?? 0;
-
-            JArray row = new()
-            {
-                keyIndex,                           // 0
-                legacy.SavedSpawnPosition.x,        // 1
-                legacy.SavedSpawnPosition.y,        // 2
-                legacy.SavedSpawnPosition.z,        // 3
-                legacy.SavedSpawnRotation.x,        // 4
-                legacy.SavedSpawnRotation.y,        // 5
-                legacy.SavedSpawnRotation.z,        // 6
-                legacy.ScrapValue,                  // 7
-                itemSavedData,                      // 8
-                0                                   // 9
-            };
-
-            itemsArray.Add(row);
-        }
-
-        JObject root = new()
-        {
-            ["keys"] = new JArray(keysList),
-            ["items"] = itemsArray
-        };
-
-        using (dataContainer.CreateEditContext())
-        {
-            dataContainer.Set(_namespacedKey, root);
-            dataContainer.Remove(_itemKeyMapNamespacedKey);
-        }
-
-        DawnPlugin.Logger.LogInfo($"Migration complete. Migrated {itemsArray.Count} items into new compact format.");
 
         return root;
     }

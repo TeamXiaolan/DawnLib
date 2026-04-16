@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Dawn;
+using Dawn.Internal;
 using Dusk.Weights;
 using Unity.Netcode;
 using UnityEngine;
@@ -199,4 +201,34 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
     public abstract IEnumerator Apply(TAI ai, bool immediate = false);
+
+    public IEnumerator ApplyReplacementAndAddons(Transform transform, bool immediate = false)
+    {
+        foreach (Hierarchy hierarchyReplacement in Replacements)
+        {
+            if (immediate)
+            {
+                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(transform, immediate));
+            }
+            else
+            {
+                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(transform, immediate));
+            }
+        }
+
+        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
+        {
+            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? transform.Find(gameObjectAddon.PathToGameObject).gameObject : transform.gameObject;
+            if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
+                continue;
+
+            GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
+            addOn.transform.SetLocalPositionAndRotation(gameObjectAddon.PositionOffset, Quaternion.Euler(gameObjectAddon.RotationOffset));
+            if (networkObject == null)
+                continue;
+
+            networkObject.AutoObjectParentSync = false;
+            networkObject.Spawn();
+        }
+    }
 }

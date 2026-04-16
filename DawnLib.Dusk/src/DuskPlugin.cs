@@ -30,6 +30,7 @@ public class DuskPlugin : BaseUnityPlugin
 
         AchievementRegistrationPatch.Init();
         EntityReplacementRegistrationPatch.Init();
+        DuskSaveIntegration.Init();
         if (!DawnConfig.VanillaCompatibility.Value)
         {
             NetworkerPatch.Init();

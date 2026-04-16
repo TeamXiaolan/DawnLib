@@ -297,6 +297,25 @@ public class NamespacedKey : INetworkSerializable
         return string.Equals(Namespace, other.Namespace, StringComparison.Ordinal) && string.Equals(Key, other.Key, StringComparison.Ordinal);
     }
 
+    public ulong NetworkID => ComputeStableHash64(ToString());
+
+    private static ulong ComputeStableHash64(string value)
+    {
+        const ulong offsetBasis = 14695981039346656037UL;
+        const ulong prime = 1099511628211UL;
+
+        ulong hash = offsetBasis;
+        byte[] bytes = Encoding.UTF8.GetBytes(value);
+
+        foreach (byte b in bytes)
+        {
+            hash ^= b;
+            hash *= prime;
+        }
+
+        return hash;
+    }
+
     public override int GetHashCode()
     {
         unchecked

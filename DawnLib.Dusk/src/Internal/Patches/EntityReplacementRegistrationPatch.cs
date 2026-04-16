@@ -11,7 +11,6 @@ using UnityEngine;
 using OpCodes = Mono.Cecil.Cil.OpCodes;
 using Random = System.Random;
 using Dawn.Utils;
-using System.Reflection;
 
 namespace Dusk.Internal;
 
@@ -19,7 +18,11 @@ static class EntityReplacementRegistrationPatch
 {
     internal static readonly NamespacedKey Key = NamespacedKey.From("dawn_lib", "entity_replacements");
 
-    internal static Random? replacementRandom = null;
+    internal static Random? itemReplacementRandom = null;
+    internal static Random? nestReplacementRandom = null;
+    internal static Random? enemyReplacementRandom = null;
+    internal static Random? unlockableReplacementRandom = null;
+    internal static Random? mapObjectReplacementRandom = null;
 
     internal static void Init()
     {
@@ -35,6 +38,8 @@ static class EntityReplacementRegistrationPatch
             On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
         }
 
+        On.StartOfRound.OnClientConnect += SyncSkinsWithNewClient;
+
         using (new DetourContext(priority: -200))
         {
             On.Terminal.Awake += RegisterDuskUnlockables;
@@ -42,7 +47,11 @@ static class EntityReplacementRegistrationPatch
 
         On.StartOfRound.SetShipReadyToLand += (orig, self) =>
         {
-            replacementRandom = null;
+            itemReplacementRandom = null;
+            nestReplacementRandom = null;
+            enemyReplacementRandom = null;
+            unlockableReplacementRandom = null;
+            mapObjectReplacementRandom = null;
             orig(self);
         };
 
@@ -118,6 +127,15 @@ static class EntityReplacementRegistrationPatch
         IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
 
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+
+    private static void SyncSkinsWithNewClient(On.StartOfRound.orig_OnClientConnect orig, StartOfRound self, ulong clientId)
+    {
+        orig(self, clientId);
+        if (self.IsServer && DuskNetworker.Instance != null)
+        {
+            DuskNetworker.Instance.SyncSkinDataRpc(clientId);
+        }
     }
 
     private static void ReplaceModelShown(ILContext il)
@@ -374,17 +392,17 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (self.TryGetGrabbableObjectReplacement(out var _))
+        if (self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? _))
         {
             orig(self);
             return;
         }
 
-        /*if (StartOfRound.Instance.inShipPhase)
+        if (StartOfRound.Instance.inShipPhase)
         {
             orig(self);
             return;
-        }*/
+        }
 
         SetReplacement(self);
         orig(self);
@@ -438,9 +456,12 @@ static class EntityReplacementRegistrationPatch
 
         int totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx) ?? 0);
 
-        replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        if (itemReplacementRandom == null)
+        {
+            itemReplacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight);
+        int chosenWeight = itemReplacementRandom.Next(0, totalWeight);
         foreach (DuskItemReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= replacement.Weights.GetFor(ctx) ?? 0;
@@ -582,9 +603,12 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        if (nestReplacementRandom == null)
+        {
+            nestReplacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
+        int chosenWeight = nestReplacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskEnemyReplacementDefinition replacement in replacements)
         {
             chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
@@ -665,9 +689,12 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        replacementRandom ??= new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        if (enemyReplacementRandom == null)
+        {
+            enemyReplacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
 
-        int chosenWeight = replacementRandom.Next(0, totalWeight.Value.Clamp0());
+        int chosenWeight = enemyReplacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();

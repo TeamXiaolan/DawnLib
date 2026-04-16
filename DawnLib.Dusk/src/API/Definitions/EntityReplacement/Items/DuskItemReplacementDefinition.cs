@@ -1,6 +1,5 @@
 using System.Collections;
 using Dawn.Internal;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Dusk;
@@ -46,38 +45,18 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
     public override IEnumerator Apply(GrabbableObject grabbableObject, bool immediate = false)
     {
         Transform grabbableTransform = grabbableObject.transform;
-        // yield return base.Apply(grabbableObject);
-        if (grabbableObject != null)
+        grabbableObject.SetGrabbableObjectReplacement(this);
+
+        if (immediate)
         {
-            grabbableObject.SetGrabbableObjectReplacement(this);
+            StartOfRoundRefs.Instance.StartCoroutine(base.Apply(grabbableObject, immediate));
+        }
+        else
+        {
+            yield return StartOfRoundRefs.Instance.StartCoroutine(base.Apply(grabbableObject, immediate));
         }
 
-        foreach (Hierarchy hierarchyReplacement in Replacements)
-        {
-            if (immediate)
-            {
-                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(grabbableTransform, immediate));
-            }
-            else
-            {
-                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(grabbableTransform, immediate));
-            }
-        }
-
-        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
-        {
-            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? grabbableTransform.Find(gameObjectAddon.PathToGameObject).gameObject : grabbableTransform.gameObject;
-            if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
-                continue;
-
-            GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-            addOn.transform.SetLocalPositionAndRotation(gameObjectAddon.PositionOffset, Quaternion.Euler(gameObjectAddon.RotationOffset));
-            if (networkObject == null)
-                continue;
-
-            networkObject.AutoObjectParentSync = false;
-            networkObject.Spawn();
-        }
+        yield return StartOfRoundRefs.Instance.StartCoroutine(ApplyReplacementAndAddons(grabbableTransform, immediate));
 
         if (grabbableObject == null)
         {

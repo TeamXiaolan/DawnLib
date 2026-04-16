@@ -18,44 +18,25 @@ public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableRep
     protected abstract void ApplyTyped(T dawnUnlockable);
     public override IEnumerator Apply(DuskUnlockable dawnUnlockable, bool immediate = false)
     {
-        yield return base.Apply(dawnUnlockable);
+        Transform dawnUnlockableTransform = dawnUnlockable.transform;
         dawnUnlockable.SetUnlockableReplacement(this);
-        foreach (Hierarchy hierarchyReplacement in Replacements)
+
+        if (immediate)
         {
-            if (immediate)
-            {
-                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnUnlockable.transform, immediate));
-            }
-            else
-            {
-                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnUnlockable.transform, immediate));
-            }
+            StartOfRoundRefs.Instance.StartCoroutine(base.Apply(dawnUnlockable, immediate));
+        }
+        else
+        {
+            yield return StartOfRoundRefs.Instance.StartCoroutine(base.Apply(dawnUnlockable, immediate));
         }
 
-        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
+        yield return StartOfRoundRefs.Instance.StartCoroutine(ApplyReplacementAndAddons(dawnUnlockableTransform, immediate));
+
+        if (dawnUnlockable == null)
         {
-            if (string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = dawnUnlockable.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
-            if (gameObject != null)
-            {
-                if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
-                    continue;
-
-                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-                addOn.transform.localPosition = gameObjectAddon.PositionOffset;
-                addOn.transform.localRotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
-
-                if (networkObject == null)
-                    continue;
-
-                networkObject.AutoObjectParentSync = false;
-                networkObject.Spawn();
-            }
+            yield break;
         }
+
         ApplyTyped((T)dawnUnlockable);
     }
 }

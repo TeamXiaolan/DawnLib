@@ -82,9 +82,12 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
             return;
         }
 
-        EntityReplacementRegistrationPatch.replacementRandom ??= new System.Random(StartOfRoundRefs.Instance.randomMapSeed + 234780);
+        if (EntityReplacementRegistrationPatch.mapObjectReplacementRandom == null)
+        {
+            EntityReplacementRegistrationPatch.mapObjectReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
 
-        int chosenWeight = EntityReplacementRegistrationPatch.replacementRandom.Next(0, totalWeight.Value.Clamp0());
+        int chosenWeight = EntityReplacementRegistrationPatch.mapObjectReplacementRandom.Next(0, totalWeight.Value.Clamp0());
         foreach (DuskMapObjectReplacementDefinition replacement in newReplacements)
         {
             chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();

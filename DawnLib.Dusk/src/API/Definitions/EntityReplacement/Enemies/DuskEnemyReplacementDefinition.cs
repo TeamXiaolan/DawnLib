@@ -60,36 +60,25 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
     protected abstract void ApplyTyped(T enemyAI);
     public override IEnumerator Apply(EnemyAI enemyAI, bool immediate = false)
     {
-        yield return base.Apply(enemyAI);
         enemyAI.SetEnemyReplacement(this);
-        foreach (Hierarchy hierarchyReplacement in Replacements)
+        Transform enemyAITransform = enemyAI.transform;
+
+        if (immediate)
         {
-            if (immediate)
-            {
-                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(enemyAI.transform, immediate));
-            }
-            else
-            {
-                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(enemyAI.transform, immediate));
-            }
+            StartOfRoundRefs.Instance.StartCoroutine(base.Apply(enemyAI, immediate));
+        }
+        else
+        {
+            yield return StartOfRoundRefs.Instance.StartCoroutine(base.Apply(enemyAI, immediate));
         }
 
-        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
+        yield return StartOfRoundRefs.Instance.StartCoroutine(ApplyReplacementAndAddons(enemyAITransform, immediate));
+
+        if (enemyAI == null)
         {
-            GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? enemyAI.transform.Find(gameObjectAddon.PathToGameObject).gameObject : enemyAI.gameObject;
-            if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
-                continue;
-
-            GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-            addOn.transform.localPosition = gameObjectAddon.PositionOffset;
-            addOn.transform.localRotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
-
-            if (networkObject == null)
-                continue;
-
-            networkObject.AutoObjectParentSync = false;
-            networkObject.Spawn();
+            yield break;
         }
+
         ApplyTyped((T)enemyAI);
     }
 }

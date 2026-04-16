@@ -118,7 +118,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
             _playerStates[player] = BundleState.Queued;
         }
 
-        RouteProgressUI.Instance.Setup(moonInfo.Level.PlanetName);
+        RouteProgressUI.Instance!.Setup(moonInfo.Level.PlanetName);
         CheckReadyAndUpdateUI();
         StartCoroutine(DoMoonSceneLoading(moonInfo, sceneInfo));
     }
@@ -253,7 +253,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     private void CheckReadyAndUpdateUI()
     {
-        RouteProgressUI.Instance.Refresh(_playerStates);
+        RouteProgressUI.Instance!.Refresh(_playerStates);
 
         bool anyFailedPlayers = _playerStates.Any(it => it.Value == BundleState.Error);
         int remainingPlayers = _playerStates.Count(it => it.Value != BundleState.Done);
@@ -294,7 +294,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         StartOfRound.Instance.screenLevelVideoReel.Stop();
         StartOfRound.Instance.screenLevelDescription.enabled = false;
 
-        RouteProgressUI.Instance.gameObject.SetActive(true);
+        RouteProgressUI.Instance!.gameObject.SetActive(true);
         Debuggers.Moons?.Log($"Enabling RouteProgressUI.");
         StartMatchLeverRefs.Instance.triggerScript.interactable = false;
         allPlayersDone = false;
@@ -323,6 +323,6 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         }
         StartOfRound.Instance.screenLevelDescription.enabled = true;
         Debuggers.Moons?.Log($"Disabling RouteProgressUI.");
-        RouteProgressUI.Instance.gameObject.SetActive(false);
+        RouteProgressUI.Instance!.gameObject.SetActive(false);
     }
 }

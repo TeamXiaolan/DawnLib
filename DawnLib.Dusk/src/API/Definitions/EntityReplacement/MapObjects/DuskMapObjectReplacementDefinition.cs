@@ -18,44 +18,25 @@ public abstract class DuskMapObjectReplacementDefinition<T> : DuskMapObjectRepla
     protected abstract void ApplyTyped(T dawnMapObject);
     public override IEnumerator Apply(DuskMapObject dawnMapObject, bool immediate = false)
     {
-        yield return base.Apply(dawnMapObject);
+        Transform mapObjectTransform = dawnMapObject.transform;
         dawnMapObject.SetMapObjectReplacement(this);
-        foreach (Hierarchy hierarchyReplacement in Replacements)
+
+        if (immediate)
         {
-            if (immediate)
-            {
-                StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnMapObject.transform, immediate));
-            }
-            else
-            {
-                yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(dawnMapObject.transform, immediate));
-            }
+            StartOfRoundRefs.Instance.StartCoroutine(base.Apply(dawnMapObject, immediate));
+        }
+        else
+        {
+            yield return StartOfRoundRefs.Instance.StartCoroutine(base.Apply(dawnMapObject, immediate));
         }
 
-        foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
+        yield return StartOfRoundRefs.Instance.StartCoroutine(ApplyReplacementAndAddons(mapObjectTransform, immediate));
+
+        if (dawnMapObject == null)
         {
-            if (string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject))
-            {
-                continue;
-            }
-
-            GameObject? gameObject = dawnMapObject.transform.Find(gameObjectAddon.PathToGameObject)?.gameObject;
-            if (gameObject != null)
-            {
-                if (gameObjectAddon.GameObjectToCreate.TryGetComponent(out NetworkObject networkObject) && !NetworkManager.Singleton.IsServer)
-                    continue;
-
-                GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
-                addOn.transform.localPosition = gameObjectAddon.PositionOffset;
-                addOn.transform.localRotation = Quaternion.Euler(gameObjectAddon.RotationOffset);
-
-                if (networkObject == null)
-                    continue;
-
-                networkObject.AutoObjectParentSync = false;
-                networkObject.Spawn();
-            }
+            yield break;
         }
+
         ApplyTyped((T)dawnMapObject);
     }
 }
