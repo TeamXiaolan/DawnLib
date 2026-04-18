@@ -1,4 +1,8 @@
-# v0.9.8
+# v0.9.9
+
+- Whoops.
+
+## v0.9.8
 
 - Added replacing of the various item sfx into the item replacements.
 - Added replacing the conductivity of an item into the item replacements.

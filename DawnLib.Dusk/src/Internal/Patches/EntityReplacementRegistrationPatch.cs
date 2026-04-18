@@ -131,7 +131,7 @@ static class EntityReplacementRegistrationPatch
 
         new ILHook(
             AccessTools.EnumeratorMoveNext(
-                AccessTools.Method(typeof(GameNetcodeStuff.PlayerControllerB), nameof(StormyWeather.GetMetalObjectsAfterDelay))
+                AccessTools.Method(typeof(StormyWeather), nameof(StormyWeather.GetMetalObjectsAfterDelay))
             ),
             DynamicallyReplaceItemProperties
         );
