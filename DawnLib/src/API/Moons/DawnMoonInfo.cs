@@ -69,6 +69,12 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
         StartOfRound.Instance.ChangeLevelServerRpc(index, TerminalRefs.Instance.groupCredits);
     }
 
+    public void ChangeWeatherTo(LevelWeatherType levelWeatherType)
+    {
+        Level.currentWeather = levelWeatherType;
+        StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
+    }
+
     private static string StripSpecialCharacters(string input)
     {
         string returnString = string.Empty;

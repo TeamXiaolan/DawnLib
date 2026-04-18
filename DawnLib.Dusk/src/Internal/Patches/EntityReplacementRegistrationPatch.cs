@@ -101,6 +101,8 @@ static class EntityReplacementRegistrationPatch
         IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
         IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
 
+        IL.HUDManager.DisplayNewScrapFound += ReplaceModelShown;
+
         DuskPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceItemProperties', this transpiler runs on a lot of functions, so this may take a second!");
 
         IL.DepositItemsDesk.PlaceItemOnCounter += DynamicallyReplaceItemProperties;
@@ -117,11 +119,36 @@ static class EntityReplacementRegistrationPatch
         IL.GrabbableObject.FallWithCurve += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.Update += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.LateUpdate += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.PlayDropSFX += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.PocketItem += DynamicallyReplaceItemProperties;
 
-        IL.HUDManager.DisplayNewScrapFound += ReplaceModelShown;
+        new ILHook(
+            AccessTools.EnumeratorMoveNext(
+                AccessTools.Method(typeof(GameNetcodeStuff.PlayerControllerB), nameof(GameNetcodeStuff.PlayerControllerB.GrabObject))
+            ),
+            DynamicallyReplaceItemProperties
+        );
+
+        new ILHook(
+            AccessTools.EnumeratorMoveNext(
+                AccessTools.Method(typeof(GameNetcodeStuff.PlayerControllerB), nameof(StormyWeather.GetMetalObjectsAfterDelay))
+            ),
+            DynamicallyReplaceItemProperties
+        );
+
+        IL.GameNetcodeStuff.PlayerControllerB.GrabObjectClientRpc += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.ScrollMouse_performed += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.SwitchItemSlotsClientRpc += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.SwitchToSlotClientRpc += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.UseUtilitySlot_performed += DynamicallyReplaceItemProperties;
+
+        IL.BeltBagItem.PocketItem += DynamicallyReplaceItemProperties;
 
         IL.CaveDwellerPhysicsProp.Update += DynamicallyReplaceItemProperties;
         IL.CaveDwellerPhysicsProp.LateUpdate += DynamicallyReplaceItemProperties;
+
+        IL.EventWhenDroppedItem.PlayDropSFX += DynamicallyReplaceItemProperties;
+        IL.SoccerBallProp.PlayDropSFX += DynamicallyReplaceItemProperties;
 
         IL.SoccerBallProp.FallWithCurve += DynamicallyReplaceItemProperties;
         IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
@@ -231,6 +258,21 @@ static class EntityReplacementRegistrationPatch
     }
 
     // note!!! this transpiler should only be used on GrabbableObjects!
+    private static readonly Dictionary<string, Func<GrabbableObject, AudioClip, AudioClip>> itemSfxReplacerFunctions = new()
+    {
+        { nameof(Item.grabSFX), GenerateItemSfxReplacer(it => it.GrabSFX) },
+        { nameof(Item.dropSFX), GenerateItemSfxReplacer(it => it.DropSFX) },
+        { nameof(Item.pocketSFX), GenerateItemSfxReplacer(it => it.PocketSFX) },
+        { nameof(Item.throwSFX), GenerateItemSfxReplacer(it => it.ThrowSFX) },
+    };
+
+    // note!!! this transpiler should only be used on GrabbableObjects!
+    private static readonly Dictionary<string, Func<GrabbableObject, bool, bool>> itemConductiveReplacerFunctions = new()
+    {
+        { nameof(Item.isConductiveMetal), GenerateItemConductiveReplacer(it => it.IsConductiveMetal) },
+    };
+
+    // note!!! this transpiler should only be used on GrabbableObjects!
     private static readonly Dictionary<string, Func<GrabbableObject, Vector3, Vector3>> offsetReplacerFunctions = new()
     {
         { nameof(Item.restingRotation), GenerateOffsetReplacer(it => it.RestingRotation) },
@@ -293,8 +335,36 @@ static class EntityReplacementRegistrationPatch
 
                 c.Index += 2;
                 c.EmitDelegate(replacer);
-                break;
+                goto ContinueOuter;
             }
+
+            foreach ((string name, var replacer) in itemSfxReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<Item>(name))
+                    continue;
+
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate(replacer);
+                goto ContinueOuter;
+            }
+
+            foreach ((string name, var replacer) in itemConductiveReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<Item>(name))
+                    continue;
+
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate(replacer);
+                goto ContinueOuter;
+            }
+
+        ContinueOuter:;
         }
     }
 
@@ -561,6 +631,29 @@ static class EntityReplacementRegistrationPatch
                 return existing;
 
             return generator((DuskItemReplacementDefinition)replacement.CurrentEntityReplacement);
+        };
+    }
+
+    private static Func<GrabbableObject, AudioClip, AudioClip> GenerateItemSfxReplacer(Func<DuskItemReplacementDefinition, AudioClip?> generator)
+    {
+        return (self, existing) =>
+        {
+            if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement))
+                return existing;
+
+            AudioClip? replacedClip = generator(replacement);
+            return replacedClip != null ? replacedClip : existing;
+        };
+    }
+
+    private static Func<GrabbableObject, bool, bool> GenerateItemConductiveReplacer(Func<DuskItemReplacementDefinition, bool> generator)
+    {
+        return (self, existing) =>
+        {
+            if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement))
+                return existing;
+
+            return generator(replacement);
         };
     }
 

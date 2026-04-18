@@ -7,6 +7,9 @@ namespace Dusk;
 public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
 {
     [field: SerializeField]
+    public bool IsConductiveMetal { get; private set; }
+
+    [field: SerializeField]
     public AudioClip? GrabSFX { get; private set; }
 
     [field: SerializeField]

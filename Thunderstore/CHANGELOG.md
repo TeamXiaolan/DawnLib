@@ -1,6 +1,10 @@
 # v0.9.8
 
-- Started saving item skins into the savefile.
+- Added replacing of the various item sfx into the item replacements.
+- Added replacing the conductivity of an item into the item replacements.
+- Started saving item skins into the savefile where clients can load in and it'll sync.
+- Added a `ChangeWeatherTo` method to `DawnMoonInfo`.
+- Improved Editor tooling slightly.
 
 ## v0.9.7
 
