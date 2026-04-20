@@ -135,8 +135,7 @@ public class PersistentDataContainer : DataContainer
         try
         {
             await using FileStream stream = new FileStream(_filePath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true);
-
-            using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
+            await using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
             string payload = JsonConvert.SerializeObject(dictionary, DawnLib.JSONSettings);
             await writer.WriteAsync(payload).ConfigureAwait(false);
             await writer.FlushAsync().ConfigureAwait(false);
