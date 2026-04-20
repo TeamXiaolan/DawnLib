@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Discovery Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4107-d1-achievements/")]
 public class DuskDiscoveryAchievement : DuskAchievementDefinition, IProgress
 {
     [Tooltip("Unique string ID for each discovery to account for progress.")]

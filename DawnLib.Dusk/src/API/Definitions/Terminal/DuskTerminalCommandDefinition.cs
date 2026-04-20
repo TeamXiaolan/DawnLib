@@ -91,6 +91,7 @@ public class SimpleInputCommand
 }
 
 [CreateAssetMenu(fileName = "New TerminalCommand Definition", menuName = $"{DuskModConstants.Definitions}/TerminalCommand Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4650-c9-terminal-commands/")]
 public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalCommandInfo>
 {
     [field: SerializeField]
