@@ -7,6 +7,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Vehicle Definition", menuName = $"{DuskModConstants.Definitions}/Vehicle Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4108-d2-vehicles/")]
 public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INamespaced<DuskVehicleDefinition>
 {
     [field: SerializeField]

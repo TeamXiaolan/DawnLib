@@ -11,6 +11,7 @@ using UnityEngine.Serialization;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Item Definition", menuName = $"{DuskModConstants.Definitions}/Item Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4105-c7-items/")]
 public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 {
     [field: FormerlySerializedAs("item")]
