@@ -9,6 +9,7 @@ public class EnemyConfig(ConfigContext section, string EntityNameReference) : Du
     public ConfigEntry<string>? InteriorSpawnWeights;
     public ConfigEntry<string>? WeatherSpawnWeights;
     public ConfigEntry<string>? RouteSpawnWeights;
+
     public ConfigEntry<float>? PowerLevel;
     public ConfigEntry<int>? MaxSpawnCount;
 
@@ -16,6 +17,8 @@ public class EnemyConfig(ConfigContext section, string EntityNameReference) : Du
         MoonSpawnWeights,
         InteriorSpawnWeights,
         WeatherSpawnWeights,
+        RouteSpawnWeights,
+
         PowerLevel,
         MaxSpawnCount
     ];

@@ -1,28 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Dawn.Utils;
 using Unity.Netcode;
-using UnityEngine;
 
 namespace Dawn.Internal;
 
 public class DawnNetworker : NetworkSingleton<DawnNetworker>
 {
-    internal static EntranceTeleport[] _entrancePoints = [];
-    public static IReadOnlyList<EntranceTeleport> EntrancePoints => _entrancePoints;
-
     internal event Action OnSave = delegate { };
     internal PersistentDataContainer SaveContainer { get; private set; }
     internal PersistentDataContainer ContractContainer { get; private set; }
 
     private void Awake()
     {
-        if (StartOfRound.Instance == null)
-            return;
-
-        StartOfRound.Instance.StartNewRoundEvent.AddListener(OnNewRoundStart);
-
         string saveId = GameNetworkManager.Instance.currentSaveFileName;
         SaveContainer = CreateSaveContainer(saveId);
         ContractContainer = CreateContractContainer(saveId);
@@ -53,18 +43,6 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         if (!DawnConfig.DisableDawnUnlockableSaving.Value)
         {
             UnlockableSaveDataHandler.SaveAllUnlockables(DawnLib.GetCurrentContract()!);
-        }
-    }
-
-    private void OnNewRoundStart()
-    {
-        _entrancePoints = FindObjectsByType<EntranceTeleport>(FindObjectsSortMode.InstanceID);
-        foreach (EntranceTeleport? entrance in _entrancePoints)
-        {
-            if (!entrance.FindExitPoint())
-            {
-                DawnPlugin.Logger.LogError("Something went wrong in the generation of the fire exits! (ignorable if EntranceTeleportOptimisation or LethalPerformance is installed)");
-            }
         }
     }
 

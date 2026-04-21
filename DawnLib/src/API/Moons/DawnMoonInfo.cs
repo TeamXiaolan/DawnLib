@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Dawn.Internal;
+using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
 
@@ -72,6 +73,12 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     public void ChangeWeatherTo(LevelWeatherType levelWeatherType)
     {
         Level.currentWeather = levelWeatherType;
+        StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
+    }
+
+    public void ChangeWeatherTo(DawnWeatherEffectInfo weatherEffectInfo)
+    {
+        Level.currentWeather = (LevelWeatherType)TimeOfDayRefs.Instance.effects.IndexOf(weatherEffectInfo.WeatherEffect);
         StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
     }
 

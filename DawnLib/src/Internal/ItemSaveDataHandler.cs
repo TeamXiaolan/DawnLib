@@ -10,7 +10,25 @@ namespace Dawn.Internal;
 
 public static class ItemSaveDataHandler
 {
+    private static readonly List<Collider> _validItemSpawningColliders = new();
+    public static IReadOnlyList<Collider> ValidItemSpawningColliders => _validItemSpawningColliders;
     internal static GrabbableObject[] AllShipItems = [];
+
+    public static void AddColliderForItemSaving(Collider collider)
+    {
+        _validItemSpawningColliders.Add(collider);
+    }
+
+    private static void ValidateColliderEntries()
+    {
+        for (int i = _validItemSpawningColliders.Count - 1; i >= 0; i--)
+        {
+            if (_validItemSpawningColliders[i] == null)
+            {
+                _validItemSpawningColliders.RemoveAt(i);
+            }
+        }
+    }
 
     private static readonly NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
 
@@ -148,7 +166,20 @@ public static class ItemSaveDataHandler
             JToken itemSavedData = row.Count > 8 ? row[8] : 0;
             JToken extraSaveData = row.Count > 9 ? row[9] : 0;
 
-            if (!StartOfRoundRefs.Instance.shipInnerRoomBounds.bounds.Contains(spawnPosition))
+            AddColliderForItemSaving(StartOfRoundRefs.Instance.shipInnerRoomBounds);
+            ValidateColliderEntries();
+            bool validSpawn = false;
+            foreach (Collider collider in ValidItemSpawningColliders)
+            {
+                Bounds bounds = collider.bounds;
+                if (bounds.Contains(spawnPosition))
+                {
+                    validSpawn = true;
+                    break;
+                }
+            }
+
+            if (!validSpawn)
             {
                 spawnPosition = StartOfRoundRefs.Instance.playerSpawnPositions[1].position;
             }

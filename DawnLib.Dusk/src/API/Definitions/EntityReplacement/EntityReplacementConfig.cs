@@ -16,6 +16,8 @@ public class EntityReplacementConfig(ConfigContext section, string EntityNameRef
         MoonSpawnWeights,
         InteriorSpawnWeights,
         WeatherSpawnWeights,
+        RouteSpawnWeights,
+
         DisableDateCheck
     ];
 }

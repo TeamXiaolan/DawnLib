@@ -6,16 +6,20 @@ namespace Dusk;
 public class UnlockableConfig(ConfigContext section, string EntityNameReference) : DuskBaseConfig(section, EntityNameReference)
 {
     public ConfigEntry<int>? Cost;
+
     public ConfigEntry<bool>? IsDecor;
+    public ConfigEntry<bool>? IsShipUpgrade;
+
     public ConfigEntry<bool>? DisableUnlockRequirement;
     public ConfigEntry<bool>? DisablePricingStrategy;
-    public ConfigEntry<bool>? IsShipUpgrade;
 
     override internal List<ConfigEntryBase?> _configEntries => [
         Cost,
+
+        IsShipUpgrade,
         IsDecor,
+
         DisableUnlockRequirement,
-        DisablePricingStrategy,
-        IsShipUpgrade
+        DisablePricingStrategy
     ];
 }

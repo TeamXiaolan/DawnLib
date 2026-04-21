@@ -16,6 +16,8 @@ public class DungeonConfig(ConfigContext section, string EntityNameReference) : 
     override internal List<ConfigEntryBase?> _configEntries => [
         MoonSpawnWeights,
         WeatherSpawnWeights,
+        RouteSpawnWeights,
+
         DungeonRangeClamp,
         ExtraScrapGeneration
     ];

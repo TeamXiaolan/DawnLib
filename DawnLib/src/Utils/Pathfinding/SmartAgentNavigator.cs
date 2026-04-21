@@ -107,7 +107,7 @@ public class SmartAgentNavigator : NetworkBehaviour
 
     private void UseTeleport(EntranceTeleport teleport)
     {
-        if (teleport.exitScript == null || !teleport.FindExitPoint() || teleport.exitPointDoesntExist)
+        if (!teleport.FindExitPoint() || teleport.exitScript == null || teleport.exitPointDoesntExist)
             return;
 
         agent.Warp(teleport.exitScript.entrancePoint.position);
@@ -239,7 +239,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         if (Vector3.Distance(this.transform.position, destination.Position) >= 1f + agent.stoppingDistance)
             return;
 
-        agent.Warp(destination.InternalTeleport!.Destination.position);
+        agent.Warp(destination.InternalTeleport.Destination.position);
     }
 
     private void HandleElevatorDestination(SmartPathDestination destination)
@@ -249,7 +249,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         if (Vector3.Distance(this.transform.position, destination.Position) >= 1f + agent.stoppingDistance)
             return;
 
-        destination.ElevatorFloor!.CallElevator();
+        destination.ElevatorFloor.CallElevator();
     }
 
     private void HandleEntranceTeleportDestination(SmartPathDestination destination)
@@ -259,7 +259,7 @@ public class SmartAgentNavigator : NetworkBehaviour
         if (Vector3.Distance(this.transform.position, destination.Position) >= 1f + agent.stoppingDistance)
             return;
 
-        UseTeleport(destination.EntranceTeleport!);
+        UseTeleport(destination.EntranceTeleport);
     }
     #endregion
 
