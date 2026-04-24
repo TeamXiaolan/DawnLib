@@ -77,6 +77,8 @@ public class ConfigManager(ConfigFile file)
     public static ConfigEntryBase? FindEntry(ConfigFile file, string section, string key)
     {
         ConfigDefinition definition = new(section, key);
-        return file.GetConfigEntries().FirstOrDefault(x => x.Definition == definition);
+        // Note: explicit cast needed due to https://github.com/BepInEx/BepInEx/issues/1305
+        var entries = ((IDictionary<ConfigDefinition, ConfigEntryBase>)file).Values;
+        return entries.FirstOrDefault(x => x.Definition == definition);
     }
 }
