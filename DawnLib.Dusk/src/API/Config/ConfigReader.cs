@@ -201,7 +201,9 @@ public class ConfigReader : MonoBehaviour
         Debuggers.Configs?.Log($"ConfigReader: pluginGuid={pluginGuid}, section={section}, key={key}");
         ConfigFile config = pluginInfo.Instance.Config;
         ConfigDefinition definition = new(section, key);
-        foreach (ConfigEntryBase configEntryBase in config.GetConfigEntries())
+        // Note: explicit cast needed due to https://github.com/BepInEx/BepInEx/issues/1305
+        var entries = ((IDictionary<ConfigDefinition, ConfigEntryBase>)config).Values;
+        foreach (ConfigEntryBase configEntryBase in entries)
         {
             ConfigDefinition existingDefinition = configEntryBase.Definition;
             Debuggers.Configs?.Log($"Existing definition: Section: {existingDefinition.Section} | Key: {existingDefinition.Key}");
