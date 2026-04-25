@@ -72,14 +72,19 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 
     public void ChangeWeatherTo(LevelWeatherType levelWeatherType)
     {
+        if (WeatherRegistryCompat.Enabled)
+        {
+            WeatherRegistryCompat.SetCurrentWeather(Level, levelWeatherType);
+            return;
+        }
+
         Level.currentWeather = levelWeatherType;
         StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
     }
 
     public void ChangeWeatherTo(DawnWeatherEffectInfo weatherEffectInfo)
     {
-        Level.currentWeather = (LevelWeatherType)TimeOfDayRefs.Instance.effects.IndexOf(weatherEffectInfo.WeatherEffect);
-        StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
+        ChangeWeatherTo((LevelWeatherType)TimeOfDayRefs.Instance.effects.IndexOf(weatherEffectInfo.WeatherEffect));
     }
 
     private static string StripSpecialCharacters(string input)

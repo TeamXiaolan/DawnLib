@@ -43,6 +43,12 @@ static class WeatherRegistryCompat
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static void SetCurrentWeather(SelectableLevel level, LevelWeatherType levelWeatherType)
+    {
+        WeatherController.ChangeWeather(level, levelWeatherType);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     public static bool IsWeatherManagerReady()
     {
         return WeatherManager.IsSetupFinished;
