@@ -46,6 +46,13 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         }
     }
 
+    [Rpc(SendTo.Everyone)]
+    internal void ChangeWeatherToRpc(NamespacedKey moonKey, LevelWeatherType levelWeatherType)
+    {
+        LethalContent.Moons[moonKey.AsTyped<DawnMoonInfo>()].Level.currentWeather = levelWeatherType;
+        StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void BroadcastDisplayTipServerRpc(HUDDisplayTip displayTip)
     {

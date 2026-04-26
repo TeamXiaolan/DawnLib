@@ -91,7 +91,7 @@ public class DawnSurface : MonoBehaviour
             int dominantTextureIndex = 0;
             float highestBlendWeight = 0f;
 
-            int textureLayerCount = StartOfRound.Instance.currentTerrainAlphaMaps.Length / (activeTerrain.terrainData.alphamapWidth * activeTerrain.terrainData.alphamapHeight);
+            int textureLayerCount = StartOfRound.Instance.currentTerrainAlphaMaps.Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
 
             for (int layerIndex = 0; layerIndex < textureLayerCount; layerIndex++)
             {

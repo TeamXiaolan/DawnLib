@@ -204,12 +204,6 @@ static class MapObjectRegistrationHandler
 
         foreach (GameObject mapObject in realMapObjects)
         {
-            if (mapObject.GetComponent<DawnMapObjectNamespacedKeyContainer>())
-            {
-                Debuggers.MapObjects?.Log($"Already registered {mapObject}");
-                continue;
-            }
-
             string name = NamespacedKey.NormalizeStringForNamespacedKey(mapObject.name, true);
             NamespacedKey<DawnMapObjectInfo>? key = MapObjectKeys.GetByReflection(name);
             if (key == null && LethalLibCompat.Enabled && LethalLibCompat.TryGetMapObjectFromLethalLib(mapObject, out string lethalLibModName))
@@ -221,20 +215,16 @@ static class MapObjectRegistrationHandler
                 key = NamespacedKey<DawnMapObjectInfo>.From("unknown_lib", mapObject.name);
             }
 
-            if (LethalContent.MapObjects.ContainsKey(key))
-            {
-                DawnPlugin.Logger.LogWarning($"MapObject {mapObject.name} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                DawnMapObjectNamespacedKeyContainer duplicateContainer = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
-                duplicateContainer.Value = key;
-                continue;
-            }
-
             realInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
             realOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], insideMapObjectInfo, outsideMapObjectInfo, null);
-            DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
-            container.Value = key;
+            if (mapObject.GetComponent<IIndoorMapHazard>() == null)
+            {
+                DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
+                container.Value = key;
+            }
+
             if (insideMapObjectInfo != null)
             {
                 insideMapObjectInfo.IndoorMapHazardType.SetDawnInfo(mapObjectInfo);

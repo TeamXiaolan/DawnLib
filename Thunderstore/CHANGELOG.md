@@ -1,6 +1,8 @@
-# v???
+# v0.9.11
 
+- Synced `ChangeWeatherTo` method, only call this on the host please.
 - Added WR compat to `ChangeWeatherTo` method.
+- Edited some hazard code due to new stuff by zeekerss on v81.
 
 ## v0.9.10
 

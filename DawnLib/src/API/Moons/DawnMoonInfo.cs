@@ -78,8 +78,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
             return;
         }
 
-        Level.currentWeather = levelWeatherType;
-        StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();
+        DawnNetworker.Instance!.ChangeWeatherToRpc(Key, levelWeatherType);
     }
 
     public void ChangeWeatherTo(DawnWeatherEffectInfo weatherEffectInfo)

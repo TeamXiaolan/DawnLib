@@ -60,6 +60,11 @@ static class SurfaceRegistrationHandler
             return;
         }
 
+        if (terrainCollider.gameObject.GetComponent<DawnSurface>() != null)
+        {
+            return;
+        }
+
         DawnSurface surface = terrainCollider.gameObject.AddComponent<DawnSurface>();
         foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
         {
@@ -69,7 +74,8 @@ static class SurfaceRegistrationHandler
             }
 
             TerrainData terrainData = terrainCollider.terrainData;
-            for (int i = 0; i < terrainData.alphamapTextureCount; i++)
+            int textureLayerCount = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight).Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
+            for (int i = 0; i < textureLayerCount; i++)
             {
                 surface.NamespacedKeysForTerrain.Add(surfaceInfo.Key);
             }
