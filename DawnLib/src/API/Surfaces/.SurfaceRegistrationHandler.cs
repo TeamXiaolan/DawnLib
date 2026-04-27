@@ -50,9 +50,15 @@ static class SurfaceRegistrationHandler
         }
 
         TerrainCollider terrainCollider = GameObject.FindAnyObjectByType<TerrainCollider>();
+        if (terrainCollider == null || terrainCollider.terrainData == null || !terrainCollider.gameObject.activeSelf || !terrainCollider.enabled || !terrainCollider.gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         TerrainData terrainData = terrainCollider.terrainData;
         int textureLayerCount = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight).Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
-        if (terrainCollider == null || terrainCollider.terrainData == null || textureLayerCount == 0 || !terrainCollider.gameObject.activeSelf || !terrainCollider.enabled || !terrainCollider.gameObject.activeInHierarchy)
+
+        if (textureLayerCount == 0)
         {
             return;
         }

@@ -1,4 +1,9 @@
-# v0.9.11
+# v0.9.12
+
+- Fixed an error from non unity-terrain moons.
+- Adjusted an issue with enemy power level that'd go off if you pack didn't have StarlancerAIFix. (There is currently a bad issue that happens with DawnLib+LunarConfig+StarlancerAIFix happening that's been around for presumably a long time, hopefully StarlancerAIFix can be updated to fix this).
+
+## v0.9.11
 
 - Synced `ChangeWeatherTo` method, only call this on the host please.
 - Added WR compat to `ChangeWeatherTo` method.

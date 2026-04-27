@@ -144,6 +144,9 @@ static class MiscFixesPatch
 
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
+            if (itemInfo.Key.IsVanilla())
+                continue;
+
             foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes.ToArray())
             {
                 if (itemGroup == null)

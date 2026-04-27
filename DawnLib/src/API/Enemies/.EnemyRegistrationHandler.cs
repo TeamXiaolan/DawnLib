@@ -210,12 +210,13 @@ static class EnemyRegistrationHandler
         }
 
         DawnEnemyInfo enemyInfo = self.enemyType.GetDawnInfo();
-        if ((enemyInfo.ShouldSkipRespectOverride()) || StarlancerAIFixCompat.Enabled)
+        if (enemyInfo.ShouldSkipRespectOverride() || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
             return;
         }
 
+        bool previouslyDaytime = self.enemyType.isDaytimeEnemy;
         if (enemyInfo.Daytime != null)
         {
             self.enemyType.isDaytimeEnemy = true;
@@ -268,6 +269,10 @@ static class EnemyRegistrationHandler
 
         orig(self);
 
+        if (previouslyDaytime != self.enemyType.isDaytimeEnemy)
+        {
+            self.enemyType.isDaytimeEnemy = previouslyDaytime;
+        }
         if (previouslyOutside != self.enemyType.isOutsideEnemy)
         {
             self.enemyType.isOutsideEnemy = previouslyOutside;
