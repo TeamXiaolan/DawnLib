@@ -60,6 +60,7 @@
         <PackageReference Include="TestAccount666-GoodItemScan" Version="2.0.0" PrivateAssets="all" Publicize="true" />
         <PackageReference Include="AinaVT-LethalConfig" Version="1.4.6" Publicize="true" PrivateAssets="all"/>
         <PackageReference Include="Zaggy1024-PathfindingLib" Version="2.4.1" PrivateAssets="all"/>
+        <PackageReference Include="Alice-DungeonGenerationPlus" Version="1.5.0" PrivateAssets="all"/>
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
@@ -125,10 +126,10 @@
         <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\Unity.Mathematics.dll</HintPath>
       </Reference> -->
-      <Reference Include="DunGenPlus.dll" Publicize="true">
+      <!-- <Reference Include="DunGenPlus.dll" Publicize="true">
         <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\DunGenPlus.dll</HintPath>
-      </Reference>
+      </Reference> -->
       <Reference Include="MMHOOK_DunGen.dll" Publicize="true">
         <PrivateAssets>all</PrivateAssets>
         <HintPath>deps\MMHOOK_DunGen.dll</HintPath>
