@@ -210,6 +210,10 @@ static class MapObjectRegistrationHandler
             {
                 key = NamespacedKey<DawnMapObjectInfo>.From(lethalLibModName, mapObject.name);
             }
+            else if (key == null && LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.TryGetExtendedMapObjectModName(mapObject, out string extendedModName))
+            {
+                key = NamespacedKey<DawnMapObjectInfo>.From(extendedModName, mapObject.name);
+            }
             else if (key == null)
             {
                 key = NamespacedKey<DawnMapObjectInfo>.From("unknown_lib", mapObject.name);
@@ -219,7 +223,7 @@ static class MapObjectRegistrationHandler
             realOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], insideMapObjectInfo, outsideMapObjectInfo, null);
-            if (mapObject.GetComponent<IIndoorMapHazard>() == null)
+            if (!mapObject.TryGetComponent(out IIndoorMapHazard _))
             {
                 DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
                 container.Value = key;
@@ -233,6 +237,20 @@ static class MapObjectRegistrationHandler
             if (outsideMapObjectInfo != null)
             {
                 outsideMapObjectInfo.SpawnableOutsideObject.SetDawnInfo(mapObjectInfo);
+            }
+
+            if (LethalContent.MapObjects.TryGetValue(mapObjectInfo.TypedKey, out DawnMapObjectInfo existingMapObjectInfo))
+            {
+                if (insideMapObjectInfo != null)
+                {
+                    insideMapObjectInfo.IndoorMapHazardType.SetDawnInfo(existingMapObjectInfo);
+                }
+
+                if (outsideMapObjectInfo != null)
+                {
+                    outsideMapObjectInfo.SpawnableOutsideObject.SetDawnInfo(existingMapObjectInfo);
+                }
+                continue;
             }
 
             LethalContent.MapObjects.Register(mapObjectInfo);
