@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Moon Definition", menuName = $"{DuskModConstants.Definitions}/Moon Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4676-moons-editor-setup/")]
 public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 {
     [field: SerializeField]

@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(menuName = $"{DuskModConstants.TerminalPredicates}/Achievement Unlock Requirement", fileName = "New Achievement Predicate", order = DuskModConstants.PredicateOrder)]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4107-d1-achievements/")]
 public class AchievementPredicate : DuskTerminalPredicate
 {
     [SerializeField]
