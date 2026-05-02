@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using BepInEx.Bootstrap;
+using Dawn.Internal;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -43,47 +45,50 @@ static class SurfaceRegistrationHandler
             return;
         }
 
+        if (LethalLevelLoaderCompat.Enabled && Version.Parse(LethalLevelLoaderCompat.VERSION) < Chainloader.PluginInfos[LethalLevelLoader.Plugin.ModGUID].Metadata.Version)
+        {
+            SceneManager.sceneLoaded -= TryFixMoonTerrainFootsteps;
+            return;
+        }
+
         DawnMoonInfo moonInfo = RoundManager.Instance.currentLevel.GetDawnInfo();
         if (moonInfo == null || moonInfo.TypedKey.IsVanilla())
         {
             return;
         }
 
-        TerrainCollider terrainCollider = GameObject.FindAnyObjectByType<TerrainCollider>();
-        if (terrainCollider == null || terrainCollider.terrainData == null || !terrainCollider.gameObject.activeSelf || !terrainCollider.enabled || !terrainCollider.gameObject.activeInHierarchy)
+        foreach (Terrain terrain in Terrain.activeTerrains)
         {
-            return;
-        }
+            TerrainData terrainData = terrain.terrainData;
+            int textureLayerCount = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight).Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
 
-        TerrainData terrainData = terrainCollider.terrainData;
-        int textureLayerCount = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight).Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
+            if (textureLayerCount == 0)
+            {
+                return;
+            }
 
-        if (textureLayerCount == 0)
-        {
-            return;
-        }
-
-        if (terrainCollider.gameObject.CompareTag("Untagged"))
-        {
-            return;
-        }
-
-        if (terrainCollider.gameObject.GetComponent<DawnSurface>() != null)
-        {
-            return;
-        }
-
-        DawnSurface surface = terrainCollider.gameObject.AddComponent<DawnSurface>();
-        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
-        {
-            if (!surfaceInfo.Surface.surfaceTag.Equals(terrainCollider.gameObject.tag, StringComparison.OrdinalIgnoreCase))
+            if (terrain.CompareTag("Untagged"))
             {
                 continue;
             }
 
-            for (int i = 0; i < textureLayerCount; i++)
+            if (terrain.TryGetComponent(out DawnSurface surface))
             {
-                surface.NamespacedKeysForTerrain.Add(surfaceInfo.Key);
+                return;
+            }
+
+            surface = terrain.gameObject.AddComponent<DawnSurface>();
+            foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+            {
+                if (!surfaceInfo.Surface.surfaceTag.Equals(terrain.tag, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < textureLayerCount; i++)
+                {
+                    surface.NamespacedKeysForTerrain.Add(surfaceInfo.Key);
+                }
             }
         }
     }

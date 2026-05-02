@@ -9,11 +9,13 @@ using HarmonyLib;
 using LethalLevelLoader;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using UnityEngine;
 
 namespace Dawn.Internal;
 
 static class LethalLevelLoaderCompat
 {
+    internal const string VERSION = "1.6.9";
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(Plugin.ModGUID);
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
@@ -167,6 +169,35 @@ static class LethalLevelLoaderCompat
             {
                 modName = extendedItem.ModName;
                 return true;
+            }
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static bool TryGetExtendedMapObjectModName(GameObject mapObject, out string modName)
+    {
+        modName = "lethal_level_loader";
+        foreach (ExtendedLevel extendedLevel in LethalLevelLoader.PatchedContent.ExtendedLevels)
+        {
+            SelectableLevel level = extendedLevel.SelectableLevel;
+            if (level == null) continue;
+
+            for (int i = 0; i < level.indoorMapHazards?.Length; i++)
+            {
+                if (level.indoorMapHazards[i]?.hazardType != null && level.indoorMapHazards[i].hazardType.prefabToSpawn == mapObject)
+                {
+                    modName = extendedLevel.ModName;
+                    return true;
+                }
+            }
+            for (int i = 0; i < level.spawnableOutsideObjects?.Length; i++)
+            {
+                if (level.spawnableOutsideObjects[i]?.spawnableObject != null && level.spawnableOutsideObjects[i].spawnableObject.prefabToSpawn == mapObject)
+                {
+                    modName = extendedLevel.ModName;
+                    return true;
+                }
             }
         }
         return false;

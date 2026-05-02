@@ -9,7 +9,7 @@ namespace Dawn.Internal;
 
 static class DungeonGenerationPlusCompat
 {
-    internal const string VERSION = "1.4.1";
+    internal const string VERSION = "1.5.0";
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus") && Version.Parse(VERSION) < Chainloader.PluginInfos["dev.ladyalice.dungenplus"].Metadata.Version;
 
 
@@ -31,8 +31,8 @@ static class DungeonGenerationPlusCompat
             }
 
             extenderObject = extenders[0];
-            // ((DunGenExtender)extenderObject).DungeonFlow = dungeonFlow;
-            // DunGenPlus.API.AddDunGenExtender(dungeonFlow, (DunGenExtender)extenderObject);
+            ((DunGenExtender)extenderObject).DungeonFlow = dungeonFlow;
+            DunGenPlus.API.AddDunGenExtender(dungeonFlow, (DunGenExtender)extenderObject);
         }
         else
         {
@@ -41,7 +41,7 @@ static class DungeonGenerationPlusCompat
                 return;
             }
 
-            // DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
+            DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
             extenderObject = null;
         }
     }

@@ -25,12 +25,18 @@ public class DawnSurface : MonoBehaviour
     public float GravityStrength { get; private set; } = 1f;
 
     public int SurfaceIndex { get; private set; } = -1;
+    public Terrain? Terrain { get; private set; }
+    public float[,,] TerrainAlphamaps { get; private set; } = new float[0, 0, 0];
     public List<int> TerrainIndices { get; private set; } = new();
-    public bool IsTerrain { get; private set; } = false;
 
     public void Start()
     {
-        IsTerrain = this.gameObject.GetComponent<TerrainCollider>() != null;
+        if (TryGetComponent(out Terrain terrain))
+        {
+            TerrainData terrainData = terrain.terrainData;
+            TerrainAlphamaps = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight);
+            Terrain = terrain;
+        }
 
         foreach (NamespacedKey key in NamespacedKeysForTerrain)
         {
@@ -42,7 +48,7 @@ public class DawnSurface : MonoBehaviour
 
         if (NamespacedKey == null || string.IsNullOrEmpty(NamespacedKey.Namespace) || string.IsNullOrEmpty(NamespacedKey.Key) || !LethalContent.Surfaces.TryGetValue(NamespacedKey, out DawnSurfaceInfo surfaceInfo))
         {
-            if (!IsTerrain)
+            if (Terrain == null)
             {
                 DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' not found.");
             }
@@ -51,7 +57,7 @@ public class DawnSurface : MonoBehaviour
 
         if (surfaceInfo.Surface == null)
         {
-            if (!IsTerrain)
+            if (Terrain == null)
             {
                 DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' has no footstep surface defined.");
             }
@@ -65,7 +71,7 @@ public class DawnSurface : MonoBehaviour
     {
         footstepIndex = -1;
 
-        if (IsTerrain)
+        if (Terrain != null)
         {
             if (playerControllerB != null)
             {
@@ -77,25 +83,20 @@ public class DawnSurface : MonoBehaviour
                 return false;
             }
 
-            Terrain activeTerrain = Terrain.activeTerrain;
-            TerrainData terrainData = activeTerrain.terrainData;
+            StartOfRound.Instance.currentTerrainAlphaMaps = TerrainAlphamaps;
+            StartOfRound.Instance.gotCurrentTerrainAlphamaps = true;
 
-            if (!StartOfRound.Instance.gotCurrentTerrainAlphamaps)
-            {
-                StartOfRound.Instance.gotCurrentTerrainAlphamaps = true;
-                StartOfRound.Instance.currentTerrainAlphaMaps = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight);
-            }
-
-            Vector3 splatMapCoordinate = ConvertToSplatMapCoordinate(point, activeTerrain);
+            Vector3 splatMapCoordinate = ConvertToSplatMapCoordinate(point, Terrain);
 
             int dominantTextureIndex = 0;
             float highestBlendWeight = 0f;
 
-            int textureLayerCount = StartOfRound.Instance.currentTerrainAlphaMaps.Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
+            TerrainData terrainData = Terrain.terrainData;
+            int textureLayerCount = TerrainAlphamaps.Length / (terrainData.alphamapWidth * terrainData.alphamapHeight);
 
             for (int layerIndex = 0; layerIndex < textureLayerCount; layerIndex++)
             {
-                float layerWeight = StartOfRound.Instance.currentTerrainAlphaMaps[
+                float layerWeight = TerrainAlphamaps[
                     (int)splatMapCoordinate.z,
                     (int)splatMapCoordinate.x,
                     layerIndex
