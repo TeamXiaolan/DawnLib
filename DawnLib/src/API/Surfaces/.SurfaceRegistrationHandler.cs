@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using BepInEx.Bootstrap;
+using Dawn.Internal;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -40,6 +42,12 @@ static class SurfaceRegistrationHandler
 
         if (RoundManager.Instance.currentLevel == null)
         {
+            return;
+        }
+
+        if (LethalLevelLoaderCompat.Enabled && Version.Parse(LethalLevelLoaderCompat.VERSION) < Chainloader.PluginInfos[LethalLevelLoader.Plugin.ModGUID].Metadata.Version)
+        {
+            SceneManager.sceneLoaded -= TryFixMoonTerrainFootsteps;
             return;
         }
 

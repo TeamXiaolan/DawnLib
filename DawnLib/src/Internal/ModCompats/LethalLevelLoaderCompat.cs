@@ -15,6 +15,7 @@ namespace Dawn.Internal;
 
 static class LethalLevelLoaderCompat
 {
+    internal const string VERSION = "1.6.9";
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey(Plugin.ModGUID);
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
