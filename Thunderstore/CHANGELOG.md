@@ -1,4 +1,10 @@
-# v0.9.12
+# v0.9.13
+
+- Restored DunGenPlus compat.
+- Fixed errors with outside map objects and inside map objects.
+- Fixed my pc, so i'm back.
+
+## v0.9.12
 
 - Fixed an error from non unity-terrain moons.
 - Adjusted an issue with enemy power level that'd go off if you pack didn't have StarlancerAIFix. (There is currently a bad issue that happens with DawnLib+LunarConfig+StarlancerAIFix happening that's been around for presumably a long time, hopefully StarlancerAIFix can be updated to fix this).
