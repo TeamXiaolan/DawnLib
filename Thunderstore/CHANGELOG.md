@@ -15,6 +15,8 @@
   - Refined Doorway visualisers.
   - Added a menu when right-clicking tiles to copy from the automatic tile bounds to the manual one.
   - GameObjectChance Drawer.
+  - GraphNode Drawer.
+  - GraphLine Drawer.
 
 ## v0.9.13
 
