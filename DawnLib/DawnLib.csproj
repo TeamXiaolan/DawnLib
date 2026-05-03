@@ -57,7 +57,7 @@
 
         <PackageReference Include="AudioKnight-StarlancerAIFix" Publicize="true" Version="3.11.1" PrivateAssets="all" />
         <PackageReference Include="BananaPuncher714-LethalQuantities" Version="1.2.9" PrivateAssets="all" Publicize="true" />
-        <PackageReference Include="TestAccount666-GoodItemScan" Version="2.0.0" PrivateAssets="all" Publicize="true" />
+        <PackageReference Include="TestAccount666-GoodItemScan" Version="2.1.0" PrivateAssets="all" Publicize="true" />
         <PackageReference Include="AinaVT-LethalConfig" Version="1.4.6" Publicize="true" PrivateAssets="all"/>
         <PackageReference Include="Zaggy1024-PathfindingLib" Version="2.4.1" PrivateAssets="all"/>
         <PackageReference Include="Alice-DungeonGenerationPlus" Version="1.5.0" PrivateAssets="all"/>

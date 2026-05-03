@@ -34,7 +34,7 @@ static class GoodItemScanCompat
                 continue;
             }
 
-            rectTransform = scannedNode.rectTransform;
+            rectTransform = scannedNode.RectTransform;
             return true;
         }
 
@@ -52,7 +52,7 @@ static class GoodItemScanCompat
 
         foreach (ScannedNode scannedNode in GoodItemScan.GoodItemScan.scanner.activeNodes)
         {
-            if (rectTransform != scannedNode.rectTransform)
+            if (rectTransform != scannedNode.RectTransform)
             {
                 continue;
             }

@@ -247,7 +247,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
         if (DungeonGenerationPlusCompat.Enabled)
         {
-            DungeonGenerationPlusCompat.RegisterExtenderForBundle(_currentBundle, flowToClear, false);
+            DungeonGenerationPlusCompat.HandleExtenderForBundle(_currentBundle, flowToClear, false);
         }
         SyncSpawnSyncedObjects(false);
 
@@ -396,7 +396,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             if (DungeonGenerationPlusCompat.Enabled)
             {
-                DungeonGenerationPlusCompat.RegisterExtenderForBundle(_currentBundle!, fakeFlow, true);
+                DungeonGenerationPlusCompat.HandleExtenderForBundle(_currentBundle!, fakeFlow, true);
             }
             SyncSpawnSyncedObjects(true);
         }

@@ -5,6 +5,16 @@
 - Thanks to paco for last version's help with the outside and inside map objects.
 - Added the ability to set whether an earth leviathan can rise on custom footstep surface (not set-able on the component).
 - Added the ability to set whether quicksand works on custom footstep surfaces.
+- Updated GoodItemScanCompat.
+- Added visualisers for the following in the editor:
+  - Tile size visualiser.
+  - GlobalPropSettings Drawer.
+  - Tag Drawer.
+  - TagPair Drawer.
+  - TileInjectionRule Drawer.
+  - Refined Doorway visualisers.
+  - Added a menu when right-clicking tiles to copy from the automatic tile bounds to the manual one.
+  - GameObjectChance Drawer.
 
 ## v0.9.13
 

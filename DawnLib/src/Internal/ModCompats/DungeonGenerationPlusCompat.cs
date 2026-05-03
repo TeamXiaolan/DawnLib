@@ -15,7 +15,7 @@ static class DungeonGenerationPlusCompat
 
     private static object? extenderObject = null;
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-    public static void RegisterExtenderForBundle(AssetBundle assetBundle, DungeonFlow dungeonFlow, bool register)
+    internal static void HandleExtenderForBundle(AssetBundle assetBundle, DungeonFlow dungeonFlow, bool register)
     {
         if (register)
         {
