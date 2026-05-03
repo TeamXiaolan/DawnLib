@@ -9,8 +9,8 @@ namespace Dawn.Internal;
 
 static class DungeonGenerationPlusCompat
 {
-    internal const string VERSION = "1.5.0";
-    public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus") && Version.Parse(VERSION) < Chainloader.PluginInfos["dev.ladyalice.dungenplus"].Metadata.Version;
+    internal const string COMPATIBLE_VERSION = "1.5.0";
+    public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus") && Chainloader.PluginInfos["dev.ladyalice.dungenplus"].Metadata.Version >= Version.Parse(COMPATIBLE_VERSION);
 
 
     private static object? extenderObject = null;

@@ -242,14 +242,16 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
         PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
+        DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
+        DungeonFlow flowToClear = dungeonInfo.DungeonFlow;
+
         if (DungeonGenerationPlusCompat.Enabled)
         {
-            DungeonGenerationPlusCompat.RegisterExtenderForBundle(_currentBundle, _currentlyLoadedDungeonFlow!, false);
+            DungeonGenerationPlusCompat.RegisterExtenderForBundle(_currentBundle, flowToClear, false);
         }
         SyncSpawnSyncedObjects(false);
 
-        DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
-        DungeonFlow flowToClear = dungeonInfo.DungeonFlow;
+
         SwapReferences(ref flowToClear, ref _temporaryDungeonFlow!);
 
         dungeonInfo.sockets.Clear();
@@ -394,7 +396,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             if (DungeonGenerationPlusCompat.Enabled)
             {
-                DungeonGenerationPlusCompat.RegisterExtenderForBundle(_currentBundle!, _currentlyLoadedDungeonFlow, true);
+                DungeonGenerationPlusCompat.RegisterExtenderForBundle(_currentBundle!, fakeFlow, true);
             }
             SyncSpawnSyncedObjects(true);
         }

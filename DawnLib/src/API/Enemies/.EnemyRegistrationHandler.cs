@@ -1,9 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
 using Dawn.Utils;
 using DunGen.Graph;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
@@ -29,6 +30,12 @@ static class EnemyRegistrationHandler
         On.EnemyAI.Start += EnsureCorrectEnemyVariables;
         On.QuickMenuManager.Start += AddEnemiesToDebugList;
 
+        IL.RoundManager.SpawnRandomDaytimeEnemy += StopDawnEnemyResetting;
+        IL.RoundManager.AssignRandomEnemyToVent += StopDawnEnemyResetting;
+        IL.RoundManager.SpawnRandomOutsideEnemy += StopDawnEnemyResetting;
+        IL.RoundManager.SpawnRandomWeedEnemy += StopDawnEnemyResetting;
+        IL.RoundManager.PredictAllOutsideEnemies += StopDawnEnemyResetting;
+
         using (new DetourContext(priority: int.MaxValue))
         {
             On.Terminal.Awake += AddBestiaryNodes;
@@ -38,6 +45,51 @@ static class EnemyRegistrationHandler
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
         LethalContent.Enemies.OnFreeze += FixDawnEnemyReferences;
+    }
+
+    private static void StopDawnEnemyResetting(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+        int enemyTypeLoc = -1;
+        if (!c.TryGotoNext(
+            MoveType.Before,
+            c => c.MatchLdfld<SpawnableEnemyWithRarity>(nameof(SpawnableEnemyWithRarity.enemyType)),
+            c => c.MatchStloc(out enemyTypeLoc)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (0)!");
+            return;
+        }
+
+
+        if (!c.TryGotoNext(
+            MoveType.After,
+            c => c.MatchLdcI4(0),
+            c => c.MatchStfld<EnemyType>(nameof(EnemyType.hasSpawnedAtLeastOne))
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (1)!");
+            return;
+        }
+
+        ILLabel value = null!;
+
+        if (!c.TryGotoPrev(
+            MoveType.After,
+            c => c.MatchBrfalse(out value)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (2)!");
+            return;
+        }
+
+        // emit function that takes in enemytype and return true or false
+        c.Emit(OpCodes.Ldloc, enemyTypeLoc);
+        c.EmitDelegate((EnemyType enemyType) =>
+        {
+            return !enemyType.GetDawnInfo().ShouldSkipRespectOverride();
+        });
+        c.Emit(OpCodes.Brfalse_S, value);
     }
 
     private static void FixDawnEnemyReferences()
@@ -65,7 +117,39 @@ static class EnemyRegistrationHandler
     {
         if (self.enemyRushIndex == -1)
         {
-            return orig(self, vent, spawnTime);
+            List<EnemyType> EnemyTypesToCheck = new();
+            foreach (EnemyType enemyType in self.currentLevel.Enemies.Select(def => def.enemyType))
+            {
+                DawnEnemyInfo enemyInfo = enemyType.GetDawnInfo();
+                if (enemyInfo.Inside == null)
+                {
+                    continue;
+                }
+
+                SpawnWeightContext ctx = new SpawnWeightContext(
+                    self.currentLevel.GetDawnInfo(),
+                    self.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
+                    TimeOfDayRefs.GetCurrentWeatherEffect(self.currentLevel)?.GetDawnInfo())
+                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, self.currentLevel.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+
+                if (enemyInfo.Inside.Weights.GetFor(ctx) <= 0)
+                {
+                    continue;
+                }
+
+                EnemyTypesToCheck.Add(enemyType);
+            }
+
+            foreach (EnemyType enemyType in EnemyTypesToCheck)
+            {
+                DawnPlugin.Logger.LogFatal($"Before || Enemy: {enemyType.enemyName} | MaxCount: {enemyType.MaxCount} | NumberSpawned: {enemyType.numberSpawned} | HasSpawnedAtleastOne: {enemyType.hasSpawnedAtLeastOne}");
+            }
+            bool result = orig(self, vent, spawnTime);
+            foreach (EnemyType enemyType in EnemyTypesToCheck)
+            {
+                DawnPlugin.Logger.LogFatal($"After || Enemy: {enemyType.enemyName} | MaxCount: {enemyType.MaxCount} | NumberSpawned: {enemyType.numberSpawned} | HasSpawnedAtleastOne: {enemyType.hasSpawnedAtLeastOne}");
+            }
+            return result;
         }
 
         List<EnemyType> enemiesEdited = new();

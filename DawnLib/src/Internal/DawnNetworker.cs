@@ -18,6 +18,25 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         ContractContainer = CreateContractContainer(saveId);
     }
 
+    private void Start()
+    {
+        StartOfRoundRefs.Instance.StartNewRoundEvent.AddListener(ResetDawnEnemies);
+    }
+
+    private void ResetDawnEnemies()
+    {
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            if (enemyInfo.ShouldSkipRespectOverride())
+            {
+                continue;
+            }
+
+            enemyInfo.EnemyType.numberSpawned = 0;
+            enemyInfo.EnemyType.hasSpawnedAtLeastOne = false;
+        }
+    }
+
     internal static PersistentDataContainer CreateSaveContainer(string id)
     {
         PersistentDataContainer dataContainer = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"Save{id}"));
