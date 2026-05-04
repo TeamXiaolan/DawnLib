@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
     private NamespacedKey<DawnDungeonInfo> _currentDungeonKey;
     internal bool allPlayersDone { get; private set; }
 
+    private static readonly List<GameObject> _objectsToUnregister = new();
+
     internal void HostDecide(DawnDungeonInfo dungeonInfo)
     {
         QueueDungeonBundleLoadingServerRpc(dungeonInfo.Key);
@@ -39,7 +42,11 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     internal void HostRebroadcastQueue()
     {
-        if (_currentDungeonKey == default) return;
+        if (_currentDungeonKey == default)
+        {
+            return;
+        }
+
         QueueDungeonBundleLoadingServerRpc(_currentDungeonKey);
     }
 
@@ -72,21 +79,30 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         StartCoroutine(DoDungeonBundleLoading(dungeonInfo));
     }
 
-    private static List<GameObject> _objectsToUnregister = new();
-
     internal void SyncSpawnSyncedObjects(bool register)
     {
-        DawnDungeonInfo importantDungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
+        DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
+        SyncSpawnSyncedObjects(dungeonInfo, register);
+    }
+
+    internal static void SyncSpawnSyncedObjects(DawnDungeonInfo importantDungeonInfo, bool register)
+    {
         if (importantDungeonInfo.ShouldSkipIgnoreOverride())
             return;
 
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
         if (register)
         {
-            List<GameObject> potentialPrefabs = new();
-            foreach (NetworkPrefab networkPrefabs in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+            if (importantDungeonInfo == null)
             {
-                potentialPrefabs.Add(networkPrefabs.Prefab);
+                DawnPlugin.Logger.LogWarning("Tried to register SpawnSyncedObjects, but no DawnDungeonInfo was provided.");
+                return;
+            }
+
+            List<GameObject> potentialPrefabs = new();
+            foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+            {
+                potentialPrefabs.Add(networkPrefab.Prefab);
             }
 
             foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
@@ -206,7 +222,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
-    DungeonFlow? CheckDungeonBundleFailed(DawnDungeonInfo dungeonInfo, AssetBundleCreateRequest request)
+    private DungeonFlow? CheckDungeonBundleFailed(DawnDungeonInfo dungeonInfo, AssetBundleCreateRequest request)
     {
         if (!request.isDone || request.assetBundle == null)
         {
@@ -251,8 +267,14 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         }
         SyncSpawnSyncedObjects(false);
 
+        if (_temporaryDungeonFlow != null)
+        {
+            SwapReferences(flowToClear, _temporaryDungeonFlow);
 
-        SwapReferences(ref flowToClear, ref _temporaryDungeonFlow!);
+            ScriptableObject.Destroy(_temporaryDungeonFlow);
+            _temporaryDungeonFlow = null;
+        }
+
 
         dungeonInfo.sockets.Clear();
         dungeonInfo.doorways.Clear();
@@ -260,9 +282,9 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         dungeonInfo.tiles.Clear();
 
         _currentlyLoadedDungeonFlow = null;
-        ScriptableObject.Destroy(_temporaryDungeonFlow);
-        _temporaryDungeonFlow = null;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type. 
         _currentDungeonKey = default;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         yield return _currentBundle.UnloadAsync(true);
         _currentBundle = null;
@@ -296,114 +318,167 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     private void UnlockGame()
     {
-        if (_currentlyLoadedDungeonFlow != null && RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow.name == _currentlyLoadedDungeonFlow.name)
+        DungeonFlow? temporaryFlow = TryApplyLoadedDungeonFlow(_currentlyLoadedDungeonFlow, _currentBundle);
+
+        if (temporaryFlow != null)
         {
-            DungeonFlow fakeFlow = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
-            _temporaryDungeonFlow = ScriptableObject.CreateInstance<DungeonFlow>();
-            SwapReferences(ref _temporaryDungeonFlow, ref fakeFlow);
-            SwapReferences(ref fakeFlow, ref _currentlyLoadedDungeonFlow);
-
-            foreach (TileSet tileSet in fakeFlow.GetUsedTileSets())
-            {
-                string tileSetName = tileSet.name.RemoveLeadingNumbers().ReplaceNumbersWithWords().Replace(" ", "_");
-                Debuggers.Dungeons?.Log($"tileSetName: {tileSet.name}");
-                foreach (DawnTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
-                {
-                    Debuggers.Dungeons?.Log($"tileSetInfo.Key.Key: {tileSetInfo.Key.Key}");
-                    if (tileSetInfo.ShouldSkipIgnoreOverride())
-                        continue;
-
-                    if (tileSetName.Equals(tileSetInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        tileSet.SetDawnInfo(tileSetInfo);
-                        break;
-                    }
-                }
-            }
-
-            foreach (DungeonArchetype dungeonArchetype in fakeFlow.GetUsedArchetypes())
-            {
-                string archetypeName = dungeonArchetype.name.RemoveLeadingNumbers().ReplaceNumbersWithWords().Replace(" ", "_");
-                Debuggers.Dungeons?.Log($"archetypeName: {archetypeName}");
-                foreach (DawnArchetypeInfo archetypeInfo in LethalContent.Archetypes.Values)
-                {
-                    if (archetypeInfo.ShouldSkipIgnoreOverride())
-                        continue;
-
-                    Debuggers.Dungeons?.Log($"archetypeInfo.Key.Key: {archetypeInfo.Key.Key}");
-
-                    if (archetypeName.Equals(archetypeInfo.Key.Key, System.StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        dungeonArchetype.SetDawnInfo(archetypeInfo);
-                        break;
-                    }
-                }
-            }
-
-            DawnDungeonInfo dungeonInfo = fakeFlow.GetDawnInfo();
-            dungeonInfo.sockets = new();
-            var tileSets = fakeFlow.TileInjectionRules.Select(it => it.TileSet).Concat(fakeFlow.GetUsedTileSets()).Distinct();
-            dungeonInfo.tiles = tileSets.Select(it => it.TileWeights.Weights).SelectMany(it => it).SelectMany(it => it.Value.GetComponentsInChildren<Tile>()).ToList();
-            dungeonInfo.doorways = new();
-            dungeonInfo.spawnSyncedObjects = new();
-
-            foreach (Tile dungeonTile in dungeonInfo.Tiles)
-            {
-                foreach (Doorway dungeonDoorway in dungeonTile.gameObject.GetComponentsInChildren<Doorway>())
-                {
-                    if (!dungeonInfo.Doorways.Contains(dungeonDoorway))
-                    {
-                        dungeonInfo.doorways.Add(dungeonDoorway);
-                    }
-
-                    if (!dungeonInfo.Sockets.Contains(dungeonDoorway.socket))
-                    {
-                        dungeonInfo.sockets.Add(dungeonDoorway.socket);
-                    }
-
-                    foreach (GameObjectWeight doorwayTileWeight in dungeonDoorway.ConnectorPrefabWeights)
-                    {
-                        foreach (SpawnSyncedObject spawnSyncedObject in doorwayTileWeight.GameObject.GetComponentsInChildren<SpawnSyncedObject>())
-                        {
-                            if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
-                            {
-                                dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
-                            }
-                        }
-                    }
-
-
-                    foreach (GameObjectWeight doorwayTileWeight in dungeonDoorway.BlockerPrefabWeights)
-                    {
-                        foreach (SpawnSyncedObject spawnSyncedObject in doorwayTileWeight.GameObject.GetComponentsInChildren<SpawnSyncedObject>())
-                        {
-                            if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
-                            {
-                                dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
-                            }
-                        }
-                    }
-                }
-
-                foreach (SpawnSyncedObject spawnSyncedObject in dungeonTile.gameObject.GetComponentsInChildren<SpawnSyncedObject>())
-                {
-                    if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
-                    {
-                        dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
-                    }
-                }
-            }
-
-            if (DungeonGenerationPlusCompat.Enabled)
-            {
-                DungeonGenerationPlusCompat.HandleExtenderForBundle(_currentBundle!, fakeFlow, true);
-            }
-            SyncSpawnSyncedObjects(true);
+            _temporaryDungeonFlow = temporaryFlow;
         }
+
         allPlayersDone = true;
     }
 
-    private void SwapReferences(ref DungeonFlow dungeonA, ref DungeonFlow dungeonB)
+    internal static DungeonFlow? TryApplyLoadedDungeonFlow(DungeonFlow? loadedDungeonFlow, AssetBundle? sourceBundle = null)
+    {
+        if (loadedDungeonFlow == null)
+            return null;
+
+        DungeonFlow roundManagerFlow = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
+
+        if (roundManagerFlow.name != loadedDungeonFlow.name)
+            return null;
+
+        DungeonFlow temporaryFlow = ScriptableObject.CreateInstance<DungeonFlow>();
+
+        SwapReferences(temporaryFlow, roundManagerFlow);
+        SwapReferences(roundManagerFlow, loadedDungeonFlow);
+
+        ApplyDawnInfoToTileSets(roundManagerFlow);
+        ApplyDawnInfoToArchetypes(roundManagerFlow);
+
+        DawnDungeonInfo dungeonInfo = RebuildDungeonInfoCache(roundManagerFlow);
+
+        if (DungeonGenerationPlusCompat.Enabled && sourceBundle != null)
+        {
+            DungeonGenerationPlusCompat.HandleExtenderForBundle(sourceBundle, roundManagerFlow, true);
+        }
+
+        SyncSpawnSyncedObjects(dungeonInfo, true);
+
+        return temporaryFlow;
+    }
+
+    private static void ApplyDawnInfoToTileSets(DungeonFlow flow)
+    {
+        foreach (TileSet tileSet in flow.GetUsedTileSets())
+        {
+            string tileSetName = tileSet.name
+                .RemoveLeadingNumbers()
+                .ReplaceNumbersWithWords()
+                .Replace(" ", "_");
+
+            Debuggers.Dungeons?.Log($"tileSetName: {tileSet.name}");
+
+            foreach (DawnTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
+            {
+                Debuggers.Dungeons?.Log($"tileSetInfo.Key.Key: {tileSetInfo.Key.Key}");
+
+                if (tileSetInfo.ShouldSkipIgnoreOverride())
+                    continue;
+
+                if (tileSetName.Equals(tileSetInfo.Key.Key, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    tileSet.SetDawnInfo(tileSetInfo);
+                    break;
+                }
+            }
+        }
+    }
+
+    private static void ApplyDawnInfoToArchetypes(DungeonFlow flow)
+    {
+        foreach (DungeonArchetype dungeonArchetype in flow.GetUsedArchetypes())
+        {
+            string archetypeName = dungeonArchetype.name
+                .RemoveLeadingNumbers()
+                .ReplaceNumbersWithWords()
+                .Replace(" ", "_");
+
+            Debuggers.Dungeons?.Log($"archetypeName: {archetypeName}");
+
+            foreach (DawnArchetypeInfo archetypeInfo in LethalContent.Archetypes.Values)
+            {
+                if (archetypeInfo.ShouldSkipIgnoreOverride())
+                    continue;
+
+                Debuggers.Dungeons?.Log($"archetypeInfo.Key.Key: {archetypeInfo.Key.Key}");
+
+                if (archetypeName.Equals(archetypeInfo.Key.Key, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    dungeonArchetype.SetDawnInfo(archetypeInfo);
+                    break;
+                }
+            }
+        }
+    }
+
+    private static DawnDungeonInfo RebuildDungeonInfoCache(DungeonFlow flow)
+    {
+        DawnDungeonInfo dungeonInfo = flow.GetDawnInfo();
+
+        dungeonInfo.sockets = new();
+
+        var tileSets = flow.TileInjectionRules
+            .Select(it => it.TileSet)
+            .Concat(flow.GetUsedTileSets())
+            .Distinct();
+
+        dungeonInfo.tiles = tileSets
+            .Select(it => it.TileWeights.Weights)
+            .SelectMany(it => it)
+            .SelectMany(it => it.Value.GetComponentsInChildren<Tile>())
+            .ToList();
+
+        dungeonInfo.doorways = new();
+        dungeonInfo.spawnSyncedObjects = new();
+
+        foreach (Tile dungeonTile in dungeonInfo.Tiles)
+        {
+            foreach (Doorway dungeonDoorway in dungeonTile.gameObject.GetComponentsInChildren<Doorway>())
+            {
+                if (!dungeonInfo.Doorways.Contains(dungeonDoorway))
+                {
+                    dungeonInfo.doorways.Add(dungeonDoorway);
+                }
+
+                if (!dungeonInfo.Sockets.Contains(dungeonDoorway.socket))
+                {
+                    dungeonInfo.sockets.Add(dungeonDoorway.socket);
+                }
+
+                AddSpawnSyncedObjectsFromWeights(dungeonInfo, dungeonDoorway.ConnectorPrefabWeights);
+                AddSpawnSyncedObjectsFromWeights(dungeonInfo, dungeonDoorway.BlockerPrefabWeights);
+            }
+
+            foreach (SpawnSyncedObject spawnSyncedObject in dungeonTile.gameObject.GetComponentsInChildren<SpawnSyncedObject>())
+            {
+                if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
+                {
+                    dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
+                }
+            }
+        }
+
+        return dungeonInfo;
+    }
+
+    private static void AddSpawnSyncedObjectsFromWeights(
+        DawnDungeonInfo dungeonInfo,
+        IEnumerable<GameObjectWeight> weights)
+    {
+        foreach (GameObjectWeight doorwayTileWeight in weights)
+        {
+            foreach (SpawnSyncedObject spawnSyncedObject in doorwayTileWeight.GameObject.GetComponentsInChildren<SpawnSyncedObject>())
+            {
+                if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
+                {
+                    dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
+                }
+            }
+        }
+    }
+
+    private static void SwapReferences(DungeonFlow dungeonA, DungeonFlow dungeonB)
     {
         dungeonA.globalPropGroupID_obsolete = dungeonB.globalPropGroupID_obsolete;
         dungeonA.globalPropRanges_obsolete = dungeonB.globalPropRanges_obsolete;

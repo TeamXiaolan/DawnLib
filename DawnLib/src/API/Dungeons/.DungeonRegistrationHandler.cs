@@ -12,9 +12,7 @@ using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
-using Unity.Netcode;
 using UnityEngine;
-using DunGen.Adapters;
 using static Dawn.Internal.DawnMoonNetworker;
 using static DunGen.Graph.DungeonFlow;
 
@@ -42,6 +40,7 @@ static class DungeonRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         On.MenuManager.Awake += DeleteLLLTranspilerAndEnsureDelayedDungeon;
+        On.MenuManager.Awake += RemoveHotloadingIfDebugDunGenPlus;
         IL.RoundManager.SpawnScrapInLevel += MakeExtraScrapGenerationMoreModular;
         On.RoundManager.GenerateNewFloor += (orig, self) =>
         {
@@ -65,36 +64,44 @@ static class DungeonRegistrationHandler
         };
     }
 
-    [HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewLevelClientRpc)), HarmonyPrefix, HarmonyPriority(100)] // Stole this from paco and pushed it before he could
-    internal static void GenerateNewLevelClientRpc_Prefix(RoundManager __instance)
+    private static void RemoveHotloadingIfDebugDunGenPlus(On.MenuManager.orig_Awake orig, MenuManager self)
     {
-        // Don't run on the server.
-        if (__instance.__rpc_exec_stage != NetworkBehaviour.__RpcExecStage.Send)
+        if (self.versionNumberText == null) // Because zeekerss has two menumanager's
         {
+            orig(self);
             return;
         }
 
-        RestoreRuntimeDungeon();
+        if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn() && !DungeonGenerationPlusCompat.RemovedHotloading)
+        {
+            DungeonGenerationPlusCompat.RemovedHotloading = true;
+            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            {
+                if (dungeonInfo.ShouldSkipIgnoreOverride())
+                {
+                    continue;
+                }
+
+                AssetBundle loadedBundle = AssetBundle.LoadFromFile(dungeonInfo.AssetBundlePath);
+                DungeonFlow? loadedFlow = loadedBundle.LoadAsset<DungeonFlow>($"{dungeonInfo.DungeonFlow.name}");
+                if (loadedFlow == null)
+                {
+                    DawnPlugin.Logger.LogError($"Bundle: {Path.GetFileName(dungeonInfo.AssetBundlePath)} does not contain DungeonFlow: {dungeonInfo.DungeonFlow.name}.");
+                    return;
+                }
+
+                DawnDungeonNetworker.TryApplyLoadedDungeonFlow(loadedFlow, loadedBundle);
+            }
+        }
+        orig(self);
     }
 
-    private static void RestoreRuntimeDungeon()
+    private static IEnumerator LoadDawnDungeonBundles()
     {
-        GameObject dungeonGeneratorContainer = GameObject.FindGameObjectWithTag("DungeonGenerator");
-        if (!dungeonGeneratorContainer.TryGetComponent(out RuntimeDungeon _))
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
-            RuntimeDungeon dungeon = dungeonGeneratorContainer.AddComponent<RuntimeDungeon>();
-            UnityNavMeshAdapter navMeshAdapter = dungeon.gameObject.AddComponent<UnityNavMeshAdapter>();
-
-            Transform dungeonGeneratorRoot = dungeon.transform.GetParent().GetChild(1);
-            if (dungeonGeneratorRoot == null) return; // Messed with LevelGeneration hierarchy -> Cooked...
-            dungeon.Root = dungeonGeneratorRoot.gameObject;
-
-            navMeshAdapter.BakeMode = UnityNavMeshAdapter.RuntimeNavMeshBakeMode.FullDungeonBake;
-            navMeshAdapter.LayerMask = LayerMask.GetMask("Default", "Room", "Colliders", "NavigationSurface"); // 35072
-
-            DungeonGenerator dungeonGenerator = dungeon.Generator;
-            dungeonGenerator.AllowTilePooling = true; // Yippee!
-            dungeonGenerator.GenerateAsynchronously = true;
+            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(dungeonInfo.AssetBundlePath);
+            yield return request;
         }
     }
 
@@ -273,6 +280,11 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator UnloadDungeonBundleForAllPlayers(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
+        if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn())
+        {
+            yield break;
+        }
+
         if (DawnDungeonNetworker.Instance != null)
         {
             IEnumerator unloadIEnumerator = DawnDungeonNetworker.Instance.UnloadExisting();
@@ -296,6 +308,11 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator LoadDungeonBundle()
     {
+        if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn())
+        {
+            yield break;
+        }
+
         DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
         if (!dungeonInfo.ShouldSkipIgnoreOverride())
         {

@@ -11,7 +11,7 @@ static class DungeonGenerationPlusCompat
 {
     internal const string COMPATIBLE_VERSION = "1.5.0";
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus") && Chainloader.PluginInfos["dev.ladyalice.dungenplus"].Metadata.Version >= Version.Parse(COMPATIBLE_VERSION);
-
+    internal static bool RemovedHotloading = false;
 
     private static object? extenderObject = null;
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
@@ -44,5 +44,15 @@ static class DungeonGenerationPlusCompat
             DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
             extenderObject = null;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    internal static bool IsDebugOn()
+    {
+        if (PluginConfig.EnableDevDebugTools.Value)
+        {
+            return true;
+        }
+        return false;
     }
 }
