@@ -43,6 +43,7 @@ static class MapObjectRegistrationHandler
 
     private static void FixMapObjectBlanksOnDawnMoons()
     {
+        List<ScriptableObject> SOsToDelete = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
@@ -50,7 +51,7 @@ static class MapObjectRegistrationHandler
 
             foreach (IndoorMapHazard indoorMapHazard in moonInfo.Level.indoorMapHazards)
             {
-                if (indoorMapHazard.hazardType == null || indoorMapHazard.hazardType.prefabToSpawn == null)
+                if (indoorMapHazard.hazardType == null)
                     continue;
 
                 foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
@@ -58,8 +59,9 @@ static class MapObjectRegistrationHandler
                     if (mapObjectInfo.InsideInfo == null)
                         continue;
 
-                    if (mapObjectInfo.InsideInfo.IndoorMapHazardType.name == indoorMapHazard.hazardType.name || mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn.name == indoorMapHazard.hazardType.prefabToSpawn.name)
+                    if (mapObjectInfo.InsideInfo.IndoorMapHazardType.name == indoorMapHazard.hazardType.name)
                     {
+                        SOsToDelete.Add(indoorMapHazard.hazardType);
                         indoorMapHazard.hazardType = mapObjectInfo.InsideInfo.IndoorMapHazardType;
                         break;
                     }
@@ -68,7 +70,7 @@ static class MapObjectRegistrationHandler
 
             foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObjectWithRarity in moonInfo.Level.spawnableOutsideObjects)
             {
-                if (spawnableOutsideObjectWithRarity.spawnableObject == null || spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn == null)
+                if (spawnableOutsideObjectWithRarity.spawnableObject == null)
                     continue;
 
                 foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
@@ -76,13 +78,19 @@ static class MapObjectRegistrationHandler
                     if (mapObjectInfo.OutsideInfo == null)
                         continue;
 
-                    if (mapObjectInfo.OutsideInfo.SpawnableOutsideObject.name == spawnableOutsideObjectWithRarity.spawnableObject.name || mapObjectInfo.OutsideInfo.SpawnableOutsideObject.prefabToSpawn.name == spawnableOutsideObjectWithRarity.spawnableObject.prefabToSpawn.name)
+                    if (mapObjectInfo.OutsideInfo.SpawnableOutsideObject.name == spawnableOutsideObjectWithRarity.spawnableObject.name)
                     {
+                        SOsToDelete.Add(spawnableOutsideObjectWithRarity.spawnableObject);
                         spawnableOutsideObjectWithRarity.spawnableObject = mapObjectInfo.OutsideInfo.SpawnableOutsideObject;
                         break;
                     }
                 }
             }
+        }
+
+        for (int i = SOsToDelete.Count - 1; i >= 0; i--)
+        {
+            ScriptableObject.Destroy(SOsToDelete[i]);
         }
     }
 

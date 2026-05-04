@@ -1,4 +1,8 @@
-# v0.9.15
+# v0.9.16
+
+- Adjusted the logic for replacing blank map objects/hazards.
+
+## v0.9.15
 
 - Removed some unneeded logging.
 - Improved DunGenPlus compat.
