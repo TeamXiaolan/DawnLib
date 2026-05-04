@@ -117,39 +117,7 @@ static class EnemyRegistrationHandler
     {
         if (self.enemyRushIndex == -1)
         {
-            List<EnemyType> EnemyTypesToCheck = new();
-            foreach (EnemyType enemyType in self.currentLevel.Enemies.Select(def => def.enemyType))
-            {
-                DawnEnemyInfo enemyInfo = enemyType.GetDawnInfo();
-                if (enemyInfo.Inside == null)
-                {
-                    continue;
-                }
-
-                SpawnWeightContext ctx = new SpawnWeightContext(
-                    self.currentLevel.GetDawnInfo(),
-                    self.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
-                    TimeOfDayRefs.GetCurrentWeatherEffect(self.currentLevel)?.GetDawnInfo())
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, self.currentLevel.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
-
-                if (enemyInfo.Inside.Weights.GetFor(ctx) <= 0)
-                {
-                    continue;
-                }
-
-                EnemyTypesToCheck.Add(enemyType);
-            }
-
-            foreach (EnemyType enemyType in EnemyTypesToCheck)
-            {
-                DawnPlugin.Logger.LogFatal($"Before || Enemy: {enemyType.enemyName} | MaxCount: {enemyType.MaxCount} | NumberSpawned: {enemyType.numberSpawned} | HasSpawnedAtleastOne: {enemyType.hasSpawnedAtLeastOne}");
-            }
-            bool result = orig(self, vent, spawnTime);
-            foreach (EnemyType enemyType in EnemyTypesToCheck)
-            {
-                DawnPlugin.Logger.LogFatal($"After || Enemy: {enemyType.enemyName} | MaxCount: {enemyType.MaxCount} | NumberSpawned: {enemyType.numberSpawned} | HasSpawnedAtleastOne: {enemyType.hasSpawnedAtLeastOne}");
-            }
-            return result;
+            return orig(self, vent, spawnTime);
         }
 
         List<EnemyType> enemiesEdited = new();

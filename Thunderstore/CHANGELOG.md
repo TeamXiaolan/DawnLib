@@ -1,4 +1,11 @@
-# v0.9.14
+# v0.9.15
+
+- Removed some unneeded logging.
+- Improved DunGenPlus compat.
+- Added the ability to set whether an earth leviathan can rise on custom footstep surface (not set-able on the component).
+- Added the ability to set whether quicksand works on custom footstep surfaces.
+
+## v0.9.14
 
 - Refined DunGenPlus compat.
 - Fixed issues with DawnLib and LunarConfig'd enemies that caused them to be able to spawn more than they should especially on eclipsed moons.
