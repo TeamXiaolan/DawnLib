@@ -8,6 +8,11 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
 {
     [field: SerializeField]
     public FootstepSurface Surface { get; private set; }
+    [field: SerializeField]
+    [field: Tooltip("This means that the earth leviathan can use this surface to emerge")]
+    public bool IsNatural { get; private set; }
+    [field: SerializeField]
+    public bool QuicksandCompatible { get; private set; }
 
     [field: SerializeField]
     [field: Tooltip("Please make sure this is a prefab with a ParticleSystem!")]
@@ -30,6 +35,8 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
         {
             builder.SetSurfaceVFXPrefab(FootstepVFXPrefab);
             builder.OverrideSurfaceVFXOffset(PositionOffset);
+            builder.OverrideIsNatural(IsNatural);
+            builder.OverrideQuicksandCompatible(QuicksandCompatible);
             ApplyTagsTo(builder);
         });
     }

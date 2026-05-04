@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx.Bootstrap;
@@ -29,8 +30,132 @@ static class SurfaceRegistrationHandler
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditFallValueForGravity;
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditUncappedFallValueForGravity;
 
+        IL.GameNetcodeStuff.PlayerControllerB.CheckConditionsForSinkingInQuicksand += AllowCustomSurfacesInQuicksand;
+
+        IL.SandWormAI.StartEmergeAnimation += AllowEmergingAtCustomSurfaces;
+
         SceneManager.sceneLoaded += OnVowOrMarchLoaded;
         SceneManager.sceneLoaded += TryFixMoonTerrainFootsteps;
+    }
+
+    private static void AllowEmergingAtCustomSurfaces(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+        if (!c.TryGotoNext(
+            MoveType.Before,
+            i => i.MatchLdloc(2),
+            i => i.MatchBrfalse(out _),
+            i => i.MatchLdloc(5),
+            i => i.MatchLdcI4(1),
+            i => i.MatchAdd()
+        ))
+        {
+            DawnPlugin.Logger.LogWarning($"Failed to apply SandWormAI.StartEmergeAnimation patch (0)!");
+            return;
+        }
+
+        ILLabel skipToFlagLabel = c.DefineLabel();
+        c.MarkLabel(skipToFlagLabel);
+
+        if (!c.TryGotoPrev(
+            MoveType.Before,
+            i => i.MatchLdcI4(0),
+            i => i.MatchStloc(2),
+            i => i.MatchCall<Terrain>("get_activeTerrain"),
+            i => i.MatchLdnull()
+        ))
+        {
+            DawnPlugin.Logger.LogWarning($"Failed to apply SandWormAI.StartEmergeAnimation patch (1)!");
+            return;
+        }
+
+        c.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        c.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 2);
+        c.EmitDelegate((RaycastHit hit, ref bool flag) =>
+        {
+            if (!hit.collider.TryGetComponent(out DawnSurface surface))
+            {
+                return false; // Vanilla logic
+            }
+
+            if (!surface.TryGetFootstepIndex(hit.point, true, out int footstepSurfaceIndex) || footstepSurfaceIndex == -1)
+            {
+                return false; // Vanilla logic
+            }
+
+            DawnSurfaceInfo? surfaceInfo = null;
+            foreach (DawnSurfaceInfo potentialSurfaceInfo in LethalContent.Surfaces.Values)
+            {
+                if (potentialSurfaceInfo.SurfaceIndex == footstepSurfaceIndex)
+                {
+                    surfaceInfo = potentialSurfaceInfo;
+                    break;
+                }
+            }
+
+            if (surfaceInfo == null)
+            {
+                return false; // Vanilla logic
+            }
+
+            if (StartOfRoundRefs.Instance.currentLevel.GetDawnInfo() == LethalContent.Moons[MoonKeys.Embrion] && surfaceInfo == LethalContent.Surfaces[SurfaceKeys.Rock])
+            {
+                flag = true;
+                return true; // Skip vanilla logic
+            }
+
+            if (surfaceInfo.IsNatural)
+            {
+                flag = true;
+                return true; // Skip 
+            }
+
+            return true; // Skip vanilla logic for the current path node
+        });
+        c.Emit(Mono.Cecil.Cil.OpCodes.Brtrue, skipToFlagLabel);
+    }
+
+    private static void AllowCustomSurfacesInQuicksand(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+        ILLabel branchLabel = null!;
+
+        if (!c.TryGotoNext(
+            MoveType.Before,
+            i => i.MatchLdarg(0),
+            i => i.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.currentFootstepSurfaceIndex)),
+            i => i.MatchLdcI4(1),
+            i => i.MatchBeq(out branchLabel)
+        ))
+        {
+            DawnPlugin.Logger.LogWarning($"Failed to apply PlayerControllerB.CheckConditionsForSinkingInQuicksand patch (0)!");
+            return;
+        }
+
+        c.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+        c.Emit(Mono.Cecil.Cil.OpCodes.Ldfld, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex)));
+        c.EmitDelegate((int currentFootstepSurfaceIndex) =>
+        {
+            foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+            {
+                if (surfaceInfo.ShouldSkipIgnoreOverride())
+                {
+                    continue;
+                }
+
+                if (surfaceInfo.SurfaceIndex == currentFootstepSurfaceIndex)
+                {
+                    if (surfaceInfo.QuicksandCompatible)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            return false;
+        });
+
+        c.Emit(Mono.Cecil.Cil.OpCodes.Brtrue_S, branchLabel);
     }
 
     private static void TryFixMoonTerrainFootsteps(Scene arg0, LoadSceneMode arg1)
@@ -40,7 +165,7 @@ static class SurfaceRegistrationHandler
             return;
         }
 
-        if (RoundManager.Instance.currentLevel == null)
+        if (StartOfRound.Instance.currentLevel == null)
         {
             return;
         }
@@ -51,7 +176,7 @@ static class SurfaceRegistrationHandler
             return;
         }
 
-        DawnMoonInfo moonInfo = RoundManager.Instance.currentLevel.GetDawnInfo();
+        DawnMoonInfo moonInfo = StartOfRound.Instance.currentLevel.GetDawnInfo();
         if (moonInfo == null || moonInfo.TypedKey.IsVanilla())
         {
             return;
@@ -105,13 +230,13 @@ static class SurfaceRegistrationHandler
         {
             GameObject marchTerrain = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh").transform.Find("Map/MarchTerrainNew").gameObject;
             DawnSurface surface = marchTerrain.AddComponent<DawnSurface>();
-            surface.NamespacedKeysForTerrain.AddRange([NamespacedKey.From("lethal_company", "grass"), NamespacedKey.From("lethal_company", "rock"), NamespacedKey.From("lethal_company", "gravel")]);
+            surface.NamespacedKeysForTerrain.AddRange([SurfaceKeys.Grass, SurfaceKeys.Rock, SurfaceKeys.Gravel]);
         }
         else if (level == LethalContent.Moons[MoonKeys.Vow].Level)
         {
             GameObject vowTerrain = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh").transform.Find("VowTerrain").gameObject;
             DawnSurface surface = vowTerrain.AddComponent<DawnSurface>();
-            surface.NamespacedKeysForTerrain.AddRange([NamespacedKey.From("lethal_company", "grass"), NamespacedKey.From("lethal_company", "gravel"), NamespacedKey.From("lethal_company", "rock")]);
+            surface.NamespacedKeysForTerrain.AddRange([SurfaceKeys.Grass, SurfaceKeys.Gravel, SurfaceKeys.Rock]);
         }
     }
 
@@ -304,7 +429,18 @@ static class SurfaceRegistrationHandler
                 continue;
             }
 
-            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, null, Vector3.zero, i, null);
+            List<int> quicksandTags = // All these require player to be: isGrounded, !inSpecialInteractAnimation, !inAnimationWithEnemy, !isClimbingLadder, physicsParent == null, !isInHangarShipRoom, !isInElevator
+            [
+                1,
+                4,
+                5, // Requires you to be inside
+                7,
+                8
+                // Another condition is standingOnTerrain regardless of currentFootstepSurfaceIndex
+            ];
+            bool isNatural = startOfRound.naturalSurfaceTags.Contains(surface.surfaceTag);
+            bool quicksandCompatible = quicksandTags.Contains(i);
+            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.SetDawnInfo(surfaceInfo);
         }
