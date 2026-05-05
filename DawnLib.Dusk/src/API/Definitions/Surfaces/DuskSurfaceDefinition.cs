@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Surface Definition", menuName = $"{DuskModConstants.Definitions}/Surface Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/")]
 public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
 {
     [field: SerializeField]

@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Stat Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4107-d1-achievements/")]
 public class DuskStatAchievement : DuskAchievementDefinition, IProgress
 {
     public class StatSaveData(bool completed, float currentProgress) : AchievementSaveData(completed)

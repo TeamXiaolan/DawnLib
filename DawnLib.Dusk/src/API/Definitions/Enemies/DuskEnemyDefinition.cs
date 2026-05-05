@@ -18,6 +18,7 @@ public enum SpawnTable
 }
 
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = $"{DuskModConstants.Definitions}/Enemy Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4100-c4-enemies/")]
 public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
 {
     [field: FormerlySerializedAs("enemyType")]
