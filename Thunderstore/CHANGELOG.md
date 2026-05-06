@@ -1,5 +1,6 @@
 # v0.9.16
 
+- Fixed some more issues with transpilers relating to dawnlib enemy spawns.
 - Adjusted the logic for replacing blank map objects/hazards.
 
 ## v0.9.15

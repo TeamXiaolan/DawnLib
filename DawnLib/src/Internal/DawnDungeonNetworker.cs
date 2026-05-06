@@ -333,24 +333,32 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         if (loadedDungeonFlow == null)
             return null;
 
-        DungeonFlow roundManagerFlow = RoundManager.Instance.dungeonFlowTypes[RoundManager.Instance.currentDungeonType].dungeonFlow;
+        DungeonFlow? matchingFlow = null;
+        foreach (DawnDungeonInfo potentialMatchingFlow in LethalContent.Dungeons.Values)
+        {
+            if (potentialMatchingFlow.DungeonFlow.name == loadedDungeonFlow.name)
+            {
+                matchingFlow = potentialMatchingFlow.DungeonFlow;
+                break;
+            }
+        }
 
-        if (roundManagerFlow.name != loadedDungeonFlow.name)
+        if (matchingFlow == null)
             return null;
 
         DungeonFlow temporaryFlow = ScriptableObject.CreateInstance<DungeonFlow>();
 
-        SwapReferences(temporaryFlow, roundManagerFlow);
-        SwapReferences(roundManagerFlow, loadedDungeonFlow);
+        SwapReferences(temporaryFlow, matchingFlow);
+        SwapReferences(matchingFlow, loadedDungeonFlow);
 
-        ApplyDawnInfoToTileSets(roundManagerFlow);
-        ApplyDawnInfoToArchetypes(roundManagerFlow);
+        ApplyDawnInfoToTileSets(matchingFlow);
+        ApplyDawnInfoToArchetypes(matchingFlow);
 
-        DawnDungeonInfo dungeonInfo = RebuildDungeonInfoCache(roundManagerFlow);
+        DawnDungeonInfo dungeonInfo = RebuildDungeonInfoCache(matchingFlow);
 
         if (DungeonGenerationPlusCompat.Enabled && sourceBundle != null)
         {
-            DungeonGenerationPlusCompat.HandleExtenderForBundle(sourceBundle, roundManagerFlow, true);
+            DungeonGenerationPlusCompat.HandleExtenderForBundle(sourceBundle, matchingFlow, true);
         }
 
         SyncSpawnSyncedObjects(dungeonInfo, true);
