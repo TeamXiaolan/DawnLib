@@ -8,7 +8,7 @@ class BoundedRangeConverter : TOMLConverter<BoundedRange>
 {
     protected override string ConvertToString(BoundedRange range)
     {
-        return $"{range.Min},{range.Max}";
+        return $"{range.Min.ToString(CultureInfo.InvariantCulture)},{range.Max.ToString(CultureInfo.InvariantCulture)}";
     }
 
     protected override BoundedRange ConvertToObject(string value)

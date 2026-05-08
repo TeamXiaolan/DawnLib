@@ -35,6 +35,7 @@ public class UnlockableInfoBuilder : BaseInfoBuilder<DawnUnlockableItemInfo, Unl
             if (_suitMaterial == null)
             {
                 DawnPlugin.Logger.LogWarning($"Suit: '{_parentBuilder.key}' didn't set suit material.");
+                throw new ArgumentNullException(_parentBuilder.key.ToString());
             }
             return new DawnSuitInfo(_suitMaterial, _jumpAudioClip);
         }

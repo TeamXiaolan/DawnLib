@@ -51,8 +51,9 @@ static class EnemyRegistrationHandler
     {
         ILCursor c = new ILCursor(il);
         int firstEnemyTypeLoc = -1;
+        ILLabel firstSkip = null!;
         if (!c.TryGotoNext(
-            MoveType.Before,
+            MoveType.After,
             c => c.MatchLdfld<SpawnableEnemyWithRarity>(nameof(SpawnableEnemyWithRarity.enemyType)),
             c => c.MatchStloc(out firstEnemyTypeLoc)
         ))
@@ -61,39 +62,18 @@ static class EnemyRegistrationHandler
             return;
         }
 
-
         if (!c.TryGotoNext(
             MoveType.After,
-            c => c.MatchLdcI4(0),
-            c => c.MatchStfld<EnemyType>(nameof(EnemyType.hasSpawnedAtLeastOne))
+            c => c.MatchBrfalse(out firstSkip)
         ))
         {
             DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (1)!");
             return;
         }
 
-        ILLabel firstSkip = null!;
-
-        if (!c.TryGotoPrev(
-            MoveType.After,
-            c => c.MatchBrfalse(out firstSkip)
-        ))
-        {
-            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (2)!");
-            return;
-        }
-
         // emit function that takes in enemytype and return true or false, false to do vanilla behaviour
         c.Emit(OpCodes.Ldloc, firstEnemyTypeLoc);
-        c.EmitDelegate((EnemyType enemyType) =>
-        {
-            if (!enemyType.HasDawnInfo())
-            {
-                return false;
-            }
-
-            return !enemyType.GetDawnInfo().ShouldSkipRespectOverride();
-        });
+        c.EmitDelegate(DawnLibHandledEnemy);
         c.Emit(OpCodes.Brfalse_S, firstSkip);
 
         if (il.Method.Name.Contains("PredictAllOutsideEnemies") || il.Method.Name.Contains("SpawnRandomWeedEnemy"))
@@ -102,49 +82,37 @@ static class EnemyRegistrationHandler
         }
 
         int secondEnemyTypeLoc = -1;
-        if (!c.TryGotoNext(
-            MoveType.Before,
-            c => c.MatchLdfld<SpawnableEnemyWithRarity>(nameof(SpawnableEnemyWithRarity.enemyType)),
-            c => c.MatchStloc(out secondEnemyTypeLoc)
-        ))
-        {
-            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (3)!");
-            return;
-        }
-
-        if (!c.TryGotoNext(
-            MoveType.After,
-            c => c.MatchLdcI4(0),
-            c => c.MatchStfld<EnemyType>(nameof(EnemyType.hasSpawnedAtLeastOne))
-        ))
-        {
-            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (4)!");
-            return;
-        }
-
         ILLabel secondSkip = null!;
-
-        if (!c.TryGotoPrev(
+        if (!c.TryGotoNext(
             MoveType.After,
+            c => c.MatchLdfld<SpawnableEnemyWithRarity>(nameof(SpawnableEnemyWithRarity.enemyType)),
+            c => c.MatchStloc(out secondEnemyTypeLoc),
+            c => c.MatchLdarg(0),
+            c => c.MatchLdfld(out _),
             c => c.MatchBrfalse(out secondSkip)
         ))
         {
-            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (5)!");
+            DawnPlugin.Logger.LogError($"Failed to apply {il.Method.Name} patch (2)!");
             return;
         }
 
         // emit function that takes in enemytype and return true or false, false to do vanilla behaviour
         c.Emit(OpCodes.Ldloc, secondEnemyTypeLoc);
-        c.EmitDelegate((EnemyType enemyType) =>
-        {
-            if (!enemyType.HasDawnInfo())
-            {
-                return false;
-            }
-
-            return !enemyType.GetDawnInfo().ShouldSkipRespectOverride();
-        });
+        c.EmitDelegate(DawnLibHandledEnemy);
         c.Emit(OpCodes.Brfalse_S, secondSkip);
+
+        DawnPlugin.Logger.LogInfo($"IL for {il.Method.Name}:\n{il.ToString()}");
+    }
+
+    private static bool DawnLibHandledEnemy(EnemyType enemyType)
+    {
+        DawnEnemyInfo? enemyInfo = enemyType.GetDawnInfo();
+        if (enemyInfo == null)
+        {
+            return false;
+        }
+
+        return !enemyInfo.ShouldSkipRespectOverride();
     }
 
     private static void FixDawnEnemyReferences()

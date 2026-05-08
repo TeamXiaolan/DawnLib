@@ -96,15 +96,6 @@ static class DungeonRegistrationHandler
         orig(self);
     }
 
-    private static IEnumerator LoadDawnDungeonBundles()
-    {
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
-        {
-            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(dungeonInfo.AssetBundlePath);
-            yield return request;
-        }
-    }
-
     private static void MakeExtraScrapGenerationMoreModular(ILContext il)
     {
         ILCursor cursor = new(il);
@@ -280,23 +271,22 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator UnloadDungeonBundleForAllPlayers(On.StartOfRound.orig_EndOfGame orig, StartOfRound self, int bodiesInsured, int connectedPlayersOnServer, int scrapCollected)
     {
-        if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn())
+        bool unloadIsOkay = !DungeonGenerationPlusCompat.Enabled || !DungeonGenerationPlusCompat.IsDebugOn();
+        if (unloadIsOkay)
         {
-            yield break;
-        }
-
-        if (DawnDungeonNetworker.Instance != null)
-        {
-            IEnumerator unloadIEnumerator = DawnDungeonNetworker.Instance.UnloadExisting();
-            while (unloadIEnumerator.MoveNext())
+            if (DawnDungeonNetworker.Instance != null)
             {
-                yield return unloadIEnumerator.Current;
+                IEnumerator unloadIEnumerator = DawnDungeonNetworker.Instance.UnloadExisting();
+                while (unloadIEnumerator.MoveNext())
+                {
+                    yield return unloadIEnumerator.Current;
+                }
+                DawnDungeonNetworker.Instance.PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
             }
-            DawnDungeonNetworker.Instance.PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
-        }
-        else if (!DawnConfig.VanillaCompatibility.Value)
-        {
-            DawnPlugin.Logger.LogError($"DawnDungeonNetworker is null, but VanillaCompatibility is false! This is a bug!");
+            else if (!DawnConfig.VanillaCompatibility.Value)
+            {
+                DawnPlugin.Logger.LogError($"DawnDungeonNetworker is null, but VanillaCompatibility is false! This is a bug!");
+            }
         }
 
         IEnumerator origIEnumerator = orig(self, bodiesInsured, connectedPlayersOnServer, scrapCollected);
@@ -308,22 +298,22 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator LoadDungeonBundle()
     {
-        if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn())
-        {
-            yield break;
-        }
-
         DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
-        if (!dungeonInfo.ShouldSkipIgnoreOverride())
+
+        bool loadIsOkay = !DungeonGenerationPlusCompat.Enabled || !DungeonGenerationPlusCompat.IsDebugOn();
+        if (loadIsOkay)
         {
-            DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(dungeonInfo.Key);
-            IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
-            while (waitForLoad.MoveNext())
+            if (!dungeonInfo.ShouldSkipIgnoreOverride())
             {
-                yield return waitForLoad.Current;
+                DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(dungeonInfo.Key);
+                IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
+                while (waitForLoad.MoveNext())
+                {
+                    yield return waitForLoad.Current;
+                }
             }
+            yield return new WaitForSeconds(0.1f);
         }
-        yield return new WaitForSeconds(0.1f);
 
         if (LethalLevelLoaderCompat.Enabled && dungeonInfo.ShouldSkipRespectOverride())
         {

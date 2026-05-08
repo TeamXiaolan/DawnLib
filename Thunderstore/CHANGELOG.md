@@ -1,4 +1,8 @@
-# v0.9.16
+# v0.9.17
+
+- This has to be my 3rd or 4th attempt on the enemy transpilers thing.
+
+## v0.9.16
 
 - Fixed some more issues with transpilers relating to dawnlib enemy spawns.
 - Adjusted the logic for replacing blank map objects/hazards.
