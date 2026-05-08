@@ -109,10 +109,10 @@ static class EnemyRegistrationHandler
         DawnEnemyInfo? enemyInfo = enemyType.GetDawnInfo();
         if (enemyInfo == null)
         {
-            return false;
+            return true;
         }
 
-        return !enemyInfo.ShouldSkipRespectOverride();
+        return enemyInfo.ShouldSkipRespectOverride();
     }
 
     private static void FixDawnEnemyReferences()
