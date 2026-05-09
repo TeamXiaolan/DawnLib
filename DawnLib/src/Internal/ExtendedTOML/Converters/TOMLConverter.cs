@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Dawn.Internal;
 
@@ -11,7 +12,7 @@ public abstract class TOMLConverter
     public virtual bool IsEnabled() => true;
 }
 
-public abstract class TOMLConverter<T> : TOMLConverter
+public abstract class TOMLConverter<T> : TOMLConverter where T : notnull
 {
     public override Type ConvertingType => typeof(T);
 

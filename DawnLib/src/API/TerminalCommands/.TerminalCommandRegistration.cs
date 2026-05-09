@@ -237,11 +237,12 @@ static class TerminalCommandRegistration
 
     private static string ReplaceInternalLevelNames(string input)
     {
+        string result = string.Empty;
         foreach ((string internalName, string humanName) in _internalToHumanRouteNames)
         {
-            input = input.Replace(internalName, humanName);
+            result = input.Replace(internalName, humanName);
         }
-        return input;
+        return result;
     }
 
     private static bool TryGetEventCommandFromNode(TerminalNode node, [NotNullWhen(true)] out DawnEventDrivenCommandInfo? eventDrivenCommandInfo)

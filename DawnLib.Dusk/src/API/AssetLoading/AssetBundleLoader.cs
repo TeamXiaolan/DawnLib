@@ -23,7 +23,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
     private AssetBundle? _bundle;
 
-    protected AssetBundleLoader(DuskMod mod, string filePath) : this(mod.Assembly, filePath)
+    protected AssetBundleLoader(DuskMod mod, string filePath) : this(mod.Assembly!, filePath)
     {
     }
 

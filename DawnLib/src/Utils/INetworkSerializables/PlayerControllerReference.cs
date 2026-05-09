@@ -19,8 +19,16 @@ public class PlayerControllerReference : INetworkSerializable, IEquatable<Player
 
     public static implicit operator PlayerControllerB(PlayerControllerReference reference)
     {
-        if (reference == null) return null;
-        if (reference._playerID == -1) return null;
+        if (reference == null)
+        {
+            throw new ArgumentNullException(nameof(reference) + " is null.");
+        }
+
+        if (reference._playerID == -1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reference) + " is invalid.");
+        }
+
         return StartOfRound.Instance.allPlayerScripts[reference._playerID];
     }
 

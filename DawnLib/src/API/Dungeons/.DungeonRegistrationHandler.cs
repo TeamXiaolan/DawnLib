@@ -603,11 +603,12 @@ static class DungeonRegistrationHandler
 
     private static string ReplaceInternalLevelNames(string input)
     {
+        string result = string.Empty;
         foreach ((string internalName, string humanName) in _internalToHumanDungeonNames)
         {
-            input = input.Replace(internalName, humanName);
+            result = input.Replace(internalName, humanName);
         }
-        return input;
+        return result;
     }
 
     private static void CollectLLLTags(DungeonFlow dungeonFlow, HashSet<NamespacedKey> tags)

@@ -97,7 +97,7 @@ static class LethalLibCompat
         modName = "lethal_lib";
         foreach (RegisteredMapObject registeredMapObject in mapObjects)
         {
-            if (registeredMapObject.mapObject != null && registeredMapObject.mapObject.prefabToSpawn == mapObject)
+            if (registeredMapObject.indoorMapHazardType != null && registeredMapObject.indoorMapHazardType.prefabToSpawn == mapObject)
             {
                 return true;
             }

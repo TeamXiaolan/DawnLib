@@ -14,6 +14,7 @@ public class SceneReference
     [field: SerializeField]
     private string _bundleName;
 
+    public string AssetGUID => _assetGUID;
     public string ScenePath => _scenePath;
     public string BundleName => _bundleName;
     public string SceneName => !string.IsNullOrWhiteSpace(ScenePath) ? DawnNetworkSceneManager.GetSceneNameFromPath(ScenePath) : string.Empty;

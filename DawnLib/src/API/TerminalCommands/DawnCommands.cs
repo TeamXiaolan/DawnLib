@@ -88,7 +88,7 @@ public static class DawnCommands
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     relevantMoonInfo,
                     null,
-                    TimeOfDayRefs.GetCurrentWeatherEffect(relevantMoonInfo.Level)?.GetDawnInfo())
+                    includeWeather ? TimeOfDayRefs.GetCurrentWeatherEffect(relevantMoonInfo.Level)?.GetDawnInfo() : null)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, relevantMoonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = dungeonInfo.Weights.GetFor(ctx) ?? 0;
