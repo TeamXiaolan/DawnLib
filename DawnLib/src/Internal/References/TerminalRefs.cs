@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Dawn.Internal;
@@ -15,7 +16,9 @@ public static class TerminalRefs
                 _instance = UnityEngine.Object.FindFirstObjectByType<Terminal>();
                 if (_instance == null)
                 {
-                    throw new NullReferenceException("Tried to access terminal but it was null!");
+#pragma warning disable CS8603 // Possible null reference return.
+                    return null;
+#pragma warning restore CS8603 // Possible null reference return.
                 }
                 BuyKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "buy");
                 InfoKeyword = _instance.terminalNodes.allKeywords.First(keyword => keyword.word == "info");
