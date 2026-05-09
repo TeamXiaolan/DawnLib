@@ -123,15 +123,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         StartCoroutine(DoMoonSceneLoading(moonInfo, sceneInfo));
     }
 
-    // todo: this is technically insecure. i dont care
-    [ServerRpc(RequireOwnership = false)]
-    private void PlayerSetBundleStateServerRpc(PlayerControllerReference reference, BundleState state)
-    {
-        PlayerSetBundleStateClientRpc(reference, state);
-    }
-
-    [ClientRpc]
-    public void PlayerSetBundleStateClientRpc(PlayerControllerReference reference, BundleState state)
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void PlayerSetBundleStateRpc(PlayerControllerReference reference, BundleState state)
     {
         PlayerControllerB player = reference;
 
@@ -151,7 +144,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
         if (Equals(moonInfo.TypedKey, _currentMoonKey) && Equals(sceneInfo.TypedKey, _currentSceneKey))
         {
-            PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+            PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
             yield break;
         }
         _currentMoonKey = moonInfo.TypedKey;
@@ -172,7 +165,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                     yield return StartCoroutine(UnloadExisting());
                 }
 
-                PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
+                PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
                 yield return null;
 
 
@@ -184,7 +177,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
                 // todo: more graceful error handling?
                 if (hasError)
                 {
-                    PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
+                    PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
                     yield break;
                 }
                 else
@@ -199,7 +192,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
             yield return StartCoroutine(UnloadExisting());
         }
 
-        PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+        PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
     bool CheckMoonBundleFailed(CustomMoonSceneInfo sceneInfo, AssetBundleCreateRequest request)
@@ -236,6 +229,8 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
         // request that the bundle gets unloaded just before this object gets destroyed. e.g. going back to main menu
         _currentBundle?.Unload(true);
+        _currentBundle = null;
+        _currentBundlePath = null;
     }
 
     private IEnumerator UnloadExisting()
@@ -243,7 +238,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         if (_currentBundle == null)
             yield break;
 
-        PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
+        PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
         yield return _currentBundle.UnloadAsync(true);
 

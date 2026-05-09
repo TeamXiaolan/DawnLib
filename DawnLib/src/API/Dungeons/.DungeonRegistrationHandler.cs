@@ -28,8 +28,6 @@ static class DungeonRegistrationHandler
             On.StartOfRound.Awake += RegisterDawnDungeons;
         }
 
-        On.StartOfRound.OnClientDisconnect += StartOfRoundOnClientDisconnect;
-
         using (new DetourContext(priority: 200))
         {
             DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), FixRandomMapObjects));
@@ -235,11 +233,11 @@ static class DungeonRegistrationHandler
             dungeonInfo.DungeonFlow.Lines.Clear();
             for (int i = archetypes.Count - 1; i >= 0; i--)
             {
-                ScriptableObject.Destroy(archetypes[i]);
+                DungeonArchetype.Destroy(archetypes[i]);
             }
             for (int i = tileSets.Count - 1; i >= 0; i--)
             {
-                ScriptableObject.Destroy(tileSets[i]);
+                TileSet.Destroy(tileSets[i]);
             }
         }
     }
@@ -281,7 +279,7 @@ static class DungeonRegistrationHandler
                 {
                     yield return unloadIEnumerator.Current;
                 }
-                DawnDungeonNetworker.Instance.PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+                DawnDungeonNetworker.Instance.PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
             }
             else if (!DawnConfig.VanillaCompatibility.Value)
             {
@@ -328,16 +326,6 @@ static class DungeonRegistrationHandler
             }
             RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier = Mathf.Clamp(RoundManager.Instance.dungeonGenerator.Generator.LengthMultiplier, toUse.Min, toUse.Max);
             RoundManager.Instance.dungeonGenerator.Generate();
-        }
-    }
-
-    private static void StartOfRoundOnClientDisconnect(On.StartOfRound.orig_OnClientDisconnect orig, StartOfRound self, ulong clientid)
-    {
-        orig(self, clientid);
-
-        if (self.IsServer && self.inShipPhase)
-        {
-            DawnDungeonNetworker.Instance?.HostRebroadcastQueue();
         }
     }
 

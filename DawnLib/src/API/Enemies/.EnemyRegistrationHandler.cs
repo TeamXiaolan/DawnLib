@@ -100,8 +100,6 @@ static class EnemyRegistrationHandler
         c.Emit(OpCodes.Ldloc, secondEnemyTypeLoc);
         c.EmitDelegate(DawnLibHandledEnemy);
         c.Emit(OpCodes.Brfalse_S, secondSkip);
-
-        DawnPlugin.Logger.LogInfo($"IL for {il.Method.Name}:\n{il.ToString()}");
     }
 
     private static bool DawnLibHandledEnemy(EnemyType enemyType)

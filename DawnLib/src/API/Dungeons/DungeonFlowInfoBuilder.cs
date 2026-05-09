@@ -101,7 +101,6 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         }
 
         line.DungeonArchetypes.Add(targetArchetype);
-
         return this;
     }
 

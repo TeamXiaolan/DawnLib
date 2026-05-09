@@ -112,7 +112,7 @@ static class SurfaceRegistrationHandler
 
             return true; // Skip vanilla logic for the current path node
         });
-        c.Emit(Mono.Cecil.Cil.OpCodes.Brtrue, skipToFlagLabel);
+        c.Emit(Mono.Cecil.Cil.OpCodes.Brtrue_S, skipToFlagLabel);
     }
 
     private static void AllowCustomSurfacesInQuicksand(ILContext il)

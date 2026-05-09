@@ -61,6 +61,7 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
             if (state == DawnMoonNetworker.BundleState.Error)
             {
                 anyErrors = true;
+                break;
             }
 
             if (state == DawnMoonNetworker.BundleState.Queued)
@@ -69,11 +70,7 @@ public class RouteProgressUI : Singleton<RouteProgressUI>
             }
             else if (state == DawnMoonNetworker.BundleState.Loading)
             {
-                currentProgress += 0.50f;
-            }
-            else if (state == DawnMoonNetworker.BundleState.Loading)
-            {
-                currentProgress += 0.75f;
+                currentProgress += 0.65f;
             }
             else if (state == DawnMoonNetworker.BundleState.Done)
             {

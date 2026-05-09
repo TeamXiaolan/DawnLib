@@ -35,33 +35,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     private static readonly List<GameObject> _objectsToUnregister = new();
 
-    internal void HostDecide(DawnDungeonInfo dungeonInfo)
-    {
-        QueueDungeonBundleLoadingServerRpc(dungeonInfo.Key);
-    }
-
-    internal void HostRebroadcastQueue()
-    {
-        if (_currentDungeonKey == default)
-        {
-            return;
-        }
-
-        QueueDungeonBundleLoadingServerRpc(_currentDungeonKey);
-    }
-
-    [ServerRpc]
-    private void QueueDungeonBundleLoadingServerRpc(NamespacedKey dungeonKey)
-    {
-        QueueDungeonBundleLoadingClientRpc(dungeonKey);
-    }
-
-    [ClientRpc]
-    private void QueueDungeonBundleLoadingClientRpc(NamespacedKey dungeonKey)
-    {
-        QueueDungeonBundleLoading(dungeonKey);
-    }
-
     internal void QueueDungeonBundleLoading(NamespacedKey dungeonKey)
     {
         DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[dungeonKey.AsTyped<DawnDungeonInfo>()];
@@ -79,13 +52,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         StartCoroutine(DoDungeonBundleLoading(dungeonInfo));
     }
 
-    internal void SyncSpawnSyncedObjects(bool register)
-    {
-        DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
-        SyncSpawnSyncedObjects(dungeonInfo, register);
-    }
-
-    internal static void SyncSpawnSyncedObjects(DawnDungeonInfo importantDungeonInfo, bool register)
+    private static void SyncSpawnSyncedObjects(DawnDungeonInfo importantDungeonInfo, bool register)
     {
         if (importantDungeonInfo.ShouldSkipIgnoreOverride())
             return;
@@ -93,12 +60,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
         if (register)
         {
-            if (importantDungeonInfo == null)
-            {
-                DawnPlugin.Logger.LogWarning("Tried to register SpawnSyncedObjects, but no DawnDungeonInfo was provided.");
-                return;
-            }
-
             List<GameObject> potentialPrefabs = new();
             foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
             {
@@ -149,15 +110,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
     }
 
-    // todo: this is technically insecure. i dont care
-    [ServerRpc(RequireOwnership = false)]
-    internal void PlayerSetBundleStateServerRpc(PlayerControllerReference reference, BundleState state)
-    {
-        PlayerSetBundleStateClientRpc(reference, state);
-    }
-
-    [ClientRpc]
-    public void PlayerSetBundleStateClientRpc(PlayerControllerReference reference, BundleState state)
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void PlayerSetBundleStateRpc(PlayerControllerReference reference, BundleState state)
     {
         PlayerControllerB player = reference;
 
@@ -177,7 +131,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
         if (Equals(dungeonInfo.TypedKey, _currentDungeonKey))
         {
-            PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+            PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
             yield break;
         }
         _currentDungeonKey = dungeonInfo.TypedKey;
@@ -191,7 +145,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                     yield return StartCoroutine(UnloadExisting());
                 }
 
-                PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
+                PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Loading);
                 yield return null;
 
 
@@ -203,7 +157,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 // todo: more graceful error handling?
                 if (flowToLoad == null)
                 {
-                    PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
+                    PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Error);
                     yield break;
                 }
                 else
@@ -219,7 +173,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             yield return StartCoroutine(UnloadExisting());
         }
 
-        PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
+        PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Done);
     }
 
     private DungeonFlow? CheckDungeonBundleFailed(DawnDungeonInfo dungeonInfo, AssetBundleCreateRequest request)
@@ -247,7 +201,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         if (_currentBundle == null)
             return;
 
-        SyncSpawnSyncedObjects(false);
+        UnloadAndHandleFlow(_currentBundle);
         _currentBundle.Unload(true);
     }
 
@@ -256,16 +210,27 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         if (_currentBundle == null)
             yield break;
 
-        PlayerSetBundleStateServerRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
+        PlayerSetBundleStateRpc(GameNetworkManager.Instance.localPlayerController, BundleState.Unloading);
 
+        UnloadAndHandleFlow(_currentBundle);
+
+        yield return _currentBundle.UnloadAsync(true);
+        _currentBundle = null;
+        _currentBundlePath = null;
+        yield return Resources.UnloadUnusedAssets();
+        System.GC.Collect();
+    }
+
+    private void UnloadAndHandleFlow(AssetBundle currentBundle)
+    {
         DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
         DungeonFlow flowToClear = dungeonInfo.DungeonFlow;
 
         if (DungeonGenerationPlusCompat.Enabled)
         {
-            DungeonGenerationPlusCompat.HandleExtenderForBundle(_currentBundle, flowToClear, false);
+            DungeonGenerationPlusCompat.HandleExtenderForBundle(currentBundle, flowToClear, false);
         }
-        SyncSpawnSyncedObjects(false);
+        SyncSpawnSyncedObjects(dungeonInfo, false);
 
         if (_temporaryDungeonFlow != null)
         {
@@ -274,7 +239,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             ScriptableObject.Destroy(_temporaryDungeonFlow);
             _temporaryDungeonFlow = null;
         }
-
 
         dungeonInfo.sockets.Clear();
         dungeonInfo.doorways.Clear();
@@ -285,12 +249,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type. 
         _currentDungeonKey = default;
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
-
-        yield return _currentBundle.UnloadAsync(true);
-        _currentBundle = null;
-        _currentBundlePath = null;
-        yield return Resources.UnloadUnusedAssets();
-        System.GC.Collect();
     }
 
     private void CheckReady()
@@ -426,7 +384,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
         dungeonInfo.sockets = new();
 
-        var tileSets = flow.TileInjectionRules
+        IEnumerable<TileSet> tileSets = flow.TileInjectionRules
             .Select(it => it.TileSet)
             .Concat(flow.GetUsedTileSets())
             .Distinct();
@@ -470,9 +428,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         return dungeonInfo;
     }
 
-    private static void AddSpawnSyncedObjectsFromWeights(
-        DawnDungeonInfo dungeonInfo,
-        IEnumerable<GameObjectWeight> weights)
+    private static void AddSpawnSyncedObjectsFromWeights(DawnDungeonInfo dungeonInfo, IEnumerable<GameObjectWeight> weights)
     {
         foreach (GameObjectWeight doorwayTileWeight in weights)
         {

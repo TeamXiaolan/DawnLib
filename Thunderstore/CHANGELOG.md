@@ -1,4 +1,9 @@
-# v0.9.18
+# v0.9.19
+
+- Code cleanup.
+- Adding some compatibility for LLL moon hotloading with Dawn UI with paco.
+
+## v0.9.18
 
 - I haven't been this frustrated in a singular thing in such a long time.
 
