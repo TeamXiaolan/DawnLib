@@ -50,6 +50,7 @@ static class SurfaceRegistrationHandler
         PlayerControllerB playerControllerB = self.thisPlayerController;
         if (playerControllerB.isClimbingLadder || playerControllerB.inSpecialInteractAnimation)
         {
+            orig(self);
             return;
         }
 
@@ -65,6 +66,7 @@ static class SurfaceRegistrationHandler
         DawnSurfaceInfo? surfaceInfo = StartOfRound.Instance.footstepSurfaces[playerControllerB.currentFootstepSurfaceIndex].GetDawnInfo();
         if (surfaceInfo == null || surfaceInfo.CrouchClips == null || surfaceInfo.CrouchClips.Count == 0)
         {
+            orig(self);
             return;
         }
 
@@ -76,7 +78,7 @@ static class SurfaceRegistrationHandler
 
         playerControllerB.movementAudio.pitch = UnityEngine.Random.Range(0.93f, 1.07f);
 
-        float volumeScale = 0.6f;
+        float volumeScale = 0.3f;
         volumeScale *= surfaceInfo.Volume;
         playerControllerB.movementAudio.PlayOneShot(surfaceInfo.CrouchClips[index], volumeScale);
         playerControllerB.previousFootstepClip = index;
@@ -89,12 +91,12 @@ static class SurfaceRegistrationHandler
         new()
         {
             AnimationEventName = "PlayCrouchFootstepSound",
-            Time = 0.5f,
+            Time = 0.33f,
         },
         new()
         {
             AnimationEventName = "PlayCrouchFootstepSound",
-            Time = 1f,
+            Time = 0.66f,
         }
     };
 
@@ -151,9 +153,8 @@ static class SurfaceRegistrationHandler
                 return;
             }
 
-            c.Index++;
+            c.GotoNext(MoveType.After, i => i.MatchLdarg(0));
 
-            c.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
             c.EmitLdfld(type, "currentFootstepSurfaceIndex");
             c.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, location);
             c.EmitDelegate((int currentFootstepSurfaceIndex, ref float volume) =>
@@ -167,6 +168,7 @@ static class SurfaceRegistrationHandler
 
                 volume *= surfaceInfo.Volume;
             });
+            c.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
         };
     }
 
