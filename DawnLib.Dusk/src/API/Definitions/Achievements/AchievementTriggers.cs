@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Dawn.Internal;
 using UnityEngine;
 using UnityEngine.Events;
@@ -49,6 +50,18 @@ public class AchievementTriggers : MonoBehaviour
         }
     }
 
+    public void TryDiscoverMoreProgressAchievement(List<string> uniqueStringIDs)
+    {
+        Debuggers.Achievements?.Log($"Trying to discover more progress for achievement: {_reference.TypedKey} with unique string ids: {string.Join(", ", uniqueStringIDs)}");
+        if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
+            return;
+
+        if (DuskModContent.Achievements.TryDiscoverMoreProgressAchievement(achievementDefinition.TypedKey, uniqueStringIDs))
+        {
+            _onAchievementCompleted.Invoke();
+        }
+    }
+
     public void ResetAllAchievementProgress()
     {
         Debuggers.Achievements?.Log($"Trying to reset all progress for achievement: {_reference.TypedKey}");
@@ -56,5 +69,14 @@ public class AchievementTriggers : MonoBehaviour
             return;
 
         achievementDefinition.ResetProgress();
+    }
+
+    public void SoftResetAllAchievementProgress()
+    {
+        Debuggers.Achievements?.Log($"Trying to soft reset all progress for achievement: {_reference.TypedKey}");
+        if (!_reference.TryResolve(out DuskAchievementDefinition achievementDefinition))
+            return;
+
+        achievementDefinition.SoftResetProgress();
     }
 }

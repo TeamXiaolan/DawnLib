@@ -5,6 +5,7 @@ using Dawn;
 using Dawn.Internal;
 using Dawn.Utils;
 using Dusk.Internal;
+using Dusk.Utils;
 using UnityEngine;
 
 namespace Dusk;
@@ -31,6 +32,7 @@ public class DuskPlugin : BaseUnityPlugin
         AchievementRegistrationPatch.Init();
         EntityReplacementRegistrationPatch.Init();
         DuskSaveIntegration.Init();
+        CommitKeyToSave.Init();
         if (!DawnConfig.VanillaCompatibility.Value)
         {
             NetworkerPatch.Init();

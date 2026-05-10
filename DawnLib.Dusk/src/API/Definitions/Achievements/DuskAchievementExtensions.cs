@@ -25,7 +25,15 @@ public static class DuskAchievementExtensions
         return registry.TryGetValue(achievementKey, out DuskAchievementDefinition? value) && value is DuskDiscoveryAchievement discovery && discovery.TryDiscoverMoreProgress(uniqueStringID);
     }
 
-    public static void ResetAchievementProgress(this Registry<DuskAchievementDefinition> registry, NamespacedKey<DuskAchievementDefinition> achievementKey)
+    public static void ResetAchievement(this Registry<DuskAchievementDefinition> registry, NamespacedKey<DuskAchievementDefinition> achievementKey)
+    {
+        if (registry.TryGetValue(achievementKey, out DuskAchievementDefinition? value))
+        {
+            value.ResetProgress();
+        }
+    }
+
+    public static void SoftResetAchievement(this Registry<DuskAchievementDefinition> registry, NamespacedKey<DuskAchievementDefinition> achievementKey)
     {
         if (registry.TryGetValue(achievementKey, out DuskAchievementDefinition? value))
         {

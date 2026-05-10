@@ -98,6 +98,14 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
         }
     }
 
+    public void SoftResetProgress()
+    {
+        if (Completed)
+            return;
+
+        ResetProgress();
+    }
+
     public override void Register(DuskMod mod)
     {
         base.Register(mod);

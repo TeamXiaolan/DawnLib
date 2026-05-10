@@ -4,6 +4,11 @@
 - Adding some compatibility for LLL moon hotloading with Dawn UI with paco.
 - Added the ability to add crouching footsteps to a custom footstep surface.
 - Added the ability to control the volume of all audioclips in a custom footstep surface.
+- Added the option to have a bundle in a content container disabled/enabled by default.
+- Added the ability to create your own story logs system similar to sigurd's for the terminal.
+  - You can use the scripts CommitKeyToSave and ExtraScanEvents to unlock parts of the log.
+  - This is not part of the story log registry, it is part of the terminal commands registry, this may be changed in the future.
+- Added a soft reset all progress to achievements.
 
 ## v0.9.18
 
