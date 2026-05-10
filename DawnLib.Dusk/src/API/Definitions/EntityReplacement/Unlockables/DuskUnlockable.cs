@@ -59,7 +59,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             return;
         }
 
-        if (!unlockableItem.GetDawnInfo().CustomData.TryGet(EntityReplacementRegistrationPatch.Key, out List<DuskUnlockableReplacementDefinition>? replacements))
+        if (!unlockableItem.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? replacements))
         {
             Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no replacements!");
             return;

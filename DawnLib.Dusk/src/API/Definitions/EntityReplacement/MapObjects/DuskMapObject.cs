@@ -45,7 +45,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
             return;
         }
 
-        if (!LethalContent.MapObjects[container.Value.AsTyped<DawnMapObjectInfo>()].CustomData.TryGet(EntityReplacementRegistrationPatch.Key, out List<DuskMapObjectReplacementDefinition>? replacements))
+        if (!LethalContent.MapObjects[container.Value.AsTyped<DawnMapObjectInfo>()].CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskMapObjectReplacementDefinition>? replacements))
         {
             return;
         }

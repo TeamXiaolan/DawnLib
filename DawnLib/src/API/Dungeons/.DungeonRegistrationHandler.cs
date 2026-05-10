@@ -130,7 +130,6 @@ static class DungeonRegistrationHandler
         return dungeonInfo.ExtraScrapGeneration;
     }
 
-    private static readonly NamespacedKey StingerPlayedKey = NamespacedKey.From("dawn_lib", "played_stinger_once_before");
     private static void HandleStingerAudio(On.EntranceTeleport.orig_TeleportPlayer orig, EntranceTeleport self)
     {
         if (!self.checkedForFirstTime)
@@ -149,9 +148,9 @@ static class DungeonRegistrationHandler
                 return;
             }
 
-            if (!dungeonInfo.CustomData.TryGet(StingerPlayedKey, out bool hasPlayedStingerBefore))
+            if (!dungeonInfo.CustomData.TryGet(DawnKeys.StingerPlayed, out bool hasPlayedStingerBefore))
             {
-                DawnPlugin.Logger.LogError($"Failed to get {StingerPlayedKey} from dungeon: {dungeonInfo.Key}.");
+                DawnPlugin.Logger.LogError($"Failed to get {DawnKeys.StingerPlayed} from dungeon: {dungeonInfo.Key}.");
                 orig(self);
                 return;
             }
@@ -170,7 +169,7 @@ static class DungeonRegistrationHandler
             }
 
             Debuggers.Dungeons?.Log($"Playing dungeon stinger for dungeon {dungeonInfo.Key}, alreadyPlayed: {hasPlayedStingerBefore} (Chance Roll: {chanceRoll} <= {dungeonInfo.StingerDetail.PlayChance})");
-            dungeonInfo.CustomData.Set(StingerPlayedKey, true);
+            dungeonInfo.CustomData.Set(DawnKeys.StingerPlayed, true);
             self.StartCoroutine(self.playMusicOnDelay());
         }
         orig(self);
@@ -469,9 +468,9 @@ static class DungeonRegistrationHandler
             weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
 
             PersistentDataContainer customData = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{key.Namespace}_{key.Key}"));
-            if (!customData.Has(StingerPlayedKey))
+            if (!customData.Has(DawnKeys.StingerPlayed))
             {
-                customData.Set(StingerPlayedKey, false);
+                customData.Set(DawnKeys.StingerPlayed, false);
             }
 
             DawnStingerDetail stingerDetail = new DawnStingerDetail(indoorMapType.firstTimeAudio, false, 100f, new FuncProvider<bool>(() => true));

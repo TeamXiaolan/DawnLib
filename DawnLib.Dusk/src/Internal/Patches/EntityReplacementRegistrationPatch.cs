@@ -16,8 +16,6 @@ namespace Dusk.Internal;
 
 static class EntityReplacementRegistrationPatch
 {
-    internal static readonly NamespacedKey Key = NamespacedKey.From("dawn_lib", "entity_replacements");
-
     internal static Random? itemReplacementRandom = null;
     internal static Random? nestReplacementRandom = null;
     internal static Random? enemyReplacementRandom = null;
@@ -377,12 +375,12 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.MapObjects.TryGetValue(mapObjectReplacementDefinition.EntityToReplaceKey, out DawnMapObjectInfo mapObjectInfo))
             {
-                if (!mapObjectInfo.CustomData.TryGet(Key, out List<DuskMapObjectReplacementDefinition>? list))
+                if (!mapObjectInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskMapObjectReplacementDefinition>? list))
                 {
                     DuskMapObjectReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskMapObjectReplacementDefinition>();
                     vanilla.RegisterAsDefault();
                     list = [vanilla];
-                    mapObjectInfo.CustomData.Set(Key, list);
+                    mapObjectInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
                 list.Add(mapObjectReplacementDefinition);
             }
@@ -421,12 +419,12 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.Unlockables.TryGetValue(unlockableReplacementDefinition.EntityToReplaceKey, out DawnUnlockableItemInfo unlockableItemInfo))
             {
-                if (!unlockableItemInfo.CustomData.TryGet(Key, out List<DuskUnlockableReplacementDefinition>? list))
+                if (!unlockableItemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? list))
                 {
                     DuskUnlockableReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskUnlockableReplacementDefinition>();
                     vanilla.RegisterAsDefault();
                     list = [vanilla];
-                    unlockableItemInfo.CustomData.Set(Key, list);
+                    unlockableItemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
                 list.Add(unlockableReplacementDefinition);
             }
@@ -442,12 +440,12 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.Items.TryGetValue(itemReplacementDefinition.EntityToReplaceKey, out DawnItemInfo itemInfo))
             {
-                if (!itemInfo.CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? list))
+                if (!itemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? list))
                 {
                     DuskItemReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
                     vanilla.RegisterAsDefault();
                     list = [vanilla];
-                    itemInfo.CustomData.Set(Key, list);
+                    itemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
                 list.Add(itemReplacementDefinition);
             }
@@ -506,7 +504,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void SetReplacement(GrabbableObject grabbableObject)
     {
-        if (!grabbableObject.itemProperties.GetDawnInfo().CustomData.TryGet(Key, out List<DuskItemReplacementDefinition>? replacements))
+        if (!grabbableObject.itemProperties.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? replacements))
         {
             return;
         }
@@ -666,7 +664,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
+        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             orig(self);
             return;
@@ -725,12 +723,12 @@ static class EntityReplacementRegistrationPatch
 
             if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
             {
-                if (!enemyInfo.CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? list))
+                if (!enemyInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? list))
                 {
                     DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
                     defaultSkin.RegisterAsDefault();
                     list = [defaultSkin];
-                    enemyInfo.CustomData.Set(Key, list);
+                    enemyInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
                 list.Add(enemyReplacementDefinition);
             }
@@ -746,7 +744,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(Key, out List<DuskEnemyReplacementDefinition>? replacements))
+        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             return;
         }

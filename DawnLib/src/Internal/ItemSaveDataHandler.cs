@@ -30,8 +30,6 @@ public static class ItemSaveDataHandler
         }
     }
 
-    private static readonly NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_items_save_data");
-
     internal static void LoadSavedItems(PersistentDataContainer dataContainer)
     {
         JObject? root = TryGetCurrentFormat(dataContainer);
@@ -114,7 +112,7 @@ public static class ItemSaveDataHandler
 
         using (dataContainer.CreateEditContext())
         {
-            dataContainer.Set(_namespacedKey, root);
+            dataContainer.Set(DawnKeys.ShipItemsSaveData, root);
         }
     }
 
@@ -219,7 +217,7 @@ public static class ItemSaveDataHandler
 
         try
         {
-            root = dataContainer.GetOrCreateDefault<JObject>(_namespacedKey);
+            root = dataContainer.GetOrCreateDefault<JObject>(DawnKeys.ShipItemsSaveData);
         }
         catch (Exception e)
         {

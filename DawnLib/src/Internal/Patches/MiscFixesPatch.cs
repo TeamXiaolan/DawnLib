@@ -177,6 +177,7 @@ static class MiscFixesPatch
         {
             return;
         }
+
         AudioMixer audioMixer = menuManagerAudioSource.outputAudioMixerGroup.audioMixer;
         foreach (GameObject prefabToFix in soundPrefabsToFix)
         {

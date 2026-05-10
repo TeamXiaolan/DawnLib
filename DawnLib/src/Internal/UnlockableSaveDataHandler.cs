@@ -11,8 +11,6 @@ public static class UnlockableSaveDataHandler
 {
     internal static List<PlaceableShipObject> placeableShipObjects = new();
 
-    private static readonly NamespacedKey _namespacedKey = NamespacedKey.From("dawn_lib", "ship_unlockables_save_data");
-
     internal static void LoadSavedUnlockables(PersistentDataContainer dataContainer)
     {
         JObject? root = TryGetNewFormat(dataContainer);
@@ -235,7 +233,7 @@ public static class UnlockableSaveDataHandler
 
         using (dataContainer.CreateEditContext())
         {
-            dataContainer.Set(_namespacedKey, root);
+            dataContainer.Set(DawnKeys.ShipUnlockablesSaveData, root);
         }
     }
 
@@ -245,7 +243,7 @@ public static class UnlockableSaveDataHandler
 
         try
         {
-            root = dataContainer.GetOrCreateDefault<JObject>(_namespacedKey);
+            root = dataContainer.GetOrCreateDefault<JObject>(DawnKeys.ShipUnlockablesSaveData);
         }
         catch (Exception e)
         {
@@ -308,7 +306,7 @@ public static class UnlockableSaveDataHandler
 
         try
         {
-            legacyList = dataContainer.GetOrCreateDefault<List<UnlockableSaveData>>(_namespacedKey);
+            legacyList = dataContainer.GetOrCreateDefault<List<UnlockableSaveData>>(DawnKeys.ShipUnlockablesSaveData);
         }
         catch (Exception e)
         {
@@ -363,7 +361,7 @@ public static class UnlockableSaveDataHandler
 
         using (dataContainer.CreateEditContext())
         {
-            dataContainer.Set(_namespacedKey, root);
+            dataContainer.Set(DawnKeys.ShipUnlockablesSaveData, root);
         }
 
         DawnPlugin.Logger.LogInfo($"Migration complete. Migrated {itemsArray.Count} unlockables into new compact format.");

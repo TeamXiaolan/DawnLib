@@ -8,8 +8,10 @@
 - Added the ability to create your own story logs system similar to sigurd's for the terminal.
   - You can use the scripts CommitKeyToSave and ExtraScanEvents to unlock parts of the log.
   - This is not part of the story log registry, it is part of the terminal commands registry, this may be changed in the future.
-- Added a soft reset all progress to achievements.
+- Added a soft reset all progress to achievements for AchievementTriggers script.
+  - This allows resetting achievement progress IF the achievement had not been completed.
 - User generated configs from the editor are now affected by the AllowEditingConfig setting.
+- Fixed issue with disabling/enabling DawnLib on and off with older save files affecting newer ones.
 
 ## v0.9.18
 

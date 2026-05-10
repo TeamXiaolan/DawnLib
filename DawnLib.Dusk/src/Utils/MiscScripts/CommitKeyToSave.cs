@@ -25,7 +25,7 @@ public class CommitKeyToSave : MonoBehaviour
     public NamespacedKey NamespacedKey { get; private set; }
 
     [field: SerializeField, TextArea(2, 10)]
-    public string FoundEntryText { get; private set; } = "Found journal entry: '" + "'";
+    public string FoundEntryText { get; private set; } = "Found journal entry: ' '";
 
     [field: SerializeField]
     public bool SaveImmediately { get; private set; } = false;

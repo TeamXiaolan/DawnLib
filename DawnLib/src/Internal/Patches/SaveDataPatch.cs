@@ -1,9 +1,14 @@
-
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Dawn.Utils;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace Dawn.Internal;
 
@@ -14,12 +19,67 @@ static class SaveDataPatch
     {
         On.MenuManager.Start += LCBetterSaveInit;
         On.MenuManager.Start += SetLastDawnVersion;
+        On.MenuManager.Start += ResetInvalidSaveFiles;
         On.DeleteFileButton.DeleteFile += ResetSaveFile;
         On.GameNetworkManager.ResetSavedGameValues += ResetSaveFile;
         On.StartOfRound.AutoSaveShipData += SaveData;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "Awake"), OnPlaceableShipObjectAwake));
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlaceableShipObject), "OnDestroy"), OnPlaceableShipObjectOnDestroy));
+    }
+
+    private static readonly Regex SaveFileRegex = new Regex(@"^ContractLCSaveFile\d+$");
+    private static List<string> GetDawnSaveFiles()
+    {
+        return Directory.EnumerateFiles(PersistentDataHandler.RootPath, "ContractLCSaveFile*", SearchOption.TopDirectoryOnly)
+            .Where(file =>
+            {
+                string fileName = Path.GetFileName(file);
+                return SaveFileRegex.IsMatch(fileName);
+            })
+            .ToList();
+    }
+
+    private static void ResetInvalidSaveFiles(On.MenuManager.orig_Start orig, MenuManager self)
+    {
+        if (!DawnPlugin.PersistentData.TryGet(DawnKeys.LastVersion, out string? lastLaunchVersion) || Version.Parse(lastLaunchVersion) <= Version.Parse("0.9.18")) // 0.9.18 is the version before the saves thing was created
+        {
+            orig(self);
+            return;
+        }
+
+        string DawnSaveKey = DawnKeys.DawnSave.ToString();
+        foreach (string dawnSaveFile in GetDawnSaveFiles())
+        {
+            int saveNumber = int.Parse(dawnSaveFile[^1..]);
+            string fileName = $"LCSaveFile{saveNumber}";
+            string vanillaFilePath = Path.Combine(Application.persistentDataPath, fileName);
+
+            bool fileExists = File.Exists(vanillaFilePath);
+            if (fileExists)
+            {
+                continue;
+            }
+
+            ES3Settings settings = new ES3Settings(vanillaFilePath);
+            if (ES3.KeyExists(DawnSaveKey, settings))
+            {
+                continue;
+            }
+
+            PersistentDataContainer contractContainer = DawnNetworker.CreateContractContainer(fileName);
+            contractContainer.Clear();
+
+            PersistentDataContainer saveContainer = DawnNetworker.CreateSaveContainer(fileName);
+            saveContainer.Clear();
+            Debuggers.SaveManager?.Log($"Clearing potential invalid save: {dawnSaveFile}.");
+
+            if (fileExists)
+            {
+                ES3.Save(DawnSaveKey, true, settings);
+            }
+        }
+        orig(self);
     }
 
     private static void SetLastDawnVersion(On.MenuManager.orig_Start orig, MenuManager self)
