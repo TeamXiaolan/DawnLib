@@ -41,7 +41,7 @@ public abstract class DuskContentDefinition : ScriptableObject
         using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         foreach (DuskDynamicConfig configDefinition in _configEntries)
         {
-            ConfigEntryBase entry = mod.ConfigManager.CreateDynamicConfig(configDefinition, context);
+            ConfigEntryBase entry = mod.ConfigManager.CreateDynamicConfig(BaseConfig?.UserAllowedToEdit() ?? true, configDefinition, context);
             generalConfigs[configDefinition.settingName.CleanStringForConfig()] = entry;
         }
     }

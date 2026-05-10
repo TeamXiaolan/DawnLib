@@ -21,11 +21,16 @@ public class ConfigManager(ConfigFile file)
         return CreateConfigSection(data.configName + " Options");
     }
 
-    public ConfigEntryBase CreateDynamicConfig(DuskDynamicConfig configDefinition, ConfigContext context)
+    public ConfigEntryBase CreateDynamicConfig(bool userAllowedToEdit, DuskDynamicConfig configDefinition, ConfigContext context)
     {
         ConfigEntryBase Bind<T>(T defaultValue)
         {
-            return context.Bind(configDefinition.settingName, configDefinition.Description, defaultValue);
+            ConfigEntry<T> configEntry = context.Bind(configDefinition.settingName, configDefinition.Description, defaultValue);
+            if (!userAllowedToEdit)
+            {
+                DuskBaseConfig.AssignValueIfNotNull(configEntry, defaultValue);
+            }
+            return configEntry;
         }
 
         return configDefinition.DynamicConfigType switch

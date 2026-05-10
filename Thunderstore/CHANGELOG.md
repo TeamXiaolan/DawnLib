@@ -9,6 +9,7 @@
   - You can use the scripts CommitKeyToSave and ExtraScanEvents to unlock parts of the log.
   - This is not part of the story log registry, it is part of the terminal commands registry, this may be changed in the future.
 - Added a soft reset all progress to achievements.
+- User generated configs from the editor are now affected by the AllowEditingConfig setting.
 
 ## v0.9.18
 
