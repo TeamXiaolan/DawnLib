@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Dawn;
+using Dusk.Utils;
 using UnityEngine;
 
 namespace Dusk;
@@ -90,6 +92,72 @@ public class SimpleInputCommand
     public string FailedInputResult { get; private set; }
 }
 
+[Serializable]
+public class StoryLogCommand
+{
+    [field: SerializeField]
+    public bool Enabled { get; private set; }
+
+    [field: SerializeField]
+    [field: Tooltip("Keywords such as sigurd `gold` or sigurd `work`, etc.")]
+    public List<string> InputKeywords { get; private set; } = new();
+
+    [field: SerializeField]
+    [field: Tooltip("Result of each keyword in the same order as InputKeywords.")]
+    [field: TextArea(2, 10)]
+    public List<string> ResultDisplayTexts { get; private set; } = new();
+
+    [field: SerializeField]
+    [field: Tooltip("Keys that need to be saved in order to unlock the above entries.")]
+    public List<NamespacedKey> SavedResultKeys { get; private set; } = new();
+    [field: SerializeField]
+    [field: Tooltip("Appends text for each key that is in the save file.")]
+    public List<string> TextToAppendAfterEmptyResult { get; private set; } = new();
+    [field: SerializeField]
+    [field: Tooltip("Text added to the very beginning of the command when not given or given an invalid input.")]
+    [field: TextArea(2, 10)]
+    public string EmptyResultDisplayText { get; private set; }
+    [field: SerializeField]
+    [field: Tooltip("Text added to the very end of the command when not given or given an invalid input.")]
+    [field: TextArea(2, 10)]
+    public string PostEmptyResultDisplayText { get; private set; }
+
+    internal string ResultDisplayText(string userInput)
+    {
+        PersistentDataContainer? save = DawnLib.GetCurrentSave();
+        if (save == null)
+        {
+            return EmptyResultDisplayText;
+        }
+
+        HashSet<NamespacedKey> savedKeys = save.GetOrCreateDefault<HashSet<NamespacedKey>>(Dawn.Utils.ExtraScanEvents._dataKey);
+        savedKeys.UnionWith(save.GetOrCreateDefault<HashSet<NamespacedKey>>(CommitKeyToSave.DawnLibLoreKey));
+        for (int i = 0; i < InputKeywords.Count; i++)
+        {
+            if (!savedKeys.Contains(SavedResultKeys[i]))
+                continue;
+
+            if (userInput.Equals(InputKeywords[i], System.StringComparison.OrdinalIgnoreCase))
+            {
+                return ResultDisplayTexts[i];
+            }
+        }
+
+        StringBuilder stringBuilder = new(EmptyResultDisplayText);
+        for (int i = 0; i < InputKeywords.Count; i++)
+        {
+            if (!savedKeys.Contains(SavedResultKeys[i]))
+                continue;
+
+            stringBuilder.Append(TextToAppendAfterEmptyResult[i]);
+        }
+
+        stringBuilder.Append(PostEmptyResultDisplayText);
+
+        return stringBuilder.ToString();
+    }
+}
+
 [CreateAssetMenu(fileName = "New TerminalCommand Definition", menuName = $"{DuskModConstants.Definitions}/TerminalCommand Definition")]
 public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalCommandInfo>
 {
@@ -99,6 +167,9 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
     [field: SerializeField]
     public List<string> CommandKeywordsList { get; private set; }
 
+    [field: SerializeField]
+    [field: Tooltip("Your own sigurd-like storylog command, you'd need to implement gathering the entries in your own way, using Components like ExtraScanEvents and CommitKeyToSave.")]
+    public StoryLogCommand StoryLogCommand { get; private set; }
     [field: SerializeField]
     [field: Tooltip("Setup a query command that involves a continue and cancel operation to reach the main command text.")]
     public SimpleQueryCommand SimpleQueryCommand { get; private set; }
@@ -119,10 +190,17 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
-
         DawnLib.DefineTerminalCommand(TypedKey, CommandBasicInformation, builder =>
         {
             builder.SetKeywords(CommandKeywordsList);
+            if (StoryLogCommand.Enabled)
+            {
+                builder.DefineInputCommand(inputCommandBuilder =>
+                {
+                    inputCommandBuilder.SetResultDisplayText(StoryLogCommand.ResultDisplayText);
+                });
+            }
+
             if (SimpleQueryCommand.Enabled)
             {
                 builder.DefineSimpleQueryCommand(simpleQueryBuilder =>

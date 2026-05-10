@@ -8,7 +8,7 @@ namespace Dawn.Utils;
 [AddComponentMenu($"{DawnConstants.ExtraEvents}/Extra Scan Events")]
 public class ExtraScanEvents : MonoBehaviour
 {
-    private readonly static NamespacedKey _dataKey = NamespacedKey.From("dawn_lib", "already_scanned");
+    internal static readonly NamespacedKey _dataKey = NamespacedKey.From("dawn_lib", "already_scanned");
 
     [SerializeField]
     private UnityEvent _onScan;
