@@ -563,11 +563,11 @@ static class SurfaceRegistrationHandler
 
             List<int> quicksandTags = // All these require player to be: isGrounded, !inSpecialInteractAnimation, !inAnimationWithEnemy, !isClimbingLadder, physicsParent == null, !isInHangarShipRoom, !isInElevator
             [
-                1,
-                4,
-                5, // Requires you to be inside
-                7,
-                8
+                1, // Gravel
+                4, // Grass
+                5, // Rock, Requires you to be inside
+                7, // Tiles
+                8 // Snow
                 // Another condition is standingOnTerrain regardless of currentFootstepSurfaceIndex
             ];
             bool isNatural = startOfRound.naturalSurfaceTags.Contains(surface.surfaceTag);

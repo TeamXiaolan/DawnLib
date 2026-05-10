@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx.Configuration;
-using Dawn;
 
 namespace Dusk;
 
@@ -22,12 +21,10 @@ public abstract class ContentHandler(DuskMod mod)
     {
         string configName = assetBundleData.configName;
 
-        using (ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData))
-        {
-            ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", true);
-            mod._configEntries.Add(isEnabled);
-            return isEnabled.Value;
-        }
+        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData);
+        ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", assetBundleData.enabledByDefault);
+        mod._configEntries.Add(isEnabled);
+        return isEnabled.Value;
     }
 
     protected bool TryLoadContentBundle<TAsset>(string assetBundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
