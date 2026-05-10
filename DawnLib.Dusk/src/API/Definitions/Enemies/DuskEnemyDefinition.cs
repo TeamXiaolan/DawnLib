@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using BepInEx.Configuration;
 using Dawn;
 using Dusk.Weights;
 using Unity.Netcode;

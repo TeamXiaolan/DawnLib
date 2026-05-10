@@ -1,6 +1,4 @@
-﻿using Dawn;
-
-namespace Dawn.SourceGen;
+﻿namespace Dawn.SourceGen;
 
 public static class DawnLibSourceGenConstants
 {

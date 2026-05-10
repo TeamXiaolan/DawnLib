@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
-using Dawn.Internal;
 
 namespace Dusk;
 
