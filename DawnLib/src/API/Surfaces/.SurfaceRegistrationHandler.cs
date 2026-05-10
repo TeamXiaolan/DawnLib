@@ -30,12 +30,54 @@ static class SurfaceRegistrationHandler
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditFallValueForGravity;
         IL.GameNetcodeStuff.PlayerControllerB.Update += EditUncappedFallValueForGravity;
 
+        IL.GameNetcodeStuff.PlayerControllerB.PlayFootstepSound += EditFootstepSound(typeof(PlayerControllerB));
+        IL.MaskedPlayerEnemy.PlayFootstepSound += EditFootstepSound(typeof(MaskedPlayerEnemy));
+
         IL.GameNetcodeStuff.PlayerControllerB.CheckConditionsForSinkingInQuicksand += AllowCustomSurfacesInQuicksand;
 
         IL.SandWormAI.StartEmergeAnimation += AllowEmergingAtCustomSurfaces;
 
         SceneManager.sceneLoaded += OnVowOrMarchLoaded;
         SceneManager.sceneLoaded += TryFixMoonTerrainFootsteps;
+    }
+
+    private static ILContext.Manipulator EditFootstepSound(Type type)
+    {
+        return il =>
+        {
+            ILCursor c = new ILCursor(il);
+            int location = -1;
+            if (!c.TryGotoNext(
+                MoveType.Before,
+                i => i.MatchStloc(out location),
+                i => i.MatchLdarg(0),
+                i => i.MatchLdfld(type, "movementAudio"),
+                i => i.MatchCall<StartOfRound>("get_Instance"),
+                i => i.MatchLdfld<StartOfRound>(nameof(StartOfRound.footstepSurfaces)),
+                i => i.MatchLdarg(0)
+            ))
+            {
+                DawnPlugin.Logger.LogWarning($"Failed to apply {type.Name}.PlayFootstepSound patch (0)!");
+                return;
+            }
+
+            c.Index++;
+
+            c.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+            c.EmitLdfld(type, "currentFootstepSurfaceIndex");
+            c.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, location);
+            c.EmitDelegate((int currentFootstepSurfaceIndex, ref float volume) =>
+            {
+                FootstepSurface footstepSurface = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex];
+                DawnSurfaceInfo? surfaceInfo = footstepSurface.GetDawnInfo();
+                if (surfaceInfo == null)
+                {
+                    return;
+                }
+
+                volume *= surfaceInfo.Volume;
+            });
+        };
     }
 
     private static void AllowEmergingAtCustomSurfaces(ILContext il)
@@ -440,7 +482,7 @@ static class SurfaceRegistrationHandler
             ];
             bool isNatural = startOfRound.naturalSurfaceTags.Contains(surface.surfaceTag);
             bool quicksandCompatible = quicksandTags.Contains(i);
-            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
+            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, new(), 1f, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.SetDawnInfo(surfaceInfo);
         }

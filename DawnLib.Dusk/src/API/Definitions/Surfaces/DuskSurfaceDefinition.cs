@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Dawn;
 using UnityEngine;
 
@@ -8,6 +9,11 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
 {
     [field: SerializeField]
     public FootstepSurface Surface { get; private set; }
+    [field: SerializeField]
+    public List<AudioClip> CrouchClips { get; private set; } = new();
+    [field: SerializeField]
+    [field: Range(0f, 2f)]
+    public float Volume { get; private set; } = 1f;
     [field: SerializeField]
     [field: Tooltip("This means that the earth leviathan can use this surface to emerge")]
     public bool IsNatural { get; private set; }
@@ -37,6 +43,8 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
             builder.OverrideSurfaceVFXOffset(PositionOffset);
             builder.OverrideIsNatural(IsNatural);
             builder.OverrideQuicksandCompatible(QuicksandCompatible);
+            builder.SetCrouchClips(CrouchClips);
+            builder.OverrideVolume(Volume);
             ApplyTagsTo(builder);
         });
     }
