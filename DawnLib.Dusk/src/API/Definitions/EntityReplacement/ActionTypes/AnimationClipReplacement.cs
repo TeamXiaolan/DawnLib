@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using Dawn.Utils;
 using UnityEngine;
 
 namespace Dusk;
@@ -13,7 +13,7 @@ public class AnimationClipReplacement : Hierarchy
     [field: SerializeField]
     public AnimationClip NewAnimationClip { get; private set; }
     [field: SerializeField]
-    public List<AnimationEventAddition> PotentialAnimationEvents { get; private set; } = new();
+    public List<AnimationEventData> PotentialAnimationEvents { get; private set; } = new();
 
     public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
@@ -24,7 +24,7 @@ public class AnimationClipReplacement : Hierarchy
 
         Animator animator = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
         AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
-        foreach (AnimationEventAddition animationEventAddition in PotentialAnimationEvents)
+        foreach (AnimationEventData animationEventAddition in PotentialAnimationEvents)
         {
             AnimationEvent animationEvent = new()
             {
@@ -42,25 +42,4 @@ public class AnimationClipReplacement : Hierarchy
         animatorOverrideController[OriginalClipName] = NewAnimationClip;
         animator.runtimeAnimatorController = animatorOverrideController;
     }
-}
-
-[Serializable]
-public class AnimationEventAddition
-{
-    [field: SerializeField]
-    public string AnimationEventName { get; private set; }
-    [field: SerializeField]
-    public float Time { get; private set; }
-
-    [field: Header("Optional | Parameters")]
-    [field: SerializeField]
-    public string StringParameter { get; private set; } = string.Empty;
-    [field: SerializeField]
-    public int IntParameter { get; private set; } = 0;
-    [field: SerializeField]
-    public float FloatParameter { get; private set; } = 0f;
-    [field: SerializeField]
-    public bool BoolParameter { get; private set; } = false;
-    [field: SerializeField]
-    public UnityEngine.Object? ObjectParameter { get; private set; } = null;
 }

@@ -2,6 +2,8 @@
 
 - Code cleanup.
 - Adding some compatibility for LLL moon hotloading with Dawn UI with paco.
+- Added the ability to add crouching footsteps to a custom footstep surface.
+- Added the ability to control the volume of all audioclips in a custom footstep surface.
 
 ## v0.9.18
 

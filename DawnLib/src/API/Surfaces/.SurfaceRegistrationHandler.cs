@@ -39,6 +39,96 @@ static class SurfaceRegistrationHandler
 
         SceneManager.sceneLoaded += OnVowOrMarchLoaded;
         SceneManager.sceneLoaded += TryFixMoonTerrainFootsteps;
+
+        On.GameNetcodeStuff.PlayerControllerB.Start += AddCrouchingFootsteps;
+
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlayerAnimationEvents), "PlayCrouchFootstepSound"), PlayCrouchFootstepSound));
+    }
+
+    private static void PlayCrouchFootstepSound(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlayerAnimationEvents> orig, PlayerAnimationEvents self)
+    {
+        PlayerControllerB playerControllerB = self.thisPlayerController;
+        if (playerControllerB.isClimbingLadder || playerControllerB.inSpecialInteractAnimation)
+        {
+            return;
+        }
+
+        if ((playerControllerB.IsOwner && playerControllerB.slipperyFloor > 0.5f) || (!playerControllerB.IsOwner && playerControllerB.slimeSlipAudioVolumeSync > 0f))
+        {
+            playerControllerB.currentFootstepSurfaceIndex = 12;
+        }
+        else
+        {
+            playerControllerB.GetCurrentMaterialStandingOn(false);
+        }
+
+        DawnSurfaceInfo? surfaceInfo = StartOfRound.Instance.footstepSurfaces[playerControllerB.currentFootstepSurfaceIndex].GetDawnInfo();
+        if (surfaceInfo == null || surfaceInfo.CrouchClips == null || surfaceInfo.CrouchClips.Count == 0)
+        {
+            return;
+        }
+
+        int index = UnityEngine.Random.Range(0, surfaceInfo.CrouchClips.Count);
+        if (index == playerControllerB.previousFootstepClip)
+        {
+            index = (index + 1) % surfaceInfo.CrouchClips.Count;
+        }
+
+        playerControllerB.movementAudio.pitch = UnityEngine.Random.Range(0.93f, 1.07f);
+
+        float volumeScale = 0.6f;
+        volumeScale *= surfaceInfo.Volume;
+        playerControllerB.movementAudio.PlayOneShot(surfaceInfo.CrouchClips[index], volumeScale);
+        playerControllerB.previousFootstepClip = index;
+        WalkieTalkie.TransmitOneShotAudio(playerControllerB.movementAudio, surfaceInfo.CrouchClips[index], volumeScale);
+        orig(self);
+    }
+
+    private static readonly List<AnimationEventData> CrouchingAnimationEvents = new()
+    {
+        new()
+        {
+            AnimationEventName = "PlayCrouchFootstepSound",
+            Time = 0.5f,
+        },
+        new()
+        {
+            AnimationEventName = "PlayCrouchFootstepSound",
+            Time = 1f,
+        }
+    };
+
+    private static bool addedCrouchingSteps = false;
+    private static void AddCrouchingFootsteps(On.GameNetcodeStuff.PlayerControllerB.orig_Start orig, PlayerControllerB self)
+    {
+        orig(self);
+        if (addedCrouchingSteps)
+        {
+            return;
+        }
+
+        addedCrouchingSteps = true;
+
+        AnimationClip crouchWalkingClip = null!;
+        foreach (AnimationClip animationClip in self.playerBodyAnimator.runtimeAnimatorController.animationClips)
+        {
+            if (animationClip.name == "CrouchWalk")
+            {
+                crouchWalkingClip = animationClip;
+                break;
+            }
+        }
+
+        foreach (AnimationEventData animationEventAddition in CrouchingAnimationEvents)
+        {
+            AnimationEvent animationEvent = new()
+            {
+                functionName = animationEventAddition.AnimationEventName,
+                time = animationEventAddition.Time,
+            };
+
+            crouchWalkingClip.AddEvent(animationEvent);
+        }
     }
 
     private static ILContext.Manipulator EditFootstepSound(Type type)
