@@ -602,10 +602,10 @@ static class DungeonRegistrationHandler
 
     private static string ReplaceInternalLevelNames(string input)
     {
-        string result = string.Empty;
+        string result = input;
         foreach ((string internalName, string humanName) in _internalToHumanDungeonNames)
         {
-            result = input.Replace(internalName, humanName);
+            result = result.Replace(internalName, humanName);
         }
         return result;
     }

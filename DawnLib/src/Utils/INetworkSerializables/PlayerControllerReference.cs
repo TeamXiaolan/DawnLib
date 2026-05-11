@@ -57,6 +57,7 @@ public class PlayerControllerReference : INetworkSerializable, IEquatable<Player
     {
         return _playerID;
     }
+
     public bool Equals(PlayerControllerReference? other)
     {
         if (other is null) return false;

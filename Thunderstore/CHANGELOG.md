@@ -1,4 +1,9 @@
-# v0.9.19
+# v0.9.20
+
+- Fixed small issue that made vanilla dungeons unrecognisable to DawnLib.
+- Same as above but for some terminal command registration.
+
+## v0.9.19
 
 - Code cleanup.
 - Added the ability to add crouching footsteps to a custom footstep surface.
