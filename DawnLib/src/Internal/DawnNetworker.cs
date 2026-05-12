@@ -65,8 +65,24 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         }
     }
 
-    [Rpc(SendTo.Everyone)]
-    internal void ChangeWeatherToRpc(NamespacedKey moonKey, LevelWeatherType levelWeatherType)
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    internal void RequestWeatherSyncRpc(LevelWeatherType[] levelWeatherTypes, ulong clientId)
+    {
+        BaseRpcTarget target = RpcTarget.Single(clientId, RpcTargetUse.Persistent);
+        foreach ((int i, DawnMoonInfo moonInfo) in LethalContent.Moons.Values.WithIndex())
+        {
+            SelectableLevel level = moonInfo.Level;
+            LevelWeatherType levelWeatherType = levelWeatherTypes[i];
+            if (level.currentWeather != levelWeatherType)
+            {
+                ChangeWeatherToRpc(moonInfo.Key, level.currentWeather, target);
+            }
+        }
+        target.Dispose();
+    }
+
+    [Rpc(SendTo.SpecifiedInParams)]
+    internal void ChangeWeatherToRpc(NamespacedKey moonKey, LevelWeatherType levelWeatherType, RpcParams rpcParams = default)
     {
         LethalContent.Moons[moonKey.AsTyped<DawnMoonInfo>()].Level.currentWeather = levelWeatherType;
         StartOfRoundRefs.Instance.SetMapScreenInfoToCurrentLevel();

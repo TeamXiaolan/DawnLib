@@ -36,7 +36,7 @@ public sealed class DawnMapObjectInfo : DawnBaseInfo<DawnMapObjectInfo>
         }
 
         DawnPlugin.Logger.LogError($"Failed to get map object prefab for {Key}");
-        return null!;
+        return null!; // This should probably throw
     }
 
     public DawnInsideMapObjectInfo? InsideInfo { get; private set; }

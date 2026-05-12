@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Dawn.Internal;
+using Unity.Netcode;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
@@ -78,7 +79,9 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
             return;
         }
 
-        DawnNetworker.Instance!.ChangeWeatherToRpc(Key, levelWeatherType);
+        EveryoneRpcTarget target = new EveryoneRpcTarget(NetworkManager.Singleton);
+        DawnNetworker.Instance!.ChangeWeatherToRpc(Key, levelWeatherType, target);
+        target.Dispose();
     }
 
     public void ChangeWeatherTo(DawnWeatherEffectInfo weatherEffectInfo)

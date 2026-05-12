@@ -557,7 +557,10 @@ static class SurfaceRegistrationHandler
 
             if (LethalContent.Surfaces.ContainsKey(key))
             {
-                DawnPlugin.Logger.LogWarning($"Surface {surface.surfaceTag} is already registered by the same creator to LethalContent. This is likely to cause issues unless caused by lobby reloads.");
+                if (!LethalContent.Surfaces.IsFrozen)
+                {
+                    DawnPlugin.Logger.LogWarning($"Surface {surface.surfaceTag} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                }
                 LethalContent.Surfaces[key].Surface = surface;
                 surface.SetDawnInfo(LethalContent.Surfaces[key]);
                 continue;
@@ -583,6 +586,7 @@ static class SurfaceRegistrationHandler
         {
             return;
         }
+
         LethalContent.Surfaces.Freeze();
     }
 

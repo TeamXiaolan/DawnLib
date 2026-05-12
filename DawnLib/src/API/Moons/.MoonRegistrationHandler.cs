@@ -257,6 +257,12 @@ static class MoonRegistrationHandler
                 moonInfo.Level.indoorMapHazards = [];
             }
         }
+
+        if (LethalContent.Moons.IsFrozen)
+        {
+            return;
+        }
+
         LethalContent.Moons.Freeze();
     }
 

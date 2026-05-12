@@ -15,7 +15,7 @@ public static class GrabbableObjectExtensions
     [Obsolete($"Use {nameof(TryGetGrabbableObjectReplacement)}")]
     public static DuskItemReplacementDefinition? GetGrabbableObjectReplacement(this GrabbableObject grabbableObject)
     {
-        grabbableObject.TryGetGrabbableObjectReplacement(out var output);
+        grabbableObject.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? output);
         return output;
     }
 

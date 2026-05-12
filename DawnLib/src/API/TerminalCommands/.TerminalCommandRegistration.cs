@@ -208,7 +208,6 @@ static class TerminalCommandRegistration
         }
 
         LethalContent.TerminalCommands.Freeze();
-        // Grab the vanilla references here
         orig(self);
     }
 

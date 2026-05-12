@@ -36,6 +36,11 @@ static class MapObjectRegistrationHandler
             if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride() || !mapObjectInfo.HasNetworkObject)
                 continue;
 
+            if (mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn == null)
+            {
+                DawnPlugin.Logger.LogWarning($"MapObject Inside prefab is null for {mapObjectInfo.InsideInfo.IndoorMapHazardType.name}");
+                continue;
+            }
             self.spawnablePrefabs.Add(mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn);
         }
         orig(self);

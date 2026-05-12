@@ -258,10 +258,16 @@ static class VehicleRegistrationPatch
             currentVehicleIndex++;
         }
 
+        self.buyableVehicles = buyableVehiclesList.ToArray();
+        if (DuskModContent.Vehicles.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
         infoKeyword.compatibleNouns = allInfoKeywordNounsList.ToArray();
         buyKeyword.compatibleNouns = allBuyKeywordNounsList.ToArray();
         self.terminalNodes.allKeywords = allKeywordsList.ToArray();
-        self.buyableVehicles = buyableVehiclesList.ToArray();
 
         DuskModContent.Vehicles.Freeze();
         orig(self);

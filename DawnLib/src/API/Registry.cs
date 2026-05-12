@@ -55,7 +55,9 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
     virtual internal void Freeze()
     {
         if (IsFrozen)
-            return;
+        {
+            throw new RegistryFrozenException();
+        }
 
         _beforeFreeze();
         IsFrozen = true;

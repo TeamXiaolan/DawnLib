@@ -157,9 +157,9 @@ static class EntityReplacementRegistrationPatch
     private static void SyncSkinsWithNewClient(On.StartOfRound.orig_OnClientConnect orig, StartOfRound self, ulong clientId)
     {
         orig(self, clientId);
-        if (self.IsServer && DuskNetworker.Instance != null)
+        if (self.IsServer)
         {
-            DuskNetworker.Instance.SyncSkinDataRpc(clientId);
+            DuskNetworker.Instance?.SyncSkinDataRpc(clientId);
         }
     }
 

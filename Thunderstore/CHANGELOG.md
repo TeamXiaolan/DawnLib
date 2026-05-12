@@ -1,4 +1,11 @@
-# v0.9.20
+# v0.9.21
+
+- Made sure weathers are synced with host on client joining.
+- Minor code cleanup.
+- Stopped predictable warnings from showing up on lobby reload.
+- Fixed a seemingly? vanilla bug where joining clients think experimentation is stormy but only on the monitor's end until you switch moons or update the ship screen.
+
+## v0.9.20
 
 - Fixed small issue that made vanilla dungeons unrecognisable to DawnLib.
 - Same as above but for some terminal command registration.

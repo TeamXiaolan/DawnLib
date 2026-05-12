@@ -275,6 +275,7 @@ static class ItemRegistrationHandler
                 item.SetDawnInfo(LethalContent.Items[key]);
                 continue;
             }
+
             itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
             DawnScrapItemInfo? scrapInfo = null;
             itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);

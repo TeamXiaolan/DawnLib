@@ -1,4 +1,7 @@
+using System;
 using Dawn.Internal;
+using Dawn.Utils;
+using Unity.Netcode;
 
 namespace Dawn;
 
@@ -8,6 +11,26 @@ static class WeatherRegistrationHandler
     {
         On.Terminal.Awake += RegisterVanillaWeathers;
         On.Terminal.Start += RegisterModdedWeathers;
+
+        On.GameNetcodeStuff.PlayerControllerB.ConnectClientToPlayerObject += SyncWeathers;
+    }
+
+    private static void SyncWeathers(On.GameNetcodeStuff.PlayerControllerB.orig_ConnectClientToPlayerObject orig, GameNetcodeStuff.PlayerControllerB self)
+    {
+        orig(self);
+        if (NetworkManager.Singleton.IsServer || !self.IsLocalPlayer())
+        {
+            return;
+        }
+
+        self.playersManager.SetMapScreenInfoToCurrentLevel();
+        LevelWeatherType[] levelWeatherTypes = new LevelWeatherType[LethalContent.Moons.Count];
+        foreach ((int i, DawnMoonInfo moonInfo) in LethalContent.Moons.Values.WithIndex())
+        {
+            levelWeatherTypes[i] = moonInfo.Level.currentWeather;
+        }
+
+        DawnNetworker.Instance?.RequestWeatherSyncRpc(levelWeatherTypes, self.actualClientId);
     }
 
     private static void RegisterVanillaWeathers(On.Terminal.orig_Awake orig, Terminal self)
@@ -20,6 +43,11 @@ static class WeatherRegistrationHandler
     {
         orig(self);
         AddWeathersToRegistry();
+        if (LethalContent.Weathers.IsFrozen)
+        {
+            return;
+        }
+
         LethalContent.Weathers.Freeze();
     }
 
@@ -47,7 +75,10 @@ static class WeatherRegistrationHandler
 
             if (LethalContent.Weathers.ContainsKey(key))
             {
-                DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. This is likely to cause issues unless caused by lobby reloads.");
+                if (!LethalContent.Weathers.IsFrozen)
+                {
+                    DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. This is likely to cause issues.");
+                }
                 LethalContent.Weathers[key].WeatherEffect = weatherEffect;
                 weatherEffect.SetDawnInfo(LethalContent.Weathers[key]);
                 continue;

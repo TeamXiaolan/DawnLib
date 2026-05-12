@@ -12,7 +12,7 @@ public sealed class DawnStoryLogInfo : DawnBaseInfo<DawnStoryLogInfo>
         StoryLogTerminalKeyword = storyLogTerminalKeyword;
     }
 
-    public GameObject? StoryLogGameObject { get; } // non dawnlib is null because it's not usually a prefab (atleast not for vanilla)
+    public GameObject? StoryLogGameObject { get; } // non dawnlib is null because it's usually scene placed/not a prefab (atleast not for vanilla)
     public TerminalNode StoryLogTerminalNode { get; }
     public TerminalKeyword StoryLogTerminalKeyword { get; }
 }
