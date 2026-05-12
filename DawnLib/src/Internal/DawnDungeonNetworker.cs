@@ -60,39 +60,63 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
         if (register)
         {
-            List<GameObject> potentialPrefabs = new();
+           List<GameObject> potentialPrefabs = new();
             foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
-            {
                 potentialPrefabs.Add(networkPrefab.Prefab);
+
+            foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
+            {
+                if (spawnSyncedObject.spawnPrefab == null)
+                {
+                    DawnPlugin.Logger.LogError("SpawnSyncedObject prefab is null");
+                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
+
+                    continue;
+                }
+
+                //blank references should not have that anyway
+                if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var _)) continue;
+
+                var fixedPrefab = potentialPrefabs.FirstOrDefault(pp => pp.name == spawnSyncedObject.spawnPrefab.name);
+
+                if (fixedPrefab == null)
+                {
+                    DawnPlugin.Logger.LogError("Failed to repair SpawnSyncedObject");
+                    DawnPlugin.Logger.LogError($"Prefab: {spawnSyncedObject.spawnPrefab.name}");
+                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
+
+                    continue;
+                }
+
+                Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {fixedPrefab.name} with reference");
+                spawnSyncedObject.spawnPrefab = fixedPrefab;
             }
 
             foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
             {
                 if (spawnSyncedObject.spawnPrefab == null)
-                    continue;
-
-                foreach (GameObject potentialPrefab in potentialPrefabs)
                 {
-                    if (spawnSyncedObject.spawnPrefab.name == potentialPrefab.name)
-                    {
-                        Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {spawnSyncedObject.spawnPrefab.name} with reference");
-                        spawnSyncedObject.spawnPrefab = potentialPrefab;
-                        break;
-                    }
-                }
-            }
+                    DawnPlugin.Logger.LogError("SpawnSyncedObject prefab is null");
+                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
 
-            foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
-            {
-                if (spawnSyncedObject.spawnPrefab == null || spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>() == null)
                     continue;
+                }
 
+                if (!spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var netObj))
+                {
+                    DawnPlugin.Logger.LogError("SpawnSyncedObject NetworkObject is null");
+                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
+
+                    continue;
+                }
+                
                 if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(spawnSyncedObject.spawnPrefab))
                     continue;
 
                 _objectsToUnregister.Add(spawnSyncedObject.spawnPrefab);
+
                 NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
-                NetworkObject netObj = spawnSyncedObject.spawnPrefab.GetComponent<NetworkObject>();
+
                 DawnPlugin.Logger.LogDebug(
                     $"Registered network prefab '{spawnSyncedObject.spawnPrefab.name}' " +
                     $"with hash={netObj.GlobalObjectIdHash} " +
@@ -102,11 +126,11 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         else
         {
             foreach (GameObject obj in _objectsToUnregister)
-            {
                 NetworkManager.Singleton.PrefabHandler.RemoveNetworkPrefab(obj);
-            }
+
             _objectsToUnregister.Clear();
         }
+
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
     }
 

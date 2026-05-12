@@ -1,3 +1,7 @@
+# v0.9.2x (change version number when you gonna update it again)
+
+- Added more logging for interiors hotloading about messed up SpawnSyncedObjects
+
 # v0.9.21
 
 - Made sure weathers are synced with host on client joining.
