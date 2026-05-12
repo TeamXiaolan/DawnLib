@@ -75,52 +75,29 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 }
 
                 //blank references should not have that anyway
-                if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var _)) continue;
+                //if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var _)) continue;
 
                 var fixedPrefab = potentialPrefabs.FirstOrDefault(pp => pp.name == spawnSyncedObject.spawnPrefab.name);
 
                 if (fixedPrefab == null)
                 {
-                    DawnPlugin.Logger.LogError("Failed to repair SpawnSyncedObject");
-                    DawnPlugin.Logger.LogError($"Prefab: {spawnSyncedObject.spawnPrefab.name}");
-                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
+                    //ig they can have it, but its creator fault ig
+                    if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var nObject))
+                    {
+                        RegisterPrefab(spawnSyncedObject.spawnPrefab, nObject);
+                    }
+                    else
+                    {
+                        DawnPlugin.Logger.LogError("Failed to repair SpawnSyncedObject");
+                        DawnPlugin.Logger.LogError($"Prefab: {spawnSyncedObject.spawnPrefab.name}");
+                        DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
+                    }
 
                     continue;
                 }
 
                 Debuggers.Dungeons?.Log($"Fixed SpawnSyncedObject: {fixedPrefab.name} with reference");
                 spawnSyncedObject.spawnPrefab = fixedPrefab;
-            }
-
-            foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
-            {
-                if (spawnSyncedObject.spawnPrefab == null)
-                {
-                    DawnPlugin.Logger.LogError("SpawnSyncedObject prefab is null");
-                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
-
-                    continue;
-                }
-
-                if (!spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var netObj))
-                {
-                    DawnPlugin.Logger.LogError("SpawnSyncedObject NetworkObject is null");
-                    DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
-
-                    continue;
-                }
-                
-                if (NetworkManager.Singleton.NetworkConfig.Prefabs.Contains(spawnSyncedObject.spawnPrefab))
-                    continue;
-
-                _objectsToUnregister.Add(spawnSyncedObject.spawnPrefab);
-
-                NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(spawnSyncedObject.spawnPrefab);
-
-                DawnPlugin.Logger.LogDebug(
-                    $"Registered network prefab '{spawnSyncedObject.spawnPrefab.name}' " +
-                    $"with hash={netObj.GlobalObjectIdHash} " +
-                    $"(IsServer={NetworkManager.Singleton.IsServer}, IsClient={NetworkManager.Singleton.IsClient})");
             }
         }
         else
@@ -132,6 +109,20 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         }
 
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = true;
+    }
+
+    private static void RegisterPrefab(GameObject spawnPrefab, NetworkObject nObject)
+    {
+        if (_objectsToUnregister.Contains(spawnPrefab)) return;
+
+        _objectsToUnregister.Add(spawnPrefab);
+
+        NetworkManager.Singleton.PrefabHandler.AddNetworkPrefab(spawnPrefab);
+
+        DawnPlugin.Logger.LogDebug(
+            $"Registered network prefab '{spawnPrefab.name}' " +
+            $"with hash={nObject.GlobalObjectIdHash} " +
+            $"(IsServer={NetworkManager.Singleton.IsServer}, IsClient={NetworkManager.Singleton.IsClient})");
     }
 
     [Rpc(SendTo.Everyone, RequireOwnership = false)]
