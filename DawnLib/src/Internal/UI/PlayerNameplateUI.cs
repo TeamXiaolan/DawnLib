@@ -1,4 +1,5 @@
 ﻿using GameNetcodeStuff;
+using Steamworks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +17,12 @@ public class PlayerNameplateUI : MonoBehaviour
         set => _usernameText.color = value;
     }
 
-    public void Setup(PlayerControllerB player)
+    public async void Setup(PlayerControllerB player)
     {
         try
         {
-            HUDManager.FillImageWithSteamProfile(_image, player.playerSteamId);
+            Steamworks.Data.Image? steamProfilePicture = await SteamFriends.GetLargeAvatarAsync(player.playerSteamId);
+            _image.texture = HUDManager.GetTextureFromImage(steamProfilePicture);
         }
         catch (System.Exception e)
         {
