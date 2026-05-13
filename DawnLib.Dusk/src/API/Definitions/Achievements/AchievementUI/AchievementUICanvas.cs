@@ -41,7 +41,7 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
         foreach (var duskMod in DuskMod.AllMods)
         {
             // instantiate a mod element if it has ANY achievements
-            if (DuskModContent.Achievements.Values.Where(a => a.Mod == duskMod).Count() > 0)
+            if (DuskModContent.Achievements.Values.Count(a => a.Mod == duskMod) > 0)
             {
                 var uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
                 AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();
@@ -56,7 +56,10 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
     public void BackButtonOnClick()
     {
         _menuManager.EnableUIPanel(_mainButtons);
-        _achievementsButton.Select();
+        if (_achievementsButton != null)
+        {
+            _achievementsButton.Select();
+        }
         _background.SetActive(false);
     }
 

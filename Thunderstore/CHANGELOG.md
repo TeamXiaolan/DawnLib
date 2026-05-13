@@ -1,8 +1,10 @@
-# v0.9.2x (change version number when you gonna update it again)
+# v0.9.22
 
 - Added more logging for interiors hotloading about messed up SpawnSyncedObjects
+- Null checked a button for achievements.
+- Prevented the disabledHoverTip being set to null accidently before first routing.
 
-# v0.9.21
+## v0.9.21
 
 - Made sure weathers are synced with host on client joining.
 - Minor code cleanup.
