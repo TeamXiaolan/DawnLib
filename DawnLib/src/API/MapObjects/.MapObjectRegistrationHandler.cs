@@ -38,7 +38,7 @@ static class MapObjectRegistrationHandler
 
             if (mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn == null)
             {
-                DawnPlugin.Logger.LogWarning($"MapObject Inside prefab is null for {mapObjectInfo.InsideInfo.IndoorMapHazardType.name}");
+                DawnPlugin.Logger.LogWarning($"MapObject Inside prefab is null for {mapObjectInfo.Key}");
                 continue;
             }
             self.spawnablePrefabs.Add(mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn);
