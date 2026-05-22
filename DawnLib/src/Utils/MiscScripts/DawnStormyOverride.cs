@@ -39,7 +39,7 @@ public class DawnStormyOverride : MonoBehaviour
     private AudioClip[] _oldDistantThunderSFX;
     private AudioClip _oldStaticElectricitySFX;
 
-    public void Awake()
+    public void Start()
     {
         _stormyObject = LethalContent.Weathers[WeatherKeys.Flooded].WeatherEffect.effectPermanentObject;
         if (NewStormyRainAmbience != null)

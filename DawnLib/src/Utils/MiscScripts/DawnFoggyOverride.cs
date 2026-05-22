@@ -11,7 +11,7 @@ public class DawnFoggyOverride : MonoBehaviour
 
     private LocalVolumetricFog _fog;
     private Vector3 _oldSize;
-    public void Awake()
+    public void Start()
     {
         GameObject permanentEffectObject = LethalContent.Weathers[WeatherKeys.Foggy].WeatherEffect.effectPermanentObject;
         _fog = permanentEffectObject.GetComponent<LocalVolumetricFog>();

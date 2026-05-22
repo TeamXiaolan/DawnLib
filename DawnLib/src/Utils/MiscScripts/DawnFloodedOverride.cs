@@ -17,7 +17,7 @@ public class DawnFloodedOverride : MonoBehaviour
     private GameObject _oldFloodedPrefab;
     private GameObject _newFloodInstance;
 
-    public void Awake()
+    public void Start()
     {
         _oldFloodedPrefab = LethalContent.Weathers[WeatherKeys.Flooded].WeatherEffect.effectPermanentObject;
         if (NewFloodedAmbience != null)

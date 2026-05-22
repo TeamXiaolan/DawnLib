@@ -11,7 +11,7 @@ public class DawnDustCloudsOverride : MonoBehaviour
 
     private LocalVolumetricFog _fog;
     private Vector3 _oldSize;
-    public void Awake()
+    public void Start()
     {
         GameObject effectObject = LethalContent.Weathers[WeatherKeys.Rollinggroundfog].WeatherEffect.effectObject;
         _fog = effectObject.GetComponent<LocalVolumetricFog>();

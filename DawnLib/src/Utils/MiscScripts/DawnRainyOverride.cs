@@ -16,7 +16,7 @@ public class DawnRainyOverride : MonoBehaviour
     private GameObject _rainyOverridePrefab;
     private GameObject _rainyParticlesPrefab;
 
-    public void Awake()
+    public void Start()
     {
         GameObject effectObject = LethalContent.Weathers[WeatherKeys.Rainy].WeatherEffect.effectObject;
 
