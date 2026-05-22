@@ -18,7 +18,6 @@ using static DunGen.Graph.DungeonFlow;
 
 namespace Dawn;
 
-[HarmonyPatch]
 static class DungeonRegistrationHandler
 {
     internal static void Init()

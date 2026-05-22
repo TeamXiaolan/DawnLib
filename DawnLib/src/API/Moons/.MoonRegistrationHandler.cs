@@ -311,65 +311,27 @@ static class MoonRegistrationHandler
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
-            foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.Enemies.ToArray())
+            EnemyType? specialEnemy = moonInfo.Level.specialEnemyRarity?.overrideEnemy;
+            foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
             {
-                if (spawnableEnemyWithRarity.enemyType == null)
-                {
-                    moonInfo.Level.Enemies.Remove(spawnableEnemyWithRarity);
-                    continue;
-                }
+                EnemyType potentialReplacement = enemyInfo.EnemyType;
+                ReplaceAndSetToDestroy(moonInfo.Level.Enemies, potentialReplacement, enemiesToDestroy);
+                ReplaceAndSetToDestroy(moonInfo.Level.OutsideEnemies, potentialReplacement, enemiesToDestroy);
+                ReplaceAndSetToDestroy(moonInfo.Level.DaytimeEnemies, potentialReplacement, enemiesToDestroy);
 
-                bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
-                foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+                if (specialEnemy != null)
                 {
-                    if (!enemyIsValid && enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name)
+                    bool enemyIsValid = specialEnemy.HasDawnInfo();
+                    if (enemyIsValid)
                     {
-                        Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
-                        enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
-                        spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
-                        break;
+                        continue;
                     }
-                }
-            }
 
-            foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.OutsideEnemies.ToArray())
-            {
-                if (spawnableEnemyWithRarity.enemyType == null)
-                {
-                    moonInfo.Level.OutsideEnemies.Remove(spawnableEnemyWithRarity);
-                    continue;
-                }
-
-                bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
-                foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
-                {
-                    if (!enemyIsValid && enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name)
+                    if (potentialReplacement.name == specialEnemy.name)
                     {
-                        Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
-                        enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
-                        spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
-                        break;
-                    }
-                }
-            }
-
-            foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.Level.DaytimeEnemies.ToArray())
-            {
-                if (spawnableEnemyWithRarity.enemyType == null)
-                {
-                    moonInfo.Level.DaytimeEnemies.Remove(spawnableEnemyWithRarity);
-                    continue;
-                }
-
-                bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
-                foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
-                {
-                    if (!enemyIsValid && enemyInfo.EnemyType.name == spawnableEnemyWithRarity.enemyType.name)
-                    {
-                        Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {enemyInfo.EnemyType.name}");
-                        enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
-                        spawnableEnemyWithRarity.enemyType = enemyInfo.EnemyType;
-                        break;
+                        Debuggers.Moons?.Log($"replacing fake SO {specialEnemy.name} with {potentialReplacement.name}");
+                        enemiesToDestroy.Add(specialEnemy);
+                        specialEnemy = potentialReplacement;
                     }
                 }
             }
@@ -378,7 +340,40 @@ static class MoonRegistrationHandler
 
         for (int i = enemiesToDestroy.Count - 1; i >= 0; i--)
         {
+            if (enemiesToDestroy[i] == null)
+            {
+                continue;
+            }
+
             ScriptableObject.Destroy(enemiesToDestroy[i]);
+        }
+    }
+
+    private static void ReplaceAndSetToDestroy(List<SpawnableEnemyWithRarity> spawnableEnemiesWithRarities, EnemyType potentialReplacement, List<EnemyType> enemiesToDestroy)
+    {
+        for (int i = spawnableEnemiesWithRarities.Count - 1; i >= 0; i--)
+        {
+            SpawnableEnemyWithRarity spawnableEnemyWithRarity = spawnableEnemiesWithRarities[i];
+            if (spawnableEnemyWithRarity.enemyType == null)
+            {
+                spawnableEnemiesWithRarities.Remove(spawnableEnemyWithRarity);
+                continue;
+            }
+
+            bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
+            if (!enemyIsValid)
+            {
+                continue;
+            }
+
+            if (potentialReplacement.name == spawnableEnemyWithRarity.enemyType.name)
+            {
+                Debuggers.Moons?.Log($"replacing fake SO {spawnableEnemyWithRarity.enemyType.name} with {potentialReplacement.name}");
+                enemiesToDestroy.Add(spawnableEnemyWithRarity.enemyType);
+                spawnableEnemyWithRarity.enemyType = potentialReplacement;
+                break;
+            }
+
         }
     }
 
