@@ -3,6 +3,9 @@
 - Added more logging for interiors hotloading about messed up SpawnSyncedObjects
 - Null checked a button for achievements.
 - Prevented the disabledHoverTip being set to null accidently before first routing.
+- Start replacing blanks for .specialEnemy in levels.
+- Adjusted the sound fix for DawnLib's AssetBundleLoader.
+- Potentially fixed an issue with clients desyncing fire exits?
 - Added a fix to `DestroyItemInSlot`.
   - This fix is more in-depth than the one made by JacobG5.
   - Fixing more issues in the function than just the error being made.

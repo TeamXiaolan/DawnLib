@@ -18,10 +18,16 @@ static class MiscFixesPatch
     internal static HashSet<GameObject> soundPrefabsToFix = new();
     internal static HashSet<GameObject> tilesToFixSockets = new();
 
+    private static HashSet<AudioMixerGroup> _originalAudioMixerGroups = new();
+
     internal static void Init()
     {
+        using (new DetourContext(priority: 999))
+        {
+            On.GameNetworkManager.Start += GetAudioMixerGroups;
+        }
+
         On.GameNetworkManager.Start += AddNetworkPrefabToNetworkConfig;
-        On.MenuManager.Start += DoSoundFixes;
         // TODO replace these changes with prefab changes to get rid of the fake SO's once and for all
         On.ButlerEnemyAI.Start += FixButlerBlankReferences;
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(EnemyAINestSpawnObject), "Awake"), FixNestBlankReferences));
@@ -32,6 +38,26 @@ static class MiscFixesPatch
         LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
         LethalContent.Items.OnFreeze += FixItemSpawnPositionTypes;
         IL.GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot += FixOutOfBoundsError;
+    }
+
+    private static void GetAudioMixerGroups(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
+    {
+        foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+        {
+            GameObject prefab = networkPrefab.Prefab;
+            foreach (AudioSource audioSource in prefab.GetComponentsInChildren<AudioSource>(includeInactive: true))
+            {
+                if (audioSource.outputAudioMixerGroup != null && !_originalAudioMixerGroups.Contains(audioSource.outputAudioMixerGroup))
+                {
+                    if (_originalAudioMixerGroups.Add(audioSource.outputAudioMixerGroup))
+                    {
+                        DawnPlugin.Logger.LogFatal($"Added {audioSource.outputAudioMixerGroup.name} to _originalAudioMixerGroups");
+                    }
+                }
+            }
+        }
+        TryRestoreAudioSource();
+        orig(self);
     }
 
     private static void FixOutOfBoundsError(ILContext il)
@@ -249,34 +275,43 @@ static class MiscFixesPatch
         }
     }
 
-    private static void DoSoundFixes(On.MenuManager.orig_Start orig, MenuManager self)
+    internal static void TryRestoreAudioSource()
     {
-        orig(self);
+        List<AudioMixerGroup> mixerGroupsToDestroy = new();
 
-        AudioSource? menuManagerAudioSource = self.gameObject.GetComponent<AudioSource>();
-        if (menuManagerAudioSource == null)
+        foreach (GameObject prefab in soundPrefabsToFix)
         {
-            return;
-        }
-
-        AudioMixer audioMixer = menuManagerAudioSource.outputAudioMixerGroup.audioMixer;
-        foreach (GameObject prefabToFix in soundPrefabsToFix)
-        {
-            AudioSource[] audioSourcesToFix = prefabToFix.GetComponentsInChildren<AudioSource>();
-            foreach (AudioSource audioSource in audioSourcesToFix)
+            foreach (AudioSource audioSource in prefab.GetComponentsInChildren<AudioSource>(includeInactive: true))
             {
-                if (audioSource.outputAudioMixerGroup == null || audioSource.outputAudioMixerGroup.audioMixer.name != "NonDiagetic") // huh why does LL ignore it if it's null or not NonDiagetic?
-                    continue;
+                if (audioSource.outputAudioMixerGroup == null)
+                {
+                    return;
+                }
 
-                AudioMixerGroup? audioMixerGroup = audioMixer.FindMatchingGroups(audioSource.outputAudioMixerGroup.name)[0];
-                if (audioMixerGroup == null)
-                    continue;
+                AudioMixerGroup targetMixerGroup = audioSource.outputAudioMixerGroup;
+                AudioMixerGroup? restoredMixerGroup = null;
 
-                audioSource.outputAudioMixerGroup = audioMixerGroup;
-                Debuggers.Sounds?.Log("Set mixer group for " + audioSource.name + " in " + prefabToFix.name + " to NonDiagetic:" + audioMixerGroup.name);
+                foreach (AudioMixerGroup vanillaMixerGroup in _originalAudioMixerGroups)
+                {
+                    if (targetMixerGroup.name == vanillaMixerGroup.name)
+                    {
+                        restoredMixerGroup = vanillaMixerGroup;
+                        mixerGroupsToDestroy.Add(targetMixerGroup);
+                    }
+                }
+
+                if (restoredMixerGroup != null)
+                {
+                    DawnPlugin.Logger.LogFatal($"Restoring audio source {audioSource.name} to {restoredMixerGroup.name}");
+                    audioSource.outputAudioMixerGroup = restoredMixerGroup;
+                }
             }
         }
 
+        for (int i = mixerGroupsToDestroy.Count - 1; i >= 0; i--)
+        {
+            AudioMixerGroup.Destroy(mixerGroupsToDestroy[i]);
+        }
         soundPrefabsToFix.Clear();
     }
 
