@@ -37,7 +37,17 @@ static class MiscFixesPatch
         // TODO end
         LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
         LethalContent.Items.OnFreeze += FixItemSpawnPositionTypes;
-        IL.GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot += FixOutOfBoundsError;
+        IL.GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot += FixVariousErrors;
+        On.MenuManager.Awake += PatchTerminalFormatter;
+    }
+
+    private static void PatchTerminalFormatter(On.MenuManager.orig_Awake orig, MenuManager self)
+    {
+        orig(self);
+        if (TerminalFormatterCompat.Enabled && !TerminalFormatterCompat.alreadyPatched)
+        {
+            TerminalFormatterCompat.Init();
+        }
     }
 
     private static void GetAudioMixerGroups(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
@@ -60,7 +70,7 @@ static class MiscFixesPatch
         orig(self);
     }
 
-    private static void FixOutOfBoundsError(ILContext il)
+    private static void FixVariousErrors(ILContext il)
     {
         ILCursor cursor = new(il);
         if (!cursor.TryGotoNext(MoveType.After,

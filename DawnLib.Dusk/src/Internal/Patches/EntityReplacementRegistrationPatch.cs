@@ -120,19 +120,19 @@ static class EntityReplacementRegistrationPatch
         IL.GrabbableObject.PlayDropSFX += DynamicallyReplaceItemProperties;
         IL.GrabbableObject.PocketItem += DynamicallyReplaceItemProperties;
 
-        new ILHook(
+        DawnPlugin.ILHooks.Add(new ILHook(
             AccessTools.EnumeratorMoveNext(
                 AccessTools.Method(typeof(GameNetcodeStuff.PlayerControllerB), nameof(GameNetcodeStuff.PlayerControllerB.GrabObject))
             ),
             DynamicallyReplaceItemProperties
-        );
+        ));
 
-        new ILHook(
+        DawnPlugin.ILHooks.Add(new ILHook(
             AccessTools.EnumeratorMoveNext(
                 AccessTools.Method(typeof(StormyWeather), nameof(StormyWeather.GetMetalObjectsAfterDelay))
             ),
             DynamicallyReplaceItemProperties
-        );
+        ));
 
         IL.GameNetcodeStuff.PlayerControllerB.GrabObjectClientRpc += DynamicallyReplaceItemProperties;
         IL.GameNetcodeStuff.PlayerControllerB.ScrollMouse_performed += DynamicallyReplaceItemProperties;

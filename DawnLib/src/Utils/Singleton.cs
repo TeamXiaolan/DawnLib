@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Dawn.Utils;
@@ -18,6 +19,9 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
             return _instance;
         }
     }
+
+    [MemberNotNullWhen(true, nameof(Instance))]
+    public static bool IsNotNull => Instance != null;
 
     protected virtual void OnDestroy()
     {

@@ -24,8 +24,8 @@ static class MoonRegistrationHandler
     {
         LethalContent.Moons.AddAutoTaggers(
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
-            new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost == 0),
-            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode && moonInfo.RouteNode!.itemCost > 0),
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode != null && moonInfo.RouteNode.itemCost == 0),
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode != null && moonInfo.RouteNode.itemCost > 0),
             new SimpleAutoTagger<DawnMoonInfo>(DawnLibTags.HasBuyingPercent, moonInfo => moonInfo.GetNumberlessPlanetName() == "Gordion")
         );
 
@@ -411,7 +411,7 @@ static class MoonRegistrationHandler
         return orig(self, builder.ToString(), node);
     }
 
-    static string FormatMoonEntry(DawnMoonInfo moonInfo, TerminalPurchaseResult result)
+    public static string FormatMoonEntry(DawnMoonInfo moonInfo, TerminalPurchaseResult result)
     {
         StringBuilder builder = new StringBuilder();
         string name = moonInfo.GetNumberlessPlanetName();
@@ -433,27 +433,31 @@ static class MoonRegistrationHandler
         }
         else
         {
-            DawnWeatherEffectInfo? currentWeather = moonInfo.GetCurrentWeather();
-
-            if (currentWeather != null)
-            {
-                builder.Append($"({moonInfo.Level.currentWeather.ToString()})");
-            }
+            TryAppendMoonWeather(builder, moonInfo);
         }
 
         return builder.ToString();
     }
 
+    public static void TryAppendMoonWeather(StringBuilder builder, DawnMoonInfo moonInfo)
+    {
+        DawnWeatherEffectInfo? currentWeather = moonInfo.GetCurrentWeather();
+
+        if (currentWeather != null)
+        {
+            builder.Append($"({moonInfo.Level.currentWeather})");
+        }
+    }
+
     private static IEnumerator DelayTravelEffects(On.StartOfRound.orig_TravelToLevelEffects orig, StartOfRound self)
     {
-        // why
         IEnumerator enumerator = orig(self);
         while (enumerator.MoveNext())
         {
             yield return enumerator.Current;
-            if (enumerator.Current is WaitForSeconds wfs && Mathf.Approximately(wfs.m_Seconds, self.currentLevel.timeToArrive))
+            if (enumerator.Current is WaitForSeconds wfs && Mathf.Approximately(wfs.m_Seconds, self.currentLevel.timeToArrive) && DawnMoonNetworker.IsNotNull)
             {
-                yield return new WaitUntil(() => DawnMoonNetworker.Instance!.allPlayersDone);
+                yield return new WaitUntil(() => DawnMoonNetworker.Instance.allPlayersDone);
             }
         }
         self.shipTravelCoroutine = null;
@@ -491,7 +495,7 @@ static class MoonRegistrationHandler
 
     static IEnumerator DoHotloadSceneStuff(SelectableLevel level)
     {
-        yield return new WaitUntil(() => DawnMoonNetworker.Instance != null && RouteProgressUI.Instance != null);
+        yield return new WaitUntil(() => DawnMoonNetworker.IsNotNull && RouteProgressUI.IsNotNull);
         DawnMoonNetworker.Instance!.HostDecide(level.GetDawnInfo());
     }
 

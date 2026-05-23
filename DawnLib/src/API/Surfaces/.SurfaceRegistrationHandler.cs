@@ -623,9 +623,9 @@ static class SurfaceRegistrationHandler
             }
 
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
-            if (surfaceInfo.SurfaceVFXPrefab != null)
+            if (surfaceInfo.SurfaceVFXPrefab != null && FootstepVFXPool.IsNotNull)
             {
-                FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
+                FootstepVFXPool.Instance.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
             }
 
             return true; // DawnSurface found, return early!
@@ -646,9 +646,9 @@ static class SurfaceRegistrationHandler
             }
 
             DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
-            if (surfaceInfo.SurfaceVFXPrefab != null)
+            if (surfaceInfo.SurfaceVFXPrefab != null && FootstepVFXPool.IsNotNull)
             {
-                FootstepVFXPool.Instance!.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
+                FootstepVFXPool.Instance.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
             }
             return true; // DawnSurface found, return early!
         }

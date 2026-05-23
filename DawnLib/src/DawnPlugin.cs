@@ -17,13 +17,13 @@ namespace Dawn;
 [BepInDependency(LethalConfig.PluginInfo.Guid, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(LethalQuantities.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency(PathfindingLibPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-[BepInDependency(TerminalFormatter.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.github.WhiteSpike.MoonDaySpeedMultiplierPatcher", BepInDependency.DependencyFlags.SoftDependency)]
 public class DawnPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
     internal static readonly List<Hook> Hooks = new();
+    internal static readonly List<ILHook> ILHooks = new();
     internal static readonly Harmony _harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
     private void Awake()
@@ -50,11 +50,6 @@ public class DawnPlugin : BaseUnityPlugin
         if (LethalQuantitiesCompat.Enabled)
         {
             LethalQuantitiesCompat.Init();
-        }
-
-        if (TerminalFormatterCompat.Enabled)
-        {
-            TerminalFormatterCompat.Init();
         }
 
         ExtendedTOML.Init();

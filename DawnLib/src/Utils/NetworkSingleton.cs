@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Unity.Netcode;
 
 namespace Dawn.Utils;
@@ -18,6 +19,9 @@ public abstract class NetworkSingleton<T> : NetworkBehaviour where T : NetworkSi
             return _instance;
         }
     }
+
+    [MemberNotNullWhen(true, nameof(Instance))]
+    public static bool IsNotNull => Instance != null;
 
     public override void OnNetworkDespawn()
     {

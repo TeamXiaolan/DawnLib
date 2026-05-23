@@ -251,7 +251,7 @@ static class DungeonRegistrationHandler
         {
             c.RemoveRange(3);
             c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<IEnumerator>>(LoadDungeonBundle);
+            c.EmitDelegate(LoadDungeonBundle);
 
             MethodInfo startCoroutine = typeof(MonoBehaviour).GetMethod("StartCoroutine", new[] { typeof(IEnumerator) })!;
             c.Emit(OpCodes.Callvirt, startCoroutine);
@@ -299,10 +299,10 @@ static class DungeonRegistrationHandler
         bool loadIsOkay = !DungeonGenerationPlusCompat.Enabled || !DungeonGenerationPlusCompat.IsDebugOn();
         if (loadIsOkay)
         {
-            if (!dungeonInfo.ShouldSkipIgnoreOverride())
+            if (!dungeonInfo.ShouldSkipIgnoreOverride() && DawnDungeonNetworker.IsNotNull)
             {
-                DawnDungeonNetworker.Instance!.QueueDungeonBundleLoading(dungeonInfo.Key);
-                IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance!.allPlayersDone);
+                DawnDungeonNetworker.Instance.QueueDungeonBundleLoading(dungeonInfo.Key);
+                IEnumerator waitForLoad = new WaitUntil(() => DawnDungeonNetworker.Instance.allPlayersDone);
                 while (waitForLoad.MoveNext())
                 {
                     yield return waitForLoad.Current;
