@@ -1,4 +1,8 @@
-# v0.9.23
+# v0.9.24
+
+- Solved fake extra fire exit existing.
+
+## v0.9.23
 
 - Cleaned up code for more compatibility with other mods.
 - Stored ILHooks in a list just incase they need to be unpatched by another mod.

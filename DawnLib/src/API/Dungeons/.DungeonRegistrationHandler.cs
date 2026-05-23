@@ -340,7 +340,7 @@ static class DungeonRegistrationHandler
 
         foreach (GlobalPropSettings propSettings in dungeonFlow.GlobalProps.Where(p => p.ID == DawnDungeonInfo.FireExitGlobalPropID))
         {
-            propSettings.Count = new IntRange(moonEntranceTeleports.Length, moonEntranceTeleports.Length);
+            propSettings.Count = new IntRange(moonEntranceTeleports.Length - 1, moonEntranceTeleports.Length - 1);
         }
     }
 
