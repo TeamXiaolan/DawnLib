@@ -159,5 +159,5 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
     public IReadOnlyList<SpawnSyncedObject> SpawnSyncedObjects => spawnSyncedObjects.AsReadOnly();
     public IReadOnlyList<DoorwaySocket> Sockets => sockets.AsReadOnly();
 
-    public static int FireExitGlobalPropID = 1231;
+    public const int FireExitGlobalPropID = 1231;
 }

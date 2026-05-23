@@ -329,12 +329,13 @@ static class DungeonRegistrationHandler
 
     private static void AdjustFireExits(DungeonFlow dungeonFlow) // code mostly taken from LLL
     {
-        EntranceTeleport[] moonEntranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).Where(e => e.entranceId != 0).ToArray();
+        GameObject environmentRoot = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh");
+        EntranceTeleport[] moonEntranceTeleports = environmentRoot.GetComponentsInChildren<EntranceTeleport>().OrderBy(e => e.entranceId).ToArray();
 
         for (int i = 0; i < moonEntranceTeleports.Length; i++)
         {
             EntranceTeleport entranceTeleport = moonEntranceTeleports[i];
-            entranceTeleport.entranceId = i + 1;
+            entranceTeleport.entranceId = i;
         }
 
         foreach (GlobalPropSettings propSettings in dungeonFlow.GlobalProps.Where(p => p.ID == DawnDungeonInfo.FireExitGlobalPropID))
