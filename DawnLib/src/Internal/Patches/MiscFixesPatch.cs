@@ -61,7 +61,7 @@ static class MiscFixesPatch
                 {
                     if (_originalAudioMixerGroups.Add(audioSource.outputAudioMixerGroup))
                     {
-                        DawnPlugin.Logger.LogFatal($"Added {audioSource.outputAudioMixerGroup.name} to _originalAudioMixerGroups");
+                        Debuggers.Sounds?.Log($"Added {audioSource.outputAudioMixerGroup.name} to _originalAudioMixerGroups");
                     }
                 }
             }
@@ -312,7 +312,7 @@ static class MiscFixesPatch
 
                 if (restoredMixerGroup != null)
                 {
-                    DawnPlugin.Logger.LogFatal($"Restoring audio source {audioSource.name} to {restoredMixerGroup.name}");
+                    Debuggers.Sounds?.Log($"Restoring audio source {audioSource.name} to {restoredMixerGroup.name}");
                     audioSource.outputAudioMixerGroup = restoredMixerGroup;
                 }
             }
