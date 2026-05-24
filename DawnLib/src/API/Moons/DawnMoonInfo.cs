@@ -84,8 +84,14 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
         target.Dispose();
     }
 
-    public void ChangeWeatherTo(DawnWeatherEffectInfo weatherEffectInfo)
+    public void ChangeWeatherTo(DawnWeatherEffectInfo? weatherEffectInfo)
     {
+        if (weatherEffectInfo == null)
+        {
+            ChangeWeatherTo(LevelWeatherType.None);
+            return;
+        }
+
         ChangeWeatherTo((LevelWeatherType)TimeOfDayRefs.Instance.effects.IndexOf(weatherEffectInfo.WeatherEffect));
     }
 

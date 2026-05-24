@@ -1,11 +1,9 @@
-# v0.9.24
+# v0.9.23
 
 - Solved fake extra fire exit existing.
-
-## v0.9.23
-
 - Cleaned up code for more compatibility with other mods.
 - Stored ILHooks in a list just incase they need to be unpatched by another mod.
+- Fixed a big issue caused by last update if you had any DawnLib moons installed.
 
 ## v0.9.22
 

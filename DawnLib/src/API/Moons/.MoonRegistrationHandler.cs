@@ -283,10 +283,10 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
-                bool enemyIsValid = spawnableItemWithRarity.spawnableItem.HasDawnInfo();
+                bool itemIsValid = spawnableItemWithRarity.spawnableItem.HasDawnInfo();
                 foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
                 {
-                    if (!enemyIsValid && itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name)
+                    if (!itemIsValid && itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name)
                     {
                         itemsToDestroy.Add(spawnableItemWithRarity.spawnableItem);
                         spawnableItemWithRarity.spawnableItem = itemInfo.Item;
@@ -298,7 +298,7 @@ static class MoonRegistrationHandler
 
         for (int i = itemsToDestroy.Count - 1; i >= 0; i--)
         {
-            ScriptableObject.Destroy(itemsToDestroy[i]);
+            Item.Destroy(itemsToDestroy[i]);
         }
     }
 
@@ -356,12 +356,12 @@ static class MoonRegistrationHandler
             SpawnableEnemyWithRarity spawnableEnemyWithRarity = spawnableEnemiesWithRarities[i];
             if (spawnableEnemyWithRarity.enemyType == null)
             {
-                spawnableEnemiesWithRarities.Remove(spawnableEnemyWithRarity);
+                spawnableEnemiesWithRarities.RemoveAt(i);
                 continue;
             }
 
             bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
-            if (!enemyIsValid)
+            if (enemyIsValid)
             {
                 continue;
             }
