@@ -327,20 +327,20 @@ static class DungeonRegistrationHandler
         }
     }
 
-    private static void AdjustFireExits(DungeonFlow dungeonFlow) // code mostly taken from LLL
+    private static void AdjustFireExits(DungeonFlow dungeonFlow)
     {
         GameObject environmentRoot = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh");
-        EntranceTeleport[] moonEntranceTeleports = environmentRoot.GetComponentsInChildren<EntranceTeleport>().OrderBy(e => e.entranceId).ToArray();
+        EntranceTeleport[] moonEntranceTeleports = environmentRoot.GetComponentsInChildren<EntranceTeleport>().Where(e => e.entranceId != 0).ToArray();
 
         for (int i = 0; i < moonEntranceTeleports.Length; i++)
         {
             EntranceTeleport entranceTeleport = moonEntranceTeleports[i];
-            entranceTeleport.entranceId = i;
+            entranceTeleport.entranceId = i + 1;
         }
 
         foreach (GlobalPropSettings propSettings in dungeonFlow.GlobalProps.Where(p => p.ID == DawnDungeonInfo.FireExitGlobalPropID))
         {
-            propSettings.Count = new IntRange(moonEntranceTeleports.Length - 1, moonEntranceTeleports.Length - 1);
+            propSettings.Count = new IntRange(moonEntranceTeleports.Length, moonEntranceTeleports.Length);
         }
     }
 
