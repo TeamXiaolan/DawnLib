@@ -72,18 +72,27 @@ public class DuskMod
         try
         {
             string iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
-            ModInformation.ModIcon = LoadIcon(iconPath);
-
             string manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
+            string readmePath = Directory.EnumerateFiles(searchDir, "README.md", SearchOption.AllDirectories).FirstOrDefault();
+            string changelogPath = Directory.EnumerateFiles(searchDir, "CHANGELOG.md", SearchOption.AllDirectories).FirstOrDefault();
+
             string manifestContents = File.ReadAllText(manifestPath);
+            string readmeContents = File.ReadAllText(readmePath);
+            string changelogContents = File.ReadAllText(changelogPath);
+
             ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
 
-            ModInformation.ModDescription = manifest.description;
-            ModInformation.ModName = manifest.name;
-            ModInformation.AuthorName = manifest.author_name;
-            ModInformation.Version = manifest.version_number;
-            ModInformation.ExtraDependencies = manifest.dependencies;
-            ModInformation.WebsiteUrl = manifest.website_url;
+            ModInformation.SetInfoDetails(
+                manifest.author_name,
+                manifest.name,
+                manifest.version_number,
+                manifest.description,
+                manifest.website_url,
+                manifest.dependencies,
+                LoadIcon(iconPath),
+                new TextAsset(readmeContents),
+                new TextAsset(changelogContents)
+            );
             Debuggers.Dusk?.Log($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
         }
         catch (Exception ex)

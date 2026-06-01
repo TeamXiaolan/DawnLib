@@ -23,6 +23,22 @@ public class DefaultContentHandler : ContentHandler
                     mod.Logger?.LogError($"The bundle is instead defined at plugins/{Path.GetRelativePath(Paths.PluginPath, incorrectPath)}. It should be in an Assets/ subfolder.");
                 }
 
+                mod.Logger?.LogError("Please make sure that you uploaded your mod zip correctly.");
+                mod.Logger?.LogError("Local mods do not have their folder structure edited, but uploaded mods CAN if you don't follow a specific naming scheme");
+                mod.Logger?.LogError(
+                    "Here is a working example:\n" +
+                    "Folder Structure:\n" +
+                    "YOURMOD.zip\n" +
+                    "└─ plugins\n" +
+                    "    └─ Assets\n" +
+                    "        └─ NormalAssetBundlesGoHere\n" +
+                    "    └─ DuskModAssetBundleGoesHere\n" +
+                    "└─ CHANGELOG.md\n" +
+                    "└─ icon.md\n" +
+                    "└─ LICENSE.md\n" +
+                    "└─ manifest.json\n" +
+                    "└─ README.md\n"
+                    );
                 continue;
             }
 
