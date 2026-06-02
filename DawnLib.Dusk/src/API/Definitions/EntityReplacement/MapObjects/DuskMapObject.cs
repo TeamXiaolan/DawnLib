@@ -73,7 +73,7 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
             RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            currentMoon.Level.currentWeather.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));

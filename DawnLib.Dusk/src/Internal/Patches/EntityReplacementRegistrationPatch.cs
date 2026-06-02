@@ -513,7 +513,7 @@ static class EntityReplacementRegistrationPatch
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
             RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            currentMoon.Level.currentWeather.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         List<DuskItemReplacementDefinition> newReplacements = GetValidReplacements(replacements, ctx);
@@ -685,7 +685,7 @@ static class EntityReplacementRegistrationPatch
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
             RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            currentMoon.Level.currentWeather.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         int? totalWeight = replacements.Sum(it => it.Weights.GetFor(ctx));
@@ -771,7 +771,7 @@ static class EntityReplacementRegistrationPatch
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
             RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            TimeOfDayRefs.GetCurrentWeatherEffect(currentMoon.Level)?.GetDawnInfo())
+            currentMoon.Level.currentWeather.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));

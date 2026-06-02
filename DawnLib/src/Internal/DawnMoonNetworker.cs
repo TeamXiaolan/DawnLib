@@ -69,7 +69,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         SpawnWeightContext ctx = new SpawnWeightContext(
             moonInfo,
             null,
-            TimeOfDayRefs.GetCurrentWeatherEffect(moonInfo.Level)?.GetDawnInfo())
+            moonInfo.Level.currentWeather.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
         int totalWeight = moonInfo.Scenes.Sum(it => (it.Weight.GetFor(ctx) ?? 0).Clamp0());

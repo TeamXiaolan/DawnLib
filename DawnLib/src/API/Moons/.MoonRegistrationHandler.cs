@@ -24,6 +24,7 @@ static class MoonRegistrationHandler
     {
         LethalContent.Moons.AddAutoTaggers(
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Company, moonInfo => !moonInfo.Level.spawnEnemiesAndScrap),
+            new SimpleAutoTagger<DawnMoonInfo>(Tags.SupportsWeather, moonInfo => moonInfo.Level.spawnEnemiesAndScrap),
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Free, moonInfo => moonInfo.RouteNode != null && moonInfo.RouteNode.itemCost == 0),
             new SimpleAutoTagger<DawnMoonInfo>(Tags.Paid, moonInfo => moonInfo.RouteNode != null && moonInfo.RouteNode.itemCost > 0),
             new SimpleAutoTagger<DawnMoonInfo>(DawnLibTags.HasBuyingPercent, moonInfo => moonInfo.GetNumberlessPlanetName() == "Gordion")

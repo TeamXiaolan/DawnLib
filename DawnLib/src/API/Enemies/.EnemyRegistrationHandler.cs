@@ -160,7 +160,7 @@ static class EnemyRegistrationHandler
             SpawnWeightContext ctx = new SpawnWeightContext(
                 self.currentLevel.GetDawnInfo(),
                 self.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
-                TimeOfDayRefs.GetCurrentWeatherEffect(self.currentLevel)?.GetDawnInfo())
+                self.currentLevel.currentWeather.GetDawnInfo())
                 .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, self.currentLevel.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
             if (enemyInfo.Inside.Weights.GetFor(ctx) > 0)
@@ -388,7 +388,7 @@ static class EnemyRegistrationHandler
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     level.GetDawnInfo(),
                     dungeonFlow?.GetDawnInfo(),
-                    TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                    level.currentWeather.GetDawnInfo())
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Outside.Weights.GetFor(ctx) ?? 0;
@@ -407,7 +407,7 @@ static class EnemyRegistrationHandler
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     level.GetDawnInfo(),
                     dungeonFlow?.GetDawnInfo(),
-                    TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                    level.currentWeather.GetDawnInfo())
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Inside.Weights.GetFor(ctx) ?? 0;
@@ -426,7 +426,7 @@ static class EnemyRegistrationHandler
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     level.GetDawnInfo(),
                     dungeonFlow?.GetDawnInfo(),
-                    TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                    level.currentWeather.GetDawnInfo())
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Daytime.Weights.GetFor(ctx) ?? 0;

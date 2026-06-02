@@ -364,7 +364,7 @@ static class DungeonRegistrationHandler
             SpawnWeightContext ctx = new SpawnWeightContext(
                 level.GetDawnInfo(),
                 null,
-                TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                level.currentWeather.GetDawnInfo())
                 .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
             int newRarity = dungeonInfo.Weights?.GetFor(ctx) ?? 0;

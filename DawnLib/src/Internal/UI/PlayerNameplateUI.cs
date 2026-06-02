@@ -26,7 +26,7 @@ public class PlayerNameplateUI : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            DawnPlugin.Logger.LogDebug($"Hiding error for `PlayerNameplateUI.Setup` because it's like a false positive.");
+            DawnPlugin.Logger.LogDebug($"Hiding error for `PlayerNameplateUI.Setup` because it's likely a **false** positive.");
             DawnPlugin.Logger.LogDebug($"Failed to set up player nameplate UI for player {player.playerUsername}: {e.Message}");
         }
         _usernameText.text = player.playerUsername;

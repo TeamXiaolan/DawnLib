@@ -139,7 +139,7 @@ static class ItemRegistrationHandler
             SpawnWeightContext ctx = new SpawnWeightContext(
                 level.GetDawnInfo(),
                 RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-                TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                level.currentWeather.GetDawnInfo())
                 .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
             int rarity = scrapInfo.Weights.GetFor(ctx) ?? 0;

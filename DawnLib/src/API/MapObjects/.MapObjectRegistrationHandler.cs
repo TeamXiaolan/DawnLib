@@ -322,7 +322,7 @@ static class MapObjectRegistrationHandler
         SpawnWeightContext ctx = new SpawnWeightContext(
             level.GetDawnInfo(),
             RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
-            TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+            level.currentWeather.GetDawnInfo())
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
         AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
@@ -566,7 +566,7 @@ static class MapObjectRegistrationHandler
             SpawnWeightContext ctx = new SpawnWeightContext(
                 level.GetDawnInfo(),
                 RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-                TimeOfDayRefs.GetCurrentWeatherEffect(level)?.GetDawnInfo())
+                level.currentWeather.GetDawnInfo())
                 .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
             indoorMapHazard.numberToSpawn = insideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);

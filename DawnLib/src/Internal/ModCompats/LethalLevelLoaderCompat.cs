@@ -93,7 +93,7 @@ static class LethalLevelLoaderCompat
             SpawnWeightContext ctx = new SpawnWeightContext(
                 extendedLevel.SelectableLevel.GetDawnInfo(),
                 dungeonInfo,
-                TimeOfDayRefs.GetCurrentWeatherEffect(extendedLevel.SelectableLevel)?.GetDawnInfo())
+                extendedLevel.SelectableLevel.currentWeather.GetDawnInfo())
                 .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, extendedLevel.SelectableLevel.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
 
             return (dungeonInfo.Weights.GetFor(ctx) ?? 0).Clamp0();
