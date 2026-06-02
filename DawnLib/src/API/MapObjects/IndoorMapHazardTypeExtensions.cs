@@ -6,8 +6,7 @@ public static class IndoorMapHazardTypeExtensions
 {
     public static DawnMapObjectInfo GetDawnInfo(this IndoorMapHazardType IndoorMapHazardType)
     {
-        object newObject = IndoorMapHazardType;
-        DawnMapObjectInfo IndoorMapHazardTypeInfo = (DawnMapObjectInfo)((IDawnObject)newObject).DawnInfo;
+        DawnMapObjectInfo IndoorMapHazardTypeInfo = (DawnMapObjectInfo)((IDawnObject)IndoorMapHazardType).DawnInfo;
         return IndoorMapHazardTypeInfo;
     }
 
@@ -18,7 +17,6 @@ public static class IndoorMapHazardTypeExtensions
 
     internal static void SetDawnInfo(this IndoorMapHazardType IndoorMapHazardType, DawnMapObjectInfo IndoorMapHazardTypeInfo)
     {
-        object newObject = IndoorMapHazardType;
-        ((IDawnObject)newObject).DawnInfo = IndoorMapHazardTypeInfo;
+        ((IDawnObject)IndoorMapHazardType).DawnInfo = IndoorMapHazardTypeInfo;
     }
 }

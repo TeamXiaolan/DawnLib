@@ -6,8 +6,7 @@ public static class SpawnableOutsideObjectExtensions
 {
     public static DawnMapObjectInfo GetDawnInfo(this SpawnableOutsideObject SpawnableOutsideObject)
     {
-        object newObject = SpawnableOutsideObject;
-        DawnMapObjectInfo SpawnableOutsideObjectInfo = (DawnMapObjectInfo)((IDawnObject)newObject).DawnInfo;
+        DawnMapObjectInfo SpawnableOutsideObjectInfo = (DawnMapObjectInfo)((IDawnObject)SpawnableOutsideObject).DawnInfo;
         return SpawnableOutsideObjectInfo;
     }
 
@@ -18,7 +17,6 @@ public static class SpawnableOutsideObjectExtensions
 
     internal static void SetDawnInfo(this SpawnableOutsideObject SpawnableOutsideObject, DawnMapObjectInfo SpawnableOutsideObjectInfo)
     {
-        object newObject = SpawnableOutsideObject;
-        ((IDawnObject)newObject).DawnInfo = SpawnableOutsideObjectInfo;
+        ((IDawnObject)SpawnableOutsideObject).DawnInfo = SpawnableOutsideObjectInfo;
     }
 }

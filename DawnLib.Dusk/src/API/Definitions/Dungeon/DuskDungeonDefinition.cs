@@ -24,14 +24,13 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     public List<NamespacedConfigWeight> WeatherSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]
     public List<IntComparisonConfigWeight> RouteSpawnWeightsConfig { get; private set; } = new();
-
-    [field: Space(2f)]
-    [field: SerializeField]
-    public int ExtraScrapGeneration { get; private set; } = 0;
-
-    [field: Header("Configs | Generation")]
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
+
+    [field: Space(2f)]
+    [field: Header("Configs | Generation")]
+    [field: SerializeField]
+    public int ExtraScrapGeneration { get; private set; } = 0;
     [field: SerializeField]
     public bool GenerateExtraScrapConfig { get; private set; } = true;
     [field: SerializeField]
@@ -99,12 +98,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
-        List<IntComparisonConfigWeight> Routes = IntComparisonConfigWeight.ConvertManyFromString(string.Empty);
-        if (RouteSpawnWeightsConfig.Count > 0)
-        {
-            Routes = RouteSpawnWeightsConfig;
-        }
-
+        List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
         if (Config.RouteSpawnWeights != null)
         {
             Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);

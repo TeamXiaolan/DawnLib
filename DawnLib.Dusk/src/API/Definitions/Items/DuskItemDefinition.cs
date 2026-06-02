@@ -139,12 +139,7 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
             Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
-        List<IntComparisonConfigWeight> Routes = IntComparisonConfigWeight.ConvertManyFromString(string.Empty);
-        if (RouteSpawnWeightsConfig.Count > 0)
-        {
-            Routes = RouteSpawnWeightsConfig;
-        }
-
+        List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
         if (Config.RouteSpawnWeights != null)
         {
             Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);

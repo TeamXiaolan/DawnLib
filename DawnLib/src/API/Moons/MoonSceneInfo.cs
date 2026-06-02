@@ -19,6 +19,7 @@ public class VanillaMoonSceneInfo : IMoonSceneInfo
         SceneName = sceneName;
         TypedKey = key;
     }
+
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<IMoonSceneInfo> TypedKey { get; }
     public int GetWeight()

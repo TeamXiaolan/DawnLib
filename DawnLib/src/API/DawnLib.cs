@@ -204,6 +204,16 @@ public static class DawnLib
         return info;
     }
 
+    public static DawnWeatherEffectInfo DefineWeatherEffect(NamespacedKey<DawnWeatherEffectInfo> key, WeatherEffect weather, Action<WeatherEffectInfoBuilder> callback)
+    {
+        WeatherEffectInfoBuilder builder = new(key, weather);
+        callback(builder);
+        DawnWeatherEffectInfo info = builder.Build();
+        weather.SetDawnInfo(info);
+        LethalContent.Weathers.Register(info);
+        return info;
+    }
+
     public static void ApplyTag(JSONTagDefinition definition)
     {
         void ListenToRegistry<T>(TaggedRegistry<T> registry, NamespacedKey namespacedKey) where T : DawnBaseInfo<T>
