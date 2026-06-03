@@ -9,7 +9,7 @@ public static class LevelWeatherTypeExtensions
         WeatherEffect? weatherEffect = GetWeatherEffect(levelWeatherType);
         if (weatherEffect == null)
         {
-            return null!; // TODO: return the DawnWeatherEffectInfo for None
+            return LethalContent.Weathers[WeatherKeys.None];
         }
 
         if (!weatherEffect.TryGetDawnInfo(out DawnWeatherEffectInfo? weatherEffectInfo))

@@ -9,6 +9,7 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dawn.Internal;
 
@@ -101,6 +102,11 @@ static class SaveDataPatch
     {
         UnlockableSaveDataHandler.placeableShipObjects.Add(self);
         orig(self);
+        if (self.gameObject.scene != SceneManager.GetActiveScene())
+        {
+            return;
+        }
+
         if (self.parentObject == null)
         {
             DawnPlugin.Logger.LogError($"Parent object is null for object: {self.gameObject.name}");

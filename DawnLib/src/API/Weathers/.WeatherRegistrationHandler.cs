@@ -17,7 +17,7 @@ static class WeatherRegistrationHandler
     internal static void Init()
     {
         On.TimeOfDay.Awake += RegisterDawnWeathers;
-        LethalContent.Moons.OnFreeze += AddDawnWeathersToMoons;
+        LethalContent.Moons.AfterTagging += AddDawnWeathersToMoons;
 
         On.StartOfRound.Start += RegisterVanillaAndModdedWeathers;
 
@@ -53,7 +53,6 @@ static class WeatherRegistrationHandler
                     weatherVariable2 = 0
                 };
 
-                DawnPlugin.Logger.LogFatal($"Adding weather {randomWeatherWithVariables.weatherType} to {moonInfo.Level.PlanetName}");
                 randomWeathersWithVariables.Add(randomWeatherWithVariables);
             }
             moonInfo.Level.randomWeathers = randomWeathersWithVariables.ToArray();
@@ -88,9 +87,16 @@ static class WeatherRegistrationHandler
         cursor.Emit(OpCodes.Ldloc, 0);
         cursor.EmitDelegate((SelectableLevel selectableLevel, System.Random random) =>
         {
-            List<LevelWeatherType> possibleWeathers = selectableLevel.randomWeathers.Select(x => x.weatherType).Where(x => x != LevelWeatherType.None).ToList();
-            List<DawnWeatherEffectInfo> possibleDawnWeathers = possibleWeathers.Select(x => x.GetDawnInfo()).ToList();
-            DawnWeatherEffectInfo selectedDawnWeather = possibleDawnWeathers[random.Next(possibleDawnWeathers.Count)];
+            List<LevelWeatherType> possibleWeathers = selectableLevel.randomWeathers.Select(x => x.weatherType).ToList();
+            List<DawnWeatherEffectInfo> possibleDawnWeathers = new();
+            foreach (LevelWeatherType possibleWeather in possibleWeathers)
+            {
+                if (possibleWeather.TryGetDawnInfo(out DawnWeatherEffectInfo? dawnWeatherEffectInfo))
+                {
+                    possibleDawnWeathers.Add(dawnWeatherEffectInfo);
+                }
+            }
+            DawnWeatherEffectInfo selectedDawnWeather = random.NextItem(possibleDawnWeathers);
             return selectedDawnWeather.GetLevelWeatherEffect();
         });
     }
@@ -100,7 +106,7 @@ static class WeatherRegistrationHandler
         if (self.GetType() == typeof(LevelWeatherType))
         {
             int value = (int)(LevelWeatherType)self;
-            if (value > TimeOfDayRefs.Instance.effects.Length)
+            if (value > TimeOfDayRefs.Instance.effects.Length || value < 0)
             {
                 return orig(self);
             }
@@ -129,14 +135,14 @@ static class WeatherRegistrationHandler
             effectsToSet.Add(weatherInfo.WeatherEffect);
             if (weatherInfo.EffectObjectPrefab != null)
             {
-                GameObject newEffectObject = GameObject.Instantiate(weatherInfo.EffectObjectPrefab);
+                GameObject newEffectObject = GameObject.Instantiate(weatherInfo.EffectObjectPrefab, self.transform);
                 newEffectObject.SetActive(false);
                 weatherInfo.WeatherEffect.effectObject = newEffectObject;
             }
 
             if (weatherInfo.EffectPermanentObjectPrefab != null)
             {
-                GameObject newEffectPermanentObject = GameObject.Instantiate(weatherInfo.EffectPermanentObjectPrefab);
+                GameObject newEffectPermanentObject = GameObject.Instantiate(weatherInfo.EffectPermanentObjectPrefab, self.transform);
                 newEffectPermanentObject.SetActive(false);
                 weatherInfo.WeatherEffect.effectPermanentObject = newEffectPermanentObject;
             }
@@ -179,6 +185,16 @@ static class WeatherRegistrationHandler
 
     private static void AddWeathersToRegistry()
     {
+        if (!LethalContent.Weathers.IsFrozen)
+        {
+            string noneName = NamespacedKey.NormalizeStringForNamespacedKey("none", true);
+            NamespacedKey<DawnWeatherEffectInfo> noneKey = NamespacedKey.Vanilla(noneName).AsTyped<DawnWeatherEffectInfo>();
+            ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> noneWeights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
+            // TODO: ugh none isn't even a weather technically, should this really have a weight at all? should I ignore zeekerss' way of getting none weight via the curve? should i try to replicate the curve logic but through pure numerical weights???
+            DawnWeatherEffectInfo noneEffectInfo = new(noneKey, [DawnLibTags.IsExternal], null!, noneWeights, 1f, null);
+            LethalContent.Weathers.Register(noneEffectInfo);
+        }
+
         foreach (WeatherEffect weatherEffect in TimeOfDayRefs.Instance.effects)
         {
             if (weatherEffect.HasDawnInfo())
@@ -216,17 +232,5 @@ static class WeatherRegistrationHandler
             LethalContent.Weathers.Register(weatherEffectInfo);
             weatherEffect.SetDawnInfo(weatherEffectInfo);
         }
-
-        if (LethalContent.Weathers.IsFrozen)
-        {
-            return;
-        }
-
-        string noneName = NamespacedKey.NormalizeStringForNamespacedKey("none", true);
-        NamespacedKey<DawnWeatherEffectInfo> noneKey = NamespacedKey.Vanilla(noneName).AsTyped<DawnWeatherEffectInfo>();
-        ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> noneWeights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
-        // TODO: ugh none isn't even a weather technically, should this really have a weight at all? should I ignore zeekerss' way of getting none weight via the curve? should i try to replicate the curve logic but through pure numerical weights???
-        DawnWeatherEffectInfo noneEffectInfo = new(noneKey, [DawnLibTags.IsExternal], null!, noneWeights, 1f, null);
-        LethalContent.Weathers.Register(noneEffectInfo);
     }
 }
