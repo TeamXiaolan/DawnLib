@@ -6,7 +6,7 @@ using Dawn.Internal;
 namespace Dusk.Weights;
 
 [Serializable]
-public class WeatherWeightTransformer : WeightTransformer<DawnWeatherEffectInfo?>
+public class WeatherWeightTransformer : WeightTransformer<DawnWeatherEffectInfo>
 {
     public WeatherWeightTransformer(List<NamespacedConfigWeight> weatherConfig)
     {
@@ -31,22 +31,19 @@ public class WeatherWeightTransformer : WeightTransformer<DawnWeatherEffectInfo?
 
     public Dictionary<NamespacedKey, NamespacedConfigWeight> MatchingWeathersWithWeightAndOperationDict = new();
 
-    public override float GetNewWeight(float currentWeight, DawnWeatherEffectInfo? weatherInfo)
+    public override float GetNewWeight(float currentWeight, DawnWeatherEffectInfo weatherInfo)
     {
-        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo?.TypedKey ?? WeatherKeys.None;
-        IEnumerable<NamespacedKey> tags = weatherInfo?.AllTags() ?? Array.Empty<NamespacedKey>();
-
-        if (!WeightTransformerTagLogic.TryApplyByKey(currentWeight, typedKey, MatchingWeathersWithWeightAndOperationDict, DoOperation, out float result, Debuggers.Weights))
+        if (!WeightTransformerTagLogic.TryApplyByKey(currentWeight, weatherInfo.TypedKey, MatchingWeathersWithWeightAndOperationDict, DoOperation, out float result, Debuggers.Weights))
         {
-            result = WeightTransformerTagLogic.ApplyByTags(currentWeight, tags, MatchingWeathersWithWeightAndOperationDict, DoOperation, Debuggers.Weights);
+            result = WeightTransformerTagLogic.ApplyByTags(currentWeight, weatherInfo.AllTags(), MatchingWeathersWithWeightAndOperationDict, DoOperation, Debuggers.Weights);
         }
 
         return result;
     }
 
-    public override MathOperation GetOperation(DawnWeatherEffectInfo? weatherInfo)
+    public override MathOperation GetOperation(DawnWeatherEffectInfo weatherInfo)
     {
-        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo?.TypedKey ?? NamespacedKey<DawnWeatherEffectInfo>.Vanilla("none");
+        NamespacedKey<DawnWeatherEffectInfo> typedKey = weatherInfo.TypedKey;
         if (MatchingWeathersWithWeightAndOperationDict.TryGetValue(typedKey, out NamespacedConfigWeight opWithWeight))
         {
             return opWithWeight.Operation;

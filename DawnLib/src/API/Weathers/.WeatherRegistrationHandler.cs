@@ -16,15 +16,35 @@ static class WeatherRegistrationHandler
 {
     internal static void Init()
     {
-        On.TimeOfDay.Awake += RegisterDawnWeathers;
-        LethalContent.Moons.AfterTagging += AddDawnWeathersToMoons;
-
-        On.StartOfRound.Start += RegisterVanillaAndModdedWeathers;
+        if (WeatherRegistryCompat.Enabled)
+        {
+            On.Terminal.Start += RegisterVanillaAndModdedWeathers;
+        }
+        else
+        {
+            On.TimeOfDay.Awake += RegisterDawnWeathers;
+            LethalContent.Moons.AfterTagging += AddDawnWeathersToMoons;
+            On.StartOfRound.Start += RegisterVanillaAndModdedWeathers;
+        }
 
         On.GameNetcodeStuff.PlayerControllerB.ConnectClientToPlayerObject += SyncWeathers;
         IL.StartOfRound.SetPlanetsWeather += ModifyWeatherWeighting;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(Enum), nameof(Enum.ToString), Type.EmptyTypes), ProvideDawnWeatherNames));
+    }
+
+    private static void RegisterVanillaAndModdedWeathers(On.Terminal.orig_Start orig, Terminal self)
+    {
+        orig(self);
+        AddWeathersToRegistry(); // This should HOPEFULLY run after LethalContent.Moons has collected all the moons
+        if (LethalContent.Weathers.IsFrozen)
+        {
+            return;
+        }
+
+        LethalContent.Weathers.Freeze();
+        InsertDawnWeathers(TimeOfDayRefs.Instance);
+        AddDawnWeathersToMoons();
     }
 
     private static void AddDawnWeathersToMoons()
@@ -43,7 +63,7 @@ static class WeatherRegistrationHandler
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     moonInfo,
                     null,
-                    moonInfo.Level.currentWeather.GetDawnInfo())
+                    LethalContent.Weathers[WeatherKeys.None])
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 RandomWeatherWithVariables randomWeatherWithVariables = new RandomWeatherWithVariables()
@@ -126,6 +146,12 @@ static class WeatherRegistrationHandler
 
     private static void RegisterDawnWeathers(On.TimeOfDay.orig_Awake orig, TimeOfDay self)
     {
+        InsertDawnWeathers(self);
+        orig(self);
+    }
+
+    private static void InsertDawnWeathers(TimeOfDay self)
+    {
         List<WeatherEffect> effectsToSet = self.effects.ToList();
         foreach (DawnWeatherEffectInfo weatherInfo in LethalContent.Weathers.Values)
         {
@@ -149,7 +175,6 @@ static class WeatherRegistrationHandler
         }
 
         self.effects = effectsToSet.ToArray();
-        orig(self);
     }
 
     private static void SyncWeathers(On.GameNetcodeStuff.PlayerControllerB.orig_ConnectClientToPlayerObject orig, GameNetcodeStuff.PlayerControllerB self)
@@ -172,7 +197,7 @@ static class WeatherRegistrationHandler
 
     private static void RegisterVanillaAndModdedWeathers(On.StartOfRound.orig_Start orig, StartOfRound self)
     {
-        AddWeathersToRegistry(); // This should HOPEFULLY run after LethalContent.Moons.Freeze
+        AddWeathersToRegistry(); // This should HOPEFULLY run after LethalContent.Moons has collected all the moons
         if (LethalContent.Weathers.IsFrozen)
         {
             orig(self);
@@ -195,7 +220,7 @@ static class WeatherRegistrationHandler
             LethalContent.Weathers.Register(noneEffectInfo);
         }
 
-        foreach (WeatherEffect weatherEffect in TimeOfDayRefs.Instance.effects)
+        foreach ((int i, WeatherEffect weatherEffect) in TimeOfDayRefs.Instance.effects.WithIndex())
         {
             if (weatherEffect.HasDawnInfo())
                 continue;
@@ -227,8 +252,19 @@ static class WeatherRegistrationHandler
             }
 
             // TODO: Grab each weather's weights on the moons, their weather to weather weights too and their base weight since WR supports that
-            ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weatherWeights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
-            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, weatherWeights, 1f, null);
+            WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weatherWeights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+            {
+                foreach (RandomWeatherWithVariables randomWeatherWithVariables in moonInfo.Level.randomWeathers)
+                {
+                    if ((int)randomWeatherWithVariables.weatherType == i)
+                    {
+                        DawnPlugin.Logger.LogFatal($"Weather {weatherEffect.name} is registered to the moon {moonInfo.Level.PlanetName} with a weight of 100. This is likely to cause issues.");
+                        weatherWeights.AddWeight(moonInfo.TypedKey, 100);
+                    }
+                }
+            }
+            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, weatherWeights.Build(), 1f, null);
             LethalContent.Weathers.Register(weatherEffectInfo);
             weatherEffect.SetDawnInfo(weatherEffectInfo);
         }

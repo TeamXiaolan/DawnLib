@@ -24,7 +24,7 @@ public class DawnPlugin : BaseUnityPlugin
     internal static PersistentDataContainer PersistentData { get; private set; } = null!;
     internal static readonly List<Hook> Hooks = new();
     internal static readonly List<ILHook> ILHooks = new();
-    internal static readonly Harmony _harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
+    internal static readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
     private void Awake()
     {
@@ -84,7 +84,7 @@ public class DawnPlugin : BaseUnityPlugin
         // Testing
         // DawnTesting.TestCommands();
 
-        _harmony.PatchAll(Assembly.GetExecutingAssembly());
+        harmony.PatchAll(Assembly.GetExecutingAssembly());
 
         DawnNetworkSceneManager.Init();
 

@@ -105,7 +105,7 @@ static class LethalLevelLoaderCompat
     public static void TryRemoveLLLDungeonTranspiler()
     {
         MethodBase originalMethod = typeof(RoundManager).GetMethod(nameof(RoundManager.GenerateNewFloor));
-        DawnPlugin._harmony.Unpatch(originalMethod, HarmonyLib.HarmonyPatchType.Transpiler, LethalLevelLoader.Plugin.ModGUID);
+        DawnPlugin.harmony.Unpatch(originalMethod, HarmonyLib.HarmonyPatchType.Transpiler, LethalLevelLoader.Plugin.ModGUID);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
