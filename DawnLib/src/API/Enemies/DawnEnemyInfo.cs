@@ -35,6 +35,7 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
     public DawnEnemyLocationInfo? Outside { get; private set; }
     public DawnEnemyLocationInfo? Inside { get; private set; }
     public DawnEnemyLocationInfo? Daytime { get; private set; }
+    public DawnEnemyLocationInfo? Weed { get; private set; }
 
     public TerminalNode? BestiaryNode { get; }
     public TerminalKeyword? NameKeyword { get; }

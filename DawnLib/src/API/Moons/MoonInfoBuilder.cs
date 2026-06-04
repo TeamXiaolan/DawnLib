@@ -14,6 +14,11 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     private ITerminalPurchasePredicate? _purchasePredicate;
     private float _outsideEnemiesProbabilityRange = 3f;
 
+    private int _maxWeedEnemyPowerCount, _maxWeedDiversityPowerCount, _maxDaytimeDiversityPowerCount;
+    private AnimationCurve _weedEnemySpawnChanceThroughDay = AnimationCurve.Constant(0f, 0f, 1f);
+    private float _weedEnemiesProbabilityRange;
+    private List<SpawnableEnemyWithRarity> _weedEnemies = [];
+
     public MoonInfoBuilder(NamespacedKey<DawnMoonInfo> key, SelectableLevel value) : base(key, value)
     {
     }
@@ -78,27 +83,45 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         return this;
     }
 
-    public MoonInfoBuilder OverrideEnemyPowerCount(int maxInsidePowerCount, int maxOutsidePowerCount, int maxDaytimePowerCount)
+    public MoonInfoBuilder OverrideEnemyPowerCount(int maxInsidePowerCount, int maxOutsidePowerCount, int maxDaytimePowerCount, int maxWeedPowerCount)
     {
         value.maxEnemyPowerCount = maxInsidePowerCount;
         value.maxOutsideEnemyPowerCount = maxOutsidePowerCount;
         value.maxDaytimeEnemyPowerCount = maxDaytimePowerCount;
+        _maxWeedEnemyPowerCount = maxWeedPowerCount;
         return this;
     }
 
-    public MoonInfoBuilder OverrideEnemySpawnCurves(AnimationCurve insideAnimationCurve, AnimationCurve outsideAnimationCurve, AnimationCurve daytimeAnimationCurve)
+    public MoonInfoBuilder OverrideEnemySpawnCurves(AnimationCurve insideAnimationCurve, AnimationCurve outsideAnimationCurve, AnimationCurve daytimeAnimationCurve, AnimationCurve weedAnimationCurve)
     {
         value.enemySpawnChanceThroughoutDay = insideAnimationCurve;
         value.outsideEnemySpawnChanceThroughDay = outsideAnimationCurve;
         value.daytimeEnemySpawnChanceThroughDay = daytimeAnimationCurve;
+        _weedEnemySpawnChanceThroughDay = weedAnimationCurve;
         return this;
     }
 
-    public MoonInfoBuilder OverrideEnemySpawnRanges(float insideSpawnRange, float outsideSpawnRange, float daytimeSpawnRange)
+    public MoonInfoBuilder OverrideEnemySpawnRanges(float insideSpawnRange, float outsideSpawnRange, float daytimeSpawnRange, float weedSpawnRange)
     {
         value.spawnProbabilityRange = insideSpawnRange;
         _outsideEnemiesProbabilityRange = outsideSpawnRange;
         value.daytimeEnemiesProbabilityRange = daytimeSpawnRange;
+        _weedEnemiesProbabilityRange = weedSpawnRange;
+        return this;
+    }
+
+    public MoonInfoBuilder OverrideDiversityPowerCounts(int insideDiversityPowerCount, int outsideDiversityPowerCount, int daytimeDiversityPowerCount, int weedDiversityPowerCount)
+    {
+        value.maxInsideDiversityPowerCount = insideDiversityPowerCount;
+        value.maxOutsideDiversityPowerCount = outsideDiversityPowerCount;
+        _maxDaytimeDiversityPowerCount = daytimeDiversityPowerCount;
+        _maxWeedDiversityPowerCount = weedDiversityPowerCount;
+        return this;
+    }
+
+    public MoonInfoBuilder SetWeedEnemies(List<SpawnableEnemyWithRarity> weedEnemies)
+    {
+        _weedEnemies = weedEnemies;
         return this;
     }
 
@@ -147,7 +170,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
 
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _outsideEnemiesProbabilityRange, _scenes, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _outsideEnemiesProbabilityRange, _maxDaytimeDiversityPowerCount, _maxWeedEnemyPowerCount, _maxWeedDiversityPowerCount, _weedEnemies, _weedEnemySpawnChanceThroughDay, _weedEnemiesProbabilityRange, _scenes, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
         return info;
     }
 }

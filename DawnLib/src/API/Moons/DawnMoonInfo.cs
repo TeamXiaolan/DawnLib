@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using System.Globalization;
 using Dawn.Internal;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
 
 public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, int maxDaytimeDiversityPowerCount, int maxWeedEnemyPowerCount, int maxWeedDiversityPowerCount, List<SpawnableEnemyWithRarity> weedEnemies, AnimationCurve weedEnemySpawnChanceThroughDay, float weedEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
 
         OutsideEnemiesProbabilityRange = outsideEnemiesProbabilityRange;
+
+        MaxDaytimeDiversityPowerCount = maxDaytimeDiversityPowerCount;
+
+        MaxWeedEnemyPowerCount = maxWeedEnemyPowerCount;
+        MaxWeedDiversityPowerCount = maxWeedDiversityPowerCount;
+        WeedEnemies = weedEnemies;
+        WeedEnemySpawnChanceThroughDay = weedEnemySpawnChanceThroughDay;
+        WeedEnemiesProbabilityRange = weedEnemiesProbabilityRange;
 
         Scenes.AddRange(scenes);
 
@@ -28,7 +37,18 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     public TerminalNode? RouteNode { get; }
     public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
+
+    // TODO: Put these in the preloader
     public float OutsideEnemiesProbabilityRange { get; private set; }
+
+    public int MaxDaytimeDiversityPowerCount { get; private set; }
+
+    public int MaxWeedEnemyPowerCount { get; private set; }
+    public int MaxWeedDiversityPowerCount { get; private set; }
+    public List<SpawnableEnemyWithRarity> WeedEnemies { get; } = new(); // This is only so they can decide whether to include or disclude vanilla fox, NOT for adding custom weed enemies to the moon
+    public AnimationCurve WeedEnemySpawnChanceThroughDay { get; private set; }
+    public float WeedEnemiesProbabilityRange { get; private set; }
+    // TODO End
 
     public List<IMoonSceneInfo> Scenes { get; } = [];
 

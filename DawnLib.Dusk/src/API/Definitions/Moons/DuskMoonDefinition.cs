@@ -26,13 +26,30 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     [field: Header("Configs | Defaults")]
     [field: SerializeField]
     public int Cost { get; private set; }
+
     [field: SerializeField]
     [field: Tooltip("Vanilla typically hard codes this to a value of 3.")]
     public float OutsideEnemiesSpawnProbabilityRange { get; private set; } = 3;
 
+    [field: SerializeField]
+    public int MaxDaytimeDiversityPowerCount { get; private set; } = 100;
+
+    [field: SerializeField]
+    public List<SpawnableEnemyWithRarity>? WeedEnemies { get; private set; } = null; // Null before 1.0.0 DawnLib
+    [field: SerializeField]
+    public int MaxWeedDiversityPowerCount { get; private set; } = 100;
+    [field: SerializeField]
+    public int MaxWeedEnemyPowerCount { get; private set; } = 4;
+    [field: SerializeField]
+    public float WeedEnemiesProbabilityRange { get; private set; } = 1;
+    [field: SerializeField]
+    public AnimationCurve WeedEnemySpawnChanceThroughDay { get; private set; } = AnimationCurve.Constant(0f, 1f, 2f);
+
     [field: Header("Configs | Generation")]
     [field: SerializeField]
     public bool GenerateEnemyPowerCountConfigs { get; private set; } = true;
+    [field: SerializeField]
+    public bool GenerateEnemyDiversityCountConfigs { get; private set; } = true;
     [field: SerializeField]
     public bool GenerateEnemySpawnCurveConfigs { get; private set; } = true;
     [field: SerializeField]
@@ -53,6 +70,17 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
+        if (WeedEnemies == null)
+        {
+            EnemyType blankKidnapperFox = EnemyType.CreateInstance<EnemyType>();
+            blankKidnapperFox.name = "BushWolf";
+            blankKidnapperFox.enemyName = "Bush Wolf";
+            WeedEnemies = new List<SpawnableEnemyWithRarity>()
+            {
+                new SpawnableEnemyWithRarity(blankKidnapperFox, 100)
+            };
+        }
+
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateMoonConfig(section);
         BaseConfig = Config;
@@ -91,9 +119,11 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 
             builder.OverrideTimeMultiplier(Config.TimeFactor?.Value ?? Level.DaySpeedMultiplier);
             builder.OverrideMinMaxScrap(new BoundedRange(Config.MinMaxScrap?.Value.Min ?? Level.minScrap, Config.MinMaxScrap?.Value.Max ?? Level.maxScrap));
-            builder.OverrideEnemyPowerCount(Config.InsideEnemyPowerCount?.Value ?? Level.maxEnemyPowerCount, Config.OutsideEnemyPowerCount?.Value ?? Level.maxOutsideEnemyPowerCount, Config.DaytimeEnemyPowerCount?.Value ?? Level.maxDaytimeEnemyPowerCount);
-            builder.OverrideEnemySpawnCurves(Config.InsideEnemySpawnCurve?.Value ?? Level.enemySpawnChanceThroughoutDay, Config.OutsideEnemySpawnCurve?.Value ?? Level.outsideEnemySpawnChanceThroughDay, Config.DaytimeEnemySpawnCurve?.Value ?? Level.daytimeEnemySpawnChanceThroughDay);
-            builder.OverrideEnemySpawnRanges(Config.InsideEnemySpawnRange?.Value ?? Level.spawnProbabilityRange, Config.OutsideEnemySpawnRange?.Value ?? OutsideEnemiesSpawnProbabilityRange, Config.DaytimeEnemySpawnRange?.Value ?? Level.daytimeEnemiesProbabilityRange);
+            builder.OverrideEnemyPowerCount(Config.InsideEnemyPowerCount?.Value ?? Level.maxEnemyPowerCount, Config.OutsideEnemyPowerCount?.Value ?? Level.maxOutsideEnemyPowerCount, Config.DaytimeEnemyPowerCount?.Value ?? Level.maxDaytimeEnemyPowerCount, Config.WeedEnemyPowerCount?.Value ?? MaxWeedEnemyPowerCount);
+            builder.OverrideEnemySpawnCurves(Config.InsideEnemySpawnCurve?.Value ?? Level.enemySpawnChanceThroughoutDay, Config.OutsideEnemySpawnCurve?.Value ?? Level.outsideEnemySpawnChanceThroughDay, Config.DaytimeEnemySpawnCurve?.Value ?? Level.daytimeEnemySpawnChanceThroughDay, Config.WeedEnemySpawnCurve?.Value ?? WeedEnemySpawnChanceThroughDay);
+            builder.OverrideEnemySpawnRanges(Config.InsideEnemySpawnRange?.Value ?? Level.spawnProbabilityRange, Config.OutsideEnemySpawnRange?.Value ?? OutsideEnemiesSpawnProbabilityRange, Config.DaytimeEnemySpawnRange?.Value ?? Level.daytimeEnemiesProbabilityRange, Config.WeedEnemySpawnRange?.Value ?? WeedEnemiesProbabilityRange);
+            builder.OverrideDiversityPowerCounts(Config.InsideDiversityPowerCount?.Value ?? Level.maxInsideDiversityPowerCount, Config.OutsideDiversityPowerCount?.Value ?? Level.maxOutsideDiversityPowerCount, Config.DaytimeDiversityPowerCount?.Value ?? MaxDaytimeDiversityPowerCount, Config.WeedDiversityPowerCount?.Value ?? MaxWeedDiversityPowerCount);
+            builder.SetWeedEnemies(WeedEnemies);
             ApplyTagsTo(builder);
         });
     }
@@ -109,14 +139,22 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             InsideEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Power Count", $"Inside enemy power count for {EntityNameReference}.", Level.maxEnemyPowerCount) : null,
             OutsideEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Power Count", $"Outside enemy power count for {EntityNameReference}.", Level.maxOutsideEnemyPowerCount) : null,
             DaytimeEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Power Count", $"Daytime enemy power count for {EntityNameReference}.", Level.maxDaytimeEnemyPowerCount) : null,
+            WeedEnemyPowerCount = GenerateEnemyPowerCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Weed Enemy Power Count", $"Weed enemy power count for {EntityNameReference}.", MaxWeedEnemyPowerCount) : null,
+
+            InsideDiversityPowerCount = GenerateEnemyDiversityCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Diversity Count", $"Inside enemy diversity count for {EntityNameReference}.", Level.maxInsideDiversityPowerCount) : null,
+            OutsideDiversityPowerCount = GenerateEnemyDiversityCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Diversity Count", $"Outside enemy diversity count for {EntityNameReference}.", Level.maxOutsideDiversityPowerCount) : null,
+            DaytimeDiversityPowerCount = GenerateEnemyDiversityCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Diversity Count", $"Daytime enemy diversity count for {EntityNameReference}.", MaxDaytimeDiversityPowerCount) : null,
+            WeedDiversityPowerCount = GenerateEnemyDiversityCountConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Weed Enemy Diversity Count", $"Weed enemy diversity count for {EntityNameReference}.", MaxWeedDiversityPowerCount) : null,
 
             InsideEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Spawn Range", $"Inside enemy spawn range for {EntityNameReference}.", Level.spawnProbabilityRange) : null,
             OutsideEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Spawn Range", $"Outside enemy spawn range for {EntityNameReference}.", OutsideEnemiesSpawnProbabilityRange) : null,
             DaytimeEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Spawn Range", $"Daytime enemy spawn range for {EntityNameReference}.", Level.daytimeEnemiesProbabilityRange) : null,
+            WeedEnemySpawnRange = GenerateEnemySpawnProbabilityRangeConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Weed Enemy Spawn Range", $"Weed enemy spawn range for {EntityNameReference}.", WeedEnemiesProbabilityRange) : null,
 
             InsideEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Inside Enemy Spawn Curve", $"Inside enemy spawn curve for {EntityNameReference}.", Level.enemySpawnChanceThroughoutDay) : null,
             OutsideEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Outside Enemy Spawn Curve", $"Outside enemy spawn curve for {EntityNameReference}.", Level.outsideEnemySpawnChanceThroughDay) : null,
             DaytimeEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Daytime Enemy Spawn Curve", $"Daytime enemy spawn curve for {EntityNameReference}.", Level.daytimeEnemySpawnChanceThroughDay) : null,
+            WeedEnemySpawnCurve = GenerateEnemySpawnCurveConfigs && Level.spawnEnemiesAndScrap ? section.Bind($"{EntityNameReference} | Weed Enemy Spawn Curve", $"Weed enemy spawn curve for {EntityNameReference}.", WeedEnemySpawnChanceThroughDay) : null,
 
             DisableUnlockRequirements = GenerateDisableUnlockConfig && TerminalPredicate ? section.Bind($"{EntityNameReference} | Disable Unlock Requirements", $"Whether {EntityNameReference} should have it's unlock requirements disabled.", false) : null,
             DisablePricingStrategy = GenerateDisablePricingStrategyConfig && PricingStrategy ? section.Bind($"{EntityNameReference} | Disable Pricing Strategy", $"Whether {EntityNameReference} should have it's pricing strategy disabled.", false) : null,
@@ -131,14 +169,22 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideEnemyPowerCount, Level.maxEnemyPowerCount);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideEnemyPowerCount, Level.maxOutsideEnemyPowerCount);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeEnemyPowerCount, Level.maxDaytimeEnemyPowerCount);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.WeedEnemyPowerCount, MaxWeedEnemyPowerCount);
+
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideDiversityPowerCount, Level.maxInsideDiversityPowerCount);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideDiversityPowerCount, Level.maxOutsideDiversityPowerCount);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeDiversityPowerCount, MaxDaytimeDiversityPowerCount);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.WeedDiversityPowerCount, MaxWeedDiversityPowerCount);
 
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideEnemySpawnRange, Level.spawnProbabilityRange);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideEnemySpawnRange, OutsideEnemiesSpawnProbabilityRange);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeEnemySpawnRange, Level.daytimeEnemiesProbabilityRange);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.WeedEnemySpawnRange, WeedEnemiesProbabilityRange);
 
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.InsideEnemySpawnCurve, Level.enemySpawnChanceThroughoutDay);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.OutsideEnemySpawnCurve, Level.outsideEnemySpawnChanceThroughDay);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.DaytimeEnemySpawnCurve, Level.daytimeEnemySpawnChanceThroughDay);
+            DuskBaseConfig.AssignValueIfNotNull(moonConfig.WeedEnemySpawnCurve, WeedEnemySpawnChanceThroughDay);
 
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.DisableUnlockRequirements, false);
             DuskBaseConfig.AssignValueIfNotNull(moonConfig.DisablePricingStrategy, false);

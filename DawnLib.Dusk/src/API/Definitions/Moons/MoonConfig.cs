@@ -19,14 +19,22 @@ public class MoonConfig(ConfigContext section, string EntityNameReference) : Dus
     public ConfigEntry<int>? InsideEnemyPowerCount = null;
     public ConfigEntry<int>? OutsideEnemyPowerCount = null;
     public ConfigEntry<int>? DaytimeEnemyPowerCount = null;
+    public ConfigEntry<int>? WeedEnemyPowerCount = null;
+
+    public ConfigEntry<int>? InsideDiversityPowerCount = null;
+    public ConfigEntry<int>? OutsideDiversityPowerCount = null;
+    public ConfigEntry<int>? DaytimeDiversityPowerCount = null;
+    public ConfigEntry<int>? WeedDiversityPowerCount = null;
 
     public ConfigEntry<AnimationCurve>? InsideEnemySpawnCurve = null;
     public ConfigEntry<AnimationCurve>? OutsideEnemySpawnCurve = null;
     public ConfigEntry<AnimationCurve>? DaytimeEnemySpawnCurve = null;
+    public ConfigEntry<AnimationCurve>? WeedEnemySpawnCurve = null;
 
     public ConfigEntry<float>? InsideEnemySpawnRange = null;
     public ConfigEntry<float>? OutsideEnemySpawnRange = null;
     public ConfigEntry<float>? DaytimeEnemySpawnRange = null;
+    public ConfigEntry<float>? WeedEnemySpawnRange = null;
 
     override internal List<ConfigEntryBase?> _configEntries => [
         Cost,
@@ -41,13 +49,16 @@ public class MoonConfig(ConfigContext section, string EntityNameReference) : Dus
         InsideEnemyPowerCount,
         OutsideEnemyPowerCount,
         DaytimeEnemyPowerCount,
+        WeedEnemyPowerCount,
 
         InsideEnemySpawnCurve,
         OutsideEnemySpawnCurve,
         DaytimeEnemySpawnCurve,
+        WeedEnemySpawnCurve,
 
         InsideEnemySpawnRange,
         OutsideEnemySpawnRange,
-        DaytimeEnemySpawnRange
+        DaytimeEnemySpawnRange,
+        WeedEnemySpawnRange
     ];
 }

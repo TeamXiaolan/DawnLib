@@ -289,11 +289,6 @@ static class EnemyRegistrationHandler
             return;
         }
 
-        bool previouslyDaytime = self.enemyType.isDaytimeEnemy;
-        if (enemyInfo.Daytime != null)
-        {
-            self.enemyType.isDaytimeEnemy = true;
-        }
         GameObject[]? insideNodes = RoundManager.Instance.insideAINodes;
         GameObject[]? outsideNodes = RoundManager.Instance.outsideAINodes;
         bool insideIsClosest = true;
@@ -328,6 +323,12 @@ static class EnemyRegistrationHandler
                     break;
                 }
             }
+        }
+
+        bool previouslyDaytime = self.enemyType.isDaytimeEnemy;
+        if (enemyInfo.Daytime != null)
+        {
+            self.enemyType.isDaytimeEnemy = true;
         }
 
         bool previouslyOutside = self.enemyType.isOutsideEnemy;

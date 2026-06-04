@@ -319,6 +319,7 @@ static class MoonRegistrationHandler
                 ReplaceAndSetToDestroy(moonInfo.Level.Enemies, potentialReplacement, enemiesToDestroy);
                 ReplaceAndSetToDestroy(moonInfo.Level.OutsideEnemies, potentialReplacement, enemiesToDestroy);
                 ReplaceAndSetToDestroy(moonInfo.Level.DaytimeEnemies, potentialReplacement, enemiesToDestroy);
+                ReplaceAndSetToDestroy(moonInfo.WeedEnemies, potentialReplacement, enemiesToDestroy);
 
                 if (specialEnemy != null)
                 {
@@ -556,7 +557,7 @@ static class MoonRegistrationHandler
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies, AnimationCurve.Constant(0f, 1f, 2f), 1f, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.SetDawnInfo(moonInfo);
             LethalContent.Moons.Register(moonInfo);
         }
@@ -570,7 +571,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies, AnimationCurve.Constant(0f, 1f, 2f), 1f, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
         self.currentLevel.SetDawnInfo(testMoonInfo);
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
