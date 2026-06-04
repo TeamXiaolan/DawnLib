@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <RootNamespace>Dawn.Core</RootNamespace>
+        <AssemblyName>com.github.teamxiaolan.dawnlib.core</AssemblyName>
+        <AssemblyTitle>DawnLibCore</AssemblyTitle>
+        <Product>DawnLibCore</Product>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+	
+    <!-- Defining the reference files that have to be publicized. -->
+    <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all"/>
+    </ItemGroup>
+
+    <Target Name="PublishThunderstore">
+    </Target>
+</Project>
