@@ -259,7 +259,6 @@ static class WeatherRegistrationHandler
                 {
                     if ((int)randomWeatherWithVariables.weatherType == i)
                     {
-                        DawnPlugin.Logger.LogFatal($"Weather {weatherEffect.name} is registered to the moon {moonInfo.Level.PlanetName} with a weight of 100. This is likely to cause issues.");
                         weatherWeights.AddWeight(moonInfo.TypedKey, 100);
                     }
                 }
