@@ -52,6 +52,7 @@ public class DuskPlugin : BaseUnityPlugin
          * because dawn doesn't actually load any assetbundles,
          * and dusk is currently in charge of the main bundles,
          * we have to manually set this field in MoonRegistrationHandler as a workaround
+         * TODO: maybe to fix this, move assetbundleloader to core?
          */
         MoonRegistrationHandler.RouteProgressUIPrefab = DawnLibMainVanilla.RouteProgressUIPrefab;
 
