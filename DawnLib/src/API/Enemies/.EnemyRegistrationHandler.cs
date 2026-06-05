@@ -269,6 +269,12 @@ static class EnemyRegistrationHandler
                 Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} daytime.");
                 testLevel.DaytimeEnemies.Add(spawnDef);
             }
+
+            if (enemyInfo.Weed != null && testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
+            {
+                Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} outside (but it is a weed!).");
+                testLevel.OutsideEnemies.Add(spawnDef);
+            }
         }
         orig(self);
     }
@@ -371,6 +377,7 @@ static class EnemyRegistrationHandler
             return;
 
         DungeonFlow? dungeonFlow = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow;
+        DawnMoonInfo moonInfo = level.GetDawnInfo();
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (enemyInfo.ShouldSkipRespectOverride())
@@ -379,6 +386,7 @@ static class EnemyRegistrationHandler
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
             if (enemyInfo.Outside != null)
             {
+                Debuggers.Enemies?.Log($"Updating Outside weights");
                 SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.OutsideEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
@@ -387,10 +395,10 @@ static class EnemyRegistrationHandler
                 }
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
-                    level.GetDawnInfo(),
+                    moonInfo,
                     dungeonFlow?.GetDawnInfo(),
                     level.currentWeather.GetDawnInfo())
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Outside.Weights.GetFor(ctx) ?? 0;
                 spawnableEnemyWithRarity.rarity = rarity.Clamp0();
@@ -398,6 +406,7 @@ static class EnemyRegistrationHandler
 
             if (enemyInfo.Inside != null)
             {
+                Debuggers.Enemies?.Log($"Updating Inside weights");
                 SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.Enemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
@@ -406,10 +415,10 @@ static class EnemyRegistrationHandler
                 }
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
-                    level.GetDawnInfo(),
+                    moonInfo,
                     dungeonFlow?.GetDawnInfo(),
                     level.currentWeather.GetDawnInfo())
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Inside.Weights.GetFor(ctx) ?? 0;
                 spawnableEnemyWithRarity.rarity = rarity.Clamp0();
@@ -417,6 +426,7 @@ static class EnemyRegistrationHandler
 
             if (enemyInfo.Daytime != null)
             {
+                Debuggers.Enemies?.Log($"Updating Daytime weights");
                 SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.DaytimeEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
@@ -425,14 +435,44 @@ static class EnemyRegistrationHandler
                 }
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
-                    level.GetDawnInfo(),
+                    moonInfo,
                     dungeonFlow?.GetDawnInfo(),
                     level.currentWeather.GetDawnInfo())
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Daytime.Weights.GetFor(ctx) ?? 0;
                 spawnableEnemyWithRarity.rarity = rarity.Clamp0();
             }
+
+            if (enemyInfo.Weed != null)
+            {
+                Debuggers.Enemies?.Log($"Updating Weed weights");
+                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = moonInfo.WeedEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+                if (spawnableEnemyWithRarity == null)
+                {
+                    Debuggers.Enemies?.Log($"Adding weed spawnable {enemyInfo.EnemyType} to the moon");
+                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
+                    moonInfo.WeedEnemies.Add(spawnableEnemyWithRarity);
+                }
+
+                SpawnWeightContext ctx = new SpawnWeightContext(
+                    moonInfo,
+                    dungeonFlow?.GetDawnInfo(),
+                    level.currentWeather.GetDawnInfo())
+                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
+
+                int rarity = enemyInfo.Weed.Weights.GetFor(ctx) ?? 0;
+                spawnableEnemyWithRarity.rarity = rarity.Clamp0();
+            }
+        }
+
+        RoundManagerRefs.Instance.WeedEnemies.RemoveAll(x => !x.enemyType.GetDawnInfo().ShouldSkipRespectOverride());
+        foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.WeedEnemies.ToList())
+        {
+            if (spawnableEnemyWithRarity.enemyType == null || spawnableEnemyWithRarity.enemyType.GetDawnInfo().ShouldSkipRespectOverride())
+                continue;
+
+            RoundManagerRefs.Instance.WeedEnemies.Add(spawnableEnemyWithRarity);
         }
     }
 
@@ -441,6 +481,21 @@ static class EnemyRegistrationHandler
         Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> enemyInsideWeightBuilder = new();
         Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> enemyOutsideWeightBuilder = new();
         Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> enemyDaytimeWeightBuilder = new();
+        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> enemyWeedWeightBuilder = new();
+
+        foreach (SpawnableEnemyWithRarity enemyWithRarity in RoundManagerRefs.Instance.WeedEnemies)
+        {
+            if (enemyWithRarity.enemyType == null)
+                continue;
+
+            if (!enemyWeedWeightBuilder.TryGetValue(enemyWithRarity.enemyType.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
+            {
+                weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+                enemyWeedWeightBuilder[enemyWithRarity.enemyType.name] = weightTableBuilder;
+            }
+            Debuggers.Enemies?.Log($"Adding weed weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on all levels");
+            weightTableBuilder.SetGlobalWeight(enemyWithRarity.rarity);
+        }
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -531,6 +586,7 @@ static class EnemyRegistrationHandler
             DawnEnemyLocationInfo? insideInfo = null;
             DawnEnemyLocationInfo? outsideInfo = null;
             DawnEnemyLocationInfo? daytimeInfo = null;
+            DawnEnemyLocationInfo? weedInfo = null;
 
             if (enemyInsideWeightBuilder.ContainsKey(enemyType.name))
             {
@@ -545,6 +601,11 @@ static class EnemyRegistrationHandler
             if (enemyDaytimeWeightBuilder.ContainsKey(enemyType.name))
             {
                 daytimeInfo = new DawnEnemyLocationInfo(enemyDaytimeWeightBuilder[enemyType.name].Build());
+            }
+
+            if (enemyWeedWeightBuilder.ContainsKey(enemyType.name))
+            {
+                weedInfo = new DawnEnemyLocationInfo(enemyWeedWeightBuilder[enemyType.name].Build());
             }
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
@@ -569,7 +630,7 @@ static class EnemyRegistrationHandler
 
             DawnEnemyInfo enemyInfo = new(
                 key, tags, enemyType,
-                outsideInfo, insideInfo, daytimeInfo,
+                outsideInfo, insideInfo, daytimeInfo, weedInfo,
                 bestiaryNode, nameKeyword,
                 null
             );
@@ -593,6 +654,9 @@ static class EnemyRegistrationHandler
 
                 if (enemyInfo.Inside != null)
                     TryAddToEnemyList(enemyInfo, level.Enemies);
+
+                if (enemyInfo.Weed != null)
+                    TryAddToEnemyList(enemyInfo, level.GetDawnInfo().WeedEnemies);
             }
         }
 

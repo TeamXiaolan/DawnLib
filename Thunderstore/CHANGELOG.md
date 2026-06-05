@@ -1,4 +1,25 @@
-# v0.9.23
+# v1.0.0
+
+- Added the ability to register weed enemies per moon.
+- Added the ability to register vain shrouds associated with said weed enemies.
+- Moons have more control over weed enemy spawning now.
+- Made it easier to add DawnLib to the editor (com.github.teamxiaolan.dawnlib.compatibility.dll will no longer show up in editor unless you download the mod dlls weirdly!).
+- Added complete weather registration to DawnLib.
+- Added a tag to moons that support weather `SupportsWeather`, this is decided by checking whether the moon is both a company moon has any `randomWeathers` set to it.
+- Added more information related to issues such as incorrect folder structure.
+
+## TODO
+
+- Made an AddOn mod for allowing adding colours to every weather.
+- Finish out Weather Registration weighting logic.
+- Add Combined, Progressing, Unknown and terminal predicate related weather things.
+- ItemGroup registration needs to be done better.
+  - Allow injecting to items that aren't your own too?
+- Add a sibiling component to RandomScrapSpawn.
+  - Add option to prevent Empty ItemGroup items from spawning there.
+  - Allows fixing the rotation of spawned items to the spawnedItemsCopyRotation?
+
+## v0.9.23
 
 - Solved fake extra fire exit existing.
 - Cleaned up code for more compatibility with other mods.

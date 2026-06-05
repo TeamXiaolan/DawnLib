@@ -45,7 +45,7 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 
     public int MaxWeedEnemyPowerCount { get; private set; }
     public int MaxWeedDiversityPowerCount { get; private set; }
-    public List<SpawnableEnemyWithRarity> WeedEnemies { get; } = new(); // This is only so they can decide whether to include or disclude vanilla fox, NOT for adding custom weed enemies to the moon
+    public List<SpawnableEnemyWithRarity> WeedEnemies { get; } = new();
     public AnimationCurve WeedEnemySpawnChanceThroughDay { get; private set; }
     public float WeedEnemiesProbabilityRange { get; private set; }
     // TODO End

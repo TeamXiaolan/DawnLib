@@ -5,6 +5,7 @@ using Dusk.Weights;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Video;
 
 namespace Dusk;
 
@@ -14,6 +15,7 @@ public enum SpawnTable
     Inside = 1 << 0,
     Outside = 1 << 1,
     Daytime = 1 << 2,
+    Weed = 1 << 3,
 }
 
 [CreateAssetMenu(fileName = "New Enemy Definition", menuName = $"{DuskModConstants.Definitions}/Enemy Definition")]
@@ -30,7 +32,8 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     [field: TextArea(2, 20)]
     [field: SerializeField]
     public string BestiaryNodeText { get; private set; } = string.Empty;
-
+    [field: SerializeField]
+    public VideoClip BestiaryVideo { get; private set; }
     [field: SerializeField]
     public string BestiaryWordOverride { get; private set; } = string.Empty;
 
@@ -157,10 +160,19 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
                 });
             }
 
+            if (SpawnTable.HasFlag(SpawnTable.Weed))
+            {
+                builder.DefineWeed(weedBuilder =>
+                {
+                    weedBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                });
+            }
+
             if (!string.IsNullOrWhiteSpace(BestiaryNodeText))
             {
                 builder.CreateBestiaryNode(BestiaryNodeText);
                 builder.CreateNameKeyword(BestiaryWordOverride);
+                builder.SetBestiaryVideo(BestiaryVideo);
             }
 
             ApplyTagsTo(builder);

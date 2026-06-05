@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn;
 using Dawn.Utils;
 using Dusk.Utils;
@@ -35,7 +36,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     public int MaxDaytimeDiversityPowerCount { get; private set; } = 100;
 
     [field: SerializeField]
-    public List<SpawnableEnemyWithRarity>? WeedEnemies { get; private set; } = null; // Null before 1.0.0 DawnLib
+    public SpawnableEnemyWithRarity[]? WeedEnemies { get; private set; } = null; // Null before 1.0.0 DawnLib
     [field: SerializeField]
     public int MaxWeedDiversityPowerCount { get; private set; } = 100;
     [field: SerializeField]
@@ -75,10 +76,10 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             EnemyType blankKidnapperFox = EnemyType.CreateInstance<EnemyType>();
             blankKidnapperFox.name = "BushWolf";
             blankKidnapperFox.enemyName = "Bush Wolf";
-            WeedEnemies = new List<SpawnableEnemyWithRarity>()
-            {
+            WeedEnemies =
+            [
                 new SpawnableEnemyWithRarity(blankKidnapperFox, 100)
-            };
+            ];
         }
 
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
@@ -123,7 +124,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             builder.OverrideEnemySpawnCurves(Config.InsideEnemySpawnCurve?.Value ?? Level.enemySpawnChanceThroughoutDay, Config.OutsideEnemySpawnCurve?.Value ?? Level.outsideEnemySpawnChanceThroughDay, Config.DaytimeEnemySpawnCurve?.Value ?? Level.daytimeEnemySpawnChanceThroughDay, Config.WeedEnemySpawnCurve?.Value ?? WeedEnemySpawnChanceThroughDay);
             builder.OverrideEnemySpawnRanges(Config.InsideEnemySpawnRange?.Value ?? Level.spawnProbabilityRange, Config.OutsideEnemySpawnRange?.Value ?? OutsideEnemiesSpawnProbabilityRange, Config.DaytimeEnemySpawnRange?.Value ?? Level.daytimeEnemiesProbabilityRange, Config.WeedEnemySpawnRange?.Value ?? WeedEnemiesProbabilityRange);
             builder.OverrideDiversityPowerCounts(Config.InsideDiversityPowerCount?.Value ?? Level.maxInsideDiversityPowerCount, Config.OutsideDiversityPowerCount?.Value ?? Level.maxOutsideDiversityPowerCount, Config.DaytimeDiversityPowerCount?.Value ?? MaxDaytimeDiversityPowerCount, Config.WeedDiversityPowerCount?.Value ?? MaxWeedDiversityPowerCount);
-            builder.SetWeedEnemies(WeedEnemies);
+            builder.SetWeedEnemies(WeedEnemies.ToList());
             ApplyTagsTo(builder);
         });
     }

@@ -56,11 +56,15 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
         }
     }
 
+    // Returns false if content is made by DawnLib
+    // Returns true if vanilla or other libraries registered this content
     public bool ShouldSkipIgnoreOverride()
     {
         return Key.IsVanilla() || HasTag(DawnLibTags.IsExternal) || HasTag(Tags.Unimplemented);
     }
 
+    // Returns false if content is either made by DawnLib or has a LunarConfig tag
+    // Returns true if it's non DawnLib content that isn't made configurable.
     public bool ShouldSkipRespectOverride()
     {
         return ShouldSkipIgnoreOverride() && !HasTag(DawnLibTags.LunarConfig);

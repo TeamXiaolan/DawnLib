@@ -1,10 +1,11 @@
 using System;
+using UnityEngine.Video;
 
 namespace Dawn;
 
 public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyInfoBuilder>
 {
-    private DawnEnemyLocationInfo? _inside, _outside, _daytime;
+    private DawnEnemyLocationInfo? _inside, _outside, _daytime, _weed;
     private TerminalNode? _bestiaryNode;
     private TerminalKeyword? _nameKeyword;
 
@@ -64,6 +65,14 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
         return this;
     }
 
+    public EnemyInfoBuilder DefineWeed(Action<EnemyLocationBuilder> callback)
+    {
+        EnemyLocationBuilder builder = new EnemyLocationBuilder(this);
+        callback(builder);
+        _weed = builder.Build();
+        return this;
+    }
+
     public EnemyInfoBuilder CreateBestiaryNode(string bestiaryNodeText)
     {
         _bestiaryNode = new TerminalNodeBuilder($"{value.enemyName}BestiaryNode")
@@ -72,6 +81,17 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
             .SetClearPreviousText(true)
             .SetMaxCharactersToType(35)
             .Build();
+
+        return this;
+    }
+
+    public EnemyInfoBuilder SetBestiaryVideo(VideoClip videoClip)
+    {
+        if (_bestiaryNode == null)
+        {
+            throw new InvalidOperationException("Must first call CreateBestiaryNode before setting video.");
+        }
+        _bestiaryNode.displayVideo = videoClip;
 
         return this;
     }
@@ -91,6 +111,6 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
 
     override internal DawnEnemyInfo Build()
     {
-        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _bestiaryNode, _nameKeyword, customData);
+        return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _weed, _bestiaryNode, _nameKeyword, customData);
     }
 }

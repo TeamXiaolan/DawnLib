@@ -4,7 +4,7 @@ namespace Dawn;
 
 public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
 {
-    internal DawnEnemyInfo(NamespacedKey<DawnEnemyInfo> key, HashSet<NamespacedKey> tags, EnemyType enemyType, DawnEnemyLocationInfo? outside, DawnEnemyLocationInfo? inside, DawnEnemyLocationInfo? daytime, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnEnemyInfo(NamespacedKey<DawnEnemyInfo> key, HashSet<NamespacedKey> tags, EnemyType enemyType, DawnEnemyLocationInfo? outside, DawnEnemyLocationInfo? inside, DawnEnemyLocationInfo? daytime, DawnEnemyLocationInfo? weed, TerminalNode? bestiaryNode, TerminalKeyword? nameKeyword, IDataContainer? customData) : base(key, tags, customData)
     {
         EnemyType = enemyType;
 
@@ -26,6 +26,12 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
             Daytime.ParentInfo = this;
         }
 
+        Weed = weed;
+        if (Weed != null)
+        {
+            Weed.ParentInfo = this;
+        }
+
         BestiaryNode = bestiaryNode;
         NameKeyword = nameKeyword;
     }
@@ -40,11 +46,11 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
     public TerminalNode? BestiaryNode { get; }
     public TerminalKeyword? NameKeyword { get; }
 
-    public IEnumerable<T> GetAllSpawned<T>() where T : EnemyAI
+    public IEnumerable<T> GetAllSpawned<T>(bool strongerCheck = false) where T : EnemyAI
     {
         foreach (EnemyAI enemy in RoundManager.Instance.SpawnedEnemies)
         {
-            if (enemy.enemyType == EnemyType)
+            if (enemy.enemyType == EnemyType || (strongerCheck && enemy.enemyType.enemyName.Equals(EnemyType.enemyName, System.StringComparison.OrdinalIgnoreCase)))
             {
                 yield return (T)enemy;
             }

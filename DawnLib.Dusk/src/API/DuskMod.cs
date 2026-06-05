@@ -134,6 +134,7 @@ public class DuskMod
         Content = containers[0];
         _allMods.Add(this);
     }
+
     public static IReadOnlyList<DuskMod> AllMods => _allMods.AsReadOnly();
 
     public IReadOnlyList<ConfigEntryBase> ConfigEntries => _configEntries.AsReadOnly();
