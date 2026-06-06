@@ -23,7 +23,7 @@ public sealed class DawnMapObjectInfo : DawnBaseInfo<DawnMapObjectInfo>
         }
     }
 
-    public GameObject GetMapObjectPrefab()
+    public GameObject? GetMapObjectPrefab()
     {
         if (InsideInfo != null)
         {
@@ -35,8 +35,7 @@ public sealed class DawnMapObjectInfo : DawnBaseInfo<DawnMapObjectInfo>
             return OutsideInfo.SpawnableOutsideObject.prefabToSpawn;
         }
 
-        DawnPlugin.Logger.LogError($"Failed to get map object prefab for {Key}");
-        return null!; // This should probably throw
+        return null;
     }
 
     public DawnInsideMapObjectInfo? InsideInfo { get; private set; }

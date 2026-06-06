@@ -64,6 +64,13 @@ static class MoonRegistrationHandler
             IL.TimeOfDay.CalculatePlanetTime += IgnoreDaySpeedMultiplier;
             IL.TimeOfDay.Update += IgnoreDaySpeedMultiplier;
         }
+
+        IL.RoundManager.SpawnRandomDaytimeEnemy += AccountForDaytimeDiversity;
+    }
+
+    private static void AccountForDaytimeDiversity(ILContext il)
+    {
+        
     }
 
     private static void ReplaceStaticOutsideEnemyProbabilityRange(ILContext il)
