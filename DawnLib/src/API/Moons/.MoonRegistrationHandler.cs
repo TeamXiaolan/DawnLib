@@ -101,7 +101,7 @@ static class MoonRegistrationHandler
             return 3f;
         }
 
-        return StartOfRound.Instance.currentLevel.DawnInfo.OutsideEnemiesProbabilityRange;
+        return StartOfRound.Instance.currentLevel.OutsideEnemiesProbabilityRange;
     }
 
     private static void MultiplyGlobalTimeMultiplierToDaySpeedMultiplier(ILContext il)
@@ -319,7 +319,7 @@ static class MoonRegistrationHandler
                 ReplaceAndSetToDestroy(moonInfo.Level.Enemies, potentialReplacement, enemiesToDestroy);
                 ReplaceAndSetToDestroy(moonInfo.Level.OutsideEnemies, potentialReplacement, enemiesToDestroy);
                 ReplaceAndSetToDestroy(moonInfo.Level.DaytimeEnemies, potentialReplacement, enemiesToDestroy);
-                ReplaceAndSetToDestroy(moonInfo.WeedEnemies, potentialReplacement, enemiesToDestroy);
+                ReplaceAndSetToDestroy(moonInfo.Level.WeedEnemies, potentialReplacement, enemiesToDestroy);
 
                 if (specialEnemy != null)
                 {

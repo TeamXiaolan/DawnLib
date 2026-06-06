@@ -38,7 +38,6 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
 
-    // TODO: Put these in the preloader
     public float OutsideEnemiesProbabilityRange { get; private set; }
 
     public int MaxDaytimeDiversityPowerCount { get; private set; }
@@ -48,7 +47,6 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     public List<SpawnableEnemyWithRarity> WeedEnemies { get; } = new();
     public AnimationCurve WeedEnemySpawnChanceThroughDay { get; private set; }
     public float WeedEnemiesProbabilityRange { get; private set; }
-    // TODO End
 
     public List<IMoonSceneInfo> Scenes { get; } = [];
 

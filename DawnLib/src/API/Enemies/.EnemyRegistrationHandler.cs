@@ -447,12 +447,12 @@ static class EnemyRegistrationHandler
             if (enemyInfo.Weed != null)
             {
                 Debuggers.Enemies?.Log($"Updating Weed weights");
-                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = moonInfo.WeedEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.WeedEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
                 if (spawnableEnemyWithRarity == null)
                 {
                     Debuggers.Enemies?.Log($"Adding weed spawnable {enemyInfo.EnemyType} to the moon");
                     spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
-                    moonInfo.WeedEnemies.Add(spawnableEnemyWithRarity);
+                    level.WeedEnemies.Add(spawnableEnemyWithRarity);
                 }
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
@@ -467,7 +467,7 @@ static class EnemyRegistrationHandler
         }
 
         RoundManagerRefs.Instance.WeedEnemies.RemoveAll(x => !x.enemyType.DawnInfo.ShouldSkipRespectOverride());
-        foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.WeedEnemies.ToList())
+        foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in level.WeedEnemies.ToList())
         {
             if (spawnableEnemyWithRarity.enemyType == null || spawnableEnemyWithRarity.enemyType.DawnInfo.ShouldSkipRespectOverride())
                 continue;
@@ -656,7 +656,7 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
 
                 if (enemyInfo.Weed != null)
-                    TryAddToEnemyList(enemyInfo, level.DawnInfo.WeedEnemies);
+                    TryAddToEnemyList(enemyInfo, level.WeedEnemies);
             }
         }
 
