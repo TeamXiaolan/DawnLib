@@ -1,4 +1,8 @@
-# v0.9.23
+# v0.9.24
+
+- Added null-safety checks to `LethalQuantitiesCompat` and `TerminalFormatterCompat` to prevent a crash when a dependency updates and renames an internal method.
+
+## v0.9.23
 
 - Solved fake extra fire exit existing.
 - Cleaned up code for more compatibility with other mods.
