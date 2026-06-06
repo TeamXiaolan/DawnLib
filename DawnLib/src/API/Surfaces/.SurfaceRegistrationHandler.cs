@@ -135,10 +135,10 @@ static class SurfaceRegistrationHandler
         cursor.EmitDelegate(CollectTransformForBatch);
     }
 
-    private static void CollectTransformForBatch(ref RaycastHit raycastHit, GameObject gameObject)
+    private static void CollectTransformForBatch(ref RaycastHit raycastHit, GameObject vainShroudGameObject)
     {
         Transform terrainTransform = raycastHit.transform;
-        MeshFilter meshFilter = terrainTransform.GetComponent<MeshFilter>();
+        MeshFilter meshFilter = vainShroudGameObject.GetComponent<MeshFilter>();
         if (meshFilter == null)
         {
             return;
