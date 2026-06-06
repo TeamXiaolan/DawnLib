@@ -56,7 +56,7 @@ static class TerminalPatches
         c.EmitDelegate((Item item) =>
         {
             Debuggers.Items?.Log($"Checking {item.itemName}");
-            DawnItemInfo info = item.GetDawnInfo();
+            DawnItemInfo info = item.DawnInfo;
             DawnShopItemInfo? shopInfo = info.ShopInfo;
             if (shopInfo == null)
                 return true;
@@ -150,12 +150,12 @@ static class TerminalPatches
 
             c.EmitDelegate<Func<Item, string>>((item) =>
             {
-                if (!item.HasDawnInfo())
+                if (item.DawnInfo == null)
                 {
                     DawnPlugin.Logger.LogWarning($"Item: {item.itemName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
                     return item.itemName;
                 }
-                DawnItemInfo info = item.GetDawnInfo();
+                DawnItemInfo info = item.DawnInfo;
                 DawnShopItemInfo? shopInfo = info.ShopInfo;
                 if (shopInfo == null)
                     return item.itemName;
@@ -215,14 +215,14 @@ static class TerminalPatches
         {
             Debuggers.Patching?.Log($"buyItemIndex = {node.buyItemIndex}");
             Item buyingItem = self.buyableItemsList[node.buyItemIndex];
-            if (!buyingItem.HasDawnInfo())
+            if (buyingItem.DawnInfo == null)
             {
                 DawnPlugin.Logger.LogWarning($"Item: {buyingItem.itemName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
                 orig(self, node);
                 return;
             }
 
-            DawnItemInfo info = buyingItem.GetDawnInfo();
+            DawnItemInfo info = buyingItem.DawnInfo;
             DawnShopItemInfo? shopItemInfo = info.ShopInfo;
 
             if (shopItemInfo != null)

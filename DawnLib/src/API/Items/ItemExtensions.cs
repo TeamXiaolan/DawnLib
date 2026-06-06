@@ -1,22 +1,32 @@
+using System;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class ItemExtensions
 {
-    public static DawnItemInfo GetDawnInfo(this Item item)
+    extension(Item item)
     {
-        DawnItemInfo itemInfo = (DawnItemInfo)((IDawnObject)item).DawnInfo;
-        return itemInfo;
-    }
+        public DawnItemInfo DawnInfo
+        {
+            get => item.GetDawnInfoCore();
+            set => item.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this Item item)
-    {
-        return item.GetDawnInfo() != null;
-    }
+        [Obsolete("Use Item.DawnInfo instead")]
+        public DawnItemInfo GetDawnInfo()
+        {
+            return item.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this Item item, DawnItemInfo itemInfo)
-    {
-        ((IDawnObject)item).DawnInfo = itemInfo;
+        private DawnItemInfo GetDawnInfoCore()
+        {
+            return (DawnItemInfo)((IDawnObject)item).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnItemInfo itemInfo)
+        {
+            ((IDawnObject)item).DawnInfo = itemInfo;
+        }
     }
 }

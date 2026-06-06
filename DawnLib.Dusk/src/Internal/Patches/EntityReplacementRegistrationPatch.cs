@@ -454,7 +454,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void ReplaceGrabbableObject(On.GrabbableObject.orig_Start orig, GrabbableObject self)
     {
-        if (!self.itemProperties.HasDawnInfo())
+        if (self.itemProperties.DawnInfo == null)
         {
             orig(self);
             return;
@@ -504,7 +504,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void SetReplacement(GrabbableObject grabbableObject)
     {
-        if (!grabbableObject.itemProperties.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? replacements))
+        if (!grabbableObject.itemProperties.DawnInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? replacements))
         {
             return;
         }

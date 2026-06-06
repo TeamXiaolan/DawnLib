@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using GameNetcodeStuff;
 using UnityEngine;
 
@@ -65,6 +66,17 @@ public class DawnSurface : MonoBehaviour
         }
 
         SurfaceIndex = surfaceInfo.SurfaceIndex;
+    }
+
+    public bool TryGetNamespacedKeyAtPosition(Vector3 point, [NotNullWhen(true)] out NamespacedKey? key)
+    {
+        key = null;
+        if (TryGetFootstepIndex(point, false, out int footstepIndex))
+        {
+            key = StartOfRound.Instance.footstepSurfaces[footstepIndex].GetDawnInfo().Key;
+            return true;
+        }
+        return false;
     }
 
     public bool TryGetFootstepIndex(Vector3 point, bool checkStandingOnTerrain, out int footstepIndex, PlayerControllerB? playerControllerB = null)

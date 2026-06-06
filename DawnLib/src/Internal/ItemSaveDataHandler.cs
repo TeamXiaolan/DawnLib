@@ -51,7 +51,7 @@ public static class ItemSaveDataHandler
 
         foreach (GrabbableObject item in AllShipItems)
         {
-            DawnItemInfo? itemInfo = item.itemProperties.GetDawnInfo();
+            DawnItemInfo? itemInfo = item.itemProperties.DawnInfo;
             if (itemInfo == null)
             {
                 if (item.NetworkObject.IsSceneObject == null || !item.NetworkObject.IsSceneObject.Value)

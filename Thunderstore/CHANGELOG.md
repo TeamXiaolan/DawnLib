@@ -7,6 +7,7 @@
 - Added complete weather registration to DawnLib.
 - Added a tag to moons that support weather `SupportsWeather`, this is decided by checking whether the moon is both a company moon has any `randomWeathers` set to it.
 - Added more information related to issues such as incorrect folder structure.
+- Fixed a minor issue with moons's Route nodes that was missing a value (did not cause any issues in game as far as I know).
 
 ## TODO
 

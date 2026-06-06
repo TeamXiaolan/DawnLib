@@ -8,9 +8,11 @@ using Dawn.Internal;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Mono.Cecil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 namespace Dawn;
@@ -43,6 +45,226 @@ static class SurfaceRegistrationHandler
         On.GameNetcodeStuff.PlayerControllerB.Start += AddCrouchingFootsteps;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlayerAnimationEvents), "PlayCrouchFootstepSound"), PlayCrouchFootstepSound));
+
+        LethalContent.Surfaces.OnFreeze += CollectCustomVainShroudBatches;
+
+        IL.BatchAllMeshChildren.RenderBatches += ModifyBatchingVainShrouds;
+        IL.MoldSpreadManager.GenerateMold += CollectVainShroudBatches;
+
+        On.BatchAllMeshChildren.ClearBatchedMeshes += ClearVainShroudBatches;
+    }
+
+    private static void ClearVainShroudBatches(On.BatchAllMeshChildren.orig_ClearBatchedMeshes orig, BatchAllMeshChildren self)
+    {
+        orig(self);
+        if (!self.gameObject.name.StartsWith("Mold"))
+        {
+            return;
+        }
+
+        foreach (KeyValuePair<NamespacedKey, List<Matrix4x4>> kvp in _batchingDict)
+        {
+            kvp.Value.Clear();
+        }
+    }
+
+    private static void CollectVainShroudBatches(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<MoldSpreadManager>(nameof(MoldSpreadManager.moldContainer)),
+            il => il.MatchCallOrCallvirt(out MethodReference method) &&
+                method.Name == nameof(UnityEngine.Object.Instantiate),
+            il => il.MatchStloc(1)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.BatchChildren (1) IL.");
+            return;
+        }
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 3);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        cursor.EmitDelegate(CollectTransformForBatch);
+
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLdcR4(0f),
+            il => il.MatchLdcR4(-180f),
+            il => il.MatchLdcR4(180f),
+            il => il.MatchCall(out _),
+            il => il.MatchLdcR4(0f),
+            il => il.MatchNewobj(out _),
+            il => il.MatchCall(out _),
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<MoldSpreadManager>(nameof(MoldSpreadManager.moldContainer)),
+            il => il.MatchCall(out _),
+            il => il.MatchStloc(1)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.BatchChildren (2) IL.");
+            return;
+        }
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 3);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        cursor.EmitDelegate(CollectTransformForBatch);
+
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLdcR4(0f),
+            il => il.MatchLdcR4(-180f),
+            il => il.MatchLdcR4(180f),
+            il => il.MatchCall(out _),
+            il => il.MatchLdcR4(0f),
+            il => il.MatchNewobj(out _),
+            il => il.MatchCall(out _),
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<MoldSpreadManager>(nameof(MoldSpreadManager.moldContainer)),
+            il => il.MatchCall(out _),
+            il => il.MatchStloc(1)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.BatchChildren (3) IL.");
+            return;
+        }
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 3);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        cursor.EmitDelegate(CollectTransformForBatch);
+    }
+
+    private static void CollectTransformForBatch(ref RaycastHit raycastHit, GameObject gameObject)
+    {
+        Transform terrainTransform = raycastHit.transform;
+        MeshFilter meshFilter = terrainTransform.GetComponent<MeshFilter>();
+        if (meshFilter == null)
+        {
+            return;
+        }
+
+        if (!terrainTransform.TryGetComponent(out DawnSurface dawnSurface))
+        {
+            List<Matrix4x4> vanillaBatches = _batchingDict[VanillaSurface];
+            vanillaBatches.Add(meshFilter.transform.localToWorldMatrix);
+            return;
+        }
+
+        if (!dawnSurface.TryGetNamespacedKeyAtPosition(raycastHit.point, out NamespacedKey? key) || key.Namespace == NamespacedKey.VanillaNamespace || !_batchingDict.ContainsKey(key))
+        {
+            List<Matrix4x4> vanillaBatches = _batchingDict[VanillaSurface];
+            vanillaBatches.Add(meshFilter.transform.localToWorldMatrix);
+            return;
+        }
+
+        if (!_batchingDict.TryGetValue(key, out List<Matrix4x4> customBatches))
+        {
+            customBatches = new List<Matrix4x4> { meshFilter.transform.localToWorldMatrix };
+            _batchingDict.Add(key, customBatches);
+        }
+        else
+        {
+            customBatches.Add(meshFilter.transform.localToWorldMatrix);
+        }
+    }
+
+    private static void ModifyBatchingVainShrouds(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<BatchAllMeshChildren>(nameof(BatchAllMeshChildren.Batches)),
+            il => il.MatchCallvirt(out _),
+            il => il.MatchStloc(1),
+            il => il.MatchBr(out _),
+            il => il.MatchLdloca(1)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.RenderBatches (1) IL.");
+            return;
+        }
+
+        int ifInsertIndex = cursor.Index;
+
+        ILLabel finalRet = null!;
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLeaveS(out finalRet),
+            il => il.MatchLdloca(1),
+            il => il.MatchConstrained(out _),
+            il => il.MatchCallvirt<System.IDisposable>(nameof(System.IDisposable.Dispose)),
+            il => il.MatchEndfinally(),
+            il => il.MatchRet()
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.RenderBatches (2) IL.");
+            return;
+        }
+
+        cursor.Index = ifInsertIndex;
+        cursor.MoveAfterLabels();
+
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_0);
+        cursor.EmitDelegate(DrawMultipleBatches);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Brfalse_S, finalRet);
+    }
+
+    private static bool DrawMultipleBatches(BatchAllMeshChildren self, Camera camera)
+    {
+        if (!self.gameObject.name.StartsWith("Mold"))
+        {
+            return true;
+        }
+
+        List<List<Matrix4x4>> batches = new();
+        foreach (KeyValuePair<NamespacedKey, List<Matrix4x4>> kvp in _batchingDict)
+        {
+            if (kvp.Value.Count <= 0)
+            {
+                continue;
+            }
+
+            batches.Add(kvp.Value);
+
+            Mesh mesh;
+            Material[] materials;
+            if (!LethalContent.Surfaces.TryGetValue(kvp.Key, out DawnSurfaceInfo? surfaceInfo))
+            {
+                mesh = self.mesh;
+                materials = [self.material];
+            }
+            else
+            {
+                mesh = surfaceInfo.VainShroudMesh;
+                materials = surfaceInfo.VainShroudMaterials;
+            }
+
+            for (int i = 0; i < mesh.subMeshCount; i++)
+            {
+                Graphics.DrawMeshInstanced(mesh, i, materials[i], kvp.Value, null, ShadowCastingMode.On, true, 24, camera);
+            }
+        }
+        return false;
+    }
+
+    private static Dictionary<NamespacedKey, List<Matrix4x4>> _batchingDict = new();
+    private static readonly NamespacedKey VanillaSurface = NamespacedKey.Vanilla("vanilla_surface");
+    private static void CollectCustomVainShroudBatches()
+    {
+        _batchingDict.Add(VanillaSurface, new());
+        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+        {
+            if (surfaceInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            if (surfaceInfo.VainShroudPrefab != null)
+            {
+                _batchingDict.Add(surfaceInfo.Key, new());
+            }
+        }
     }
 
     private static void PlayCrouchFootstepSound(RuntimeILReferenceBag.FastDelegateInvokers.Action<PlayerAnimationEvents> orig, PlayerAnimationEvents self)
@@ -577,7 +799,7 @@ static class SurfaceRegistrationHandler
             ];
             bool isNatural = startOfRound.naturalSurfaceTags.Contains(surface.surfaceTag);
             bool quicksandCompatible = quicksandTags.Contains(i);
-            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, new(), 1f, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
+            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, new(), 1f, null, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.SetDawnInfo(surfaceInfo);
         }

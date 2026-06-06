@@ -284,7 +284,7 @@ static class MoonRegistrationHandler
                     continue;
                 }
 
-                bool itemIsValid = spawnableItemWithRarity.spawnableItem.HasDawnInfo();
+                bool itemIsValid = spawnableItemWithRarity.spawnableItem.DawnInfo != null;
                 foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
                 {
                     if (!itemIsValid && itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name)

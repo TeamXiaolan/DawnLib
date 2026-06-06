@@ -179,7 +179,7 @@ public static class DawnLib
         ItemInfoBuilder builder = new(key, item);
         callback(builder);
         DawnItemInfo itemInfo = builder.Build();
-        item.SetDawnInfo(itemInfo);
+        item.DawnInfo = itemInfo;
         LethalContent.Items.Register(itemInfo);
         return itemInfo;
     }

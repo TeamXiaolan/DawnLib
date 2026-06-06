@@ -5,7 +5,7 @@ namespace Dawn;
 
 public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurface, SurfaceInfoBuilder>
 {
-    private GameObject? _surfaceVFXPrefab = null;
+    private GameObject? _surfaceVFXPrefab, _vainShroudPrefab = null;
     private Vector3 _surfaceVFXOffset = Vector3.zero;
     private bool _isNatural, _quicksandCompatible = false;
     private List<AudioClip> _crouchClips = new List<AudioClip>();
@@ -51,9 +51,15 @@ public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurfa
         return this;
     }
 
+    public SurfaceInfoBuilder SetVainShroudPrefab(GameObject? vainShroudPrefab)
+    {
+        _vainShroudPrefab = vainShroudPrefab;
+        return this;
+    }
+
     override internal DawnSurfaceInfo Build()
     {
         value.surfaceTag = "AnomalyObject";
-        return new DawnSurfaceInfo(key, [], value, _crouchClips, _volume, _isNatural, _quicksandCompatible, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
+        return new DawnSurfaceInfo(key, [], value, _crouchClips, _volume, _vainShroudPrefab, _isNatural, _quicksandCompatible, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
     }
 }

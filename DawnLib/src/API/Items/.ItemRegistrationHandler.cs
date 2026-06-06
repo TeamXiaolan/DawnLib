@@ -251,7 +251,7 @@ static class ItemRegistrationHandler
 
         foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
         {
-            if (item.HasDawnInfo())
+            if (item.DawnInfo != null)
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(item.itemName, true);
@@ -272,7 +272,7 @@ static class ItemRegistrationHandler
             if (LethalContent.Items.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"Item {item.itemName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                item.SetDawnInfo(LethalContent.Items[key]);
+                item.DawnInfo = LethalContent.Items[key];
                 continue;
             }
 
@@ -295,7 +295,7 @@ static class ItemRegistrationHandler
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(item, tags);
             DawnItemInfo itemInfo = new(key, tags, item, scrapInfo, shopInfo, null);
-            item.SetDawnInfo(itemInfo);
+            item.DawnInfo = itemInfo;
             LethalContent.Items.Register(itemInfo);
         }
 
@@ -344,7 +344,7 @@ static class ItemRegistrationHandler
 
     private static void TryRegisterItemIntoShop(Item item)
     {
-        DawnItemInfo itemInfo = item.GetDawnInfo();
+        DawnItemInfo itemInfo = item.DawnInfo;
         if (itemInfo == null)
         {
             DawnPlugin.Logger.LogWarning($"Item: {item.itemName} does not have a dawn info, this means they cannot be registered to the terminal as a shop item");
