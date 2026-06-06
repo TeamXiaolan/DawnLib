@@ -25,7 +25,15 @@ static class LethalQuantitiesCompat
         _lqConverter = new AnimationCurveTypeConverter();
         _dawnConverter = ExtendedTOML.WrapConverter(new AnimationCurveConverter());
 
-        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(LethalQuantities.Patches.RoundManagerPatch), "onStartPrefix"), MarkShouldUseLQConverter));
+        var onStartPrefix = AccessTools.DeclaredMethod(typeof(LethalQuantities.Patches.RoundManagerPatch), "onStartPrefix");
+        if (onStartPrefix != null)
+        {
+            DawnPlugin.Hooks.Add(new Hook(onStartPrefix, MarkShouldUseLQConverter));
+        }
+        else
+        {
+            DawnPlugin.Logger.LogWarning("[LethalQuantitiesCompat] Could not find RoundManagerPatch.onStartPrefix — LQ compat disabled.");
+        }
         On.BepInEx.Configuration.TomlTypeConverter.GetConverter += ReplaceAnimationCurveConverter;
     }
     private static TypeConverter ReplaceAnimationCurveConverter(TomlTypeConverter.orig_GetConverter orig, Type valuetype)
