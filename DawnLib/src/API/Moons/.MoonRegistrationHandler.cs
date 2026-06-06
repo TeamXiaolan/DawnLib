@@ -69,19 +69,62 @@ static class MoonRegistrationHandler
 
         On.RoundManager.RefreshEnemiesList += UpdateNewerDiversity;
         On.RoundManager.UnloadSceneObjectsEarly += ResetNewerDiversity;
+
+        On.RoundManager.RefreshEnemiesList += SetCurrentMaxPower;
+
+        IL.RoundManager.SpawnDaytimeEnemiesOutside += ReplaceLevelValueWithRoundManager;
+        IL.RoundManager.SpawnRandomDaytimeEnemy += ReplaceLevelValueWithRoundManager;
+    }
+
+    private static void ReplaceLevelValueWithRoundManager(ILContext il)
+    {
+        ILCursor cursor = new(il);
+
+        // evil for loop.
+        for (; cursor.Index < cursor.Instrs.Count; cursor.Index++)
+        {
+            if (cursor.Next.OpCode != OpCodes.Ldfld && cursor.Next.Next != null && cursor.Next.Next.OpCode != OpCodes.Ldfld)
+                continue;
+
+            if (cursor.Next.MatchLdfld<RoundManager>(nameof(RoundManager.currentLevel)) && cursor.Next.Next.MatchLdfld<SelectableLevel>(nameof(SelectableLevel.maxDaytimeEnemyPowerCount)))
+            {
+                cursor.Index += 2;
+                cursor.Emit(OpCodes.Ldarg_0);
+                cursor.EmitDelegate((int _, RoundManager self) =>
+                {
+                    return self.CurrentMaxDaytimePower;
+                });
+                continue;
+            }
+        }
+    }
+
+    private static void SetCurrentMaxPower(On.RoundManager.orig_RefreshEnemiesList orig, RoundManager self)
+    {
+        orig(self);
+
+        self.CurrentMaxDaytimePower = self.currentLevel.maxDaytimeEnemyPowerCount;
+
+        // self.CurrentMaxWeedPower = self.currentLevel.MaxWeedEnemyPowerCount;
     }
 
     private static void ResetNewerDiversity(On.RoundManager.orig_UnloadSceneObjectsEarly orig, RoundManager self)
     {
         orig(self);
+
         self.CurrentMaxDaytimeDiversityLevel = 0;
         self.CurrentDaytimeEnemyDiversityLevel = 0;
-        // TODO: transpile SpawnRandomDaytimeEnemy to update this, check flag2 and flag3 from SpawnRandomOutsideEnemy, specifically go before hasSpawnedAtleastOne is increment in SpawnRandomDaytimeEnemy
+
+        // self.CurrentMaxWeedDiversityLevel = 0;
+        // self.CurrentWeedEnemyDiversityLevel = 0;
     }
 
     private static void UpdateNewerDiversity(On.RoundManager.orig_RefreshEnemiesList orig, RoundManager self)
     {
         self.CurrentMaxDaytimeDiversityLevel = self.currentLevel.MaxDaytimeDiversityPowerCount;
+
+        // self.CurrentMaxWeedDiversityLevel = self.currentLevel.MaxWeedDiversityPowerCount;
+
         orig(self);
     }
 

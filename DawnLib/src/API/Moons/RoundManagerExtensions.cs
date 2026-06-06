@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using Dawn.Interfaces;
-using UnityEngine;
 
 namespace Dawn;
 
@@ -15,12 +12,6 @@ public static class RoundManagerExtensions
             set => roundManager.SetCurrentDaytimeDiversityCore(value);
         }
 
-        public int CurrentMaxDaytimeDiversityLevel
-        {
-            get => roundManager.GetCurrentMaxDaytimeDiversityCore();
-            set => roundManager.SetCurrentMaxDaytimeDiversityCore(value);
-        }
-
         private int GetCurrentDaytimeDiversityCore()
         {
             return ((IRoundManagerInjects)roundManager).CurrentDaytimeDiversity;
@@ -31,6 +22,12 @@ public static class RoundManagerExtensions
             ((IRoundManagerInjects)roundManager).CurrentDaytimeDiversity = value;
         }
 
+        public int CurrentMaxDaytimeDiversityLevel
+        {
+            get => roundManager.GetCurrentMaxDaytimeDiversityCore();
+            set => roundManager.SetCurrentMaxDaytimeDiversityCore(value);
+        }
+
         private int GetCurrentMaxDaytimeDiversityCore()
         {
             return ((IRoundManagerInjects)roundManager).CurrentDaytimeMaxDiversity;
@@ -39,6 +36,22 @@ public static class RoundManagerExtensions
         private void SetCurrentMaxDaytimeDiversityCore(int value)
         {
             ((IRoundManagerInjects)roundManager).CurrentDaytimeMaxDiversity = value;
+        }
+
+        public float CurrentMaxDaytimePower
+        {
+            get => roundManager.GetCurrentMaxDaytimePowerCore();
+            set => roundManager.SetCurrentMaxDaytimePowerCore(value);
+        }
+
+        private float GetCurrentMaxDaytimePowerCore()
+        {
+            return ((IRoundManagerInjects)roundManager).CurrentDaytimeMaxPower;
+        }
+
+        private void SetCurrentMaxDaytimePowerCore(float value)
+        {
+            ((IRoundManagerInjects)roundManager).CurrentDaytimeMaxPower = value;
         }
     }
 }

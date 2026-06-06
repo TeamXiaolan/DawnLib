@@ -9,4 +9,6 @@ interface IRoundManagerInjects
 {
     int CurrentDaytimeDiversity { get; set; }
     int CurrentDaytimeMaxDiversity { get; set; }
+
+    float CurrentDaytimeMaxPower { get; set; }
 }
