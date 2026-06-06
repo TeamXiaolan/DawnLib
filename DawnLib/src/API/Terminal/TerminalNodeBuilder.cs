@@ -77,6 +77,12 @@ public class TerminalNodeBuilder
         return this;
     }
 
+    public TerminalNodeBuilder SetBuyRerouteToMoon(int value)
+    {
+        _node.buyRerouteToMoon = value;
+        return this;
+    }
+
     public TerminalNodeBuilder SetTerminalOptions(CompatibleNoun[] terminalOptions)
     {
         _node.terminalOptions = terminalOptions;
