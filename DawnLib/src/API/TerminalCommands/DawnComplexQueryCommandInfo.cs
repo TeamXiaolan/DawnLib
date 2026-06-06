@@ -46,7 +46,7 @@ public sealed class DawnComplexQueryCommandInfo
 
         foreach (TerminalNode resultNode in ResultNodes)
         {
-            resultNode.SetDawnInfo(ParentInfo);
+            resultNode.DawnInfo = ParentInfo;
         }
     }
 

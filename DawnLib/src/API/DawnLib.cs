@@ -101,7 +101,7 @@ public static class DawnLib
         SurfaceInfoBuilder builder = new(key, surface);
         callback(builder);
         DawnSurfaceInfo surfaceInfo = builder.Build();
-        surface.SetDawnInfo(surfaceInfo);
+        surface.DawnInfo = surfaceInfo;
         LethalContent.Surfaces.Register(surfaceInfo);
         return surfaceInfo;
     }
@@ -124,7 +124,7 @@ public static class DawnLib
         DungeonFlowInfoBuilder builder = new(key, dungeonFlow);
         callback(builder);
         DawnDungeonInfo dungeonFlowInfo = builder.Build();
-        dungeonFlow.SetDawnInfo(dungeonFlowInfo);
+        dungeonFlow.DawnInfo = dungeonFlowInfo;
         LethalContent.Dungeons.Register(dungeonFlowInfo);
         return dungeonFlowInfo;
     }
@@ -134,7 +134,7 @@ public static class DawnLib
         TilesetInfoBuilder builder = new(key, tileSet);
         callback(builder);
         DawnTileSetInfo tileSetInfo = builder.Build();
-        tileSet.SetDawnInfo(tileSetInfo);
+        tileSet.DawnInfo = tileSetInfo;
         LethalContent.TileSets.Register(tileSetInfo);
         return tileSetInfo;
     }
@@ -152,12 +152,12 @@ public static class DawnLib
 
         if (info.InsideInfo != null)
         {
-            info.InsideInfo.IndoorMapHazardType.SetDawnInfo(info);
+            info.InsideInfo.IndoorMapHazardType.DawnInfo = info;
         }
 
         if (info.OutsideInfo != null)
         {
-            info.OutsideInfo.SpawnableOutsideObject.SetDawnInfo(info);
+            info.OutsideInfo.SpawnableOutsideObject.DawnInfo = info;
         }
 
         LethalContent.MapObjects.Register(info);
@@ -169,7 +169,7 @@ public static class DawnLib
         UnlockableInfoBuilder builder = new(key, unlockableItem);
         callback(builder);
         DawnUnlockableItemInfo unlockableItemInfo = builder.Build();
-        unlockableItem.SetDawnInfo(unlockableItemInfo);
+        unlockableItem.DawnInfo = unlockableItemInfo;
         LethalContent.Unlockables.Register(unlockableItemInfo);
         return unlockableItemInfo;
     }
@@ -189,7 +189,7 @@ public static class DawnLib
         EnemyInfoBuilder builder = new(key, enemy);
         callback(builder);
         DawnEnemyInfo enemyInfo = builder.Build();
-        enemy.SetDawnInfo(enemyInfo);
+        enemy.DawnInfo = enemyInfo;
         LethalContent.Enemies.Register(enemyInfo);
         return enemyInfo;
     }
@@ -199,7 +199,7 @@ public static class DawnLib
         MoonInfoBuilder builder = new(key, level);
         callback(builder);
         DawnMoonInfo info = builder.Build();
-        level.SetDawnInfo(info);
+        level.DawnInfo = info;
         LethalContent.Moons.Register(info);
         return info;
     }
@@ -209,7 +209,7 @@ public static class DawnLib
         WeatherEffectInfoBuilder builder = new(key, weather);
         callback(builder);
         DawnWeatherEffectInfo info = builder.Build();
-        weather.SetDawnInfo(info);
+        weather.DawnInfo = info;
         LethalContent.Weathers.Register(info);
         return info;
     }

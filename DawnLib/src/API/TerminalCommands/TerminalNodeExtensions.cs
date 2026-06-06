@@ -1,50 +1,52 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class TerminalNodeExtensions
 {
-    public static bool TryGetDawnInfo(this TerminalNode terminalNode, [NotNullWhen(true)] out DawnTerminalCommandInfo? terminalCommandInfo)
+    extension(TerminalNode terminalNode)
     {
-        terminalCommandInfo = (DawnTerminalCommandInfo)((IDawnObject)terminalNode).DawnInfo;
-        return terminalCommandInfo != null;
-    }
-
-    public static DawnTerminalCommandInfo GetDawnInfo(this TerminalNode terminalNode)
-    {
-        DawnTerminalCommandInfo terminalCommandInfo = (DawnTerminalCommandInfo)((IDawnObject)terminalNode).DawnInfo;
-        return terminalCommandInfo;
-    }
-
-    internal static bool HasDawnInfo(this TerminalNode terminalNode)
-    {
-        return terminalNode.GetDawnInfo() != null;
-    }
-
-    internal static void SetDawnInfo(this TerminalNode terminalNode, DawnTerminalCommandInfo terminalCommandInfo)
-    {
-        ((IDawnObject)terminalNode).DawnInfo = terminalCommandInfo;
-    }
-
-    public static string GetDisplayText(this TerminalNode terminalNode)
-    {
-        DawnTerminalCommandInfo? commandInfo = terminalNode.GetDawnInfo();
-        if (commandInfo != null && commandInfo.InputCommandInfo != null)
+        public DawnTerminalCommandInfo DawnInfo
         {
-            return commandInfo.InputCommandInfo.DynamicInputTextResult.Invoke(DawnInputCommandInfo.GetLastUserInput());
+            get => terminalNode.GetDawnInfoCore();
+            set => terminalNode.SetDawnInfoCore(value);
         }
 
-        if (((ITerminalNode)terminalNode).DynamicDisplayText == null)
+        [Obsolete("Use TerminalNode.DawnInfo instead")]
+        public DawnTerminalCommandInfo GetDawnInfo()
         {
-            return terminalNode.displayText;
+            return terminalNode.GetDawnInfoCore();
         }
-        return ((ITerminalNode)terminalNode).DynamicDisplayText.Invoke();
-    }
 
-    internal static void SetDynamicDisplayText(this TerminalNode terminalNode, Func<string> func)
-    {
-        ((ITerminalNode)terminalNode).DynamicDisplayText = func;
+        private DawnTerminalCommandInfo GetDawnInfoCore()
+        {
+            return ((ITerminalNodeDawnObject)terminalNode).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnTerminalCommandInfo terminalNodeInfo)
+        {
+            ((ITerminalNodeDawnObject)terminalNode).DawnInfo = terminalNodeInfo;
+        }
+
+        public string GetDisplayText()
+        {
+            DawnTerminalCommandInfo? commandInfo = terminalNode.DawnInfo;
+            if (commandInfo != null && commandInfo.InputCommandInfo != null)
+            {
+                return commandInfo.InputCommandInfo.DynamicInputTextResult.Invoke(DawnInputCommandInfo.GetLastUserInput());
+            }
+
+            if (((ITerminalNode)terminalNode).DynamicDisplayText == null)
+            {
+                return terminalNode.displayText;
+            }
+            return ((ITerminalNode)terminalNode).DynamicDisplayText.Invoke();
+        }
+
+        internal void SetDynamicDisplayText(Func<string> func)
+        {
+            ((ITerminalNode)terminalNode).DynamicDisplayText = func;
+        }
     }
 }

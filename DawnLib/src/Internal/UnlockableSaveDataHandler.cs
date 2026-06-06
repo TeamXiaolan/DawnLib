@@ -181,7 +181,7 @@ public static class UnlockableSaveDataHandler
                 continue;
             }
 
-            DawnUnlockableItemInfo? unlockableInfo = unlockableData.GetDawnInfo();
+            DawnUnlockableItemInfo? unlockableInfo = unlockableData.DawnInfo;
             if (unlockableInfo == null)
             {
                 DawnPlugin.Logger.LogError($"Unlockable: {unlockableData.unlockableName} doesn't have a DawnUnlockableInfo, " + "this means this unlockable cannot be committed to the savefile, " + "contact the developer of this unlockable to fix this ASAP!");

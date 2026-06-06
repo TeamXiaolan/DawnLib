@@ -1,3 +1,4 @@
+using System;
 using Dawn.Interfaces;
 using DunGen;
 
@@ -5,21 +6,30 @@ namespace Dawn;
 
 public static class TileSetExtensions
 {
-    public static DawnTileSetInfo GetDawnInfo(this TileSet tileSet)
+    extension(TileSet tileSet)
     {
-        object newObject = tileSet;
-        DawnTileSetInfo tileSetInfo = (DawnTileSetInfo)((IDawnObject)newObject).DawnInfo;
-        return tileSetInfo;
-    }
+        public DawnTileSetInfo DawnInfo
+        {
+            get => tileSet.GetDawnInfoCore();
+            set => tileSet.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this TileSet tileSet)
-    {
-        return tileSet.GetDawnInfo() != null;
-    }
+        [Obsolete("Use TileSet.DawnInfo instead")]
+        public DawnTileSetInfo GetDawnInfo()
+        {
+            return tileSet.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this TileSet tileSet, DawnTileSetInfo tileSetInfo)
-    {
-        object newObject = tileSet;
-        ((IDawnObject)newObject).DawnInfo = tileSetInfo;
+        private DawnTileSetInfo GetDawnInfoCore()
+        {
+            object newObject = tileSet;
+            return ((IDunGenTileSetDawnObject)newObject).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnTileSetInfo tileSetInfo)
+        {
+            object newObject = tileSet;
+            ((IDunGenTileSetDawnObject)newObject).DawnInfo = tileSetInfo;
+        }
     }
 }

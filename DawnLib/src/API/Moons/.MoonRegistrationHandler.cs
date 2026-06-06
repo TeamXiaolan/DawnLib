@@ -96,12 +96,12 @@ static class MoonRegistrationHandler
 
     private static float GetMoonOutsideEnemyProbabilitySpawnRange()
     {
-        if (StartOfRound.Instance == null || StartOfRound.Instance.currentLevel == null || !StartOfRound.Instance.currentLevel.HasDawnInfo())
+        if (StartOfRound.Instance == null || StartOfRound.Instance.currentLevel == null || StartOfRound.Instance.currentLevel.DawnInfo == null)
         {
             return 3f;
         }
 
-        return StartOfRound.Instance.currentLevel.GetDawnInfo().OutsideEnemiesProbabilityRange;
+        return StartOfRound.Instance.currentLevel.DawnInfo.OutsideEnemiesProbabilityRange;
     }
 
     private static void MultiplyGlobalTimeMultiplierToDaySpeedMultiplier(ILContext il)
@@ -323,7 +323,7 @@ static class MoonRegistrationHandler
 
                 if (specialEnemy != null)
                 {
-                    bool enemyIsValid = specialEnemy.HasDawnInfo();
+                    bool enemyIsValid = specialEnemy.DawnInfo != null;
                     if (enemyIsValid)
                     {
                         continue;
@@ -362,7 +362,7 @@ static class MoonRegistrationHandler
                 continue;
             }
 
-            bool enemyIsValid = spawnableEnemyWithRarity.enemyType.HasDawnInfo();
+            bool enemyIsValid = spawnableEnemyWithRarity.enemyType.DawnInfo != null;
             if (enemyIsValid)
             {
                 continue;
@@ -498,7 +498,7 @@ static class MoonRegistrationHandler
     static IEnumerator DoHotloadSceneStuff(SelectableLevel level)
     {
         yield return new WaitUntil(() => DawnMoonNetworker.IsNotNull && RouteProgressUI.IsNotNull);
-        DawnMoonNetworker.Instance!.HostDecide(level.GetDawnInfo());
+        DawnMoonNetworker.Instance!.HostDecide(level.DawnInfo);
     }
 
     private static void CollectLevels(On.StartOfRound.orig_Awake orig, StartOfRound self)
@@ -512,7 +512,7 @@ static class MoonRegistrationHandler
         _ = TerminalRefs.Instance;
         foreach (SelectableLevel level in StartOfRound.Instance.levels)
         {
-            if (level.HasDawnInfo())
+            if (level.DawnInfo != null)
                 continue;
 
             Debuggers.Moons?.Log($"Registering level: {level.PlanetName} with scrap spawn range of: {level.minScrap} and {level.maxScrap}");
@@ -558,7 +558,7 @@ static class MoonRegistrationHandler
             }
 
             DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
-            level.SetDawnInfo(moonInfo);
+            level.DawnInfo = moonInfo;
             LethalContent.Moons.Register(moonInfo);
         }
     }
@@ -572,7 +572,7 @@ static class MoonRegistrationHandler
         }
 
         DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
-        self.currentLevel.SetDawnInfo(testMoonInfo);
+        self.currentLevel.DawnInfo = testMoonInfo;
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);
     }

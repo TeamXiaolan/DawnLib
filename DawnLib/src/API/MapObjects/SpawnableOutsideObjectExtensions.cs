@@ -1,22 +1,32 @@
+using System;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class SpawnableOutsideObjectExtensions
 {
-    public static DawnMapObjectInfo GetDawnInfo(this SpawnableOutsideObject SpawnableOutsideObject)
+    extension(SpawnableOutsideObject spawnableOutsideObject)
     {
-        DawnMapObjectInfo SpawnableOutsideObjectInfo = (DawnMapObjectInfo)((IDawnObject)SpawnableOutsideObject).DawnInfo;
-        return SpawnableOutsideObjectInfo;
-    }
+        public DawnMapObjectInfo DawnInfo
+        {
+            get => spawnableOutsideObject.GetDawnInfoCore();
+            set => spawnableOutsideObject.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this SpawnableOutsideObject SpawnableOutsideObject)
-    {
-        return SpawnableOutsideObject.GetDawnInfo() != null;
-    }
+        [Obsolete("Use SpawnableOutsideObject.DawnInfo instead")]
+        public DawnMapObjectInfo GetDawnInfo()
+        {
+            return spawnableOutsideObject.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this SpawnableOutsideObject SpawnableOutsideObject, DawnMapObjectInfo SpawnableOutsideObjectInfo)
-    {
-        ((IDawnObject)SpawnableOutsideObject).DawnInfo = SpawnableOutsideObjectInfo;
+        private DawnMapObjectInfo GetDawnInfoCore()
+        {
+            return ((ISpawnableOutsideObjectDawnObject)spawnableOutsideObject).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnMapObjectInfo spawnableOutsideObjectInfo)
+        {
+            ((ISpawnableOutsideObjectDawnObject)spawnableOutsideObject).DawnInfo = spawnableOutsideObjectInfo;
+        }
     }
 }

@@ -1,22 +1,32 @@
+using System;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
-public static class SurfaceExtensions
+public static class FootstepSurfaceExtensions
 {
-    internal static DawnSurfaceInfo GetDawnInfo(this FootstepSurface surface)
+    extension(FootstepSurface footstepSurface)
     {
-        DawnSurfaceInfo surfaceInfo = (DawnSurfaceInfo)((IDawnObject)surface).DawnInfo;
-        return surfaceInfo;
-    }
+        public DawnSurfaceInfo DawnInfo
+        {
+            get => footstepSurface.GetDawnInfoCore();
+            set => footstepSurface.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this FootstepSurface surface)
-    {
-        return surface.GetDawnInfo() != null;
-    }
+        [Obsolete("Use FootstepSurface.DawnInfo instead")]
+        public DawnSurfaceInfo GetDawnInfo()
+        {
+            return footstepSurface.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this FootstepSurface surface, DawnSurfaceInfo surfaceInfo)
-    {
-        ((IDawnObject)surface).DawnInfo = surfaceInfo;
+        private DawnSurfaceInfo GetDawnInfoCore()
+        {
+            return ((IFootstepSurfaceDawnObject)footstepSurface).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnSurfaceInfo surfaceInfo)
+        {
+            ((IFootstepSurfaceDawnObject)footstepSurface).DawnInfo = surfaceInfo;
+        }
     }
 }

@@ -20,12 +20,12 @@ public static class BuyableVehicleExtensions
 
     internal static bool TryGetDuskDefinition(this BuyableVehicle buyableVehicle, [NotNullWhen(true)] out DuskVehicleDefinition? buyableVehicleDefinition)
     {
-        buyableVehicleDefinition = (DuskVehicleDefinition)((IDawnObject)buyableVehicle).DawnInfo;
+        buyableVehicleDefinition = (DuskVehicleDefinition)((IBuyableVehicleDawnObject)buyableVehicle).DawnInfo;
         return buyableVehicleDefinition != null;
     }
 
     internal static void SetDuskDefinition(this BuyableVehicle buyableVehicle, DuskVehicleDefinition buyableVehicleDefinition)
     {
-        ((IDawnObject)buyableVehicle).DawnInfo = buyableVehicleDefinition;
+        ((IBuyableVehicleDawnObject)buyableVehicle).DawnInfo = buyableVehicleDefinition;
     }
 }

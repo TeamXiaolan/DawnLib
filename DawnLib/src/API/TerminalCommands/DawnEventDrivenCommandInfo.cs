@@ -23,7 +23,7 @@ public sealed class DawnEventDrivenCommandInfo
             commandKeyword.specialKeywordResult = ResultNode;
         }
 
-        ResultNode.SetDawnInfo(ParentInfo);
+        ResultNode.DawnInfo = ParentInfo;
     }
 
     internal void InjectCommandIntoTerminal(Terminal terminal)

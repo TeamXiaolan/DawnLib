@@ -1,29 +1,32 @@
-using System.Diagnostics.CodeAnalysis;
+using System;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class SelectableLevelExtensions
 {
-    public static DawnMoonInfo GetDawnInfo(this SelectableLevel selectableLevel)
+    extension(SelectableLevel selectableLevel)
     {
-        DawnMoonInfo moonInfo = (DawnMoonInfo)((IDawnObject)selectableLevel).DawnInfo;
-        return moonInfo;
-    }
+        public DawnMoonInfo DawnInfo
+        {
+            get => selectableLevel.GetDawnInfoCore();
+            set => selectableLevel.SetDawnInfoCore(value);
+        }
 
-    public static bool TryGetDawnInfo(this SelectableLevel selectableLevel, [NotNullWhen(true)] out DawnMoonInfo? moonInfo)
-    {
-        moonInfo = (DawnMoonInfo)((IDawnObject)selectableLevel).DawnInfo;
-        return moonInfo != null;
-    }
+        [Obsolete("Use SelectableLevel.DawnInfo instead")]
+        public DawnMoonInfo GetDawnInfo()
+        {
+            return selectableLevel.GetDawnInfoCore();
+        }
 
-    internal static bool HasDawnInfo(this SelectableLevel selectableLevel)
-    {
-        return selectableLevel.GetDawnInfo() != null;
-    }
+        private DawnMoonInfo GetDawnInfoCore()
+        {
+            return ((ISelectableLevelDawnObject)selectableLevel).DawnInfo;
+        }
 
-    internal static void SetDawnInfo(this SelectableLevel level, DawnMoonInfo moonInfo)
-    {
-        ((IDawnObject)level).DawnInfo = moonInfo;
+        private void SetDawnInfoCore(DawnMoonInfo selectableLevelInfo)
+        {
+            ((ISelectableLevelDawnObject)selectableLevel).DawnInfo = selectableLevelInfo;
+        }
     }
 }

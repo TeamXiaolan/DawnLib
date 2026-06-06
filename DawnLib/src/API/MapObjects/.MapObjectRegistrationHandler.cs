@@ -146,7 +146,7 @@ static class MapObjectRegistrationHandler
                     continue;
                 }
 
-                if (indoorMapHazardType.HasDawnInfo())
+                if (indoorMapHazardType.DawnInfo != null)
                 {
                     continue;
                 }
@@ -168,7 +168,7 @@ static class MapObjectRegistrationHandler
                     continue;
                 }
 
-                if (spawnableOutsideObject.HasDawnInfo())
+                if (spawnableOutsideObject.DawnInfo != null)
                 {
                     continue;
                 }
@@ -244,24 +244,24 @@ static class MapObjectRegistrationHandler
 
             if (insideMapObjectInfo != null)
             {
-                insideMapObjectInfo.IndoorMapHazardType.SetDawnInfo(mapObjectInfo);
+                insideMapObjectInfo.IndoorMapHazardType.DawnInfo = mapObjectInfo;
             }
 
             if (outsideMapObjectInfo != null)
             {
-                outsideMapObjectInfo.SpawnableOutsideObject.SetDawnInfo(mapObjectInfo);
+                outsideMapObjectInfo.SpawnableOutsideObject.DawnInfo = mapObjectInfo;
             }
 
             if (LethalContent.MapObjects.TryGetValue(mapObjectInfo.TypedKey, out DawnMapObjectInfo existingMapObjectInfo))
             {
                 if (insideMapObjectInfo != null)
                 {
-                    insideMapObjectInfo.IndoorMapHazardType.SetDawnInfo(existingMapObjectInfo);
+                    insideMapObjectInfo.IndoorMapHazardType.DawnInfo = existingMapObjectInfo;
                 }
 
                 if (outsideMapObjectInfo != null)
                 {
-                    outsideMapObjectInfo.SpawnableOutsideObject.SetDawnInfo(existingMapObjectInfo);
+                    outsideMapObjectInfo.SpawnableOutsideObject.DawnInfo = existingMapObjectInfo;
                 }
                 continue;
             }
@@ -320,10 +320,10 @@ static class MapObjectRegistrationHandler
         GameObject prefabToSpawn = outsideInfo.SpawnableOutsideObject.prefabToSpawn;
 
         SpawnWeightContext ctx = new SpawnWeightContext(
-            level.GetDawnInfo(),
-            RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
-            level.currentWeather.GetDawnInfo())
-            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+            level.DawnInfo,
+            RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.DawnInfo,
+            level.currentWeather.DawnInfo)
+            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
 
         AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
 
@@ -388,7 +388,7 @@ static class MapObjectRegistrationHandler
                 {
                     if (footstepSurfaceIndex != -1)
                     {
-                        DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[footstepSurfaceIndex].GetDawnInfo();
+                        DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[footstepSurfaceIndex].DawnInfo;
                         if (surfaceInfo.Surface.surfaceTag.Equals(floorTags[t], StringComparison.OrdinalIgnoreCase))
                         {
                             validFloor = true;
@@ -564,10 +564,10 @@ static class MapObjectRegistrationHandler
             }
 
             SpawnWeightContext ctx = new SpawnWeightContext(
-                level.GetDawnInfo(),
-                RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-                level.currentWeather.GetDawnInfo())
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+                level.DawnInfo,
+                RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
+                level.currentWeather.DawnInfo)
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
 
             indoorMapHazard.numberToSpawn = insideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
         }

@@ -61,9 +61,9 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
         }
 
         WeatherEffect effect = TimeOfDay.Instance.effects[(int)type];
-        if (effect.HasDawnInfo())
+        if (effect.DawnInfo != null)
         {
-            return effect.GetDawnInfo();
+            return effect.DawnInfo;
         }
         return null;
     }

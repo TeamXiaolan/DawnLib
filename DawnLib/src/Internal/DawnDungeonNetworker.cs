@@ -60,7 +60,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         NetworkManager.Singleton.NetworkConfig.ForceSamePrefabs = false;
         if (register)
         {
-           List<GameObject> potentialPrefabs = new();
+            List<GameObject> potentialPrefabs = new();
             foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
                 potentialPrefabs.Add(networkPrefab.Prefab);
 
@@ -359,7 +359,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
                 if (tileSetName.Equals(tileSetInfo.Key.Key, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    tileSet.SetDawnInfo(tileSetInfo);
+                    tileSet.DawnInfo = tileSetInfo;
                     break;
                 }
             }
@@ -386,7 +386,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
                 if (archetypeName.Equals(archetypeInfo.Key.Key, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    dungeonArchetype.SetDawnInfo(archetypeInfo);
+                    dungeonArchetype.DawnInfo = archetypeInfo;
                     break;
                 }
             }
@@ -395,7 +395,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
     private static DawnDungeonInfo RebuildDungeonInfoCache(DungeonFlow flow)
     {
-        DawnDungeonInfo dungeonInfo = flow.GetDawnInfo();
+        DawnDungeonInfo dungeonInfo = flow.DawnInfo;
 
         dungeonInfo.sockets = new();
 

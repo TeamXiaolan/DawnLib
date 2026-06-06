@@ -73,7 +73,7 @@ public class DawnSurface : MonoBehaviour
         key = null;
         if (TryGetFootstepIndex(point, false, out int footstepIndex))
         {
-            key = StartOfRound.Instance.footstepSurfaces[footstepIndex].GetDawnInfo().Key;
+            key = StartOfRound.Instance.footstepSurfaces[footstepIndex].DawnInfo.Key;
             return true;
         }
         return false;

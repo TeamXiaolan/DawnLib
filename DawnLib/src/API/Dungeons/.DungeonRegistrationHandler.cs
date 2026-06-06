@@ -121,7 +121,7 @@ static class DungeonRegistrationHandler
 
     private static int GetExtraScrapForCurrentlyLoadedInterior()
     {
-        DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
+        DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo;
         if (dungeonInfo == null)
         {
             return 0;
@@ -134,7 +134,7 @@ static class DungeonRegistrationHandler
         if (!self.checkedForFirstTime)
         {
             self.checkedForFirstTime = true;
-            DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow.GetDawnInfo();
+            DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow.DawnInfo;
             if (dungeonInfo == null || dungeonInfo.StingerDetail.FirstTimeAudio == null)
             {
                 orig(self);
@@ -294,7 +294,7 @@ static class DungeonRegistrationHandler
 
     private static IEnumerator LoadDungeonBundle()
     {
-        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+        DawnDungeonInfo dungeonInfo = RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.DawnInfo;
 
         bool loadIsOkay = !DungeonGenerationPlusCompat.Enabled || !DungeonGenerationPlusCompat.IsDebugOn();
         if (loadIsOkay)
@@ -357,15 +357,15 @@ static class DungeonRegistrationHandler
 
         foreach (IntWithRarity intWithRarity in level.dungeonFlowTypes)
         {
-            DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.GetDawnInfo();
+            DawnDungeonInfo dungeonInfo = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow.DawnInfo;
             if (dungeonInfo.ShouldSkipRespectOverride())
                 continue;
 
             SpawnWeightContext ctx = new SpawnWeightContext(
-                level.GetDawnInfo(),
+                level.DawnInfo,
                 null,
-                level.currentWeather.GetDawnInfo())
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+                level.currentWeather.DawnInfo)
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
 
             int newRarity = dungeonInfo.Weights?.GetFor(ctx) ?? 0;
             intWithRarity.rarity = newRarity.Clamp0();
@@ -438,7 +438,7 @@ static class DungeonRegistrationHandler
             if (indoorMapType.dungeonFlow == null)
                 continue;
 
-            if (indoorMapType.dungeonFlow.HasDawnInfo())
+            if (indoorMapType.dungeonFlow.DawnInfo != null)
                 continue;
 
             string name = FormatFlowName(indoorMapType.dungeonFlow);
@@ -457,7 +457,7 @@ static class DungeonRegistrationHandler
             if (LethalContent.Dungeons.ContainsKey(key))
             {
                 Debuggers.Dungeons?.Log($"LethalContent.Dungeons already contains {key}");
-                indoorMapType.dungeonFlow.SetDawnInfo(LethalContent.Dungeons[key]);
+                indoorMapType.dungeonFlow.DawnInfo = LethalContent.Dungeons[key];
                 continue;
             }
 
@@ -480,7 +480,7 @@ static class DungeonRegistrationHandler
                 extraScrapGeneration = 6;
             }
             DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, stingerDetail, string.Empty, dungeonRangeClamp, extraScrapGeneration, customData);
-            indoorMapType.dungeonFlow.SetDawnInfo(dungeonInfo);
+            indoorMapType.dungeonFlow.DawnInfo = dungeonInfo;
             LethalContent.Dungeons.Register(dungeonInfo);
         }
 
@@ -514,7 +514,7 @@ static class DungeonRegistrationHandler
                 if (LethalContent.Archetypes.ContainsKey(archetypeKey))
                 {
                     Debuggers.Dungeons?.Log($"LethalContent.Archetypes already contains {archetypeKey}");
-                    dungeonArchetype.SetDawnInfo(LethalContent.Archetypes[archetypeKey]);
+                    dungeonArchetype.DawnInfo = LethalContent.Archetypes[archetypeKey];
                     continue;
                 }
 
@@ -524,7 +524,7 @@ static class DungeonRegistrationHandler
                     archetypeTags.Add(DawnLibTags.IsExternal);
                 }
                 DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, archetypeTags, dungeonArchetype, null);
-                dungeonArchetype.SetDawnInfo(info);
+                dungeonArchetype.DawnInfo = info;
                 info.ParentInfo = dungeonInfo;
                 LethalContent.Archetypes.Register(info);
 
@@ -551,7 +551,7 @@ static class DungeonRegistrationHandler
                     if (LethalContent.TileSets.ContainsKey(tileSetKey))
                     {
                         Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
-                        tileSet.SetDawnInfo(LethalContent.TileSets[tileSetKey]);
+                        tileSet.DawnInfo = LethalContent.TileSets[tileSetKey];
                         continue;
                     }
 
@@ -562,7 +562,7 @@ static class DungeonRegistrationHandler
                     }
                     DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, tileSetTags, ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet), null);
                     info.AddTileSet(tileSetInfo);
-                    tileSet.SetDawnInfo(tileSetInfo);
+                    tileSet.DawnInfo = tileSetInfo;
                     LethalContent.TileSets.Register(tileSetInfo);
                 }
             }
@@ -628,7 +628,7 @@ static class DungeonRegistrationHandler
                 continue;
             }
             Debuggers.Dungeons?.Log($"Injecting tile sets for {archetype.name}");
-            foreach (DawnTileSetInfo tileSetInfo in archetype.GetDawnInfo().TileSets)
+            foreach (DawnTileSetInfo tileSetInfo in archetype.DawnInfo.TileSets)
             {
                 if (tileSetInfo.ShouldSkipIgnoreOverride())
                     continue;

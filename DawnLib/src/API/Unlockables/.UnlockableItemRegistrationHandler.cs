@@ -222,7 +222,7 @@ static class UnlockableRegistrationHandler
         for (int i = 0; i < StartOfRoundRefs.Instance.unlockablesList.unlockables.Count; i++)
         {
             UnlockableItem unlockableItem = StartOfRoundRefs.Instance.unlockablesList.unlockables[i];
-            if (unlockableItem.HasDawnInfo())
+            if (unlockableItem.DawnInfo != null)
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(unlockableItem.unlockableName, true);
@@ -239,7 +239,7 @@ static class UnlockableRegistrationHandler
             if (LethalContent.Unlockables.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"UnlockableItem {unlockableItem.unlockableName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                unlockableItem.SetDawnInfo(LethalContent.Unlockables[key]);
+                unlockableItem.DawnInfo = LethalContent.Unlockables[key];
                 continue;
             }
 
@@ -288,7 +288,7 @@ static class UnlockableRegistrationHandler
             }
 
             DawnUnlockableItemInfo unlockableItemInfo = new(key, [DawnLibTags.IsExternal], unlockableItem, new DawnPurchaseInfo(new SimpleProvider<int>(cost), ITerminalPurchasePredicate.AlwaysSuccess()), suitInfo, placeableObjectInfo, requestNode, confirmNode, unlockableBuyKeyword, infoNode, null);
-            unlockableItem.SetDawnInfo(unlockableItemInfo);
+            unlockableItem.DawnInfo = unlockableItemInfo;
             LethalContent.Unlockables.Register(unlockableItemInfo);
         }
 

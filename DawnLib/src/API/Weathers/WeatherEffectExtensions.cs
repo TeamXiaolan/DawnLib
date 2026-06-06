@@ -5,35 +5,38 @@ namespace Dawn;
 
 public static class WeatherEffectExtensions
 {
-    internal static DawnWeatherEffectInfo GetDawnInfo(this WeatherEffect weatherEffect)
+    extension(WeatherEffect weatherEffect)
     {
-        DawnWeatherEffectInfo weatherEffectInfo = (DawnWeatherEffectInfo)((IDawnObject)weatherEffect).DawnInfo;
-        return weatherEffectInfo;
-    }
-
-    internal static bool TryGetDawnInfo(this WeatherEffect weatherEffect, out DawnWeatherEffectInfo weatherEffectInfo)
-    {
-        weatherEffectInfo = weatherEffect.GetDawnInfo();
-        return weatherEffectInfo != null;
-    }
-
-    internal static bool HasDawnInfo(this WeatherEffect weatherEffect)
-    {
-        return weatherEffect.GetDawnInfo() != null;
-    }
-
-    internal static void SetDawnInfo(this WeatherEffect weatherEffect, DawnWeatherEffectInfo weatherEffectInfo)
-    {
-        ((IDawnObject)weatherEffect).DawnInfo = weatherEffectInfo;
-    }
-
-    public static LevelWeatherType GetLevelWeatherType(this WeatherEffect weatherEffect)
-    {
-        if (!weatherEffect.TryGetDawnInfo(out DawnWeatherEffectInfo weatherEffectInfo))
+        public DawnWeatherEffectInfo DawnInfo
         {
-            throw new ArgumentException($"WeatherEffect {weatherEffect.name} does not have a DawnWeatherEffectInfo.", nameof(weatherEffect));
+            get => weatherEffect.GetDawnInfoCore();
+            set => weatherEffect.SetDawnInfoCore(value);
         }
 
-        return weatherEffectInfo.GetLevelWeatherEffect();
+        [Obsolete("Use WeatherEffect.DawnInfo instead")]
+        public DawnWeatherEffectInfo GetDawnInfo()
+        {
+            return weatherEffect.GetDawnInfoCore();
+        }
+
+        private DawnWeatherEffectInfo GetDawnInfoCore()
+        {
+            return ((IWeatherEffectDawnObject)weatherEffect).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnWeatherEffectInfo weatherEffectInfo)
+        {
+            ((IWeatherEffectDawnObject)weatherEffect).DawnInfo = weatherEffectInfo;
+        }
+
+        public LevelWeatherType GetLevelWeatherType()
+        {
+            if (weatherEffect.DawnInfo == null)
+            {
+                throw new ArgumentException($"WeatherEffect {weatherEffect.name} does not have a DawnWeatherEffectInfo.", nameof(weatherEffect));
+            }
+
+            return weatherEffect.DawnInfo.GetLevelWeatherEffect();
+        }
     }
 }

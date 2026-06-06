@@ -21,12 +21,12 @@ public static class ItemExtensions
 
         private DawnItemInfo GetDawnInfoCore()
         {
-            return (DawnItemInfo)((IDawnObject)item).DawnInfo;
+            return ((IItemDawnObject)item).DawnInfo;
         }
 
         private void SetDawnInfoCore(DawnItemInfo itemInfo)
         {
-            ((IDawnObject)item).DawnInfo = itemInfo;
+            ((IItemDawnObject)item).DawnInfo = itemInfo;
         }
     }
 }

@@ -26,7 +26,7 @@ public sealed class DawnInputCommandInfo
             commandKeyword.SetKeywordAcceptInput(true);
         }
 
-        ResultNode.SetDawnInfo(ParentInfo);
+        ResultNode.DawnInfo = ParentInfo;
     }
 
     internal void InjectCommandIntoTerminal(Terminal terminal)

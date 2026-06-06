@@ -9,12 +9,12 @@ public static class PlayerControllerBExtensions
 {
     public static bool TryGetCurrentDawnSurface(this PlayerControllerB player, [NotNullWhen(true)] out DawnSurface? dawnSurface)
     {
-        dawnSurface = (DawnSurface?)((IDawnSurface)player).CurrentDawnSurface;
+        dawnSurface = (DawnSurface?)((ICurrentDawnSurface)player).CurrentDawnSurface;
         return dawnSurface != null;
     }
 
     public static void SetCurrentDawnSurface(this PlayerControllerB player, DawnSurface? dawnSurface)
     {
-        ((IDawnSurface)player).CurrentDawnSurface = dawnSurface;
+        ((ICurrentDawnSurface)player).CurrentDawnSurface = dawnSurface;
     }
 }

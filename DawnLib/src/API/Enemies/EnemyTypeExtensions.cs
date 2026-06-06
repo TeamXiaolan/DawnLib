@@ -1,22 +1,34 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
+using DunGen.Graph;
 
 namespace Dawn;
 
 public static class EnemyTypeExtensions
 {
-    public static DawnEnemyInfo GetDawnInfo(this EnemyType enemyType)
+    extension(EnemyType enemyType)
     {
-        DawnEnemyInfo enemyInfo = (DawnEnemyInfo)((IDawnObject)enemyType).DawnInfo;
-        return enemyInfo;
-    }
+        public DawnEnemyInfo DawnInfo
+        {
+            get => enemyType.GetDawnInfoCore();
+            set => enemyType.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this EnemyType enemyType)
-    {
-        return enemyType.GetDawnInfo() != null;
-    }
+        [Obsolete("Use EnemyType.DawnInfo instead")]
+        public DawnEnemyInfo GetDawnInfo()
+        {
+            return enemyType.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this EnemyType enemyType, DawnEnemyInfo enemyInfo)
-    {
-        ((IDawnObject)enemyType).DawnInfo = enemyInfo;
+        private DawnEnemyInfo GetDawnInfoCore()
+        {
+            return ((IEnemyTypeDawnObject)enemyType).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnEnemyInfo enemyTypeInfo)
+        {
+            ((IEnemyTypeDawnObject)enemyType).DawnInfo = enemyTypeInfo;
+        }
     }
 }

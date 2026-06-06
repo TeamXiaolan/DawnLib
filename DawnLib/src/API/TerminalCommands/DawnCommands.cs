@@ -88,7 +88,7 @@ public static class DawnCommands
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     relevantMoonInfo,
                     null,
-                    includeWeather ? relevantMoonInfo.Level.currentWeather.GetDawnInfo() : null)
+                    includeWeather ? relevantMoonInfo.Level.currentWeather.DawnInfo : null)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, relevantMoonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = dungeonInfo.Weights.GetFor(ctx) ?? 0;
@@ -147,7 +147,7 @@ public static class DawnCommands
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     moonInfo,
                     null,
-                    moonInfo.Level.currentWeather.GetDawnInfo())
+                    moonInfo.Level.currentWeather.DawnInfo)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 float rarityWithThisDungeon = relevantDungeonInfo.Weights.GetFor(ctx) ?? 0;

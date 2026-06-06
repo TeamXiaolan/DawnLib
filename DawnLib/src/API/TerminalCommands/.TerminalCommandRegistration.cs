@@ -36,11 +36,11 @@ static class TerminalCommandRegistration
     [HarmonyLib.HarmonyPatch(typeof(Terminal), nameof(Terminal.RunTerminalEvents)), HarmonyLib.HarmonyPrefix]
     private static bool RunDawnLibTerminalEvents(Terminal __instance, TerminalNode node)
     {
-        if (node.TryGetDawnInfo(out DawnTerminalCommandInfo? terminalCommandInfo))
+        if (node.DawnInfo != null)
         {
-            if (!terminalCommandInfo.ShouldSkipIgnoreOverride())
+            if (!node.DawnInfo.ShouldSkipIgnoreOverride())
             {
-                DawnEventDrivenCommandInfo? eventDrivenCommandInfo = terminalCommandInfo.EventDrivenCommandInfo;
+                DawnEventDrivenCommandInfo? eventDrivenCommandInfo = node.DawnInfo.EventDrivenCommandInfo;
                 if (eventDrivenCommandInfo != null)
                 {
                     eventDrivenCommandInfo.OnTerminalEvent(__instance, node);
@@ -127,7 +127,7 @@ static class TerminalCommandRegistration
 
                 foreach (TerminalNode complexResultNode in complexResultNodes)
                 {
-                    complexResultNode.SetDawnInfo(complexTerminalCommandInfo);
+                    complexResultNode.DawnInfo = complexTerminalCommandInfo;
                     if (complexResultNode.terminalOptions == null || complexResultNode.terminalOptions.Length != 2 || complexResultNode.name == "FileCabinet1" || complexResultNode.name == "Cupboard1" || complexResultNode.name == "Bunkbeds1")
                         continue;
 
@@ -177,7 +177,7 @@ static class TerminalCommandRegistration
                     TerminalCommandBasicInformation simpleQueryBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Complex Command.", simpleQueryClearText);
                     DawnTerminalCommandInfo simpleQueryTerminalCommandInfo = new(simpleQueryNamespacedKey, simpleQueryBasicInformation, [terminalKeyword], true, simpleQueryTags, null, simpleQueryCommandInfo, null, null, null, null, null, null);
                     LethalContent.TerminalCommands.Register(simpleQueryTerminalCommandInfo);
-                    simpleQueryCommandResultNode.SetDawnInfo(simpleQueryTerminalCommandInfo);
+                    simpleQueryCommandResultNode.DawnInfo = simpleQueryTerminalCommandInfo;
                 }
             }
 
@@ -202,7 +202,7 @@ static class TerminalCommandRegistration
                     TerminalCommandBasicInformation eventDrivenBasicInformation = new($"{formattedName.ToCapitalized()}Command", "Vanilla Command", "Event Driven Command.", eventDrivenCommandInfo.ResultNode.clearPreviousText ? ClearText.Result : ClearText.None);
                     DawnTerminalCommandInfo eventDrivenTerminalCommandInfo = new(eventDrivenNamespacedKey, eventDrivenBasicInformation, [terminalKeyword], true, eventDrivenTags, null, null, null, null, null, eventDrivenCommandInfo, null, null);
                     LethalContent.TerminalCommands.Register(eventDrivenTerminalCommandInfo);
-                    nodeToCheck.SetDawnInfo(eventDrivenTerminalCommandInfo);
+                    nodeToCheck.DawnInfo = eventDrivenTerminalCommandInfo;
                 }
             }
         }
@@ -315,9 +315,9 @@ static class TerminalCommandRegistration
     {
         TerminalNode nodeToLoad = node;
 
-        if (nodeToLoad.HasDawnInfo())
+        if (nodeToLoad.DawnInfo != null)
         {
-            DawnTerminalCommandInfo commandInfo = nodeToLoad.GetDawnInfo();
+            DawnTerminalCommandInfo commandInfo = nodeToLoad.DawnInfo;
             if (commandInfo.SimpleQueryCommandInfo != null && commandInfo.SimpleQueryCommandInfo.ResultNode == node)
             {
                 if (!commandInfo.SimpleQueryCommandInfo.ContinueCondition.Invoke())

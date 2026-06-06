@@ -18,7 +18,7 @@ public sealed class DawnSimpleCommandInfo
             commandKeyword.specialKeywordResult = ResultNode;
         }
 
-        ResultNode.SetDawnInfo(ParentInfo);
+        ResultNode.DawnInfo = ParentInfo;
     }
 
     internal void InjectCommandIntoTerminal(Terminal terminal)

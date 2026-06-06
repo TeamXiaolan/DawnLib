@@ -103,7 +103,7 @@ static class TerminalPatches
                 return true;
             }
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[unlockableNode.shipUnlockableID];
-            DawnUnlockableItemInfo? info = unlockableItem.GetDawnInfo();
+            DawnUnlockableItemInfo? info = unlockableItem.DawnInfo;
             if (info == null)
             {
                 DawnPlugin.Logger.LogWarning($"{unlockableNode.creatureName} ({unlockableNode.name}) of {unlockableItem.unlockableName} has no dawn info.");
@@ -183,12 +183,12 @@ static class TerminalPatches
 
             c.EmitDelegate((UnlockableItem unlockable) =>
             {
-                if (!unlockable.HasDawnInfo())
+                if (unlockable.DawnInfo == null)
                 {
                     DawnPlugin.Logger.LogWarning($"Unlockable: {unlockable.unlockableName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
                     return unlockable.unlockableName;
                 }
-                DawnUnlockableItemInfo info = unlockable.GetDawnInfo();
+                DawnUnlockableItemInfo info = unlockable.DawnInfo;
                 TerminalPurchaseResult result = info.DawnPurchaseInfo.PurchasePredicate.CanPurchase();
                 if (result is TerminalPurchaseResult.FailedPurchaseResult failedResult)
                 {
@@ -236,20 +236,20 @@ static class TerminalPatches
             Debuggers.Patching?.Log($"shipUnlockableID = {node.shipUnlockableID}");
 
             UnlockableItem unlockableItem = StartOfRound.Instance.unlockablesList.unlockables[node.shipUnlockableID];
-            if (!unlockableItem.HasDawnInfo())
+            if (unlockableItem.DawnInfo == null)
             {
                 DawnPlugin.Logger.LogWarning($"Unlockable: {unlockableItem.unlockableName} hasn't been found by DawnLib prior to the terminal being run, please report this!");
                 orig(self, node);
                 return;
             }
-            DawnUnlockableItemInfo info = unlockableItem.GetDawnInfo();
+            DawnUnlockableItemInfo info = unlockableItem.DawnInfo;
             purchase = info.DawnPurchaseInfo;
         }
 
         if (node.buyRerouteToMoon >= 0)
         {
             Debuggers.Patching?.Log($"buyRerouteToMoon = {node.buyRerouteToMoon}");
-            purchase = StartOfRound.Instance.levels[node.buyRerouteToMoon].GetDawnInfo().DawnPurchaseInfo;
+            purchase = StartOfRound.Instance.levels[node.buyRerouteToMoon].DawnInfo.DawnPurchaseInfo;
         }
 
         // preform predicate

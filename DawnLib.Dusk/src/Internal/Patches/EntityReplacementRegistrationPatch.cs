@@ -509,11 +509,11 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.DawnInfo;
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
-            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            currentMoon.Level.currentWeather.GetDawnInfo())
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
+            currentMoon.Level.currentWeather.DawnInfo)
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         List<DuskItemReplacementDefinition> newReplacements = GetValidReplacements(replacements, ctx);
@@ -657,14 +657,14 @@ static class EntityReplacementRegistrationPatch
 
     private static void OnNestSpawnAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<EnemyAINestSpawnObject> orig, EnemyAINestSpawnObject self)
     {
-        if (!self.enemyType.HasDawnInfo())
+        if (self.enemyType.DawnInfo == null)
         {
             DuskPlugin.Logger.LogWarning($"Failed to replace enemy nest for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
             orig(self);
             return;
         }
 
-        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
+        if (!self.enemyType.DawnInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             orig(self);
             return;
@@ -681,11 +681,11 @@ static class EntityReplacementRegistrationPatch
             }
         }
 
-        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.DawnInfo;
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
-            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            currentMoon.Level.currentWeather.GetDawnInfo())
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
+            currentMoon.Level.currentWeather.DawnInfo)
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         int? totalWeight = replacements.Sum(it => it.Weights.GetFor(ctx));
@@ -738,13 +738,13 @@ static class EntityReplacementRegistrationPatch
     private static void ReplaceEnemyEntity(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
         orig(self);
-        if (!self.enemyType.HasDawnInfo())
+        if (self.enemyType.DawnInfo == null)
         {
             DuskPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
             return;
         }
 
-        if (!self.enemyType.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
+        if (!self.enemyType.DawnInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
         {
             return;
         }
@@ -767,11 +767,11 @@ static class EntityReplacementRegistrationPatch
             }
         }
 
-        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.DawnInfo;
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
-            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo(),
-            currentMoon.Level.currentWeather.GetDawnInfo())
+            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
+            currentMoon.Level.currentWeather.DawnInfo)
             .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
 
         int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));

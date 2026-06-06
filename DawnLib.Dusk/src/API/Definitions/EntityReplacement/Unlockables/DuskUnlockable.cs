@@ -53,13 +53,13 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             return;
         }
 
-        if (!unlockableItem.HasDawnInfo())
+        if (unlockableItem.DawnInfo == null)
         {
             DuskPlugin.Logger.LogWarning($"Failed to replace unlockable entity for '{unlockableItem.unlockableName}', it doesn't have a dawn info! (there may be other problems)");
             return;
         }
 
-        if (!unlockableItem.GetDawnInfo().CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? replacements))
+        if (!unlockableItem.DawnInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? replacements))
         {
             Debuggers.Unlockables?.Log($"Unlockable {unlockableItem.unlockableName} has no replacements!");
             return;
@@ -83,7 +83,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             }
         }
 
-        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.GetDawnInfo();
+        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.DawnInfo;
         SpawnWeightContext ctx = new SpawnWeightContext(
             currentMoon,
             null,

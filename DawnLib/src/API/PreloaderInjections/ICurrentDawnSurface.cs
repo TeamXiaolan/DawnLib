@@ -8,7 +8,7 @@ namespace Dawn.Interfaces;
 
 [InjectInterface(typeof(PlayerControllerB))]
 [InjectInterface(typeof(MaskedPlayerEnemy))]
-public interface IDawnSurface
+public interface ICurrentDawnSurface
 {
     object? CurrentDawnSurface { get; set; }
 }

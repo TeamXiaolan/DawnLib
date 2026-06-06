@@ -14,14 +14,14 @@ static class SoundAPICompat
         SoundAPI.RegisterCondition("DawnLib:moon:has_tag", () => new DawnTaggableCondition(() =>
         {
             if (!StartOfRound.Instance) return null;
-            return StartOfRound.Instance.currentLevel.GetDawnInfo();
+            return StartOfRound.Instance.currentLevel.DawnInfo;
         }));
 
         SoundAPI.RegisterCondition("DawnLib:dungeon:has_tag", () => new DawnTaggableCondition(() =>
         {
             if (!RoundManager.Instance) return null;
             if (!RoundManager.Instance.dungeonGenerator) return null;
-            return RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo();
+            return RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.DawnInfo;
         }));
     }
 }

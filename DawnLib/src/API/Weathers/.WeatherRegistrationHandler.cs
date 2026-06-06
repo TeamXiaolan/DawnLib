@@ -111,9 +111,9 @@ static class WeatherRegistrationHandler
             List<DawnWeatherEffectInfo> possibleDawnWeathers = new();
             foreach (LevelWeatherType possibleWeather in possibleWeathers)
             {
-                if (possibleWeather.TryGetDawnInfo(out DawnWeatherEffectInfo? dawnWeatherEffectInfo))
+                if (possibleWeather.DawnInfo != null)
                 {
-                    possibleDawnWeathers.Add(dawnWeatherEffectInfo);
+                    possibleDawnWeathers.Add(possibleWeather.DawnInfo);
                 }
             }
             DawnWeatherEffectInfo selectedDawnWeather = random.NextItem(possibleDawnWeathers);
@@ -132,7 +132,7 @@ static class WeatherRegistrationHandler
             }
 
             WeatherEffect weatherEffect = TimeOfDayRefs.Instance.effects[value];
-            DawnWeatherEffectInfo? weatherEffectInfo = weatherEffect.GetDawnInfo();
+            DawnWeatherEffectInfo? weatherEffectInfo = weatherEffect.DawnInfo;
             if (weatherEffectInfo == null || weatherEffectInfo.ShouldSkipIgnoreOverride())
             {
                 return orig(self);
@@ -222,7 +222,7 @@ static class WeatherRegistrationHandler
 
         foreach ((int i, WeatherEffect weatherEffect) in TimeOfDayRefs.Instance.effects.WithIndex())
         {
-            if (weatherEffect.HasDawnInfo())
+            if (weatherEffect.DawnInfo != null)
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(weatherEffect.name, true);
@@ -247,7 +247,7 @@ static class WeatherRegistrationHandler
                     DawnPlugin.Logger.LogWarning($"Weather {weatherEffect.name} is already registered by the same creator to LethalContent. This is likely to cause issues.");
                 }
                 LethalContent.Weathers[key].WeatherEffect = weatherEffect;
-                weatherEffect.SetDawnInfo(LethalContent.Weathers[key]);
+                weatherEffect.DawnInfo = LethalContent.Weathers[key];
                 continue;
             }
 
@@ -265,7 +265,7 @@ static class WeatherRegistrationHandler
             }
             DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, weatherWeights.Build(), 1f, null);
             LethalContent.Weathers.Register(weatherEffectInfo);
-            weatherEffect.SetDawnInfo(weatherEffectInfo);
+            weatherEffect.DawnInfo = weatherEffectInfo;
         }
     }
 }

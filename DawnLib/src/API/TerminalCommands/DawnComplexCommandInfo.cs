@@ -31,7 +31,7 @@ public sealed class DawnComplexCommandInfo
 
         foreach (TerminalNode resultNode in ResultNodes)
         {
-            resultNode.SetDawnInfo(ParentInfo);
+            resultNode.DawnInfo = ParentInfo;
         }
     }
 

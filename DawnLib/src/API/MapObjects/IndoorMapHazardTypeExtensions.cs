@@ -1,22 +1,32 @@
+using System;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class IndoorMapHazardTypeExtensions
 {
-    public static DawnMapObjectInfo GetDawnInfo(this IndoorMapHazardType IndoorMapHazardType)
+    extension(IndoorMapHazardType indoorMapHazardType)
     {
-        DawnMapObjectInfo IndoorMapHazardTypeInfo = (DawnMapObjectInfo)((IDawnObject)IndoorMapHazardType).DawnInfo;
-        return IndoorMapHazardTypeInfo;
-    }
+        public DawnMapObjectInfo DawnInfo
+        {
+            get => indoorMapHazardType.GetDawnInfoCore();
+            set => indoorMapHazardType.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this IndoorMapHazardType IndoorMapHazardType)
-    {
-        return IndoorMapHazardType.GetDawnInfo() != null;
-    }
+        [Obsolete("Use IndoorMapHazardType.DawnInfo instead")]
+        public DawnMapObjectInfo GetDawnInfo()
+        {
+            return indoorMapHazardType.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this IndoorMapHazardType IndoorMapHazardType, DawnMapObjectInfo IndoorMapHazardTypeInfo)
-    {
-        ((IDawnObject)IndoorMapHazardType).DawnInfo = IndoorMapHazardTypeInfo;
+        private DawnMapObjectInfo GetDawnInfoCore()
+        {
+            return ((IIndoorMapHazardTypeDawnObject)indoorMapHazardType).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnMapObjectInfo indoorMapHazardTypeInfo)
+        {
+            ((IIndoorMapHazardTypeDawnObject)indoorMapHazardType).DawnInfo = indoorMapHazardTypeInfo;
+        }
     }
 }

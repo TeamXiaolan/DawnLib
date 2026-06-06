@@ -1,22 +1,32 @@
+using System;
 using Dawn.Interfaces;
 
 namespace Dawn;
 
 public static class UnlockableItemExtensions
 {
-    public static DawnUnlockableItemInfo GetDawnInfo(this UnlockableItem unlockableItem)
+    extension(UnlockableItem unlockableItem)
     {
-        DawnUnlockableItemInfo unlockableItemInfo = (DawnUnlockableItemInfo)((IDawnObject)unlockableItem).DawnInfo;
-        return unlockableItemInfo;
-    }
+        public DawnUnlockableItemInfo DawnInfo
+        {
+            get => unlockableItem.GetDawnInfoCore();
+            set => unlockableItem.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this UnlockableItem unlockableItem)
-    {
-        return unlockableItem.GetDawnInfo() != null;
-    }
+        [Obsolete("Use Item.DawnInfo instead")]
+        public DawnUnlockableItemInfo GetDawnInfo()
+        {
+            return unlockableItem.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this UnlockableItem unlockableItem, DawnUnlockableItemInfo unlockableItemInfo)
-    {
-        ((IDawnObject)unlockableItem).DawnInfo = unlockableItemInfo;
+        private DawnUnlockableItemInfo GetDawnInfoCore()
+        {
+            return ((IUnlockableItemDawnObject)unlockableItem).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnUnlockableItemInfo unlockableItemInfo)
+        {
+            ((IUnlockableItemDawnObject)unlockableItem).DawnInfo = unlockableItemInfo;
+        }
     }
 }

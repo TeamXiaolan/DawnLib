@@ -4,47 +4,50 @@ namespace Dawn;
 
 public static class LevelWeatherTypeExtensions
 {
-    internal static DawnWeatherEffectInfo GetDawnInfo(this LevelWeatherType levelWeatherType)
+    extension(LevelWeatherType levelWeatherType)
     {
-        WeatherEffect? weatherEffect = GetWeatherEffect(levelWeatherType);
-        if (weatherEffect == null)
+        public DawnWeatherEffectInfo DawnInfo
         {
-            return LethalContent.Weathers[WeatherKeys.None];
+            get => levelWeatherType.GetDawnInfoCore();
         }
 
-        if (!weatherEffect.TryGetDawnInfo(out DawnWeatherEffectInfo? weatherEffectInfo))
+        [Obsolete("Use LevelWeatherType.DawnInfo instead")]
+        public DawnWeatherEffectInfo GetDawnInfo()
         {
-            throw new ArgumentException($"WeatherEffect {weatherEffect.name} does not have a DawnWeatherEffectInfo.", nameof(levelWeatherType));
-        }
-        return weatherEffectInfo;
-    }
-
-    internal static bool TryGetDawnInfo(this LevelWeatherType levelWeatherType, out DawnWeatherEffectInfo weatherEffectInfo)
-    {
-        weatherEffectInfo = levelWeatherType.GetDawnInfo();
-        return weatherEffectInfo != null;
-    }
-
-    internal static bool HasDawnInfo(this LevelWeatherType levelWeatherType)
-    {
-        return levelWeatherType.GetDawnInfo() != null;
-    }
-
-    public static WeatherEffect? GetWeatherEffect(this LevelWeatherType levelWeatherType)
-    {
-        if (levelWeatherType == LevelWeatherType.None)
-        {
-            return null;
+            return levelWeatherType.GetDawnInfoCore();
         }
 
-        foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers.Values)
+        private DawnWeatherEffectInfo GetDawnInfoCore()
         {
-            if (weatherEffectInfo.GetLevelWeatherEffect() == levelWeatherType)
+            WeatherEffect? weatherEffect = GetWeatherEffect(levelWeatherType);
+            if (weatherEffect == null)
             {
-                return weatherEffectInfo.WeatherEffect;
+                return LethalContent.Weathers[WeatherKeys.None];
             }
+
+            if (weatherEffect.DawnInfo == null)
+            {
+                throw new ArgumentException($"WeatherEffect {weatherEffect.name} does not have a DawnWeatherEffectInfo.", nameof(levelWeatherType));
+            }
+            return weatherEffect.DawnInfo;
         }
 
-        throw new ArgumentException($"LevelWeatherType {levelWeatherType.ToString()} does not have a DawnWeatherEffectInfo.", nameof(levelWeatherType));
+        public WeatherEffect? GetWeatherEffect()
+        {
+            if (levelWeatherType == LevelWeatherType.None)
+            {
+                return null;
+            }
+
+            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers.Values)
+            {
+                if (weatherEffectInfo.GetLevelWeatherEffect() == levelWeatherType)
+                {
+                    return weatherEffectInfo.WeatherEffect;
+                }
+            }
+
+            throw new ArgumentException($"LevelWeatherType {levelWeatherType.ToString()} does not have a DawnWeatherEffectInfo.", nameof(levelWeatherType));
+        }
     }
 }

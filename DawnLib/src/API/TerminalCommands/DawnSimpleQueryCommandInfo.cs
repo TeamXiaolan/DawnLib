@@ -35,7 +35,7 @@ public sealed class DawnSimpleQueryCommandInfo
             new CompatibleNoun(CancelKeyword, CancelNode)
         ];
 
-        ResultNode.SetDawnInfo(ParentInfo);
+        ResultNode.DawnInfo = ParentInfo;
     }
 
     internal void InjectCommandIntoTerminal(Terminal terminal)

@@ -285,7 +285,7 @@ static class SurfaceRegistrationHandler
             playerControllerB.GetCurrentMaterialStandingOn(false);
         }
 
-        DawnSurfaceInfo? surfaceInfo = StartOfRound.Instance.footstepSurfaces[playerControllerB.currentFootstepSurfaceIndex].GetDawnInfo();
+        DawnSurfaceInfo? surfaceInfo = StartOfRound.Instance.footstepSurfaces[playerControllerB.currentFootstepSurfaceIndex].DawnInfo;
         if (surfaceInfo == null || surfaceInfo.CrouchClips == null || surfaceInfo.CrouchClips.Count == 0)
         {
             orig(self);
@@ -382,7 +382,7 @@ static class SurfaceRegistrationHandler
             c.EmitDelegate((int currentFootstepSurfaceIndex, ref float volume) =>
             {
                 FootstepSurface footstepSurface = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex];
-                DawnSurfaceInfo? surfaceInfo = footstepSurface.GetDawnInfo();
+                DawnSurfaceInfo? surfaceInfo = footstepSurface.DawnInfo;
                 if (surfaceInfo == null)
                 {
                     return;
@@ -454,7 +454,7 @@ static class SurfaceRegistrationHandler
                 return false; // Vanilla logic
             }
 
-            if (StartOfRoundRefs.Instance.currentLevel.GetDawnInfo() == LethalContent.Moons[MoonKeys.Embrion] && surfaceInfo == LethalContent.Surfaces[SurfaceKeys.Rock])
+            if (StartOfRoundRefs.Instance.currentLevel.DawnInfo == LethalContent.Moons[MoonKeys.Embrion] && surfaceInfo == LethalContent.Surfaces[SurfaceKeys.Rock])
             {
                 flag = true;
                 return true; // Skip vanilla logic
@@ -532,7 +532,7 @@ static class SurfaceRegistrationHandler
             return;
         }
 
-        DawnMoonInfo moonInfo = StartOfRound.Instance.currentLevel.GetDawnInfo();
+        DawnMoonInfo moonInfo = StartOfRound.Instance.currentLevel.DawnInfo;
         if (moonInfo == null || moonInfo.TypedKey.IsVanilla())
         {
             return;
@@ -766,7 +766,7 @@ static class SurfaceRegistrationHandler
         {
             FootstepSurface? surface = startOfRound.footstepSurfaces[i];
 
-            if (surface == null || surface.HasDawnInfo())
+            if (surface == null || surface.DawnInfo != null)
                 continue;
 
             string surfaceTag = NamespacedKey.NormalizeStringForNamespacedKey(surface.surfaceTag, true);
@@ -784,7 +784,7 @@ static class SurfaceRegistrationHandler
                     DawnPlugin.Logger.LogWarning($"Surface {surface.surfaceTag} is already registered by the same creator to LethalContent. This is likely to cause issues.");
                 }
                 LethalContent.Surfaces[key].Surface = surface;
-                surface.SetDawnInfo(LethalContent.Surfaces[key]);
+                surface.DawnInfo = LethalContent.Surfaces[key];
                 continue;
             }
 
@@ -795,13 +795,13 @@ static class SurfaceRegistrationHandler
                 5, // Rock, Requires you to be inside
                 7, // Tiles
                 8 // Snow
-                // Another condition is standingOnTerrain regardless of currentFootstepSurfaceIndex
+                  // Another condition is standingOnTerrain regardless of currentFootstepSurfaceIndex
             ];
             bool isNatural = startOfRound.naturalSurfaceTags.Contains(surface.surfaceTag);
             bool quicksandCompatible = quicksandTags.Contains(i);
             DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, new(), 1f, null, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
-            surface.SetDawnInfo(surfaceInfo);
+            surface.DawnInfo = surfaceInfo;
         }
 
         if (LethalContent.Surfaces.IsFrozen)
@@ -844,7 +844,7 @@ static class SurfaceRegistrationHandler
                 currentFootstepSurfaceIndex = footstepSurfaceIndex;
             }
 
-            DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
+            DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].DawnInfo;
             if (surfaceInfo.SurfaceVFXPrefab != null && FootstepVFXPool.IsNotNull)
             {
                 FootstepVFXPool.Instance.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);
@@ -867,7 +867,7 @@ static class SurfaceRegistrationHandler
                 currentFootstepSurfaceIndex = footstepSurfaceIndex;
             }
 
-            DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].GetDawnInfo();
+            DawnSurfaceInfo surfaceInfo = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].DawnInfo;
             if (surfaceInfo.SurfaceVFXPrefab != null && FootstepVFXPool.IsNotNull)
             {
                 FootstepVFXPool.Instance.Play(surfaceInfo.SurfaceVFXPrefab, hit.point, hit.normal, surfaceInfo.SurfaceVFXOffset, 1f);

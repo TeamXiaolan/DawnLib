@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Dawn.Interfaces;
 using DunGen.Graph;
@@ -6,25 +7,28 @@ namespace Dawn;
 
 public static class DungeonFlowExtensions
 {
-    public static DawnDungeonInfo GetDawnInfo(this DungeonFlow dungeonFlow)
+    extension(DungeonFlow dungeonFlow)
     {
-        DawnDungeonInfo dungeonInfo = (DawnDungeonInfo)((IDawnObject)dungeonFlow).DawnInfo;
-        return dungeonInfo;
-    }
+        public DawnDungeonInfo DawnInfo
+        {
+            get => dungeonFlow.GetDawnInfoCore();
+            set => dungeonFlow.SetDawnInfoCore(value);
+        }
 
-    public static bool TryGetDawnInfo(this DungeonFlow dungeonFlow, [NotNullWhen(true)] out DawnDungeonInfo? dungeonInfo)
-    {
-        dungeonInfo = (DawnDungeonInfo)((IDawnObject)dungeonFlow).DawnInfo;
-        return dungeonInfo != null;
-    }
+        [Obsolete("Use DungeonFlow.DawnInfo instead")]
+        public DawnDungeonInfo GetDawnInfo()
+        {
+            return dungeonFlow.GetDawnInfoCore();
+        }
 
-    internal static bool HasDawnInfo(this DungeonFlow dungeonFlow)
-    {
-        return dungeonFlow.GetDawnInfo() != null;
-    }
+        private DawnDungeonInfo GetDawnInfoCore()
+        {
+            return ((IDunGenFlowDawnObject)dungeonFlow).DawnInfo;
+        }
 
-    internal static void SetDawnInfo(this DungeonFlow dungeonFlow, DawnDungeonInfo dungeonInfo)
-    {
-        ((IDawnObject)dungeonFlow).DawnInfo = dungeonInfo;
+        private void SetDawnInfoCore(DawnDungeonInfo dungeonFlowInfo)
+        {
+            ((IDunGenFlowDawnObject)dungeonFlow).DawnInfo = dungeonFlowInfo;
+        }
     }
 }

@@ -104,7 +104,7 @@ static class EnemyRegistrationHandler
 
     private static bool DawnLibHandledEnemy(EnemyType enemyType)
     {
-        DawnEnemyInfo? enemyInfo = enemyType.GetDawnInfo();
+        DawnEnemyInfo? enemyInfo = enemyType.DawnInfo;
         if (enemyInfo == null)
         {
             return true;
@@ -144,10 +144,10 @@ static class EnemyRegistrationHandler
         List<EnemyType> enemiesEdited = new();
         foreach (EnemyType enemyType in self.currentLevel.Enemies.Select(def => def.enemyType))
         {
-            if (!enemyType.HasDawnInfo())
+            if (enemyType.DawnInfo == null)
                 continue;
 
-            DawnEnemyInfo enemyInfo = enemyType.GetDawnInfo();
+            DawnEnemyInfo enemyInfo = enemyType.DawnInfo;
             if (enemyInfo.ShouldSkipRespectOverride())
                 continue;
 
@@ -158,10 +158,10 @@ static class EnemyRegistrationHandler
                 continue;
 
             SpawnWeightContext ctx = new SpawnWeightContext(
-                self.currentLevel.GetDawnInfo(),
-                self.dungeonGenerator.Generator.DungeonFlow.GetDawnInfo(),
-                self.currentLevel.currentWeather.GetDawnInfo())
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, self.currentLevel.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+                self.currentLevel.DawnInfo,
+                self.dungeonGenerator.Generator.DungeonFlow.DawnInfo,
+                self.currentLevel.currentWeather.DawnInfo)
+                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, self.currentLevel.DawnInfo.DawnPurchaseInfo.Cost.Provide());
 
             if (enemyInfo.Inside.Weights.GetFor(ctx) > 0)
                 continue;
@@ -281,14 +281,14 @@ static class EnemyRegistrationHandler
 
     private static void EnsureCorrectEnemyVariables(On.EnemyAI.orig_Start orig, EnemyAI self)
     {
-        if (!self.enemyType.HasDawnInfo())
+        if (self.enemyType.DawnInfo == null)
         {
             DawnPlugin.Logger.LogError($"Enemy with names {self.enemyType.name} and {self.enemyType.enemyName} has no DawnEnemyInfo, this means this enemy is not properly registered.");
             orig(self);
             return;
         }
 
-        DawnEnemyInfo enemyInfo = self.enemyType.GetDawnInfo();
+        DawnEnemyInfo enemyInfo = self.enemyType.DawnInfo;
         if (enemyInfo.ShouldSkipRespectOverride() || StarlancerAIFixCompat.Enabled)
         {
             orig(self);
@@ -377,7 +377,7 @@ static class EnemyRegistrationHandler
             return;
 
         DungeonFlow? dungeonFlow = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow;
-        DawnMoonInfo moonInfo = level.GetDawnInfo();
+        DawnMoonInfo moonInfo = level.DawnInfo;
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
             if (enemyInfo.ShouldSkipRespectOverride())
@@ -396,8 +396,8 @@ static class EnemyRegistrationHandler
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     moonInfo,
-                    dungeonFlow?.GetDawnInfo(),
-                    level.currentWeather.GetDawnInfo())
+                    dungeonFlow?.DawnInfo,
+                    level.currentWeather.DawnInfo)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Outside.Weights.GetFor(ctx) ?? 0;
@@ -416,8 +416,8 @@ static class EnemyRegistrationHandler
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     moonInfo,
-                    dungeonFlow?.GetDawnInfo(),
-                    level.currentWeather.GetDawnInfo())
+                    dungeonFlow?.DawnInfo,
+                    level.currentWeather.DawnInfo)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Inside.Weights.GetFor(ctx) ?? 0;
@@ -436,8 +436,8 @@ static class EnemyRegistrationHandler
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     moonInfo,
-                    dungeonFlow?.GetDawnInfo(),
-                    level.currentWeather.GetDawnInfo())
+                    dungeonFlow?.DawnInfo,
+                    level.currentWeather.DawnInfo)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Daytime.Weights.GetFor(ctx) ?? 0;
@@ -457,8 +457,8 @@ static class EnemyRegistrationHandler
 
                 SpawnWeightContext ctx = new SpawnWeightContext(
                     moonInfo,
-                    dungeonFlow?.GetDawnInfo(),
-                    level.currentWeather.GetDawnInfo())
+                    dungeonFlow?.DawnInfo,
+                    level.currentWeather.DawnInfo)
                     .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
 
                 int rarity = enemyInfo.Weed.Weights.GetFor(ctx) ?? 0;
@@ -466,10 +466,10 @@ static class EnemyRegistrationHandler
             }
         }
 
-        RoundManagerRefs.Instance.WeedEnemies.RemoveAll(x => !x.enemyType.GetDawnInfo().ShouldSkipRespectOverride());
+        RoundManagerRefs.Instance.WeedEnemies.RemoveAll(x => !x.enemyType.DawnInfo.ShouldSkipRespectOverride());
         foreach (SpawnableEnemyWithRarity spawnableEnemyWithRarity in moonInfo.WeedEnemies.ToList())
         {
-            if (spawnableEnemyWithRarity.enemyType == null || spawnableEnemyWithRarity.enemyType.GetDawnInfo().ShouldSkipRespectOverride())
+            if (spawnableEnemyWithRarity.enemyType == null || spawnableEnemyWithRarity.enemyType.DawnInfo.ShouldSkipRespectOverride())
                 continue;
 
             RoundManagerRefs.Instance.WeedEnemies.Add(spawnableEnemyWithRarity);
@@ -552,7 +552,7 @@ static class EnemyRegistrationHandler
             if (enemyType == null || enemyType.enemyPrefab == null)
                 continue;
 
-            if (enemyType.HasDawnInfo())
+            if (enemyType.DawnInfo != null)
                 continue;
 
             string name = NamespacedKey.NormalizeStringForNamespacedKey(enemyType.enemyName, true);
@@ -573,7 +573,7 @@ static class EnemyRegistrationHandler
             if (LethalContent.Enemies.ContainsKey(key))
             {
                 DawnPlugin.Logger.LogWarning($"Enemy {enemyType.enemyName} is already registered by the same creator to LethalContent. This is likely to cause issues.");
-                enemyType.SetDawnInfo(LethalContent.Enemies[key]);
+                enemyType.DawnInfo = LethalContent.Enemies[key];
                 continue;
             }
 
@@ -634,7 +634,7 @@ static class EnemyRegistrationHandler
                 bestiaryNode, nameKeyword,
                 null
             );
-            enemyType.SetDawnInfo(enemyInfo);
+            enemyType.DawnInfo = enemyInfo;
             LethalContent.Enemies.Register(enemyInfo);
         }
 
@@ -656,7 +656,7 @@ static class EnemyRegistrationHandler
                     TryAddToEnemyList(enemyInfo, level.Enemies);
 
                 if (enemyInfo.Weed != null)
-                    TryAddToEnemyList(enemyInfo, level.GetDawnInfo().WeedEnemies);
+                    TryAddToEnemyList(enemyInfo, level.DawnInfo.WeedEnemies);
             }
         }
 

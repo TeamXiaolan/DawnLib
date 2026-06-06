@@ -1,3 +1,4 @@
+using System;
 using Dawn.Interfaces;
 using DunGen;
 
@@ -5,21 +6,30 @@ namespace Dawn;
 
 public static class DungeonArchetypeExtensions
 {
-    public static DawnArchetypeInfo GetDawnInfo(this DungeonArchetype archetype)
+    extension(DungeonArchetype archetype)
     {
-        object newObject = archetype;
-        DawnArchetypeInfo archetypeInfo = (DawnArchetypeInfo)((IDawnObject)newObject).DawnInfo;
-        return archetypeInfo;
-    }
+        public DawnArchetypeInfo DawnInfo
+        {
+            get => archetype.GetDawnInfoCore();
+            set => archetype.SetDawnInfoCore(value);
+        }
 
-    internal static bool HasDawnInfo(this DungeonArchetype archetype)
-    {
-        return archetype.GetDawnInfo() != null;
-    }
+        [Obsolete("Use DungeonArchetype.DawnInfo instead")]
+        public DawnArchetypeInfo GetDawnInfo()
+        {
+            return archetype.GetDawnInfoCore();
+        }
 
-    internal static void SetDawnInfo(this DungeonArchetype archetype, DawnArchetypeInfo archetypeInfo)
-    {
-        object newObject = archetype;
-        ((IDawnObject)newObject).DawnInfo = archetypeInfo;
+        private DawnArchetypeInfo GetDawnInfoCore()
+        {
+            object newObject = archetype;
+            return ((IDunGenArchetypeDawnObject)newObject).DawnInfo;
+        }
+
+        private void SetDawnInfoCore(DawnArchetypeInfo archetypeInfo)
+        {
+            object newObject = archetype;
+            ((IDunGenArchetypeDawnObject)newObject).DawnInfo = archetypeInfo;
+        }
     }
 }

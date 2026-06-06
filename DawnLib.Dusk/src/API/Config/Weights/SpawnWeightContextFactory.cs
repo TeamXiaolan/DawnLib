@@ -6,20 +6,20 @@ public static class SpawnWeightContextFactory
 {
     public static SpawnWeightContext FromCurrentGame()
     {
-        DawnMoonInfo? moon = RoundManager.Instance?.currentLevel?.GetDawnInfo();
-        DawnDungeonInfo? dungeon = RoundManager.Instance?.dungeonGenerator?.Generator?.DungeonFlow?.GetDawnInfo();
+        DawnMoonInfo? moon = RoundManager.Instance?.currentLevel?.DawnInfo;
+        DawnDungeonInfo? dungeon = RoundManager.Instance?.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo;
 
         DawnWeatherEffectInfo? weather = null;
         if (TimeOfDay.Instance?.currentLevel != null && TimeOfDay.Instance.currentLevel.currentWeather != LevelWeatherType.None)
         {
-            weather = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].GetDawnInfo();
+            weather = TimeOfDay.Instance.effects[(int)TimeOfDay.Instance.currentLevel.currentWeather].DawnInfo;
         }
 
         SpawnWeightExtras extras = SpawnWeightExtras.Empty;
         SelectableLevel? level = RoundManager.Instance?.currentLevel;
         if (level != null)
         {
-            extras = extras.With(SpawnWeightExtraKeys.RoutingPriceKey, level.GetDawnInfo().DawnPurchaseInfo.Cost.Provide());
+            extras = extras.With(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
         }
 
         return new SpawnWeightContext(moon, dungeon, weather, extras);
