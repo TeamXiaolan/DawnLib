@@ -88,13 +88,13 @@ static class MoonRegistrationHandler
     private static void AccountForDaytimeDiversity(ILContext il)
     {
         ILCursor cursor = new(il);
-        ILLabel skipLabel = null!;
+        ILLabel firstSkipLabel = null!;
         if (!cursor.TryGotoNext(
             MoveType.After,
             il => il.MatchLdfld<EnemyType>(nameof(EnemyType.normalizedTimeInDayToLeave)),
             il => il.MatchCall<TimeOfDay>("get_Instance"),
             il => il.MatchLdfld<TimeOfDay>(nameof(TimeOfDay.normalizedTimeOfDay)),
-            il => il.MatchBlt(out skipLabel),
+            il => il.MatchBlt(out firstSkipLabel),
             il => il.MatchLdloc(2),
             il => il.MatchLdfld<EnemyType>(nameof(EnemyType.spawningDisabled)),
             il => il.MatchBrtrue(out _)))
@@ -111,8 +111,37 @@ static class MoonRegistrationHandler
         cursor.Emit(OpCodes.Ldarg_0);
         cursor.EmitDelegate(GetCurrentDaytimeDiversity);
 
-        cursor.EmitDelegate(EnemyQualifiesForDiversityCheck);
-        cursor.Emit(OpCodes.Brfalse_S, skipLabel);
+        cursor.EmitDelegate(EnemyCanSpawnAccountingForDiversity);
+        cursor.Emit(OpCodes.Brfalse_S, firstSkipLabel);
+
+        ILLabel zeroWeightLabel = null!;
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdloc(2),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.PowerLevel)),
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<RoundManager>(nameof(RoundManager.currentLevel)),
+            il => il.MatchLdfld<SelectableLevel>(nameof(SelectableLevel.maxDaytimeEnemyPowerCount)),
+            il => il.MatchConvR4(),
+            il => il.MatchLdloc(0),
+            il => il.MatchSub(),
+            il => il.MatchBgt(out zeroWeightLabel)
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomDaytimeEnemy patch (2)");
+            return;
+        }
+
+        cursor.Emit(OpCodes.Ldloc, 2);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentDaytimeMaxDiversity);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentDaytimeDiversity);
+
+        cursor.EmitDelegate(EnemyCanSpawnAccountingForDiversity);
+        cursor.Emit(OpCodes.Brfalse_S, zeroWeightLabel);
 
         if (!cursor.TryGotoNext(
             MoveType.Before,
@@ -128,7 +157,7 @@ static class MoonRegistrationHandler
             il => il.MatchCallvirt(out _)
         ))
         {
-            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomDaytimeEnemy patch (2)");
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomDaytimeEnemy patch (3)");
             return;
         }
 
@@ -147,9 +176,9 @@ static class MoonRegistrationHandler
         roundManager.CurrentDaytimeEnemyDiversityLevel += enemyType.DiversityPowerLevel;
     }
 
-    private static bool EnemyQualifiesForDiversityCheck(EnemyType enemyType, int currentMaxDiversityLevel, int currentEnemyDiversityLevel)
+    private static bool EnemyCanSpawnAccountingForDiversity(EnemyType enemyType, int currentMaxDiversityLevel, int currentEnemyDiversityLevel)
     {
-        return enemyType.DiversityPowerLevel <= currentMaxDiversityLevel - currentEnemyDiversityLevel;
+        return enemyType.DiversityPowerLevel <= currentMaxDiversityLevel - currentEnemyDiversityLevel || enemyType.hasSpawnedAtLeastOne;
     }
 
     private static int GetCurrentDaytimeDiversity(RoundManager roundManager)
