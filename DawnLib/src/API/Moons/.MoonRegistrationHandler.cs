@@ -66,17 +66,106 @@ static class MoonRegistrationHandler
         }
 
         IL.RoundManager.SpawnRandomDaytimeEnemy += AccountForDaytimeDiversity;
+
+        On.RoundManager.RefreshEnemiesList += UpdateNewerDiversity;
+        On.RoundManager.UnloadSceneObjectsEarly += ResetNewerDiversity;
+    }
+
+    private static void ResetNewerDiversity(On.RoundManager.orig_UnloadSceneObjectsEarly orig, RoundManager self)
+    {
+        orig(self);
+        self.CurrentMaxDaytimeDiversityLevel = 0;
+        self.CurrentDaytimeEnemyDiversityLevel = 0;
+        // TODO: transpile SpawnRandomDaytimeEnemy to update this, check flag2 and flag3 from SpawnRandomOutsideEnemy, specifically go before hasSpawnedAtleastOne is increment in SpawnRandomDaytimeEnemy
+    }
+
+    private static void UpdateNewerDiversity(On.RoundManager.orig_RefreshEnemiesList orig, RoundManager self)
+    {
+        self.CurrentMaxDaytimeDiversityLevel = self.currentLevel.MaxDaytimeDiversityPowerCount;
+        orig(self);
     }
 
     private static void AccountForDaytimeDiversity(ILContext il)
     {
-        
+        ILCursor cursor = new(il);
+        ILLabel skipLabel = null!;
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.normalizedTimeInDayToLeave)),
+            il => il.MatchCall<TimeOfDay>("get_Instance"),
+            il => il.MatchLdfld<TimeOfDay>(nameof(TimeOfDay.normalizedTimeOfDay)),
+            il => il.MatchBlt(out skipLabel),
+            il => il.MatchLdloc(2),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.spawningDisabled)),
+            il => il.MatchBrtrue(out _)))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomDaytimeEnemy patch (1)");
+            return;
+        }
+
+        cursor.Emit(OpCodes.Ldloc, 2);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentDaytimeMaxDiversity);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentDaytimeDiversity);
+
+        cursor.EmitDelegate(EnemyQualifiesForDiversityCheck);
+        cursor.Emit(OpCodes.Brfalse_S, skipLabel);
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdloc(14),
+            il => il.MatchCallvirt(out _),
+            il => il.MatchLdfld<EnemyAI>(nameof(EnemyAI.enemyType)),
+            il => il.MatchDup(),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.numberSpawned)),
+            il => il.MatchLdcI4(1),
+            il => il.MatchAdd(),
+            il => il.MatchStfld<EnemyType>(nameof(EnemyType.numberSpawned)),
+            il => il.MatchLdloc(14),
+            il => il.MatchCallvirt(out _)
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomDaytimeEnemy patch (2)");
+            return;
+        }
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldloc, 5);
+        cursor.EmitDelegate(IncrementDaytimeDiversity);
+    }
+
+    private static void IncrementDaytimeDiversity(RoundManager roundManager, EnemyType enemyType)
+    {
+        if (enemyType.hasSpawnedAtLeastOne)
+        {
+            return;
+        }
+
+        roundManager.CurrentDaytimeEnemyDiversityLevel += enemyType.DiversityPowerLevel;
+    }
+
+    private static bool EnemyQualifiesForDiversityCheck(EnemyType enemyType, int currentMaxDiversityLevel, int currentEnemyDiversityLevel)
+    {
+        return enemyType.DiversityPowerLevel <= currentMaxDiversityLevel - currentEnemyDiversityLevel;
+    }
+
+    private static int GetCurrentDaytimeDiversity(RoundManager roundManager)
+    {
+        return roundManager.CurrentDaytimeEnemyDiversityLevel;
+    }
+
+    private static int GetCurrentDaytimeMaxDiversity(RoundManager roundManager)
+    {
+        return roundManager.CurrentMaxDaytimeDiversityLevel;
     }
 
     private static void ReplaceStaticOutsideEnemyProbabilityRange(ILContext il)
     {
-        ILCursor c = new(il);
-        if (!c.TryGotoNext(MoveType.After,
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(MoveType.After,
             i => i.MatchLdloc(out _),
             i => i.MatchLdloc(out _),
             i => i.MatchLdcR4(3f)))
@@ -85,20 +174,20 @@ static class MoonRegistrationHandler
             return;
         }
 
-        c.Emit(OpCodes.Pop);
-        c.Emit(OpCodes.Call, typeof(MoonRegistrationHandler).GetMethod(nameof(GetMoonOutsideEnemyProbabilitySpawnRange), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+        cursor.Emit(OpCodes.Pop);
+        cursor.Emit(OpCodes.Call, typeof(MoonRegistrationHandler).GetMethod(nameof(GetMoonOutsideEnemyProbabilitySpawnRange), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
 
-        if (!c.TryGotoNext(MoveType.After,
-            i => i.MatchConvI4(),
-            i => i.MatchLdloc(out _),
-            i => i.MatchLdcR4(3f)))
+        if (!cursor.TryGotoNext(MoveType.After,
+            il => il.MatchConvI4(),
+            il => il.MatchLdloc(out _),
+            il => il.MatchLdcR4(3f)))
         {
             DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.PredictAllOutsideEnemies patch (2)");
             return;
         }
 
-        c.Emit(OpCodes.Pop);
-        c.Emit(OpCodes.Call, typeof(MoonRegistrationHandler).GetMethod(nameof(GetMoonOutsideEnemyProbabilitySpawnRange), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+        cursor.Emit(OpCodes.Pop);
+        cursor.Emit(OpCodes.Call, typeof(MoonRegistrationHandler).GetMethod(nameof(GetMoonOutsideEnemyProbabilitySpawnRange), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
     }
 
     private static float GetMoonOutsideEnemyProbabilitySpawnRange()
@@ -113,33 +202,33 @@ static class MoonRegistrationHandler
 
     private static void MultiplyGlobalTimeMultiplierToDaySpeedMultiplier(ILContext il)
     {
-        ILCursor c = new(il);
-        if (!c.TryGotoNext(MoveType.After,
-            i => i.MatchLdarg(0),
-            i => i.MatchLdfld<TimeOfDay>("globalTimeSpeedMultiplier")))
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(MoveType.After,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<TimeOfDay>("globalTimeSpeedMultiplier")))
         {
             DawnPlugin.Logger.LogWarning("Failed to apply TimeOfDay.MoveGlobalTime patch");
             return;
         }
 
-        c.Emit(OpCodes.Ldarg_0);
-        c.Emit(OpCodes.Ldfld, typeof(TimeOfDay).GetField(nameof(TimeOfDay.currentLevel)));
-        c.Emit(OpCodes.Ldfld, typeof(SelectableLevel).GetField(nameof(SelectableLevel.DaySpeedMultiplier)));
-        c.Emit(OpCodes.Mul);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldfld, typeof(TimeOfDay).GetField(nameof(TimeOfDay.currentLevel)));
+        cursor.Emit(OpCodes.Ldfld, typeof(SelectableLevel).GetField(nameof(SelectableLevel.DaySpeedMultiplier)));
+        cursor.Emit(OpCodes.Mul);
     }
 
     private static void IgnoreDaySpeedMultiplier(ILContext il)
     {
-        ILCursor c = new(il);
-        if (!c.TryGotoNext(MoveType.After,
-            i => i.MatchLdfld<SelectableLevel>("DaySpeedMultiplier")))
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(MoveType.After,
+            il => il.MatchLdfld<SelectableLevel>("DaySpeedMultiplier")))
         {
             DawnPlugin.Logger.LogWarning("Failed to apply TimeOfDay.Update patch");
             return;
         }
 
-        c.Emit(OpCodes.Pop);
-        c.Emit(OpCodes.Ldc_R4, 1f);
+        cursor.Emit(OpCodes.Pop);
+        cursor.Emit(OpCodes.Ldc_R4, 1f);
     }
 
     private static void SpawnRouteProgressUI(On.StartOfRound.orig_Awake orig, StartOfRound self)
