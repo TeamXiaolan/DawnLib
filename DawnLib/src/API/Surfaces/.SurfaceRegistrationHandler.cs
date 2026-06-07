@@ -62,7 +62,7 @@ static class SurfaceRegistrationHandler
             return;
         }
 
-        foreach (KeyValuePair<NamespacedKey, List<Matrix4x4>> kvp in _batchingDict)
+        foreach (KeyValuePair<NamespacedKey, List<List<Matrix4x4>>> kvp in _batchingDict)
         {
             kvp.Value.Clear();
         }
@@ -135,6 +135,8 @@ static class SurfaceRegistrationHandler
         cursor.EmitDelegate(CollectTransformForBatch);
     }
 
+    private const int MaxBatchSize = 1023;
+
     private static void CollectTransformForBatch(ref RaycastHit raycastHit, GameObject vainShroudGameObject)
     {
         Transform terrainTransform = raycastHit.transform;
@@ -144,29 +146,40 @@ static class SurfaceRegistrationHandler
             return;
         }
 
+        Matrix4x4 matrix = meshFilter.transform.localToWorldMatrix;
         if (!terrainTransform.TryGetComponent(out DawnSurface dawnSurface))
         {
-            List<Matrix4x4> vanillaBatches = _batchingDict[VanillaSurface];
-            vanillaBatches.Add(meshFilter.transform.localToWorldMatrix);
+            AddMatrixToBatches(VanillaSurface, matrix);
             return;
         }
 
-        if (!dawnSurface.TryGetNamespacedKeyAtPosition(raycastHit.point, out NamespacedKey? key) || key.Namespace == NamespacedKey.VanillaNamespace || !_batchingDict.ContainsKey(key))
+        if (!dawnSurface.TryGetNamespacedKeyAtPosition(raycastHit.point, out NamespacedKey? key) || key == null || key.Namespace == NamespacedKey.VanillaNamespace || !_batchingDict.ContainsKey(key))
         {
-            List<Matrix4x4> vanillaBatches = _batchingDict[VanillaSurface];
-            vanillaBatches.Add(meshFilter.transform.localToWorldMatrix);
+            AddMatrixToBatches(VanillaSurface, matrix);
             return;
         }
 
-        if (!_batchingDict.TryGetValue(key, out List<Matrix4x4> customBatches))
+        AddMatrixToBatches(key, matrix);
+    }
+
+    private static void AddMatrixToBatches(NamespacedKey surfaceKey, Matrix4x4 matrix)
+    {
+        if (!_batchingDict.TryGetValue(surfaceKey, out List<List<Matrix4x4>> batches))
         {
-            customBatches = new List<Matrix4x4> { meshFilter.transform.localToWorldMatrix };
-            _batchingDict.Add(key, customBatches);
+            batches = new();
+            _batchingDict.Add(surfaceKey, batches);
         }
-        else
+
+        foreach (List<Matrix4x4> batch in batches)
         {
-            customBatches.Add(meshFilter.transform.localToWorldMatrix);
+            if (batch.Count < MaxBatchSize)
+            {
+                batch.Add(matrix);
+                return;
+            }
         }
+
+        batches.Add([matrix]);
     }
 
     private static void ModifyBatchingVainShrouds(ILContext il)
@@ -219,15 +232,12 @@ static class SurfaceRegistrationHandler
             return true;
         }
 
-        List<List<Matrix4x4>> batches = new();
-        foreach (KeyValuePair<NamespacedKey, List<Matrix4x4>> kvp in _batchingDict)
+        foreach (KeyValuePair<NamespacedKey, List<List<Matrix4x4>>> kvp in _batchingDict)
         {
             if (kvp.Value.Count <= 0)
             {
                 continue;
             }
-
-            batches.Add(kvp.Value);
 
             Mesh mesh;
             Material[] materials;
@@ -244,17 +254,20 @@ static class SurfaceRegistrationHandler
 
             for (int i = 0; i < mesh.subMeshCount; i++)
             {
-                Graphics.DrawMeshInstanced(mesh, i, materials[i], kvp.Value, null, ShadowCastingMode.On, true, 24, camera);
+                foreach (List<Matrix4x4> batch in kvp.Value)
+                {
+                    Graphics.DrawMeshInstanced(mesh, i, materials[i], batch, null, ShadowCastingMode.On, true, 24, camera);
+                }
             }
         }
         return false;
     }
 
-    private static Dictionary<NamespacedKey, List<Matrix4x4>> _batchingDict = new();
+    private static Dictionary<NamespacedKey, List<List<Matrix4x4>>> _batchingDict = new();
     private static readonly NamespacedKey VanillaSurface = NamespacedKey.Vanilla("vanilla_surface");
     private static void CollectCustomVainShroudBatches()
     {
-        _batchingDict.Add(VanillaSurface, new());
+        _batchingDict.Add(VanillaSurface, new() { new() });
         foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
         {
             if (surfaceInfo.ShouldSkipIgnoreOverride())
@@ -262,7 +275,7 @@ static class SurfaceRegistrationHandler
 
             if (surfaceInfo.VainShroudPrefab != null)
             {
-                _batchingDict.Add(surfaceInfo.Key, new());
+                _batchingDict.Add(surfaceInfo.Key, new() { new() });
             }
         }
     }
