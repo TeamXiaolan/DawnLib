@@ -2,6 +2,7 @@
 using UnityEngine;
 
 namespace Dawn.Utils;
+
 public static class SpawnSyncedObjectExtensions
 {
     public static string GetPathInTilePrefab(this SpawnSyncedObject sso)
