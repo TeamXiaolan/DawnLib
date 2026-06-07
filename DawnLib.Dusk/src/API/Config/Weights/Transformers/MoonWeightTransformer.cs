@@ -14,13 +14,12 @@ public class MoonWeightTransformer : WeightTransformer<DawnMoonInfo>
             return;
 
         _moonConfig = moonConfig;
-        ReregisterMoonConfig();
-        LethalContent.Moons.OnFreeze += ReregisterMoonConfig;
+        RegisterMoonConfig();
     }
 
     private List<NamespacedConfigWeight> _moonConfig = new();
 
-    private void ReregisterMoonConfig()
+    private void RegisterMoonConfig()
     {
         MatchingMoonsWithWeightAndOperationDict.Clear();
         foreach (NamespacedConfigWeight configWeight in _moonConfig)

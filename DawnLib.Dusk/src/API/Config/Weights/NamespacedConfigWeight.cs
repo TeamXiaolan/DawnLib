@@ -62,7 +62,7 @@ public class NamespacedConfigWeight : IOperationWithValue
     {
         string[] parts = input.Split('=', StringSplitOptions.RemoveEmptyEntries);
         Debuggers.Weights?.Log($"Converting NamespacedConfigWeight from string: {input}");
-        NamespacedKey namespacedKey = NamespacedKey.ForceParse(parts[0], true);
+        NamespacedKey namespacedKey = NamespacedKey.ForceParse(parts[0]);
         MathOperation operation = MathOperation.Additive;
         float weight = 0;
         if (parts.Length > 1)
@@ -75,6 +75,7 @@ public class NamespacedConfigWeight : IOperationWithValue
                 '/' => MathOperation.Divisive,
                 _ => MathOperation.Additive,
             };
+
             if (!float.TryParse(parts[1][0..], NumberStyles.Float, CultureInfo.InvariantCulture, out weight))
             {
                 if (!float.TryParse(parts[1][1..], NumberStyles.Float, CultureInfo.InvariantCulture, out weight))

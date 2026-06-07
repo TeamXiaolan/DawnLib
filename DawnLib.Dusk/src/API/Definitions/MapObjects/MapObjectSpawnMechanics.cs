@@ -16,40 +16,19 @@ public class MapObjectSpawnMechanics : IContextualProvider<AnimationCurve?, Dawn
 
         foreach ((string key, string value) in _spawnRateByMoonName)
         {
-            CurvesByMoonOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
+            CurvesByMoonOrTagName[NamespacedKey.ForceParse(key)] = ConfigManager.ParseCurve(value);
         }
 
         foreach ((string key, string value) in _spawnRateByInteriorName)
         {
-            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
+            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key)] = ConfigManager.ParseCurve(value);
         }
 
         PrioritiseMoons = prioritiseMoons;
-
-        LethalContent.Moons.OnFreeze += ReregisterMoonCurves;
-        LethalContent.Dungeons.OnFreeze += ReregisterDungeonCurves;
     }
 
     private Dictionary<string, string> _spawnRateByMoonName { get; } = new();
     private Dictionary<string, string> _spawnRateByInteriorName { get; } = new();
-
-    private void ReregisterMoonCurves()
-    {
-        CurvesByMoonOrTagName.Clear();
-        foreach ((string key, string value) in _spawnRateByMoonName)
-        {
-            CurvesByMoonOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
-        }
-    }
-
-    private void ReregisterDungeonCurves()
-    {
-        CurvesByInteriorOrTagName.Clear();
-        foreach ((string key, string value) in _spawnRateByInteriorName)
-        {
-            CurvesByInteriorOrTagName[NamespacedKey.ForceParse(key, true)] = ConfigManager.ParseCurve(value);
-        }
-    }
 
     public Dictionary<NamespacedKey, AnimationCurve> CurvesByMoonOrTagName { get; } = new();
     public Dictionary<NamespacedKey, AnimationCurve> CurvesByInteriorOrTagName { get; } = new();

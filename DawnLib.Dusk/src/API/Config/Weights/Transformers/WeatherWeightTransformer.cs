@@ -14,13 +14,12 @@ public class WeatherWeightTransformer : WeightTransformer<DawnWeatherEffectInfo>
             return;
 
         _weatherConfig = weatherConfig;
-        ReregisterWeatherConfig();
-        LethalContent.Weathers.OnFreeze += ReregisterWeatherConfig;
+        RegisterWeatherConfig();
     }
 
     private List<NamespacedConfigWeight> _weatherConfig = new();
 
-    private void ReregisterWeatherConfig()
+    private void RegisterWeatherConfig()
     {
         MatchingWeathersWithWeightAndOperationDict.Clear();
         foreach (NamespacedConfigWeight configWeight in _weatherConfig)

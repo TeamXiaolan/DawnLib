@@ -14,13 +14,12 @@ public class InteriorWeightTransformer : WeightTransformer<DawnDungeonInfo>
             return;
 
         _dungeonConfig = interiorConfig;
-        ReregisterDungeonConfig();
-        LethalContent.Dungeons.OnFreeze += ReregisterDungeonConfig;
+        RegisterDungeonConfig();
     }
 
     private List<NamespacedConfigWeight> _dungeonConfig = new();
 
-    private void ReregisterDungeonConfig()
+    private void RegisterDungeonConfig()
     {
         MatchingInteriorsWithWeightAndOperationDict.Clear();
         foreach (NamespacedConfigWeight configWeight in _dungeonConfig)
