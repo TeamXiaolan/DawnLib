@@ -1,13 +1,14 @@
 # v1.0.0
 
 - Added the ability to register weed enemies per moon.
-- Added the ability to register vain shrouds associated with said weed enemies.
+- Added the ability to register vain shrouds associated with terrains.
+  - This means you can have your custom snowy vain shrouds spawning on snowy surfaces only, etc.
 - Moons have more control over weed enemy spawning now.
+- Moons have much more control over daytime enemy spawning as well.
 - Made it easier to add DawnLib to the editor (com.github.teamxiaolan.dawnlib.compatibility.dll will no longer show up in editor unless you download the mod dlls weirdly!).
 - Added complete weather registration to DawnLib.
 - Added a tag to moons that support weather `SupportsWeather`, this is decided by checking whether the moon is both a company moon has any `randomWeathers` set to it.
 - Added more information related to issues such as incorrect folder structure.
-- Fixed a minor issue with moons's Route nodes that was missing a value (did not cause any issues in game as far as I know).
 
 ## TODO
 
