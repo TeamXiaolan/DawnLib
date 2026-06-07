@@ -18,21 +18,25 @@ public static class SelectableLevelExtensions
         public float OutsideEnemiesProbabilityRange
         {
             get => selectableLevel.DawnInfo.OutsideEnemiesProbabilityRange;
+            set => selectableLevel.DawnInfo.OutsideEnemiesProbabilityRange = value;
         }
 
         public int MaxDaytimeDiversityPowerCount
         {
             get => selectableLevel.DawnInfo.MaxDaytimeDiversityPowerCount;
+            set => selectableLevel.DawnInfo.MaxDaytimeDiversityPowerCount = value;
         }
 
         public int MaxWeedEnemyPowerCount
         {
             get => selectableLevel.DawnInfo.MaxWeedEnemyPowerCount;
+            set => selectableLevel.DawnInfo.MaxWeedEnemyPowerCount = value;
         }
 
         public int MaxWeedDiversityPowerCount
         {
             get => selectableLevel.DawnInfo.MaxWeedDiversityPowerCount;
+            set => selectableLevel.DawnInfo.MaxWeedDiversityPowerCount = value;
         }
 
         public List<SpawnableEnemyWithRarity> WeedEnemies
@@ -43,11 +47,13 @@ public static class SelectableLevelExtensions
         public AnimationCurve WeedEnemySpawnChanceThroughDay
         {
             get => selectableLevel.DawnInfo.WeedEnemySpawnChanceThroughDay;
+            set => selectableLevel.DawnInfo.WeedEnemySpawnChanceThroughDay = value;
         }
 
         public float WeedEnemiesProbabilityRange
         {
             get => selectableLevel.DawnInfo.WeedEnemiesProbabilityRange;
+            set => selectableLevel.DawnInfo.WeedEnemiesProbabilityRange = value;
         }
 
         [Obsolete("Use SelectableLevel.DawnInfo instead")]

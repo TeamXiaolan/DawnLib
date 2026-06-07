@@ -66,6 +66,7 @@ static class MoonRegistrationHandler
         }
 
         IL.RoundManager.SpawnRandomDaytimeEnemy += AccountForDaytimeDiversity;
+        IL.RoundManager.SpawnRandomWeedEnemy += AccountForWeedDiversity;
 
         On.RoundManager.RefreshEnemiesList += UpdateNewerDiversity;
         On.RoundManager.UnloadSceneObjectsEarly += ResetNewerDiversity;
@@ -74,6 +75,192 @@ static class MoonRegistrationHandler
 
         IL.RoundManager.SpawnDaytimeEnemiesOutside += ReplaceLevelValueWithRoundManager;
         IL.RoundManager.SpawnRandomDaytimeEnemy += ReplaceLevelValueWithRoundManager;
+
+        IL.RoundManager.SpawnWeedEnemies += IntroduceMoreVariablesToSpawning;
+    }
+
+    private static void IntroduceMoreVariablesToSpawning(ILContext il)
+    {
+        ILCursor cursor = new(il);
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<RoundManager>(nameof(RoundManager.WeedEnemySpawnRandom)),
+            il => il.MatchLdcI4(1),
+            il => il.MatchLdcI4(3),
+            il => il.MatchCallvirt<System.Random>(nameof(System.Random.Next))
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnWeedEnemies patch (1)");
+            return;
+        }
+
+        cursor.Index++;
+        cursor.RemoveRange(4);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldfld, typeof(RoundManager).GetField(nameof(RoundManager.WeedEnemySpawnRandom)));
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetWeedEnemySpawnChanceThroughDay);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetWeedSpawnProbabilityRange);
+
+        cursor.EmitDelegate(DetermineNumberToSpawn);
+    }
+
+    private static int DetermineNumberToSpawn(RoundManager roundManager, System.Random weedEnemySpawnRandom, AnimationCurve weedEnemySpawnChanceThroughDay, float weedSpawnProbabilityRange)
+    {
+        float currentTime = roundManager.timeScript.lengthOfHours * roundManager.currentHour;
+        float numberToSpawnAtCurrentTime = (int)(weedEnemySpawnChanceThroughDay.Evaluate(currentTime / roundManager.timeScript.totalTime) * 100f) / 100f;
+
+        return weedEnemySpawnRandom.Next(Mathf.RoundToInt(numberToSpawnAtCurrentTime - weedSpawnProbabilityRange), Mathf.RoundToInt(numberToSpawnAtCurrentTime + weedSpawnProbabilityRange));
+    }
+
+    private static AnimationCurve GetWeedEnemySpawnChanceThroughDay(RoundManager roundManager)
+    {
+        return roundManager.currentLevel.WeedEnemySpawnChanceThroughDay;
+    }
+
+    private static float GetWeedSpawnProbabilityRange(RoundManager roundManager)
+    {
+        return roundManager.currentLevel.WeedEnemiesProbabilityRange;
+    }
+
+    private static void AccountForWeedDiversity(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        ILLabel zeroWeightLabel = null!;
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdloc(1),
+            il => il.MatchLdcI4(0),
+            il => il.MatchStfld<EnemyType>(nameof(EnemyType.hasSpawnedAtLeastOne)),
+            il => il.MatchLdloc(1),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.PowerLevel)),
+            il => il.MatchLdcR4(4),
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<RoundManager>(nameof(RoundManager.currentWeedEnemyPower)),
+            il => il.MatchSub(),
+            il => il.MatchBgt(out zeroWeightLabel)))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomWeedEnemy patch (1)");
+            return;
+        }
+
+        cursor.Emit(OpCodes.Ldloc, 1);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentWeedMaxDiversity);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentWeedDiversity);
+
+        cursor.EmitDelegate(EnemyCanSpawnAccountingForDiversity);
+        cursor.Emit(OpCodes.Brfalse_S, zeroWeightLabel);
+
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLdloc(1),
+            il => il.MatchLdcI4(0),
+            il => il.MatchStfld<EnemyType>(nameof(EnemyType.hasSpawnedAtLeastOne)),
+            il => il.MatchLdloc(1),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.PowerLevel))))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomWeedEnemy patch (2)");
+            return;
+        }
+
+        cursor.Remove(); // Replacing a LdcR4(4)
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentMaxWeedPower);
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<RoundManager>(nameof(RoundManager.increasedOutsideEnemySpawnRateIndex)),
+            il => il.MatchLdloc(7),
+            il => il.MatchBneUn(out _),
+            il => il.MatchLdcI4(100),
+            il => il.MatchStloc(8),
+            il => il.MatchBr(out _)
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomWeedEnemy patch (3)");
+            return;
+        }
+
+        cursor.MoveAfterLabels();
+        cursor.RemoveRange(7);
+
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<RoundManager>(nameof(RoundManager.outsideAINodes)),
+            il => il.MatchStloc(6),
+            il => il.MatchLdcI4(0),
+            il => il.MatchStloc(9),
+            il => il.MatchBr(out _),
+            il => il.MatchLdloc(4),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.PowerLevel))
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomWeedEnemy patch (4)");
+            return;
+        }
+
+        cursor.Remove(); // Replacing a LdcR4(4)
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitDelegate(GetCurrentMaxWeedPower);
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdloc(11),
+            il => il.MatchCallvirt(out _),
+            il => il.MatchLdfld<EnemyAI>(nameof(EnemyAI.enemyType)),
+            il => il.MatchDup(),
+            il => il.MatchLdfld<EnemyType>(nameof(EnemyType.numberSpawned)),
+            il => il.MatchLdcI4(1),
+            il => il.MatchAdd(),
+            il => il.MatchStfld<EnemyType>(nameof(EnemyType.numberSpawned)),
+            il => il.MatchLdloc(11),
+            il => il.MatchCallvirt(out _)
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply RoundManager.SpawnRandomWeedEnemy patch (5)");
+            return;
+        }
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldloc, 4);
+        cursor.EmitDelegate(IncrementWeedDiversity);
+    }
+
+    private static void IncrementWeedDiversity(RoundManager roundManager, EnemyType enemyType)
+    {
+        if (enemyType.hasSpawnedAtLeastOne)
+        {
+            return;
+        }
+
+        roundManager.CurrentWeedEnemyDiversityLevel += enemyType.DiversityPowerLevel;
+    }
+
+    private static int GetCurrentWeedDiversity(RoundManager roundManager)
+    {
+        return roundManager.CurrentWeedEnemyDiversityLevel;
+    }
+
+    private static int GetCurrentWeedMaxDiversity(RoundManager roundManager)
+    {
+        return roundManager.CurrentMaxWeedDiversityLevel;
+    }
+
+    private static float GetCurrentMaxWeedPower(RoundManager roundManager)
+    {
+        return roundManager.CurrentMaxWeedPower;
     }
 
     private static void ReplaceLevelValueWithRoundManager(ILContext il)
@@ -105,7 +292,7 @@ static class MoonRegistrationHandler
 
         self.CurrentMaxDaytimePower = self.currentLevel.maxDaytimeEnemyPowerCount;
 
-        // self.CurrentMaxWeedPower = self.currentLevel.MaxWeedEnemyPowerCount;
+        self.CurrentMaxWeedPower = self.currentLevel.MaxWeedEnemyPowerCount;
     }
 
     private static void ResetNewerDiversity(On.RoundManager.orig_UnloadSceneObjectsEarly orig, RoundManager self)
@@ -115,15 +302,15 @@ static class MoonRegistrationHandler
         self.CurrentMaxDaytimeDiversityLevel = 0;
         self.CurrentDaytimeEnemyDiversityLevel = 0;
 
-        // self.CurrentMaxWeedDiversityLevel = 0;
-        // self.CurrentWeedEnemyDiversityLevel = 0;
+        self.CurrentMaxWeedDiversityLevel = 0;
+        self.CurrentWeedEnemyDiversityLevel = 0;
     }
 
     private static void UpdateNewerDiversity(On.RoundManager.orig_RefreshEnemiesList orig, RoundManager self)
     {
         self.CurrentMaxDaytimeDiversityLevel = self.currentLevel.MaxDaytimeDiversityPowerCount;
 
-        // self.CurrentMaxWeedDiversityLevel = self.currentLevel.MaxWeedDiversityPowerCount;
+        self.CurrentMaxWeedDiversityLevel = self.currentLevel.MaxWeedDiversityPowerCount;
 
         orig(self);
     }

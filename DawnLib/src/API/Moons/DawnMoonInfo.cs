@@ -38,15 +38,15 @@ public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
 
-    public float OutsideEnemiesProbabilityRange { get; private set; }
+    public float OutsideEnemiesProbabilityRange { get; internal set; }
 
-    public int MaxDaytimeDiversityPowerCount { get; private set; }
+    public int MaxDaytimeDiversityPowerCount { get; internal set; }
 
-    public int MaxWeedEnemyPowerCount { get; private set; }
-    public int MaxWeedDiversityPowerCount { get; private set; }
+    public int MaxWeedEnemyPowerCount { get; internal set; }
+    public int MaxWeedDiversityPowerCount { get; internal set; }
     public List<SpawnableEnemyWithRarity> WeedEnemies { get; } = new();
-    public AnimationCurve WeedEnemySpawnChanceThroughDay { get; private set; }
-    public float WeedEnemiesProbabilityRange { get; private set; }
+    public AnimationCurve WeedEnemySpawnChanceThroughDay { get; internal set; }
+    public float WeedEnemiesProbabilityRange { get; internal set; }
 
     public List<IMoonSceneInfo> Scenes { get; } = [];
 

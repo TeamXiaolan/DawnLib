@@ -53,5 +53,53 @@ public static class RoundManagerExtensions
         {
             ((IRoundManagerInjects)roundManager).CurrentDaytimeMaxPower = value;
         }
+
+        public int CurrentWeedEnemyDiversityLevel
+        {
+            get => roundManager.GetCurrentWeedDiversityCore();
+            set => roundManager.SetCurrentWeedDiversityCore(value);
+        }
+
+        private int GetCurrentWeedDiversityCore()
+        {
+            return ((IRoundManagerInjects)roundManager).CurrentWeedDiversity;
+        }
+
+        private void SetCurrentWeedDiversityCore(int value)
+        {
+            ((IRoundManagerInjects)roundManager).CurrentWeedDiversity = value;
+        }
+
+        public int CurrentMaxWeedDiversityLevel
+        {
+            get => roundManager.GetCurrentMaxWeedDiversityCore();
+            set => roundManager.SetCurrentMaxWeedDiversityCore(value);
+        }
+
+        private int GetCurrentMaxWeedDiversityCore()
+        {
+            return ((IRoundManagerInjects)roundManager).CurrentWeedMaxDiversity;
+        }
+
+        private void SetCurrentMaxWeedDiversityCore(int value)
+        {
+            ((IRoundManagerInjects)roundManager).CurrentWeedMaxDiversity = value;
+        }
+
+        public float CurrentMaxWeedPower
+        {
+            get => roundManager.GetCurrentMaxWeedPowerCore();
+            set => roundManager.SetCurrentMaxWeedPowerCore(value);
+        }
+
+        private float GetCurrentMaxWeedPowerCore()
+        {
+            return ((IRoundManagerInjects)roundManager).CurrentWeedMaxPower;
+        }
+
+        private void SetCurrentMaxWeedPowerCore(float value)
+        {
+            ((IRoundManagerInjects)roundManager).CurrentWeedMaxPower = value;
+        }
     }
 }
