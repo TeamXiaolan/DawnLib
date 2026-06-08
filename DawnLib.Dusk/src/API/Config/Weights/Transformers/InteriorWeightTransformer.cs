@@ -8,27 +8,33 @@ namespace Dusk.Weights;
 [Serializable]
 public class InteriorWeightTransformer : WeightTransformer<DawnDungeonInfo>
 {
-    public InteriorWeightTransformer(List<NamespacedConfigWeight> interiorConfig)
+    public InteriorWeightTransformer(List<UnresolvedNamespacedWeight> interiorConfig)
     {
         if (interiorConfig.Count <= 0)
             return;
 
         _dungeonConfig = interiorConfig;
-        RegisterDungeonConfig();
+        LethalContent.Dungeons.AfterTaggingWithContext += RegisterDungeonConfig;
     }
 
-    private List<NamespacedConfigWeight> _dungeonConfig = new();
+    private List<UnresolvedNamespacedWeight> _dungeonConfig = new();
 
-    private void RegisterDungeonConfig()
+    private void RegisterDungeonConfig(NamespacedKeyResolver<DawnDungeonInfo> dungeonResolver)
     {
         MatchingInteriorsWithWeightAndOperationDict.Clear();
-        foreach (NamespacedConfigWeight configWeight in _dungeonConfig)
+        foreach (UnresolvedNamespacedWeight configWeight in _dungeonConfig)
         {
-            MatchingInteriorsWithWeightAndOperationDict[configWeight.NamespacedKey] = configWeight;
+            ResolvedNamespacedWeight<DawnDungeonInfo>? resolvedWeight = dungeonResolver.ResolveWeight(configWeight);
+            if (resolvedWeight == null)
+            {
+                continue;
+            }
+
+            MatchingInteriorsWithWeightAndOperationDict[resolvedWeight.Value.Key] = resolvedWeight.Value;
         }
     }
 
-    public Dictionary<NamespacedKey, NamespacedConfigWeight> MatchingInteriorsWithWeightAndOperationDict = new();
+    public Dictionary<NamespacedKey, ResolvedNamespacedWeight<DawnDungeonInfo>> MatchingInteriorsWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight, DawnDungeonInfo dungeonInfo)
     {
@@ -42,7 +48,7 @@ public class InteriorWeightTransformer : WeightTransformer<DawnDungeonInfo>
 
     public override MathOperation GetOperation(DawnDungeonInfo dungeonInfo)
     {
-        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out NamespacedConfigWeight opWithWeight))
+        if (MatchingInteriorsWithWeightAndOperationDict.TryGetValue(dungeonInfo.TypedKey, out ResolvedNamespacedWeight<DawnDungeonInfo> opWithWeight))
         {
             return opWithWeight.Operation;
         }

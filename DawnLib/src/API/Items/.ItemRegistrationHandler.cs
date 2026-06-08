@@ -45,8 +45,8 @@ static class ItemRegistrationHandler
         }
 
         On.StartOfRound.SetPlanetsWeather += UpdateItemWeights;
-        LethalContent.Moons.OnFreeze += FreezeItemContent;
-        LethalContent.Items.OnFreeze += RedoItemsDebugMenu;
+        LethalContent.Moons.OnFreezeWithContext += _ => FreezeItemContent();
+        LethalContent.Items.OnFreezeWithContext += _ => RedoItemsDebugMenu();
     }
 
     private static void RegisterScrapItems(On.StartOfRound.orig_Awake orig, StartOfRound self)

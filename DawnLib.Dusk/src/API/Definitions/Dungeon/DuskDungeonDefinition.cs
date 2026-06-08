@@ -47,20 +47,6 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     [field: Range(0, 100)]
     public float StingerPlayChance { get; private set; }
 
-    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
-    [field: SerializeField]
-    [Obsolete]
-    public string MoonSpawnWeights { get; private set; }
-    [field: SerializeField]
-    [field: DontDrawIfEmpty("obsolete", "Obsolete")]
-    [Obsolete]
-    public string WeatherSpawnWeights { get; private set; }
-
-#pragma warning disable CS0612
-    internal string MoonSpawnWeightsCompat => MoonSpawnWeights;
-    internal string WeatherSpawnWeightsCompat => WeatherSpawnWeights;
-#pragma warning restore CS0612
-
     public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
     public DungeonConfig Config { get; private set; }
 
@@ -76,26 +62,16 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
         Config = CreateDungeonConfig(section);
         BaseConfig = Config;
 
-        List<NamespacedConfigWeight> Moons = NamespacedConfigWeight.ConvertManyFromString(MoonSpawnWeightsCompat);
-        if (MoonSpawnWeightsConfig.Count > 0)
-        {
-            Moons = MoonSpawnWeightsConfig;
-        }
-
+        List<UnresolvedNamespacedWeight> Moons = MoonSpawnWeightsConfig.ToUnresolvedWeights();
         if (Config.MoonSpawnWeights != null)
         {
-            Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
+            Moons = UnresolvedNamespacedWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
         }
 
-        List<NamespacedConfigWeight> Weathers = NamespacedConfigWeight.ConvertManyFromString(WeatherSpawnWeightsCompat);
-        if (WeatherSpawnWeightsConfig.Count > 0)
-        {
-            Weathers = WeatherSpawnWeightsConfig;
-        }
-
+        List<UnresolvedNamespacedWeight> Weathers = WeatherSpawnWeightsConfig.ToUnresolvedWeights();
         if (Config.WeatherSpawnWeights != null)
         {
-            Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
+            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
         }
 
         List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
@@ -131,8 +107,8 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     {
         DungeonConfig dungeonConfig = new(section, EntityNameReference)
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat) : null,
-            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.ConvertManyToString()) : null,
+            WeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherSpawnWeightsConfig.ConvertManyToString()) : null,
             RouteSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Route Weights", $"Preset route weights for {EntityNameReference}.", IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig)) : null,
 
             ExtraScrapGeneration = GenerateExtraScrapConfig ? section.Bind($"{EntityNameReference} | Extra Scrap Generation", $"Extra scrap generation for {EntityNameReference}.", ExtraScrapGeneration) : null,
@@ -141,8 +117,8 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
         if (!dungeonConfig.UserAllowedToEdit())
         {
-            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig) : MoonSpawnWeightsCompat);
-            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.Count > 0 ? NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig) : WeatherSpawnWeightsCompat);
+            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.ConvertManyToString());
+            DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.ConvertManyToString());
             DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.RouteSpawnWeights, IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig));
 
             DuskBaseConfig.AssignValueIfNotNull(dungeonConfig.ExtraScrapGeneration, ExtraScrapGeneration);

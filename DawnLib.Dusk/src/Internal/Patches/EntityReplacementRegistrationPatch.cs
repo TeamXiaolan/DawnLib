@@ -24,10 +24,10 @@ static class EntityReplacementRegistrationPatch
 
     internal static void Init()
     {
-        LethalContent.Enemies.BeforeFreeze += RegisterEnemyReplacements;
-        LethalContent.Items.BeforeFreeze += RegisterItemReplacements;
-        LethalContent.Unlockables.BeforeFreeze += RegisterUnlockableReplacements;
-        LethalContent.MapObjects.BeforeFreeze += RegisterMapObjectReplacements;
+        LethalContent.Enemies.BeforeFreezeWithContext += _ => RegisterEnemyReplacements();
+        LethalContent.Items.BeforeFreezeWithContext += _ => RegisterItemReplacements();
+        LethalContent.Unlockables.BeforeFreezeWithContext += _ => RegisterUnlockableReplacements();
+        LethalContent.MapObjects.BeforeFreezeWithContext += _ => RegisterMapObjectReplacements();
         using (new DetourContext(priority: int.MaxValue))
         {
             On.StartOfRound.Awake += RegisterScenePlacedUnlockableReplacements;

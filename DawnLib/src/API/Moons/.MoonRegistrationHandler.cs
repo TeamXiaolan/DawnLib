@@ -41,9 +41,9 @@ static class MoonRegistrationHandler
             }
         }
 
-        LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
-        LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
-        LethalContent.Items.OnFreeze += FixDawnMoonItems;
+        LethalContent.Moons.OnFreezeWithContext += _ => FixAmbienceLibraries();
+        LethalContent.Enemies.OnFreezeWithContext += _ => FixDawnMoonEnemies();
+        LethalContent.Items.OnFreezeWithContext += _ => FixDawnMoonItems();
 
         if (!DawnConfig.VanillaCompatibility.Value)
         {

@@ -15,7 +15,7 @@ public class SpawnWeightsPreset : IWeighted, IContextualWeighted<SpawnWeightCont
     public int BaseWeightIncrease => _baseWeightIncrease;
     public bool IsSetup => _isSetup;
 
-    public void SetupSpawnWeightsPreset(List<NamespacedConfigWeight> moonConfig, List<NamespacedConfigWeight> interiorConfig, List<NamespacedConfigWeight> weatherConfig, int baseWeightIncrease = 0)
+    public void SetupSpawnWeightsPreset(List<UnresolvedNamespacedWeight> moonConfig, List<UnresolvedNamespacedWeight> interiorConfig, List<UnresolvedNamespacedWeight> weatherConfig, int baseWeightIncrease = 0)
     {
         _baseWeightIncrease = baseWeightIncrease;
 

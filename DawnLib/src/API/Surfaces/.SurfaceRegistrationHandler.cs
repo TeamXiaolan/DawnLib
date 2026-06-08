@@ -46,7 +46,7 @@ static class SurfaceRegistrationHandler
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(PlayerAnimationEvents), "PlayCrouchFootstepSound"), PlayCrouchFootstepSound));
 
-        LethalContent.Surfaces.OnFreeze += CollectCustomVainShroudBatches;
+        LethalContent.Surfaces.OnFreezeWithContext += _ => CollectCustomVainShroudBatches();
 
         IL.BatchAllMeshChildren.RenderBatches += ModifyBatchingVainShrouds;
         IL.MoldSpreadManager.GenerateMold += CollectVainShroudBatches;

@@ -35,8 +35,8 @@ static class MiscFixesPatch
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(HauntedMaskItem), "Awake"), FixHauntedMaskBlankReferences));
         On.LungProp.Start += FixLungPropBlankReferences;
         // TODO end
-        LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
-        LethalContent.Items.OnFreeze += FixItemSpawnPositionTypes;
+        LethalContent.Dungeons.OnFreezeWithContext += _ => FixTileSetSockets();
+        LethalContent.Items.OnFreezeWithContext += _ => FixItemSpawnPositionTypes();
         IL.GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot += FixVariousErrors;
         On.MenuManager.Awake += PatchTerminalFormatter;
     }

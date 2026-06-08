@@ -42,9 +42,9 @@ static class EnemyRegistrationHandler
             On.GameNetworkManager.Start += CollectAllEnemyTypes;
         }
 
-        LethalContent.Moons.OnFreeze += RegisterEnemies;
-        LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
-        LethalContent.Enemies.OnFreeze += FixDawnEnemyReferences;
+        LethalContent.Moons.OnFreezeWithContext += _ => RegisterEnemies();
+        LethalContent.Enemies.OnFreezeWithContext += _ => RedoEnemiesDebugMenu();
+        LethalContent.Enemies.OnFreezeWithContext += _ => FixDawnEnemyReferences();
     }
 
     private static void StopDawnEnemyResetting(ILContext il)

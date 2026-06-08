@@ -10,47 +10,74 @@ public class RegistryFrozenException() : Exception("Registry is frozen")
 
 public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : INamespaced<T>
 {
-    private readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
+    protected readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
 
     public bool IsFrozen { get; private set; }
+    [Obsolete("Use BeforeFreezeWithContext instead")]
     public event Action BeforeFreeze
     {
         add
         {
-            _beforeFreeze += () =>
+            BeforeFreezeWithContext += _ =>
             {
-                try
-                {
-                    value();
-                }
-                catch (Exception exception)
-                {
-                    DawnPlugin.Logger.LogError($"(BeforeFreeze) An exception occured in firing an event for a registry:\n{exception}");
-                }
+                value();
             };
         }
         remove => DawnPlugin.Logger.LogError("Registry.BeforeFreeze -= is not supported.");
     }
+
+    public event Action<NamespacedKeyResolver<T>> BeforeFreezeWithContext
+    {
+        add
+        {
+            _beforeFreezeWithContext += resolver =>
+            {
+                try
+                {
+                    value(resolver);
+                }
+                catch (Exception exception)
+                {
+                    DawnPlugin.Logger.LogError($"(BeforeFreezeWithContext) An exception occured in firing an event for a registry:\n{exception}");
+                }
+            };
+        }
+        remove => DawnPlugin.Logger.LogError("Registry.BeforeFreezeWithContext -= is not supported.");
+    }
+
+    [Obsolete("Use OnFreezeWithContext instead")]
     public event Action OnFreeze
     {
         add
         {
-            _onFreeze += () =>
+            OnFreezeWithContext += _ =>
             {
-                try
-                {
-                    value();
-                }
-                catch (Exception exception)
-                {
-                    DawnPlugin.Logger.LogError($"(OnFreeze) An exception occured in firing an event for a registry:\n{exception}");
-                }
+                value();
             };
         }
         remove => DawnPlugin.Logger.LogError("Registry.OnFreeze -= is not supported.");
     }
 
-    public event Action _onFreeze = delegate { }, _beforeFreeze = delegate { };
+    public event Action<NamespacedKeyResolver<T>> OnFreezeWithContext
+    {
+        add
+        {
+            _onFreezeWithContext += resolver =>
+            {
+                try
+                {
+                    value(resolver);
+                }
+                catch (Exception exception)
+                {
+                    DawnPlugin.Logger.LogError($"(OnFreezeWithContext) An exception occured in firing an event for a registry:\n{exception}");
+                }
+            };
+        }
+        remove => DawnPlugin.Logger.LogError("Registry.OnFreezeWithContext -= is not supported.");
+    }
+
+    private event Action<NamespacedKeyResolver<T>> _onFreezeWithContext = delegate { }, _beforeFreezeWithContext = delegate { };
 
     virtual internal void Freeze()
     {
@@ -59,7 +86,11 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
             throw new RegistryFrozenException();
         }
 
-        _beforeFreeze();
+        using (NamespacedKeyResolver<T> beforeFreezeResolver = new(Values))
+        {
+            _beforeFreezeWithContext(beforeFreezeResolver);
+        }
+
         IsFrozen = true;
 
         foreach (T value in Values)
@@ -70,7 +101,10 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
             }
         }
 
-        _onFreeze();
+        using (NamespacedKeyResolver<T> onFreezeResolver = new(Values))
+        {
+            _onFreezeWithContext(onFreezeResolver);
+        }
     }
 
     virtual internal void Register(T value)

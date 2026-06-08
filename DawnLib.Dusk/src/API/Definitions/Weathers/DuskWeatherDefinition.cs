@@ -52,16 +52,16 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
         Config = CreateWeatherConfig(section);
         BaseConfig = Config;
 
-        List<NamespacedConfigWeight> Moons = MoonSpawnWeightsConfig;
+        List<UnresolvedNamespacedWeight> Moons = MoonSpawnWeightsConfig.ToUnresolvedWeights();
         if (Config.MoonSpawnWeights != null)
         {
-            Moons = NamespacedConfigWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
+            Moons = UnresolvedNamespacedWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
         }
 
-        List<NamespacedConfigWeight> Weathers = WeatherToWeatherSpawnWeightsConfig;
+        List<UnresolvedNamespacedWeight> Weathers = WeatherToWeatherSpawnWeightsConfig.ToUnresolvedWeights();
         if (Config.WeatherToWeatherSpawnWeights != null)
         {
-            Weathers = NamespacedConfigWeight.ConvertManyFromString(Config.WeatherToWeatherSpawnWeights.Value);
+            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(Config.WeatherToWeatherSpawnWeights.Value);
         }
 
         List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
@@ -84,8 +84,8 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
     {
         WeatherConfig weatherConfig = new(section, EntityNameReference)
         {
-            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig)) : null,
-            WeatherToWeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", NamespacedConfigWeight.ConvertManyToString(WeatherToWeatherSpawnWeightsConfig)) : null,
+            MoonSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Moon Weights", $"Preset moon weights for {EntityNameReference}.", MoonSpawnWeightsConfig.ConvertManyToString()) : null,
+            WeatherToWeatherSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Weather Weights", $"Preset weather weights for {EntityNameReference}.", WeatherToWeatherSpawnWeightsConfig.ConvertManyToString()) : null,
             RouteSpawnWeights = GenerateSpawnWeightsConfig ? section.Bind($"{EntityNameReference} | Preset Route Weights", $"Preset route weights for {EntityNameReference}.", IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig)) : null,
 
             ScrapValueMultiplier = section.Bind($"{EntityNameReference} | Scrap Value Multiplier", $"Amount that {EntityNameReference} multiplies the value of each Scrap spawned from a moon.", ScrapValueMultiplier),
@@ -94,8 +94,8 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
 
         if (!weatherConfig.UserAllowedToEdit())
         {
-            DuskBaseConfig.AssignValueIfNotNull(weatherConfig.MoonSpawnWeights, NamespacedConfigWeight.ConvertManyToString(MoonSpawnWeightsConfig));
-            DuskBaseConfig.AssignValueIfNotNull(weatherConfig.WeatherToWeatherSpawnWeights, NamespacedConfigWeight.ConvertManyToString(WeatherToWeatherSpawnWeightsConfig));
+            DuskBaseConfig.AssignValueIfNotNull(weatherConfig.MoonSpawnWeights, MoonSpawnWeightsConfig.ConvertManyToString());
+            DuskBaseConfig.AssignValueIfNotNull(weatherConfig.WeatherToWeatherSpawnWeights, WeatherToWeatherSpawnWeightsConfig.ConvertManyToString());
             DuskBaseConfig.AssignValueIfNotNull(weatherConfig.RouteSpawnWeights, IntComparisonConfigWeight.ConvertManyToString(RouteSpawnWeightsConfig));
 
             DuskBaseConfig.AssignValueIfNotNull(weatherConfig.ScrapValueMultiplier, ScrapValueMultiplier);

@@ -44,7 +44,7 @@ static class TagExporter
 
     static void AddRegistry<T>(string name, TaggedRegistry<T> registry) where T : DawnBaseInfo<T>
     {
-        registry.AfterTagging += () =>
+        registry.AfterTaggingWithContext += _ =>
         {
             _outputFile.WriteLine($"## {name}");
             foreach ((NamespacedKey<T> key, T value) in registry)

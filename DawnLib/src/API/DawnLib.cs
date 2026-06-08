@@ -218,7 +218,7 @@ public static class DawnLib
     {
         void ListenToRegistry<T>(TaggedRegistry<T> registry, NamespacedKey namespacedKey) where T : DawnBaseInfo<T>
         {
-            registry.OnFreeze += () =>
+            registry.OnFreezeWithContext += _ =>
             {
                 foreach (string value in definition.Values)
                 {

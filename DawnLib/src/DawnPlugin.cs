@@ -112,7 +112,7 @@ public class DawnPlugin : BaseUnityPlugin
 
     static void DebugPrintRegistryResult<T>(string name, Registry<T> registry, Func<T, string> nameGetter) where T : INamespaced<T>
     {
-        registry.OnFreeze += () =>
+        registry.OnFreezeWithContext += _ =>
         {
             Logger.LogDebug($"Registry '{name}' ({typeof(T).Name}) contains '{registry.Count}' entries.");
             foreach ((NamespacedKey<T> key, T value) in registry)

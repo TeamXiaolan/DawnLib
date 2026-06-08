@@ -80,7 +80,7 @@ In order to make sure everything is ready, you can listen to a registry's "freez
 `OnFreeze` will only run once _ever_ (even between lobby reloads)
 
 ```csharp
-LethalContent.Enemies.OnFreeze += () =>
+LethalContent.Enemies.OnFreezeWithContext += (NamespacedKeyResolver resolver) =>
 {
   // All vanilla content is in and no more modded content can be added.
 };

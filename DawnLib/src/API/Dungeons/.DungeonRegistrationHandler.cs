@@ -32,8 +32,8 @@ static class DungeonRegistrationHandler
             DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomMapObject), "Awake"), FixRandomMapObjects));
         }
 
-        LethalContent.Moons.OnFreeze += AddDawnDungeonsToMoons;
-        LethalContent.Moons.OnFreeze += CollectNonDawnDungeons;
+        LethalContent.Moons.OnFreezeWithContext += _ => AddDawnDungeonsToMoons();
+        LethalContent.Moons.OnFreezeWithContext += _ => CollectNonDawnDungeons();
         On.StartOfRound.SetPlanetsWeather += UpdateAllDungeonWeights;
         On.StartOfRound.EndOfGame += UnloadDungeonBundleForAllPlayers;
         On.MenuManager.Awake += DeleteLLLTranspilerAndEnsureDelayedDungeon;
@@ -44,7 +44,7 @@ static class DungeonRegistrationHandler
             UpdateDungeonWeightOnLevel(self.currentLevel);
             orig(self);
         };
-        LethalContent.Dungeons.BeforeFreeze += CleanDawnDungeonReferences;
+        LethalContent.Dungeons.BeforeFreezeWithContext += _ => CleanDawnDungeonReferences();
 
         On.EntranceTeleport.TeleportPlayer += HandleStingerAudio;
         On.DunGen.RuntimeDungeon.Start += (orig, self) =>

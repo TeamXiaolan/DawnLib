@@ -23,7 +23,7 @@ static class WeatherRegistrationHandler
         else
         {
             On.TimeOfDay.Awake += RegisterDawnWeathers;
-            LethalContent.Moons.AfterTagging += AddDawnWeathersToMoons;
+            LethalContent.Moons.AfterTaggingWithContext += _ => AddDawnWeathersToMoons();
             On.StartOfRound.Start += RegisterVanillaAndModdedWeathers;
         }
 
@@ -126,7 +126,7 @@ static class WeatherRegistrationHandler
         if (self.GetType() == typeof(LevelWeatherType))
         {
             int value = (int)(LevelWeatherType)self;
-            if (value > TimeOfDayRefs.Instance.effects.Length || value < 0)
+            if (value >= TimeOfDayRefs.Instance.effects.Length || value < 0)
             {
                 return orig(self);
             }

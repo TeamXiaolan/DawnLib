@@ -53,9 +53,9 @@ internal static class Debuggers
     }
 }
 
-internal class DebugLogSource(string title)
+public class DebugLogSource(string title)
 {
-    internal void Log(object message)
+    public void Log(object message)
     {
         DawnPlugin.Logger.LogDebug($"[Debug-{title}] {message}");
     }

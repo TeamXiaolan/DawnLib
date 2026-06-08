@@ -8,27 +8,33 @@ namespace Dusk.Weights;
 [Serializable]
 public class MoonWeightTransformer : WeightTransformer<DawnMoonInfo>
 {
-    public MoonWeightTransformer(List<NamespacedConfigWeight> moonConfig)
+    public MoonWeightTransformer(List<UnresolvedNamespacedWeight> moonConfig)
     {
         if (moonConfig.Count <= 0)
             return;
 
         _moonConfig = moonConfig;
-        RegisterMoonConfig();
+        LethalContent.Moons.AfterTaggingWithContext += RegisterMoonConfig;
     }
 
-    private List<NamespacedConfigWeight> _moonConfig = new();
+    private List<UnresolvedNamespacedWeight> _moonConfig = new();
 
-    private void RegisterMoonConfig()
+    private void RegisterMoonConfig(NamespacedKeyResolver<DawnMoonInfo> moonResolver)
     {
         MatchingMoonsWithWeightAndOperationDict.Clear();
-        foreach (NamespacedConfigWeight configWeight in _moonConfig)
+        foreach (UnresolvedNamespacedWeight configWeight in _moonConfig)
         {
-            MatchingMoonsWithWeightAndOperationDict[configWeight.NamespacedKey] = configWeight;
+            ResolvedNamespacedWeight<DawnMoonInfo>? resolvedWeight = moonResolver.ResolveWeight(configWeight);
+            if (resolvedWeight == null)
+            {
+                continue;
+            }
+
+            MatchingMoonsWithWeightAndOperationDict[resolvedWeight.Value.Key] = resolvedWeight.Value;
         }
     }
 
-    public Dictionary<NamespacedKey, NamespacedConfigWeight> MatchingMoonsWithWeightAndOperationDict = new();
+    public Dictionary<NamespacedKey, ResolvedNamespacedWeight<DawnMoonInfo>> MatchingMoonsWithWeightAndOperationDict = new();
 
     public override float GetNewWeight(float currentWeight, DawnMoonInfo moonInfo)
     {
@@ -42,7 +48,7 @@ public class MoonWeightTransformer : WeightTransformer<DawnMoonInfo>
 
     public override MathOperation GetOperation(DawnMoonInfo moonInfo)
     {
-        if (MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out NamespacedConfigWeight opWithWeight))
+        if (MatchingMoonsWithWeightAndOperationDict.TryGetValue(moonInfo.TypedKey, out ResolvedNamespacedWeight<DawnMoonInfo> opWithWeight))
         {
             return opWithWeight.Operation;
         }

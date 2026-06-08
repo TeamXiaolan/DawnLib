@@ -25,8 +25,8 @@ static class MapObjectRegistrationHandler
         On.StartOfRound.SetPlanetsWeather += UpdateMapObjectSpawnWeights;
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
 
-        LethalContent.Moons.OnFreeze += RegisterMapObjects;
-        LethalContent.MapObjects.OnFreeze += FixMapObjectBlanksOnDawnMoons;
+        LethalContent.Moons.OnFreezeWithContext += _ => RegisterMapObjects();
+        LethalContent.MapObjects.OnFreezeWithContext += _ => FixMapObjectBlanksOnDawnMoons();
     }
 
     private static void AddPrefabsToRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)

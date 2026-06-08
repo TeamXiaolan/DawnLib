@@ -51,7 +51,7 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
             }
         });
 
-        LethalContent.Archetypes.BeforeFreeze += () =>
+        LethalContent.Archetypes.BeforeFreezeWithContext += _ =>
         {
             foreach (NamespacedKey<DawnArchetypeInfo> key in archetypeKeys)
             {

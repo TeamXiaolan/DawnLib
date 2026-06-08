@@ -227,17 +227,17 @@ public class DuskMoonSceneData
 
     public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weight(ConfigContext section, int sceneCount)
     {
-        if (sceneCount > 1)
+        if (sceneCount <= 1)
         {
             GenerateWeightsConfig = false;
         }
 
         MoonSceneConfig = CreateMoonSceneConfig(section);
 
-        List<NamespacedConfigWeight> Weathers = WeatherSpawnWeightsConfig;
+        List<UnresolvedNamespacedWeight> Weathers = WeatherSpawnWeightsConfig.ToUnresolvedWeights();
         if (MoonSceneConfig.WeatherSpawnWeights != null)
         {
-            Weathers = NamespacedConfigWeight.ConvertManyFromString(MoonSceneConfig.WeatherSpawnWeights.Value);
+            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(MoonSceneConfig.WeatherSpawnWeights.Value);
         }
 
         SpawnWeights.SetupSpawnWeightsPreset([], [], Weathers, BaseWeight);
@@ -252,13 +252,13 @@ public class DuskMoonSceneData
         MoonSceneConfig moonSceneConfig = new(section, SceneName)
         {
             BaseWeight = GenerateWeightsConfig ? section.Bind($"{SceneName} | Base Weight", $"Base Weight for Moon Scene: {SceneName}.", BaseWeight) : null,
-            WeatherSpawnWeights = GenerateWeightsConfig ? section.Bind($"{SceneName} | Weather Spawn Weights", $"Weather Weights for Moon Scene: {SceneName}.", NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig)) : null,
+            WeatherSpawnWeights = GenerateWeightsConfig ? section.Bind($"{SceneName} | Weather Spawn Weights", $"Weather Weights for Moon Scene: {SceneName}.", WeatherSpawnWeightsConfig.ConvertManyToString()) : null,
         };
 
         if (!moonSceneConfig.UserAllowedToEdit())
         {
             DuskBaseConfig.AssignValueIfNotNull(moonSceneConfig.BaseWeight, BaseWeight);
-            DuskBaseConfig.AssignValueIfNotNull(moonSceneConfig.WeatherSpawnWeights, NamespacedConfigWeight.ConvertManyToString(WeatherSpawnWeightsConfig));
+            DuskBaseConfig.AssignValueIfNotNull(moonSceneConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig.ConvertManyToString());
         }
         return moonSceneConfig;
     }
