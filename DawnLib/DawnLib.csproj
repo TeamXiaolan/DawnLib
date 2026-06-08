@@ -34,10 +34,10 @@
     <!-- Primary Package References -->
     <ItemGroup>
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" />
-        <PackageReference Include="mattymatty-MonkeyInjectionLibrary" Version="1.0.0" PrivateAssets="all"/>
-        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all"/>
+        <PackageReference Include="mattymatty-MonkeyInjectionLibrary" Version="1.0.0" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
         <PackageReference Include="BepInEx.Core" Version="5.*" PrivateAssets="all" Publicize="true" />
-        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="81.0.5-ngd.0" PrivateAssets="all" Publicize="true"/>
+        <PackageReference Include="LethalCompany.GameLibs.Steam" Version="81.0.5-ngd.0" PrivateAssets="all" Publicize="true" />
         <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.25.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -47,9 +47,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" IncludeAssets="compile" PrivateAssets="all" />
-        <PackageReference Include="mrov-TerminalFormatter" Version="0.2.29" PrivateAssets="all"/>
+        <PackageReference Include="mrov-TerminalFormatter" Version="0.2.29" PrivateAssets="all" />
         <PackageReference Include="Pooble-LCBetterSaves" Version="1.7.3" PrivateAssets="all" />
-        <ProjectReference Include="..\DawnLib.Interfaces\DawnLib.Interfaces.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Core\DawnLib.Core.csproj" PrivateAssets="all"/>
         <ProjectReference Include="..\DawnLib.SourceGen\DawnLib.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
     
@@ -63,13 +63,13 @@
         <PackageReference Include="AudioKnight-StarlancerAIFix" Publicize="true" Version="3.11.1" PrivateAssets="all" />
         <PackageReference Include="BananaPuncher714-LethalQuantities" Version="1.2.9" PrivateAssets="all" Publicize="true" />
         <PackageReference Include="TestAccount666-GoodItemScan" Version="2.1.0" PrivateAssets="all" Publicize="true" />
-        <PackageReference Include="AinaVT-LethalConfig" Version="1.4.6" Publicize="true" PrivateAssets="all"/>
-        <PackageReference Include="Zaggy1024-PathfindingLib" Version="2.4.1" PrivateAssets="all"/>
-        <PackageReference Include="Alice-DungeonGenerationPlus" Version="1.5.0" Publicize="true" PrivateAssets="all"/>
+        <PackageReference Include="AinaVT-LethalConfig" Version="1.4.6" Publicize="true" PrivateAssets="all" />
+        <PackageReference Include="Zaggy1024-PathfindingLib" Version="2.4.1" PrivateAssets="all" />
+        <PackageReference Include="Alice-DungeonGenerationPlus" Version="1.5.0" Publicize="true" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
     </ItemGroup>
 
     <!-- Netcode Patcher Post-Build Event -->

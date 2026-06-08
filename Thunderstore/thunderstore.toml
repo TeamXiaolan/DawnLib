@@ -36,10 +36,6 @@ source = "../DawnLib.Compatibility/bin/Release/netstandard2.1/com.github.teamxia
 target = "BepInEx/plugins/DawnLib/Compatibility~/"
 
 [[build.copy]]
-source = "../DawnLib.Interfaces/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.interfaces.dll"
-target = "BepInEx/plugins/DawnLib/"
-
-[[build.copy]]
 source = "../DawnLib/data"
 target = "BepInEx/plugins/DawnLib/data/"
 
