@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Dawn;
 using Dawn.Utils;
@@ -59,7 +58,7 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     [field: SerializeField]
     public bool GenerateDisablePricingStrategyConfig { get; private set; } = true;
 
-    public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
+    private IWeightModifierSource<int> _spawnWeightSource = null!;
     public ItemConfig Config { get; private set; }
 
     public override void Register(DuskMod mod)
@@ -112,15 +111,14 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
             Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
         }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
-        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
+        _spawnWeightSource = CreateSpawnWeightSource(Moons, Interiors, Weathers, Routes, 0);
         DawnLib.DefineItem(TypedKey, Item, builder =>
         {
             if (Config.IsScrapItem?.Value ?? IsScrap)
             {
                 builder.DefineScrap(scrapBuilder =>
                 {
-                    scrapBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                    scrapBuilder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
                 });
             }
 

@@ -6,7 +6,7 @@ public class WeatherEffectInfoBuilder : BaseInfoBuilder<DawnWeatherEffectInfo, W
 {
 
     private float _lerpSpeed = 1f;
-    private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>? _weights = null;
+    private DawnWeightedValue<int>? _weights = null;
 
     internal WeatherEffectInfoBuilder(NamespacedKey<DawnWeatherEffectInfo> key, WeatherEffect value) : base(key, value)
     {
@@ -18,11 +18,11 @@ public class WeatherEffectInfoBuilder : BaseInfoBuilder<DawnWeatherEffectInfo, W
         return this;
     }
 
-    public WeatherEffectInfoBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
+    public WeatherEffectInfoBuilder SetWeights(Action<WeightProfile<int>> callback)
     {
-        WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-        callback(builder);
-        _weights = builder.Build();
+        WeightProfile<int> weightProfile = new WeightProfile<int>(DawnWeightChannels.WeatherRarity.Policy);
+        callback(weightProfile);
+        _weights = new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, weightProfile);
         return this;
     }
 
@@ -31,7 +31,7 @@ public class WeatherEffectInfoBuilder : BaseInfoBuilder<DawnWeatherEffectInfo, W
         if (_weights == null)
         {
             DawnPlugin.Logger.LogWarning($"WeatherEffect '{key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-            _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
+            _weights = new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity);
         }
 
         return new DawnWeatherEffectInfo(key, tags, value, _weights, _lerpSpeed, customData);

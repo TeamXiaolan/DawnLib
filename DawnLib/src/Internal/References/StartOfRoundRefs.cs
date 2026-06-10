@@ -21,4 +21,9 @@ public static class StartOfRoundRefs
             return _instance;
         }
     }
+
+    public static SelectableLevel? GetCurrentlLevel()
+    {
+        return Instance?.currentLevel;
+    }
 }

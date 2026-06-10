@@ -90,13 +90,7 @@ static class LethalLevelLoaderCompat
         DungeonFlow? dungeonFlow = extendedDungeonFlowOfInterest?.DungeonFlow;
         if (dungeonFlow != null && dungeonFlow.DawnInfo != null && !dungeonFlow.DawnInfo.ShouldSkipRespectOverride())
         {
-            SpawnWeightContext ctx = new SpawnWeightContext(
-                extendedLevel.SelectableLevel.DawnInfo,
-                dungeonFlow.DawnInfo,
-                extendedLevel.SelectableLevel.currentWeather.DawnInfo)
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, extendedLevel.SelectableLevel.DawnInfo.DawnPurchaseInfo.Cost.Provide());
-
-            return (dungeonFlow.DawnInfo.Weights.GetFor(ctx) ?? 0).Clamp0();
+            return dungeonFlow.DawnInfo.GetRarity(extendedLevel.SelectableLevel.DawnInfo, extendedLevel.SelectableLevel.currentWeather.DawnInfo);
         }
         return orig(self, extendedLevel);
     }

@@ -13,6 +13,8 @@ public static class DawnLib
 {
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
 
+    public static DawnWeightSystem Weights { get; } = new();
+
     internal static readonly JsonSerializerSettings JSONSettings = new()
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,

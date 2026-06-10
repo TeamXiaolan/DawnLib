@@ -1,6 +1,4 @@
-using Dawn;
-
-namespace Dusk.Weights;
+namespace Dawn;
 
 public readonly struct ResolvedNamespacedWeight<T> : IOperationWithValue where T : INamespaced
 {

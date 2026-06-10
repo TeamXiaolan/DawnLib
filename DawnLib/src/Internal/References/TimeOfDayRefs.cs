@@ -21,4 +21,9 @@ public static class TimeOfDayRefs
             return _instance;
         }
     }
+
+    public static DawnWeatherEffectInfo? GetCurrentWeather()
+    {
+        return StartOfRoundRefs.GetCurrentlLevel()?.currentWeather.DawnInfo;
+    }
 }

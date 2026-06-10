@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Dawn.Utils;
-
+using Dawn;
 namespace Dusk.Weights;
 
 public static class NamespacedConfigWeightExtensions

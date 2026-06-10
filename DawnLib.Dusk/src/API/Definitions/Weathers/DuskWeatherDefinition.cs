@@ -32,7 +32,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
     [field: SerializeField]
     public bool GenerateSpawnWeightsConfig { get; private set; } = true;
 
-    public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
+    private IWeightModifierSource<int> _spawnWeightSource = null!;
     public WeatherConfig Config { get; private set; }
 
     public override void Register(DuskMod mod)
@@ -70,12 +70,11 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
             Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
         }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons, [], Weathers);
-        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
+        _spawnWeightSource = CreateSpawnWeightSource(Moons, new(), Weathers, Routes, 0);
         DawnLib.DefineWeatherEffect(TypedKey, WeatherEffect, builder =>
         {
             builder.OverrideLerpSpeed(LerpSpeed);
-            builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+            builder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
             ApplyTagsTo(builder);
         });
     }

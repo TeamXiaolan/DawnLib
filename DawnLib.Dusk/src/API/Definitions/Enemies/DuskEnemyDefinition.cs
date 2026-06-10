@@ -55,7 +55,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     [field: SerializeField]
     public bool GenerateMaxSpawnCountConfig { get; private set; } = true;
 
-    public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
+    private IWeightModifierSource<int> _spawnWeightSource = null!;
     public EnemyConfig Config { get; private set; }
 
     public override void Register(DuskMod mod)
@@ -98,15 +98,14 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
         }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons, Interiors, Weathers);
-        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
+        _spawnWeightSource = CreateSpawnWeightSource(Moons, Interiors, Weathers, Routes, 0);
         DawnLib.DefineEnemy(TypedKey, EnemyType, builder =>
         {
             if (SpawnTable.HasFlag(SpawnTable.Daytime))
             {
                 builder.DefineDaytime(daytimeBuilder =>
                 {
-                    daytimeBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                    daytimeBuilder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
                 });
             }
 
@@ -114,7 +113,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             {
                 builder.DefineOutside(outsideBuilder =>
                 {
-                    outsideBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                    outsideBuilder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
                 });
             }
 
@@ -122,7 +121,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             {
                 builder.DefineInside(insideBuilder =>
                 {
-                    insideBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                    insideBuilder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
                 });
             }
 
@@ -130,7 +129,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
             {
                 builder.DefineWeed(weedBuilder =>
                 {
-                    weedBuilder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+                    weedBuilder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
                 });
             }
 

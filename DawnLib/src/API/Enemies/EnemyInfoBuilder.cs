@@ -11,13 +11,13 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
 
     public class EnemyLocationBuilder
     {
-        private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>? _weights;
+        private DawnWeightedValue<int>? _weights;
         private EnemyInfoBuilder _parent;
-        public EnemyLocationBuilder SetWeights(Action<WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
+        public EnemyLocationBuilder SetWeights(Action<WeightProfile<int>> callback)
         {
-            WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-            callback(builder);
-            _weights = builder.Build();
+            WeightProfile<int> profile = new WeightProfile<int>(DawnWeightChannels.EnemyRarity.Policy);
+            callback(profile);
+            _weights = new DawnWeightedValue<int>(DawnWeightChannels.EnemyRarity, profile);
             return this;
         }
 
@@ -31,7 +31,7 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"Enemy '{_parent.key}' didn't set weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<int?, DawnMoonInfo, SpawnWeightContext>.Empty();
+                _weights = new DawnWeightedValue<int>(DawnWeightChannels.EnemyRarity);
             }
             return new DawnEnemyLocationInfo(_weights);
         }

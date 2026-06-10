@@ -11,7 +11,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
 
         // maybe replace this (vvv) with a SpawnableMapObject Builder?
         private bool _spawnFacingAwayFromWall, _spawnFacingWall, _spawnWithBackToWall, _spawnWithBackFlushAgainstWall, _requireDistanceBetweenSpawns, _disallowSpawningNearEntrances, _allowInMineshaft; // this feels like it should be one SO or some data thing instead of a million bools
-        private ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>? _weights;
+        private DawnWeightedValue<AnimationCurve?>? _weights;
 
         internal InsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -60,11 +60,11 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             return this;
         }
 
-        public InsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
+        public InsideBuilder SetWeights(Action<WeightProfile<AnimationCurve?>> callback)
         {
-            CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-            callback(builder);
-            _weights = builder.Build();
+            WeightProfile<AnimationCurve?> weightProfile = new WeightProfile<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve.Policy);
+            callback(weightProfile);
+            _weights = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve, weightProfile);
             return this;
         }
 
@@ -73,7 +73,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>.Empty();
+                _weights = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve);
             }
 
             IndoorMapHazardType indoorMapHazardType = ScriptableObject.CreateInstance<IndoorMapHazardType>();
@@ -99,7 +99,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
         private Vector3 _rotationOffset = Vector3.zero;
         private string[] _spawnableFloorTags = Array.Empty<string>();
 
-        private ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>? _weights;
+        private DawnWeightedValue<AnimationCurve?>? _weights;
 
         internal OutsideBuilder(MapObjectInfoBuilder parent)
         {
@@ -148,11 +148,11 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             return this;
         }
 
-        public OutsideBuilder SetWeights(Action<CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> callback)
+        public OutsideBuilder SetWeights(Action<WeightProfile<AnimationCurve?>> callback)
         {
-            CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-            callback(builder);
-            _weights = builder.Build();
+            WeightProfile<AnimationCurve?> weightProfile = new WeightProfile<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve.Policy);
+            callback(weightProfile);
+            _weights = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve, weightProfile);
             return this;
         }
 
@@ -161,7 +161,7 @@ public class MapObjectInfoBuilder : BaseInfoBuilder<DawnMapObjectInfo, GameObjec
             if (_weights == null)
             {
                 DawnPlugin.Logger.LogWarning($"MapObject: '{_parentBuilder.key}' didn't set inside weights. If you intend to have no weights (doing something special), call .SetWeights(() => {{}})");
-                _weights = ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext>.Empty();
+                _weights = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve);
             }
 
             SpawnableOutsideObject spawnableOutsideObject = ScriptableObject.CreateInstance<SpawnableOutsideObject>();

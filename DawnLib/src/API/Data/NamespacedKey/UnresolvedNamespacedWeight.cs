@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-namespace Dusk.Weights;
+namespace Dawn;
 
 [Serializable]
 public readonly struct UnresolvedNamespacedWeight : IOperationWithValue
@@ -79,7 +79,7 @@ public readonly struct UnresolvedNamespacedWeight : IOperationWithValue
             {
                 if (rawWeight.Length <= 1 || !float.TryParse(rawWeight[1..], NumberStyles.Float, CultureInfo.InvariantCulture, out weight))
                 {
-                    DuskPlugin.Logger.LogWarning($"Invalid weight value in config input: {input}");
+                    DawnPlugin.Logger.LogWarning($"Invalid weight value in config input: {input}");
                     weight = 0;
                 }
             }

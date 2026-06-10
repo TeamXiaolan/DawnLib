@@ -7,17 +7,17 @@ using Dawn.Utils;
 
 namespace Dawn;
 
-public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
+public sealed class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 {
     internal List<DoorwaySocket> sockets = new();
     internal List<Doorway> doorways = new();
     internal List<SpawnSyncedObject> spawnSyncedObjects = new();
     internal List<Tile> tiles = new();
 
-    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weights, float mapTileSize, DawnStingerDetail stingerDetail, string assetBundlePath, BoundedRange dungeonClampRange, int extraScrapGeneration, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnDungeonInfo(NamespacedKey<DawnDungeonInfo> key, HashSet<NamespacedKey> tags, DungeonFlow dungeonFlow, DawnWeightedValue<int> rarity, float mapTileSize, DawnStingerDetail stingerDetail, string assetBundlePath, BoundedRange dungeonClampRange, int extraScrapGeneration, IDataContainer? customData) : base(key, tags, customData)
     {
         DungeonFlow = dungeonFlow;
-        Weights = weights;
+        Rarity = rarity;
         MapTileSize = mapTileSize;
         StingerDetail = stingerDetail;
         AssetBundlePath = assetBundlePath;
@@ -146,9 +146,21 @@ public class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
         }
     }
 
+    public DawnWeightedValue<int> Rarity { get; }
+
+    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null)
+    {
+        return Rarity.GetValue(new WeightQuery
+        {
+            Subject = this,
+            Moon = moonInfo,
+            Weather = weatherEffectInfo,
+            Channel = DawnWeightChannels.ScrapRarity.Key
+        });
+    }
+
     public DungeonFlow DungeonFlow { get; }
     public string AssetBundlePath { get; }
-    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weights { get; private set; }
     public float MapTileSize { get; private set; }
     public DawnStingerDetail StingerDetail { get; private set; }
     public BoundedRange DungeonClampRange { get; private set; }

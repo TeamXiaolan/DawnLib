@@ -4,10 +4,23 @@ public sealed class DawnScrapItemInfo
 {
     public DawnItemInfo ParentInfo { get; internal set; }
 
-    internal DawnScrapItemInfo(ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weights)
+    internal DawnScrapItemInfo(DawnWeightedValue<int> rarity)
     {
-        Weights = weights;
+        Rarity = rarity;
     }
 
-    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weights { get; private set; }
+    public DawnWeightedValue<int> Rarity { get; }
+
+    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null)
+    {
+        return Rarity.GetValue(new WeightQuery
+        {
+            Owner = ParentInfo,
+            Subject = this,
+            Moon = moonInfo,
+            Dungeon = dungeonInfo,
+            Weather = weatherEffectInfo,
+            Channel = DawnWeightChannels.ScrapRarity.Key
+        });
+    }
 }

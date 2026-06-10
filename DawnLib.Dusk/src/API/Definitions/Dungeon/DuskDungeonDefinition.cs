@@ -47,7 +47,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     [field: Range(0, 100)]
     public float StingerPlayChance { get; private set; }
 
-    public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
+    private IWeightModifierSource<int> _spawnWeightSource = null!;
     public DungeonConfig Config { get; private set; }
 
     public override void Register(DuskMod mod)
@@ -80,8 +80,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
         }
 
-        SpawnWeights.SetupSpawnWeightsPreset(Moons, [], Weathers);
-        SpawnWeights.AddRule(new RoutePriceRule(new RoutePriceWeightTransformer(Routes)));
+        _spawnWeightSource = CreateSpawnWeightSource(Moons, new(), Weathers, Routes, 0);
         DawnLib.DefineDungeon(TypedKey, DungeonFlowReference.FlowAssetName, builder =>
         {
             foreach (var mapping in DungeonFlowReference.ArchetypeTileSets)
@@ -98,7 +97,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             builder.OverrideStingerPlayChance(StingerPlayChance);
             builder.SetDungeonRangeClamp(DungeonRangeClamp);
             builder.SetExtraScrapGeneration(ExtraScrapGeneration);
-            builder.SetWeights(weightBuilder => weightBuilder.SetGlobalWeight(SpawnWeights));
+            builder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
             ApplyTagsTo(builder);
         });
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
 using Dawn.Utils;
+using Dusk.Weights;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -73,6 +74,16 @@ public abstract class DuskContentDefinition : ScriptableObject
     protected void ApplyTagsTo(BaseInfoBuilder builder)
     {
         builder.SoloAddTags(_tags);
+    }
+
+    protected IWeightModifierSource<int> CreateSpawnWeightSource(List<UnresolvedNamespacedWeight> moons, List<UnresolvedNamespacedWeight> interiors, List<UnresolvedNamespacedWeight> weathers, List<IntComparisonConfigWeight> routes, int defaultWeight)
+    {
+        return new CompositeIntWeightSource()
+            .Add(new MoonIntWeightSource(moons))
+            .Add(new DungeonIntWeightSource(interiors))
+            .Add(new WeatherIntWeightSource(weathers))
+            .Add(new RoutePriceIntWeightSource(routes))
+            .Add(new GlobalBaseIntSource(defaultWeight));
     }
 }
 

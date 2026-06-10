@@ -83,14 +83,7 @@ public static class DawnCommands
 
             foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
             {
-
-                SpawnWeightContext ctx = new SpawnWeightContext(
-                    relevantMoonInfo,
-                    null,
-                    includeWeather ? relevantMoonInfo.Level.currentWeather.DawnInfo : null)
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, relevantMoonInfo.DawnPurchaseInfo.Cost.Provide());
-
-                int rarity = dungeonInfo.Weights.GetFor(ctx) ?? 0;
+                int rarity = dungeonInfo.GetRarity(relevantMoonInfo, includeWeather ? relevantMoonInfo.Level.currentWeather.DawnInfo : null);
                 if (rarity > 0)
                 {
                     possibleDungeons.Add(dungeonInfo);
@@ -143,19 +136,13 @@ public static class DawnCommands
                     continue;
                 }
 
-                SpawnWeightContext ctx = new SpawnWeightContext(
-                    moonInfo,
-                    null,
-                    moonInfo.Level.currentWeather.DawnInfo)
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
-
-                float rarityWithThisDungeon = relevantDungeonInfo.Weights.GetFor(ctx) ?? 0;
+                float rarityWithThisDungeon = relevantDungeonInfo.GetRarity(moonInfo, includeWeather ? moonInfo.Level.currentWeather.DawnInfo : null);
                 if (rarityWithThisDungeon <= 0)
                 {
                     continue;
                 }
 
-                float sumOfWeightsOfAllDungeons = LethalContent.Dungeons.Values.Sum(d => d.Weights.GetFor(ctx) ?? 0);
+                float sumOfWeightsOfAllDungeons = LethalContent.Dungeons.Values.Sum(d => d.GetRarity(moonInfo, includeWeather ? moonInfo.Level.currentWeather.DawnInfo : null));
                 float rarity = (rarityWithThisDungeon / sumOfWeightsOfAllDungeons) * 100f;
 
                 possibleMoons.Add(moonInfo);

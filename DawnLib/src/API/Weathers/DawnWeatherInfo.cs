@@ -8,7 +8,7 @@ namespace Dawn;
 
 public class DawnWeatherEffectInfo : DawnBaseInfo<DawnWeatherEffectInfo>
 {
-    internal DawnWeatherEffectInfo(NamespacedKey<DawnWeatherEffectInfo> key, HashSet<NamespacedKey> tags, WeatherEffect weatherEffect, ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> weights, float lerpSpeed, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnWeatherEffectInfo(NamespacedKey<DawnWeatherEffectInfo> key, HashSet<NamespacedKey> tags, WeatherEffect weatherEffect, DawnWeightedValue<int> weights, float lerpSpeed, IDataContainer? customData) : base(key, tags, customData)
     {
         WeatherEffect = weatherEffect;
 
@@ -27,7 +27,7 @@ public class DawnWeatherEffectInfo : DawnBaseInfo<DawnWeatherEffectInfo>
     public GameObject? EffectObjectPrefab { get; }
     public GameObject? EffectPermanentObjectPrefab { get; }
 
-    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weights { get; }
+    public DawnWeightedValue<int> Weights { get; }
     public float LerpSpeed { get; } // Change values like this to be preloaded in?
 
     public LevelWeatherType GetLevelWeatherEffect()

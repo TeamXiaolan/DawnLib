@@ -1,3 +1,5 @@
+using DunGen.Graph;
+
 namespace Dawn.Internal;
 
 public static class RoundManagerRefs
@@ -20,5 +22,10 @@ public static class RoundManagerRefs
             }
             return _instance;
         }
+    }
+
+    public static DungeonFlow? GetCurrentDungeon()
+    {
+        return Instance?.dungeonGenerator?.Generator?.DungeonFlow;
     }
 }

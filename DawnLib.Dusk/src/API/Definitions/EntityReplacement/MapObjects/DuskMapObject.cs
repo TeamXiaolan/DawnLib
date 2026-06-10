@@ -68,29 +68,16 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
             }
         }
 
-        DawnMoonInfo currentMoon = RoundManager.Instance.currentLevel.DawnInfo;
-
-        SpawnWeightContext ctx = new SpawnWeightContext(
-            currentMoon,
-            RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
-            currentMoon.Level.currentWeather.DawnInfo)
-            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, currentMoon.DawnPurchaseInfo.Cost.Provide());
-
-        int? totalWeight = newReplacements.Sum(it => it.Weights.GetFor(ctx));
-        if (totalWeight == null)
-        {
-            return;
-        }
-
+        int totalWeight = newReplacements.Sum(it => it.GetRarity());
         if (EntityReplacementRegistrationPatch.mapObjectReplacementRandom == null)
         {
             EntityReplacementRegistrationPatch.mapObjectReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
         }
 
-        int chosenWeight = EntityReplacementRegistrationPatch.mapObjectReplacementRandom.Next(0, totalWeight.Value.Clamp0());
+        int chosenWeight = EntityReplacementRegistrationPatch.mapObjectReplacementRandom.Next(0, totalWeight);
         foreach (DuskMapObjectReplacementDefinition replacement in newReplacements)
         {
-            chosenWeight -= (replacement.Weights.GetFor(ctx) ?? 0).Clamp0();
+            chosenWeight -= replacement.GetRarity();
             if (chosenWeight > 0)
                 continue;
 

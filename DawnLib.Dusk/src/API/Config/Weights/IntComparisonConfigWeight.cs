@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Dawn;
 using Dawn.Internal;
 using Dawn.Utils;
-using Dusk.Weights;
 using UnityEngine;
 
-namespace Dusk;
+namespace Dusk.Weights;
 
 [Serializable]
 public class IntComparison

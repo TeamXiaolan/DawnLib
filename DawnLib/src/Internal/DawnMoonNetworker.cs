@@ -66,13 +66,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     internal void HostDecide(DawnMoonInfo moonInfo)
     {
-        SpawnWeightContext ctx = new SpawnWeightContext(
-            moonInfo,
-            null,
-            moonInfo.Level.currentWeather.DawnInfo)
-            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
-
-        int totalWeight = moonInfo.Scenes.Sum(it => (it.Weight.GetFor(ctx) ?? 0).Clamp0());
+        int totalWeight = moonInfo.Scenes.Sum(it => it.GetRarity());
 
         System.Random sceneRandom = new(StartOfRoundRefs.Instance.randomMapSeed + 502 + 0);
         int chosenWeight = sceneRandom.Next(0, totalWeight);
@@ -81,7 +75,7 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
         for (int i = 0; i < moonInfo.Scenes.Count; i++)
         {
             sceneInfo = moonInfo.Scenes[i];
-            chosenWeight -= (sceneInfo.Weight.GetFor(ctx) ?? 0).Clamp0();
+            chosenWeight -= sceneInfo.GetRarity();
             if (chosenWeight <= 0)
             {
                 break;

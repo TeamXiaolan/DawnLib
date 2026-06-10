@@ -8,7 +8,7 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
 
-public class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
+public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 {
     internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, int maxDaytimeDiversityPowerCount, int maxWeedEnemyPowerCount, int maxWeedDiversityPowerCount, List<SpawnableEnemyWithRarity> weedEnemies, AnimationCurve weedEnemySpawnChanceThroughDay, float weedEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {

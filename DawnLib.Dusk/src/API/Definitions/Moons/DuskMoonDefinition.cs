@@ -220,12 +220,12 @@ public class DuskMoonSceneData
     [field: SerializeField]
     public bool GenerateWeightsConfig { get; private set; } = true;
 
-    public SpawnWeightsPreset SpawnWeights { get; private set; } = new();
-    private ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> _weights;
+    private IWeightModifierSource<int> _spawnWeightSource = null!;
+    private DawnWeightedValue<int> _weights;
 
     public MoonSceneConfig MoonSceneConfig { get; private set; }
 
-    public ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> Weight(ConfigContext section, int sceneCount)
+    public DawnWeightedValue<int> Weight(ConfigContext section, int sceneCount)
     {
         if (sceneCount <= 1)
         {
@@ -240,10 +240,19 @@ public class DuskMoonSceneData
             Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(MoonSceneConfig.WeatherSpawnWeights.Value);
         }
 
-        SpawnWeights.SetupSpawnWeightsPreset([], [], Weathers, BaseWeight);
-        WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> builder = new();
-        builder.SetGlobalWeight(SpawnWeights);
-        _weights = builder.Build();
+        int globalIntWeight = BaseWeight;
+        if (MoonSceneConfig.BaseWeight != null)
+        {
+            globalIntWeight = MoonSceneConfig.BaseWeight.Value;
+        }
+
+        _spawnWeightSource = new CompositeIntWeightSource()
+            .Add(new WeatherIntWeightSource(Weathers))
+            .Add(new GlobalBaseIntSource(globalIntWeight));
+
+        WeightProfile<int> weightProfile = new(DawnWeightChannels.MoonSceneRarity.Policy);
+        weightProfile.AddSource(_spawnWeightSource);
+        _weights = new DawnWeightedValue<int>(DawnWeightChannels.MoonSceneRarity, weightProfile);
         return _weights;
     }
 

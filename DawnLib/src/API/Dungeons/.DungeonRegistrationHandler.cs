@@ -361,14 +361,8 @@ static class DungeonRegistrationHandler
             if (dungeonInfo.ShouldSkipRespectOverride())
                 continue;
 
-            SpawnWeightContext ctx = new SpawnWeightContext(
-                level.DawnInfo,
-                null,
-                level.currentWeather.DawnInfo)
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
-
-            int newRarity = dungeonInfo.Weights?.GetFor(ctx) ?? 0;
-            intWithRarity.rarity = newRarity.Clamp0();
+            int newRarity = dungeonInfo.GetRarity(level.DawnInfo, level.currentWeather.DawnInfo);
+            intWithRarity.rarity = newRarity;
         }
     }
 
@@ -407,7 +401,7 @@ static class DungeonRegistrationHandler
 
     private static void CollectNonDawnDungeons()
     {
-        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> dungeonWeightBuilder = new();
+        Dictionary<string, WeightProfile<int>> dungeonWeightProfile = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
             SelectableLevel level = moonInfo.Level;
@@ -420,13 +414,13 @@ static class DungeonRegistrationHandler
             foreach (IntWithRarity intWithRarity in intsWithRarity)
             {
                 DungeonFlow dungeonFlow = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow;
-                if (!dungeonWeightBuilder.TryGetValue(dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
+                if (!dungeonWeightProfile.TryGetValue(dungeonFlow.name, out WeightProfile<int> weightProfile))
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-                    dungeonWeightBuilder[dungeonFlow.name] = weightTableBuilder;
+                    weightProfile = new WeightProfile<int>(DawnWeightChannels.DungeonRarity.Policy);
+                    dungeonWeightProfile[dungeonFlow.name] = weightProfile;
                 }
                 Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonFlow.name} on level {level.PlanetName}");
-                weightTableBuilder.AddWeight(moonInfo.TypedKey, intWithRarity.rarity);
+                weightProfile.AddSource(new MoonBaseIntSource(moonInfo.TypedKey, intWithRarity.rarity));
             }
         }
 
@@ -464,8 +458,8 @@ static class DungeonRegistrationHandler
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(indoorMapType.dungeonFlow, tags);
 
-            dungeonWeightBuilder.TryGetValue(indoorMapType.dungeonFlow.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
-            weightTableBuilder ??= new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+            dungeonWeightProfile.TryGetValue(indoorMapType.dungeonFlow.name, out WeightProfile<int>? weightProfile);
+            weightProfile ??= new WeightProfile<int>(DawnWeightChannels.DungeonRarity.Policy);
 
             PersistentDataContainer customData = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{key.Namespace}_{key.Key}"));
             if (!customData.Has(DawnKeys.StingerPlayed))
@@ -479,7 +473,7 @@ static class DungeonRegistrationHandler
             {
                 extraScrapGeneration = 6;
             }
-            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, weightTableBuilder.Build(), indoorMapType.MapTileSize, stingerDetail, string.Empty, dungeonRangeClamp, extraScrapGeneration, customData);
+            DawnDungeonInfo dungeonInfo = new(key, tags, indoorMapType.dungeonFlow, new DawnWeightedValue<int>(DawnWeightChannels.DungeonRarity, weightProfile), indoorMapType.MapTileSize, stingerDetail, string.Empty, dungeonRangeClamp, extraScrapGeneration, customData);
             indoorMapType.dungeonFlow.DawnInfo = dungeonInfo;
             LethalContent.Dungeons.Register(dungeonInfo);
         }

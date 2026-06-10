@@ -1,4 +1,4 @@
-namespace Dusk.Weights;
+namespace Dawn;
 
 public interface IOperationWithValue
 {

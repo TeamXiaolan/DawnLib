@@ -60,12 +60,6 @@ static class WeatherRegistrationHandler
                 if (weatherEffectInfo.ShouldSkipIgnoreOverride())
                     continue;
 
-                SpawnWeightContext ctx = new SpawnWeightContext(
-                    moonInfo,
-                    null,
-                    LethalContent.Weathers[WeatherKeys.None])
-                    .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, moonInfo.DawnPurchaseInfo.Cost.Provide());
-
                 RandomWeatherWithVariables randomWeatherWithVariables = new RandomWeatherWithVariables()
                 {
                     weatherType = weatherEffectInfo.GetLevelWeatherEffect(),
@@ -214,7 +208,7 @@ static class WeatherRegistrationHandler
         {
             string noneName = NamespacedKey.NormalizeStringForNamespacedKey("none", true);
             NamespacedKey<DawnWeatherEffectInfo> noneKey = NamespacedKey.Vanilla(noneName).AsTyped<DawnWeatherEffectInfo>();
-            ProviderTable<int?, DawnMoonInfo, SpawnWeightContext> noneWeights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>().SetGlobalWeight(100).Build();
+            DawnWeightedValue<int> noneWeights = new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, WeightProfile<int>.Create(DawnWeightChannels.WeatherRarity.Policy, x => x.AddSource(new GlobalBaseIntSource(100))));
             // TODO: ugh none isn't even a weather technically, should this really have a weight at all? should I ignore zeekerss' way of getting none weight via the curve? should i try to replicate the curve logic but through pure numerical weights???
             DawnWeatherEffectInfo noneEffectInfo = new(noneKey, [DawnLibTags.IsExternal], null!, noneWeights, 1f, null);
             LethalContent.Weathers.Register(noneEffectInfo);
@@ -252,18 +246,18 @@ static class WeatherRegistrationHandler
             }
 
             // TODO: Grab each weather's weights on the moons, their weather to weather weights too and their base weight since WR supports that
-            WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weatherWeights = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+            WeightProfile<int> weatherWeights = new WeightProfile<int>(DawnWeightChannels.WeatherRarity.Policy);
             foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
             {
                 foreach (RandomWeatherWithVariables randomWeatherWithVariables in moonInfo.Level.randomWeathers)
                 {
                     if ((int)randomWeatherWithVariables.weatherType == i)
                     {
-                        weatherWeights.AddWeight(moonInfo.TypedKey, 100);
+                        weatherWeights.AddSource(new MoonBaseIntSource(moonInfo.TypedKey, 100));
                     }
                 }
             }
-            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, weatherWeights.Build(), 1f, null);
+            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, weatherWeights), 1f, null);
             LethalContent.Weathers.Register(weatherEffectInfo);
             weatherEffect.DawnInfo = weatherEffectInfo;
         }

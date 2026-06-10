@@ -132,8 +132,8 @@ static class MapObjectRegistrationHandler
 
     private static void FreezeMapObjectContents()
     {
-        Dictionary<IndoorMapHazardType, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> insideWeightsByHazardType = new();
-        Dictionary<SpawnableOutsideObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> outsideWeightsByOutsideObject = new();
+        Dictionary<IndoorMapHazardType, WeightProfile<AnimationCurve?>> insideWeightsByHazardType = new();
+        Dictionary<SpawnableOutsideObject, WeightProfile<AnimationCurve?>> outsideWeightsByOutsideObject = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -151,13 +151,13 @@ static class MapObjectRegistrationHandler
                     continue;
                 }
 
-                if (!insideWeightsByHazardType.TryGetValue(indoorMapHazardType, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
+                if (!insideWeightsByHazardType.TryGetValue(indoorMapHazardType, out WeightProfile<AnimationCurve?> builder))
                 {
-                    builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+                    builder = new WeightProfile<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve.Policy);
                     insideWeightsByHazardType[indoorMapHazardType] = builder;
                 }
 
-                builder.AddCurve(moonInfo.TypedKey, indoorMapHazard.numberToSpawn);
+                builder.AddSource(new MoonCurveSource(moonInfo.TypedKey, indoorMapHazard.numberToSpawn));
             }
 
             foreach (SpawnableOutsideObjectWithRarity outsideMapObject in selectableLevel.spawnableOutsideObjects)
@@ -173,37 +173,37 @@ static class MapObjectRegistrationHandler
                     continue;
                 }
 
-                if (!outsideWeightsByOutsideObject.TryGetValue(spawnableOutsideObject, out CurveTableBuilder<DawnMoonInfo, SpawnWeightContext> builder))
+                if (!outsideWeightsByOutsideObject.TryGetValue(spawnableOutsideObject, out WeightProfile<AnimationCurve?> builder))
                 {
-                    builder = new CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>();
+                    builder = new WeightProfile<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve.Policy);
                     outsideWeightsByOutsideObject[spawnableOutsideObject] = builder;
                 }
 
-                builder.AddCurve(moonInfo.TypedKey, outsideMapObject.randomAmount);
+                builder.AddSource(new MoonCurveSource(moonInfo.TypedKey, outsideMapObject.randomAmount));
             }
         }
 
         Dictionary<GameObject, DawnInsideMapObjectInfo> realInsideMapObjectsDict = new();
-        foreach (KeyValuePair<IndoorMapHazardType, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> kvp in insideWeightsByHazardType)
+        foreach (KeyValuePair<IndoorMapHazardType, WeightProfile<AnimationCurve?>> kvp in insideWeightsByHazardType)
         {
             IndoorMapHazardType indoorMapHazardType = kvp.Key;
-            ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> table = kvp.Value.Build();
+            DawnWeightedValue<AnimationCurve?> dawnWeightedValue = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve, kvp.Value);
             DawnInsideMapObjectInfo insideInfo = new(
                 kvp.Key,
-                table
+                dawnWeightedValue
             );
 
             realInsideMapObjectsDict[indoorMapHazardType.prefabToSpawn] = insideInfo;
         }
 
         Dictionary<GameObject, DawnOutsideMapObjectInfo> realOutsideMapObjectsDict = new();
-        foreach (KeyValuePair<SpawnableOutsideObject, CurveTableBuilder<DawnMoonInfo, SpawnWeightContext>> kvp in outsideWeightsByOutsideObject)
+        foreach (KeyValuePair<SpawnableOutsideObject, WeightProfile<AnimationCurve?>> kvp in outsideWeightsByOutsideObject)
         {
             SpawnableOutsideObject spawnableOutsideObject = kvp.Key;
-            ProviderTable<AnimationCurve?, DawnMoonInfo, SpawnWeightContext> table = kvp.Value.Build();
+            DawnWeightedValue<AnimationCurve?> dawnWeightedValue = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve, kvp.Value);
             DawnOutsideMapObjectInfo outsideInfo = new(
                 spawnableOutsideObject,
-                table,
+                dawnWeightedValue,
                 false,
                 0
             );
@@ -319,13 +319,7 @@ static class MapObjectRegistrationHandler
 
         GameObject prefabToSpawn = outsideInfo.SpawnableOutsideObject.prefabToSpawn;
 
-        SpawnWeightContext ctx = new SpawnWeightContext(
-            level.DawnInfo,
-            RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow.DawnInfo,
-            level.currentWeather.DawnInfo)
-            .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
-
-        AnimationCurve animationCurve = outsideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
+        AnimationCurve animationCurve = outsideInfo.GetRarity() ?? AnimationCurve.Constant(0, 1, 0);
 
         int randomNumberToSpawn;
         if (mapObjectInfo.HasNetworkObject)
@@ -563,13 +557,7 @@ static class MapObjectRegistrationHandler
                 level.indoorMapHazards = newIndoorMapHazard.ToArray();
             }
 
-            SpawnWeightContext ctx = new SpawnWeightContext(
-                level.DawnInfo,
-                RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
-                level.currentWeather.DawnInfo)
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
-
-            indoorMapHazard.numberToSpawn = insideInfo.SpawnWeights.GetFor(ctx) ?? AnimationCurve.Constant(0, 1, 0);
+            indoorMapHazard.numberToSpawn = insideInfo.GetRarity(level.DawnInfo, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo, level.currentWeather.DawnInfo) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 
@@ -584,13 +572,13 @@ static class MapObjectRegistrationHandler
             if (outsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                 continue;
 
+            Debuggers.MapObjects?.Log($"Updating weights for {outsideInfo.SpawnableOutsideObject.prefabToSpawn.name} on level {level.PlanetName}");
             SpawnableOutsideObjectWithRarity? spawnableOutsideObjectWithRarity = level.spawnableOutsideObjects.FirstOrDefault(mapObject => mapObject.spawnableObject.prefabToSpawn == outsideInfo.SpawnableOutsideObject.prefabToSpawn);
             if (spawnableOutsideObjectWithRarity != null)
             {
                 List<SpawnableOutsideObjectWithRarity> newSpawnableMapObjects = level.spawnableOutsideObjects.ToList();
                 newSpawnableMapObjects.Remove(spawnableOutsideObjectWithRarity);
                 level.spawnableOutsideObjects = newSpawnableMapObjects.ToArray();
-                Debuggers.MapObjects?.Log($"Updating weights for {outsideInfo.SpawnableOutsideObject.prefabToSpawn.name} on level {level.PlanetName}");
             }
         }
     }

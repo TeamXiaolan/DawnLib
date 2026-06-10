@@ -136,20 +136,14 @@ static class ItemRegistrationHandler
                 level.spawnableScrap.Add(spawnableItemWithRarity);
             }
 
-            SpawnWeightContext ctx = new SpawnWeightContext(
-                level.DawnInfo,
-                RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo,
-                level.currentWeather.DawnInfo)
-                .WithExtra(SpawnWeightExtraKeys.RoutingPriceKey, level.DawnInfo.DawnPurchaseInfo.Cost.Provide());
-
-            int rarity = scrapInfo.Weights.GetFor(ctx) ?? 0;
-            spawnableItemWithRarity.rarity = rarity.Clamp0();
+            int rarity = scrapInfo.GetRarity(level.DawnInfo, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            spawnableItemWithRarity.rarity = rarity;
         }
     }
 
     private static void FreezeItemContent()
     {
-        Dictionary<string, WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>> itemWeightBuilder = new();
+        Dictionary<string, WeightProfile<int>> itemWeightProfile = new();
         Dictionary<string, DawnShopItemInfo> itemsWithShopInfo = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -171,13 +165,13 @@ static class ItemRegistrationHandler
 
             foreach ((Item item, SpawnableItemWithRarity spawnableItemWithRarity) in nonRepeatSpawnableScrapDict)
             {
-                if (!itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext> weightTableBuilder))
+                if (!itemWeightProfile.TryGetValue(item.name, out WeightProfile<int> weightProfile))
                 {
-                    weightTableBuilder = new WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>();
-                    itemWeightBuilder[item.name] = weightTableBuilder;
+                    weightProfile = new WeightProfile<int>(DawnWeightChannels.ScrapRarity.Policy);
+                    itemWeightProfile[item.name] = weightProfile;
                 }
                 Debuggers.Items?.Log($"Adding weight {spawnableItemWithRarity.rarity} to {item.name} on level {level.PlanetName}");
-                weightTableBuilder.AddWeight(moonInfo.TypedKey, spawnableItemWithRarity.rarity);
+                weightProfile.AddSource(new MoonBaseIntSource(moonInfo.TypedKey, spawnableItemWithRarity.rarity));
             }
         }
 
@@ -276,13 +270,13 @@ static class ItemRegistrationHandler
                 continue;
             }
 
-            itemWeightBuilder.TryGetValue(item.name, out WeightTableBuilder<DawnMoonInfo, SpawnWeightContext>? weightTableBuilder);
+            itemWeightProfile.TryGetValue(item.name, out WeightProfile<int>? weightProfile);
             DawnScrapItemInfo? scrapInfo = null;
             itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);
 
-            if (weightTableBuilder != null)
+            if (weightProfile != null)
             {
-                scrapInfo = new(weightTableBuilder.Build());
+                scrapInfo = new(new DawnWeightedValue<int>(DawnWeightChannels.ScrapRarity, weightProfile));
             }
 
             if (!item.spawnPrefab)

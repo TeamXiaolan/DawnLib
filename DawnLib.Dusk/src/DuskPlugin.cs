@@ -6,6 +6,7 @@ using Dawn.Internal;
 using Dawn.Utils;
 using Dusk.Internal;
 using Dusk.Utils;
+using Dusk.Weights;
 using UnityEngine;
 
 namespace Dusk;
@@ -27,6 +28,7 @@ public class DuskPlugin : BaseUnityPlugin
         Instance = this;
         Logger = base.Logger;
         PersistentData = this.GetPersistentDataContainer();
+        DawnLib.Weights.AddContextContributor(new RoutePriceWeightContextContributor());
         Logger.LogInfo("Doing patches");
 
         AchievementRegistrationPatch.Init();

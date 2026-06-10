@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using Dawn;
 using Dawn.Internal;
 
-namespace Dusk.Weights;
+namespace Dawn;
 
 public static class NamespacedKeyResolverWeightExtensions
 {
@@ -24,7 +23,7 @@ public static class NamespacedKeyResolverWeightExtensions
         return result;
     }
 
-        public static ResolvedNamespacedWeight<T>? ResolveWeight<T>(this NamespacedKeyResolver<T> resolver, UnresolvedNamespacedWeight weight) where T : INamespaced
+    public static ResolvedNamespacedWeight<T>? ResolveWeight<T>(this NamespacedKeyResolver<T> resolver, UnresolvedNamespacedWeight weight) where T : INamespaced
     {
         if (!resolver.TryResolve(weight.KeyInput, out NamespacedKey<T>? key))
         {
