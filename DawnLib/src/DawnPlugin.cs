@@ -88,6 +88,8 @@ public class DawnPlugin : BaseUnityPlugin
 
         DawnNetworkSceneManager.Init();
 
+        DawnLib.Weights.AddContextContributor(new MoonSceneWeightContextContributor());
+
         DebugPrintRegistryResult("Enemies", LethalContent.Enemies, enemyInfo => enemyInfo.EnemyType.enemyName);
         DebugPrintRegistryResult("Moons", LethalContent.Moons, moonInfo => moonInfo.Level.PlanetName);
         DebugPrintRegistryResult("Items", LethalContent.Items, itemInfo => itemInfo.Item.itemName);
