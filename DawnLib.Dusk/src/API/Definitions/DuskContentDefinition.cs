@@ -80,6 +80,7 @@ public abstract class DuskContentDefinition : ScriptableObject
     {
         return new CompositeIntWeightSource()
             .Add(new MoonIntWeightSource(moons))
+            .Add(new MoonSceneIntWeightSource(moons))
             .Add(new DungeonIntWeightSource(interiors))
             .Add(new WeatherIntWeightSource(weathers))
             .Add(new RoutePriceIntWeightSource(routes))

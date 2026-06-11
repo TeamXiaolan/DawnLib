@@ -29,7 +29,7 @@ public sealed class MoonSceneIntWeightModifier : IWeightModifier<int>
         if (moonSceneInfo.SceneName != context.Moon.Level.sceneName)
             return false;
 
-        return context.Moon.HasTag(_weight.Key);
+        return true;
     }
 
     public void Apply(ref int value, WeightContext context)
