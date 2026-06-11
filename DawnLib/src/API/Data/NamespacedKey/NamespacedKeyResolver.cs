@@ -352,6 +352,18 @@ public class NamespacedKeyResolver<T> : IDisposable where T : INamespaced
                     yield return tag;
                 }
             }
+
+            // TODO: adjust this to be better than just casting for specifically dawnmooninfo?
+            if (value is DawnMoonInfo moonInfo)
+            {
+                foreach (IMoonSceneInfo moonSceneInfo in moonInfo.Scenes)
+                {
+                    if (seen.Add(moonSceneInfo.Key))
+                    {
+                        yield return moonSceneInfo.Key;
+                    }
+                }
+            }
         }
     }
 

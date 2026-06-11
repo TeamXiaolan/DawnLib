@@ -903,7 +903,7 @@ static class MoonRegistrationHandler
             {
                 predicate = new LethalLevelLoaderTerminalPredicate(extendedLevel);
             }
-            else if (LethalLevelLoaderCompat.Enabled && DawnConfig.AllowLLLToOverrideVanillaStatus.Value && key.Namespace == NamespacedKey.VanillaNamespace)
+            else if (LethalLevelLoaderCompat.Enabled && DawnConfig.AllowLLLToOverrideVanillaStatus.Value && key.IsVanilla())
             {
                 predicate = new LethalLevelLoaderTerminalPredicate(level);
             }
@@ -912,7 +912,25 @@ static class MoonRegistrationHandler
                 predicate = new ConstantTerminalPredicate(TerminalPurchaseResult.Hidden().SetFailure(false));
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new([new VanillaMoonSceneInfo(key.AsTyped<IMoonSceneInfo>(), level.sceneName)]), routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            List<IMoonSceneInfo> moonSceneInfos = new();
+            List<NamespacedKey<IMoonSceneInfo>> moonSceneKeys = new();
+            if (key.IsVanilla())
+            {
+                moonSceneKeys.Add(NamespacedKey<IMoonSceneInfo>.From(NamespacedKey.VanillaNamespace, level.sceneName));
+            }
+            foreach (NamespacedKey<IMoonSceneInfo> moonSceneKey in moonSceneKeys)
+            {
+                if (moonSceneKey.IsVanilla())
+                {
+                    moonSceneInfos.Add(new VanillaMoonSceneInfo(moonSceneKey, level.sceneName));
+                }
+                else // TODO: LLL stuff here below
+                {
+                    moonSceneInfos.Add(new VanillaMoonSceneInfo(moonSceneKey, level.sceneName));
+                }
+            }
+
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, moonSceneInfos, routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.DawnInfo = moonInfo;
             LethalContent.Moons.Register(moonInfo);
         }
