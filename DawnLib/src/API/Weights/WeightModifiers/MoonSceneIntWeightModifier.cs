@@ -22,8 +22,7 @@ public sealed class MoonSceneIntWeightModifier : IWeightModifier<int>
         if (context.Moon == null)
             return false;
 
-        IMoonSceneInfo? moonSceneInfo = context.Moon.Scenes.FirstOrDefault(it => Equals(it.TypedKey, _weight.Key));
-        if (moonSceneInfo == null)
+        if (!context.TryGet(DawnWeightContextKeys.MoonScene, out IMoonSceneInfo? moonSceneInfo))
             return false;
 
         if (moonSceneInfo.SceneName != context.Moon.Level.sceneName)
