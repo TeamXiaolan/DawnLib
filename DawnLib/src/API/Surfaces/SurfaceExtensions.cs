@@ -19,6 +19,12 @@ public static class FootstepSurfaceExtensions
             return footstepSurface.GetDawnInfoCore();
         }
 
+        [Obsolete("Use FootstepSurface.DawnInfo instead")]
+        public void SetDawnInfo(DawnSurfaceInfo surfaceInfo)
+        {
+            footstepSurface.SetDawnInfoCore(surfaceInfo);
+        }
+
         private DawnSurfaceInfo GetDawnInfoCore()
         {
             return ((IFootstepSurfaceDawnObject)footstepSurface).DawnInfo;

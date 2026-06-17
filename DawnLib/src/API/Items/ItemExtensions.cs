@@ -19,6 +19,12 @@ public static class ItemExtensions
             return item.GetDawnInfoCore();
         }
 
+        [Obsolete("Use Item.DawnInfo instead")]
+        public void SetDawnInfo(DawnItemInfo itemInfo)
+        {
+            item.SetDawnInfoCore(itemInfo);
+        }
+
         private DawnItemInfo GetDawnInfoCore()
         {
             return ((IItemDawnObject)item).DawnInfo;

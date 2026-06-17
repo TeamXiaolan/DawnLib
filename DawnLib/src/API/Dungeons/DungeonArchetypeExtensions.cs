@@ -20,6 +20,12 @@ public static class DungeonArchetypeExtensions
             return archetype.GetDawnInfoCore();
         }
 
+        [Obsolete("Use DungeonArchetype.DawnInfo instead")]
+        public void SetDawnInfo(DawnArchetypeInfo archetypeInfo)
+        {
+            archetype.SetDawnInfoCore(archetypeInfo);
+        }
+
         private DawnArchetypeInfo GetDawnInfoCore()
         {
             object newObject = archetype;

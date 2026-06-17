@@ -19,6 +19,12 @@ public static class SpawnableOutsideObjectExtensions
             return spawnableOutsideObject.GetDawnInfoCore();
         }
 
+        [Obsolete("Use SpawnableOutsideObject.DawnInfo instead")]
+        public void SetDawnInfo(DawnMapObjectInfo mapObjectInfo)
+        {
+            spawnableOutsideObject.SetDawnInfoCore(mapObjectInfo);
+        }
+
         private DawnMapObjectInfo GetDawnInfoCore()
         {
             return ((ISpawnableOutsideObjectDawnObject)spawnableOutsideObject).DawnInfo;

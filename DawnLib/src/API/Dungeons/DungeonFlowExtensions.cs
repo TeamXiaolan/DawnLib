@@ -20,6 +20,12 @@ public static class DungeonFlowExtensions
             return dungeonFlow.GetDawnInfoCore();
         }
 
+        [Obsolete("Use DungeonFlow.DawnInfo instead")]
+        public void SetDawnInfo(DawnDungeonInfo dungeonFlowInfo)
+        {
+            dungeonFlow.SetDawnInfoCore(dungeonFlowInfo);
+        }
+
         private DawnDungeonInfo GetDawnInfoCore()
         {
             return ((IDunGenFlowDawnObject)dungeonFlow).DawnInfo;

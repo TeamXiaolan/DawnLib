@@ -13,10 +13,16 @@ public static class UnlockableItemExtensions
             set => unlockableItem.SetDawnInfoCore(value);
         }
 
-        [Obsolete("Use Item.DawnInfo instead")]
+        [Obsolete("Use UnlockableItem.DawnInfo instead")]
         public DawnUnlockableItemInfo GetDawnInfo()
         {
             return unlockableItem.GetDawnInfoCore();
+        }
+
+        [Obsolete("Use UnlockableItem.DawnInfo instead")]
+        public void SetDawnInfo(DawnUnlockableItemInfo unlockableItemInfo)
+        {
+            unlockableItem.SetDawnInfoCore(unlockableItemInfo);
         }
 
         private DawnUnlockableItemInfo GetDawnInfoCore()

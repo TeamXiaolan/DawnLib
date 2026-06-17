@@ -19,6 +19,12 @@ public static class TerminalNodeExtensions
             return terminalNode.GetDawnInfoCore();
         }
 
+        [Obsolete("Use TerminalNode.DawnInfo instead")]
+        public void SetDawnInfo(DawnTerminalCommandInfo terminalNodeInfo)
+        {
+            terminalNode.SetDawnInfoCore(terminalNodeInfo);
+        }
+
         private DawnTerminalCommandInfo GetDawnInfoCore()
         {
             return ((ITerminalNodeDawnObject)terminalNode).DawnInfo;

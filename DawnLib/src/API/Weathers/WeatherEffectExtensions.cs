@@ -19,6 +19,12 @@ public static class WeatherEffectExtensions
             return weatherEffect.GetDawnInfoCore();
         }
 
+        [Obsolete("Use WeatherEffect.DawnInfo instead")]
+        public void SetDawnInfo(DawnWeatherEffectInfo weatherEffectInfo)
+        {
+            weatherEffect.SetDawnInfoCore(weatherEffectInfo);
+        }
+
         private DawnWeatherEffectInfo GetDawnInfoCore()
         {
             return ((IWeatherEffectDawnObject)weatherEffect).DawnInfo;

@@ -62,6 +62,12 @@ public static class SelectableLevelExtensions
             return selectableLevel.GetDawnInfoCore();
         }
 
+        [Obsolete("Use SelectableLevel.DawnInfo instead")]
+        public void SetDawnInfo(DawnMoonInfo selectableLevelInfo)
+        {
+            selectableLevel.SetDawnInfoCore(selectableLevelInfo);
+        }
+
         private DawnMoonInfo GetDawnInfoCore()
         {
             return ((ISelectableLevelDawnObject)selectableLevel).DawnInfo;
