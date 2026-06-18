@@ -26,6 +26,12 @@ public static class TileSetExtensions
             tileSet.SetDawnInfoCore(tileSetInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return tileSet.DawnInfo != null;
+        }
+
         private DawnTileSetInfo GetDawnInfoCore()
         {
             object newObject = tileSet;

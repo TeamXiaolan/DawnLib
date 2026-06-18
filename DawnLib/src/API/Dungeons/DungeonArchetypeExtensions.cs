@@ -26,6 +26,12 @@ public static class DungeonArchetypeExtensions
             archetype.SetDawnInfoCore(archetypeInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return archetype.DawnInfo != null;
+        }
+
         private DawnArchetypeInfo GetDawnInfoCore()
         {
             object newObject = archetype;

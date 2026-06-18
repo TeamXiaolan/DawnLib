@@ -25,6 +25,12 @@ public static class EnemyTypeExtensions
             enemyType.SetDawnInfoCore(enemyTypeInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return enemyType.DawnInfo != null;
+        }
+
         private DawnEnemyInfo GetDawnInfoCore()
         {
             return ((IEnemyTypeDawnObject)enemyType).DawnInfo;

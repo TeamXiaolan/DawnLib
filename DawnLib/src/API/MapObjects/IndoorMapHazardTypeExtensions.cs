@@ -25,6 +25,12 @@ public static class IndoorMapHazardTypeExtensions
             indoorMapHazardType.SetDawnInfoCore(mapObjectInfoInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return indoorMapHazardType.DawnInfo != null;
+        }
+
         private DawnMapObjectInfo GetDawnInfoCore()
         {
             return ((IIndoorMapHazardTypeDawnObject)indoorMapHazardType).DawnInfo;

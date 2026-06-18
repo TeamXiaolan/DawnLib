@@ -25,6 +25,12 @@ public static class SpawnableOutsideObjectExtensions
             spawnableOutsideObject.SetDawnInfoCore(mapObjectInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return spawnableOutsideObject.DawnInfo != null;
+        }
+
         private DawnMapObjectInfo GetDawnInfoCore()
         {
             return ((ISpawnableOutsideObjectDawnObject)spawnableOutsideObject).DawnInfo;

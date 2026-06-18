@@ -25,6 +25,12 @@ public static class WeatherEffectExtensions
             weatherEffect.SetDawnInfoCore(weatherEffectInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return weatherEffect.DawnInfo != null;
+        }
+
         private DawnWeatherEffectInfo GetDawnInfoCore()
         {
             return ((IWeatherEffectDawnObject)weatherEffect).DawnInfo;

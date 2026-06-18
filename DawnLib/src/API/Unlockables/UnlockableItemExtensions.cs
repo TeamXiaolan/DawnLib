@@ -25,6 +25,12 @@ public static class UnlockableItemExtensions
             unlockableItem.SetDawnInfoCore(unlockableItemInfo);
         }
 
+        [Obsolete]
+        public bool HasDawnInfo()
+        {
+            return unlockableItem.DawnInfo != null;
+        }
+
         private DawnUnlockableItemInfo GetDawnInfoCore()
         {
             return ((IUnlockableItemDawnObject)unlockableItem).DawnInfo;
