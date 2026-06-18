@@ -19,6 +19,8 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
     public bool IsNatural { get; private set; }
     [field: SerializeField]
     public bool QuicksandCompatible { get; private set; }
+    [field: SerializeField]
+    public bool SupportsSnowyFootprints { get; private set; }
 
     [field: SerializeField]
     [field: Tooltip("Please make sure this is a prefab with a ParticleSystem!")]
@@ -43,6 +45,7 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
             builder.OverrideSurfaceVFXOffset(PositionOffset);
             builder.OverrideIsNatural(IsNatural);
             builder.OverrideQuicksandCompatible(QuicksandCompatible);
+            builder.OverrideSupportsSnowyFootprints(SupportsSnowyFootprints);
             builder.SetCrouchClips(CrouchClips);
             builder.OverrideVolume(Volume);
             ApplyTagsTo(builder);

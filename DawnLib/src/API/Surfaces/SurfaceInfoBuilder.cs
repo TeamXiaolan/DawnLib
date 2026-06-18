@@ -7,7 +7,7 @@ public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurfa
 {
     private GameObject? _surfaceVFXPrefab, _vainShroudPrefab = null;
     private Vector3 _surfaceVFXOffset = Vector3.zero;
-    private bool _isNatural, _quicksandCompatible = false;
+    private bool _isNatural, _quicksandCompatible, _supportsSnowyFootprints = false;
     private List<AudioClip> _crouchClips = new List<AudioClip>();
     private float _volume = 1f;
 
@@ -39,6 +39,12 @@ public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurfa
         return this;
     }
 
+    public SurfaceInfoBuilder OverrideSupportsSnowyFootprints(bool supportsSnowyFootprints)
+    {
+        _supportsSnowyFootprints = supportsSnowyFootprints;
+        return this;
+    }
+
     public SurfaceInfoBuilder SetCrouchClips(List<AudioClip> crouchClips)
     {
         _crouchClips = crouchClips;
@@ -60,6 +66,6 @@ public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurfa
     override internal DawnSurfaceInfo Build()
     {
         value.surfaceTag = "AnomalyObject";
-        return new DawnSurfaceInfo(key, [], value, _crouchClips, _volume, _vainShroudPrefab, _isNatural, _quicksandCompatible, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
+        return new DawnSurfaceInfo(key, [], value, _crouchClips, _volume, _vainShroudPrefab, _isNatural, _quicksandCompatible, _supportsSnowyFootprints, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
     }
 }

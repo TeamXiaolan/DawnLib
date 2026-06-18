@@ -9,6 +9,7 @@
 - Added complete weather registration to DawnLib.
 - Added a tag to moons that support weather `SupportsWeather`, this is decided by checking whether the moon is both a company moon has any `randomWeathers` set to it.
 - Added more information related to issues such as incorrect folder structure.
+- Added the ability to set your custom surface to be snowy footprints compatible.
 
 ## TODO
 

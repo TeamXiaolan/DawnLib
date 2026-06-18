@@ -52,6 +52,41 @@ static class SurfaceRegistrationHandler
         IL.MoldSpreadManager.GenerateMold += CollectVainShroudBatches;
 
         On.BatchAllMeshChildren.ClearBatchedMeshes += ClearVainShroudBatches;
+
+        IL.GameNetcodeStuff.PlayerControllerB.LateUpdate += AdjustCheckForSnowyFootprints;
+        IL.GameNetcodeStuff.PlayerControllerB.UpdatePlayerPositionRpc += AdjustCheckForSnowyFootprints;
+    }
+
+    private static void AdjustCheckForSnowyFootprints(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        ILLabel skipLabel = null!;
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.currentFootstepSurfaceIndex)),
+            il => il.MatchLdcI4(8),
+            il => il.MatchBneUn(out skipLabel)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match AdjustCheckForSnowyFootprints IL on method: {il.Method.Name}.");
+            return;
+        }
+
+        cursor.Index++;
+        cursor.RemoveRange(3);
+        cursor.EmitDelegate(CheckSurfaceForSnowy);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Brfalse_S, skipLabel);
+    }
+
+    private static bool CheckSurfaceForSnowy(PlayerControllerB playerControllerB)
+    {
+        if (playerControllerB.TryGetCurrentDawnSurface(out DawnSurface? dawnSurface) && dawnSurface.TryGetFootstepIndex(playerControllerB.transform.position, false, out int footstepSurfaceIndex, playerControllerB))
+        {
+            return StartOfRoundRefs.Instance.footstepSurfaces[footstepSurfaceIndex].DawnInfo.SupportsSnowyFootprints;
+        }
+
+        return playerControllerB.currentFootstepSurfaceIndex == 8;
     }
 
     private static void ClearVainShroudBatches(On.BatchAllMeshChildren.orig_ClearBatchedMeshes orig, BatchAllMeshChildren self)
@@ -812,7 +847,8 @@ static class SurfaceRegistrationHandler
             ];
             bool isNatural = startOfRound.naturalSurfaceTags.Contains(surface.surfaceTag);
             bool quicksandCompatible = quicksandTags.Contains(i);
-            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, new(), 1f, null, isNatural, quicksandCompatible, null, Vector3.zero, i, null);
+            bool supportsSnowyFootprints = i == 8;
+            DawnSurfaceInfo surfaceInfo = new(key, [DawnLibTags.IsExternal], surface, new(), 1f, null, isNatural, quicksandCompatible, supportsSnowyFootprints, null, Vector3.zero, i, null);
             LethalContent.Surfaces.Register(surfaceInfo);
             surface.DawnInfo = surfaceInfo;
         }

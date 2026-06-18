@@ -5,7 +5,7 @@ namespace Dawn;
 
 public sealed class DawnSurfaceInfo : DawnBaseInfo<DawnSurfaceInfo>
 {
-    internal DawnSurfaceInfo(NamespacedKey<DawnSurfaceInfo> key, HashSet<NamespacedKey> tags, FootstepSurface surface, List<AudioClip> crouchClips, float volume, GameObject? vainShroudPrefab, bool isNatural, bool quicksandCompatible, GameObject? surfaceVFXPrefab, Vector3 surfaceVFXOffset, int surfaceIndex, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnSurfaceInfo(NamespacedKey<DawnSurfaceInfo> key, HashSet<NamespacedKey> tags, FootstepSurface surface, List<AudioClip> crouchClips, float volume, GameObject? vainShroudPrefab, bool isNatural, bool quicksandCompatible, bool supportsSnowyFootprints, GameObject? surfaceVFXPrefab, Vector3 surfaceVFXOffset, int surfaceIndex, IDataContainer? customData) : base(key, tags, customData)
     {
         Surface = surface;
         CrouchClips = crouchClips;
@@ -20,6 +20,7 @@ public sealed class DawnSurfaceInfo : DawnBaseInfo<DawnSurfaceInfo>
 
         IsNatural = isNatural;
         QuicksandCompatible = quicksandCompatible;
+        SupportsSnowyFootprints = supportsSnowyFootprints;
 
         SurfaceVFXPrefab = surfaceVFXPrefab;
         SurfaceVFXOffset = surfaceVFXOffset;
@@ -37,6 +38,7 @@ public sealed class DawnSurfaceInfo : DawnBaseInfo<DawnSurfaceInfo>
 
     public bool IsNatural { get; }
     public bool QuicksandCompatible { get; }
+    public bool SupportsSnowyFootprints { get; }
 
     public GameObject? SurfaceVFXPrefab { get; }
     public Vector3 SurfaceVFXOffset { get; }
