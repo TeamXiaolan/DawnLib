@@ -80,6 +80,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPatches.Init();
         ExtraScanEventsPatch.Init();
         DawnCommands.Init();
+        SisterRandomScrapSpawn.Init();
 
         // Testing
         // DawnTesting.TestCommands();
