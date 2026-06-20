@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using BepInEx;
 using Dawn.Internal;
 using DunGen;
@@ -71,6 +72,11 @@ public static class DawnLib
     public static void RegisterNetworkScene(string scenePath)
     {
         DawnNetworkSceneManager.AddScenePath(scenePath);
+    }
+
+    public static void RegisterRoundLoadingStep(NamespacedKey loadingKey, Func<IRoundLoadingContext, Task> callback)
+    {
+        RoundLoadingPatches.AddRoundLoadingStep(loadingKey, callback);
     }
 
     public static void FixMixerGroups(GameObject prefab)

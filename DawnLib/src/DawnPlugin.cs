@@ -81,9 +81,11 @@ public class DawnPlugin : BaseUnityPlugin
         ExtraScanEventsPatch.Init();
         DawnCommands.Init();
         SisterRandomScrapSpawn.Init();
+        RoundLoadingPatches.Init();
 
         // Testing
         // DawnTesting.TestCommands();
+        DawnTesting.TestLoadingSteps();
 
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
