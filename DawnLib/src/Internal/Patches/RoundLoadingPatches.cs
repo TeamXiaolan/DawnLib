@@ -59,89 +59,214 @@ static class RoundLoadingPatches
             }
         }
 
-        List<RoundLoadingStepEntry> eligible = [];
-        foreach (RoundLoadingStepEntry entry in _roundLoadingSteps)
-        {
-            bool add = true;
-            foreach (NamespacedKey dependency in entry.HardDependencies)
-            {
-                bool containsHardDependency = false;
-                if (entriesByKey.TryGetValue(dependency, out RoundLoadingStepEntry? dependencyEntry))
-                {
-                    containsHardDependency = true;
-                }
+        Dictionary<NamespacedKey, RoundLoadingStepEntry> eligibleByKey = new(entriesByKey);
 
-                if (!containsHardDependency)
+        bool removedAny;
+        do
+        {
+            removedAny = false;
+
+            foreach (RoundLoadingStepEntry entry in eligibleByKey.Values.ToArray())
+            {
+                foreach (NamespacedKey dependency in entry.HardDependencies)
                 {
-                    add = false;
+                    if (eligibleByKey.ContainsKey(dependency))
+                    {
+                        continue;
+                    }
+
+                    DawnPlugin.Logger.LogError($"Round loading step {entry.NamespacedKey} was removed because hard dependency {dependency} is missing or unavailable.");
+
+                    eligibleByKey.Remove(entry.NamespacedKey);
+                    removedAny = true;
                     break;
                 }
             }
-
-            if (!add)
-            {
-                continue;
-            }
-
-            eligible.Add(entry);
         }
+        while (removedAny);
 
-        Dictionary<RoundLoadingStepEntry, List<RoundLoadingStepEntry>> stepToDependencies = [];
-        foreach (RoundLoadingStepEntry entry in eligible)
+        Dictionary<RoundLoadingStepEntry, HashSet<RoundLoadingStepEntry>> stepToDependencies = [];
+
+        foreach (RoundLoadingStepEntry entry in eligibleByKey.Values)
         {
-            stepToDependencies[entry] = new List<RoundLoadingStepEntry>();
+            HashSet<RoundLoadingStepEntry> dependencies = [];
+
             foreach (NamespacedKey dependency in entry.HardDependencies)
             {
-                if (entriesByKey.TryGetValue(dependency, out RoundLoadingStepEntry? dependencyEntry))
+                if (eligibleByKey.TryGetValue(dependency, out RoundLoadingStepEntry? dependencyEntry))
                 {
-                    stepToDependencies[entry].Add(dependencyEntry);
+                    dependencies.Add(dependencyEntry);
                 }
             }
 
             foreach (NamespacedKey dependency in entry.SoftDependencies)
             {
-                if (entriesByKey.TryGetValue(dependency, out RoundLoadingStepEntry? dependencyEntry))
+                if (eligibleByKey.TryGetValue(dependency, out RoundLoadingStepEntry? dependencyEntry))
                 {
-                    stepToDependencies[entry].Add(dependencyEntry);
+                    dependencies.Add(dependencyEntry);
                 }
             }
+
+            stepToDependencies[entry] = dependencies;
         }
 
         List<RoundLoadingStepEntry> sorted = [];
-        HandleAddingStepToSorted(sorted, stepToDependencies);
-
-        sorted.Sort((a, b) => a.NamespacedKey.Key.CompareTo(b.NamespacedKey.Key));
 
         while (stepToDependencies.Count > 0)
         {
-            HandleAddingStepToSorted(sorted, stepToDependencies);
-        }
+            List<RoundLoadingStepEntry> ready = stepToDependencies
+                .Where(pair => pair.Value.Count == 0)
+                .Select(pair => pair.Key)
+                .OrderBy(entry => entry.NamespacedKey.Key)
+                .ThenBy(entry => entry.NamespacedKey.Namespace)
+                .ToList();
 
-        DawnPlugin.Logger.LogInfo($"Finished sorting {_roundLoadingSteps.Count} round loading steps.");
-        foreach (RoundLoadingStepEntry entry in sorted)
-        {
-            DawnPlugin.Logger.LogInfo($"Round loading step registered: {entry.NamespacedKey}");
+            if (ready.Count == 0)
+            {
+                DawnPlugin.Logger.LogError("Circular round loading step dependency detected.");
+                LogCircularDependency(stepToDependencies);
+
+                // sorted.AddRange(stepToDependencies.Keys.OrderBy(entry => entry.NamespacedKey.Key).ThenBy(entry => entry.NamespacedKey.Namespace));
+                break;
+            }
+
+            foreach (RoundLoadingStepEntry entry in ready)
+            {
+                sorted.Add(entry);
+                stepToDependencies.Remove(entry);
+
+                foreach (HashSet<RoundLoadingStepEntry> dependencies in stepToDependencies.Values)
+                {
+                    dependencies.Remove(entry);
+                }
+            }
         }
 
         _roundLoadingSteps.Clear();
         _roundLoadingSteps.AddRange(sorted);
+
+        DawnPlugin.Logger.LogInfo($"Finished sorting {_roundLoadingSteps.Count} round loading steps.");
+
+        foreach (RoundLoadingStepEntry entry in _roundLoadingSteps)
+        {
+            DawnPlugin.Logger.LogInfo($"Round loading step registered: {entry.NamespacedKey}");
+        }
     }
 
-    private static void HandleAddingStepToSorted(List<RoundLoadingStepEntry> sorted, Dictionary<RoundLoadingStepEntry, List<RoundLoadingStepEntry>> stepToDependencies)
+    private enum VisitState
     {
-        for (int i = stepToDependencies.Count - 1; i >= 0; i--)
-        {
-            (RoundLoadingStepEntry entry, List<RoundLoadingStepEntry> dependencies) = stepToDependencies.ElementAt(i);
-            if (dependencies.Count == 0)
-            {
-                sorted.Add(entry);
-                foreach (RoundLoadingStepEntry dependency in stepToDependencies[entry])
-                {
-                    stepToDependencies[dependency].Remove(entry);
-                }
+        Visiting,
+        Visited
+    }
 
-                stepToDependencies.Remove(entry);
+    private static void LogCircularDependency(Dictionary<RoundLoadingStepEntry, HashSet<RoundLoadingStepEntry>> stepToDependencies)
+    {
+        List<RoundLoadingStepEntry> cycle = FindDependencyCycle(stepToDependencies);
+
+        if (cycle.Count == 0)
+        {
+            DawnPlugin.Logger.LogError("Could not resolve exact circular dependency chain. Remaining unresolved steps:");
+
+            foreach ((RoundLoadingStepEntry entry, HashSet<RoundLoadingStepEntry> dependencies) in stepToDependencies)
+            {
+                string dependencyText = string.Join(", ", dependencies.Select(dependency => dependency.NamespacedKey));
+                DawnPlugin.Logger.LogError($"- {entry.NamespacedKey} depends on: {dependencyText}");
+            }
+
+            return;
+        }
+
+        DawnPlugin.Logger.LogError("Circular dependency chain:");
+
+        for (int i = 0; i < cycle.Count - 1; i++)
+        {
+            RoundLoadingStepEntry entry = cycle[i];
+            RoundLoadingStepEntry dependency = cycle[i + 1];
+
+            string dependencyType = GetDependencyType(entry, dependency);
+
+            DawnPlugin.Logger.LogError($"- {entry.NamespacedKey} {dependencyType} depends on {dependency.NamespacedKey}");
+        }
+    }
+
+    private static List<RoundLoadingStepEntry> FindDependencyCycle(Dictionary<RoundLoadingStepEntry, HashSet<RoundLoadingStepEntry>> stepToDependencies)
+    {
+        Dictionary<RoundLoadingStepEntry, VisitState> states = [];
+        List<RoundLoadingStepEntry> stack = [];
+
+        foreach (RoundLoadingStepEntry entry in stepToDependencies.Keys)
+        {
+            if (states.ContainsKey(entry))
+            {
+                continue;
+            }
+
+            if (TryFindDependencyCycle(entry, stepToDependencies, states, stack, out List<RoundLoadingStepEntry> cycle))
+            {
+                return cycle;
             }
         }
+
+        return [];
+    }
+
+    private static bool TryFindDependencyCycle(RoundLoadingStepEntry entry, Dictionary<RoundLoadingStepEntry, HashSet<RoundLoadingStepEntry>> stepToDependencies, Dictionary<RoundLoadingStepEntry, VisitState> states, List<RoundLoadingStepEntry> stack, out List<RoundLoadingStepEntry> cycle)
+    {
+        states[entry] = VisitState.Visiting;
+        stack.Add(entry);
+
+        foreach (RoundLoadingStepEntry dependency in stepToDependencies[entry])
+        {
+            if (!stepToDependencies.ContainsKey(dependency))
+            {
+                continue;
+            }
+
+            if (!states.TryGetValue(dependency, out VisitState state))
+            {
+                if (TryFindDependencyCycle(dependency, stepToDependencies, states, stack, out cycle))
+                {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (state != VisitState.Visiting)
+            {
+                continue;
+            }
+
+            int cycleStartIndex = stack.IndexOf(dependency);
+
+            cycle = stack
+                .Skip(cycleStartIndex)
+                .ToList();
+
+            cycle.Add(dependency);
+
+            return true;
+        }
+
+        stack.RemoveAt(stack.Count - 1);
+        states[entry] = VisitState.Visited;
+
+        cycle = [];
+        return false;
+    }
+
+    private static string GetDependencyType(RoundLoadingStepEntry entry, RoundLoadingStepEntry dependency)
+    {
+        if (entry.HardDependencies.Contains(dependency.NamespacedKey))
+        {
+            return "hard";
+        }
+
+        if (entry.SoftDependencies.Contains(dependency.NamespacedKey))
+        {
+            return "soft";
+        }
+
+        return "unknown";
     }
 }

@@ -85,7 +85,7 @@ public class DawnPlugin : BaseUnityPlugin
 
         // Testing
         // DawnTesting.TestCommands();
-        DawnTesting.TestLoadingSteps();
+        // DawnTesting.TestLoadingSteps();
 
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 

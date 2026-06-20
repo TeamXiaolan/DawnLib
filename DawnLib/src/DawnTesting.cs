@@ -8,10 +8,10 @@ internal class DawnTesting
 {
     internal static void TestLoadingSteps()
     {
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step"), ExampleLoadingStep1);
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step1"), ExampleLoadingStep2);
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step2"), ExampleLoadingStep3);
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step3"), ExampleLoadingStep4);
+        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step1"), ExampleLoadingStep1);
+        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step4"), ExampleLoadingStep4);
+        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step2"), ExampleLoadingStep2);
+        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step3"), ExampleLoadingStep3);
     }
 
     private static async Task ExampleLoadingStep1(IRoundLoadingContext context)
@@ -19,20 +19,16 @@ internal class DawnTesting
         await Task.CompletedTask;
     }
 
-    [LoadingStepHardDependency("dawn_lib", "example_loading_step1")]
     private static async Task ExampleLoadingStep2(IRoundLoadingContext context)
     {
         await Task.CompletedTask;
     }
 
-    [LoadingStepHardDependency("dawn_lib", "example_loading_step2")]
     private static async Task ExampleLoadingStep3(IRoundLoadingContext context)
     {
         await Task.CompletedTask;
     }
 
-    [LoadingStepHardDependency("dawn_lib", "example_loading_step1")]
-    [LoadingStepHardDependency("dawn_lib", "example_loading_step3")]
     private static async Task ExampleLoadingStep4(IRoundLoadingContext context)
     {
         await Task.CompletedTask;
