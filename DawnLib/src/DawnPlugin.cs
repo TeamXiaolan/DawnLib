@@ -81,11 +81,11 @@ public class DawnPlugin : BaseUnityPlugin
         ExtraScanEventsPatch.Init();
         DawnCommands.Init();
         SisterRandomScrapSpawn.Init();
-        RoundLoadingPatches.Init();
+        RoundLoadingStepRegistrationHandler.Init();
 
         // Testing
         // DawnTesting.TestCommands();
-        // DawnTesting.TestLoadingSteps();
+        DawnTesting.TestLoadingSteps();
 
         harmony.PatchAll(Assembly.GetExecutingAssembly());
 
@@ -105,6 +105,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Story Logs", LethalContent.StoryLogs, storyLogInfo => storyLogInfo.StoryLogTerminalNode.creatureName);
         DebugPrintRegistryResult("Surfaces", LethalContent.Surfaces, surfaceInfo => surfaceInfo.Surface.surfaceTag);
         DebugPrintRegistryResult("Terminal Commands", LethalContent.TerminalCommands, commandInfo => commandInfo.CommandBasicInformation.CommandName);
+        DebugPrintRegistryResult("RoundLoading Steps", LethalContent.RoundLoadingSteps, stepInfo => stepInfo.Key.Key.ToCapitalized());
 
         PersistentData = this.GetPersistentDataContainer();
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));

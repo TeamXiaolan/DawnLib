@@ -8,30 +8,38 @@ internal class DawnTesting
 {
     internal static void TestLoadingSteps()
     {
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step1"), ExampleLoadingStep1);
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step4"), ExampleLoadingStep4);
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step2"), ExampleLoadingStep2);
-        DawnLib.RegisterRoundLoadingStep(NamespacedKey.From("dawn_lib", "example_loading_step3"), ExampleLoadingStep3);
+        DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.From("dawn_lib", "example_loading_step1"), ExampleLoadingStep1, _ => { }, false);
+        DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.From("dawn_lib", "example_loading_step4"), ExampleLoadingStep4, _ => { }, false);
+        DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.From("dawn_lib", "example_loading_step2"), ExampleLoadingStep2, _ => { }, false);
+        DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.From("dawn_lib", "example_loading_step3"), ExampleLoadingStep3, _ => { }, false);
     }
 
-    private static async Task ExampleLoadingStep1(IRoundLoadingContext context)
+    [LoadingStepHardDependency("lethal_company", "interior_loading")]
+    private static Task ExampleLoadingStep1(ILoadingContext context)
     {
-        await Task.CompletedTask;
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step1...");
+        return Task.CompletedTask;
     }
 
-    private static async Task ExampleLoadingStep2(IRoundLoadingContext context)
+    [LoadingStepHardDependency("dawn_lib", "example_loading_step1")]
+    private static Task ExampleLoadingStep2(ILoadingContext context)
     {
-        await Task.CompletedTask;
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step2...");
+        return Task.CompletedTask;
     }
 
-    private static async Task ExampleLoadingStep3(IRoundLoadingContext context)
+    [LoadingStepHardDependency("dawn_lib", "example_loading_step2")]
+    private static Task ExampleLoadingStep3(ILoadingContext context)
     {
-        await Task.CompletedTask;
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step3...");
+        return Task.CompletedTask;
     }
 
-    private static async Task ExampleLoadingStep4(IRoundLoadingContext context)
+    [LoadingStepHardDependency("dawn_lib", "example_loading_step3")]
+    private static Task ExampleLoadingStep4(ILoadingContext context)
     {
-        await Task.CompletedTask;
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step4...");
+        return Task.CompletedTask;
     }
 
     private static string AdjectivesExample()

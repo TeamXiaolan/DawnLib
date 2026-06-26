@@ -38,7 +38,7 @@ public class SisterRandomScrapSpawn : MonoBehaviour
         cursor.Emit(OpCodes.Ldloc, 18);
         cursor.EmitDelegate((RandomScrapSpawn randomScrapSpawn, GrabbableObject grabbableObject) =>
         {
-            if (randomScrapSpawn.GetComponent<SisterRandomScrapSpawn>().SpawnedItemsCopyRotation)
+            if (randomScrapSpawn.TryGetComponent(out SisterRandomScrapSpawn sisterRandomScrapSpawn) && sisterRandomScrapSpawn.SpawnedItemsCopyRotation)
             {
                 return randomScrapSpawn.transform.rotation.eulerAngles;
             }

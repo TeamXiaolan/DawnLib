@@ -89,7 +89,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                     else
                     {
                         DawnPlugin.Logger.LogError("Failed to repair SpawnSyncedObject");
-                        DawnPlugin.Logger.LogError($"Prefab: {spawnSyncedObject.spawnPrefab.name}");
+                        DawnPlugin.Logger.LogError($"Prefab: {spawnSyncedObject.spawnPrefab.name} needs to have a NetworkObject component");
                         DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
                     }
 

@@ -74,11 +74,6 @@ public static class DawnLib
         DawnNetworkSceneManager.AddScenePath(scenePath);
     }
 
-    public static void RegisterRoundLoadingStep(NamespacedKey loadingKey, Func<IRoundLoadingContext, Task> callback)
-    {
-        RoundLoadingPatches.AddRoundLoadingStep(loadingKey, callback);
-    }
-
     public static void FixMixerGroups(GameObject prefab)
     {
         if (!prefab)
@@ -102,6 +97,23 @@ public static class DawnLib
         DawnTerminalCommandInfo commandInfo = builder.Build();
         LethalContent.TerminalCommands.Register(commandInfo);
         return commandInfo;
+    }
+
+    /// <summary>
+    /// Do not use the vanilla namespace.
+    /// </summary>
+    public static DawnRoundLoadingStepInfo DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo> loadingKey, Func<ILoadingContext, Task> loadingContextCallback, Action<RoundLoadingStepInfoBuilder> callback, bool bypassVanillaCheck = false)
+    {
+        if (!bypassVanillaCheck && loadingKey.Namespace == NamespacedKey.VanillaNamespace)
+        {
+            throw new ArgumentException("Do not use the vanilla namespace to create round loading steps.");
+        }
+
+        RoundLoadingStepInfoBuilder builder = new(loadingKey, loadingContextCallback);
+        callback(builder);
+        DawnRoundLoadingStepInfo loadingStepInfo = builder.Build();
+        LethalContent.RoundLoadingSteps.Register(loadingStepInfo);
+        return loadingStepInfo;
     }
 
     public static DawnSurfaceInfo DefineSurface(NamespacedKey<DawnSurfaceInfo> key, FootstepSurface surface, Action<SurfaceInfoBuilder> callback)

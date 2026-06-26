@@ -134,15 +134,15 @@ static class MiscFixesPatch
 
         cursor.RemoveRange(5);
         cursor.Emit(OpCodes.Ldarg, 1);
-        cursor.EmitDelegate((HUDManager hudManager, int itemSlot) =>
+        cursor.EmitDelegate((HUDManager HUDManager, int itemSlot) =>
         {
             if (itemSlot == 50)
             {
-                hudManager.itemOnlySlotIcon.enabled = false;
+                HUDManager.itemOnlySlotIcon.enabled = false;
             }
             else
             {
-                hudManager.itemSlotIcons[itemSlot].enabled = false;
+                HUDManager.itemSlotIcons[itemSlot].enabled = false;
             }
         });
     }
