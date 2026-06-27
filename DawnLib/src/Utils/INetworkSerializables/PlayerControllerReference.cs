@@ -8,7 +8,7 @@ public class PlayerControllerReference : INetworkSerializable, IEquatable<Player
 {
     private int _playerID;
 
-    public bool IsLocalClient => StartOfRound.Instance.allPlayerScripts[_playerID].IsLocalPlayer();
+    public bool IsLocalClient => StartOfRound.Instance.allPlayerScripts[_playerID].IsLocalPlayer;
     public bool IsAlive => !StartOfRound.Instance.allPlayerScripts[_playerID].isPlayerDead && StartOfRound.Instance.allPlayerScripts[_playerID].isPlayerControlled;
     public bool IsValid => _playerID != -1 && StartOfRound.Instance.allPlayerScripts.Length > _playerID;
 

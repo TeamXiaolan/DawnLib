@@ -80,7 +80,7 @@ public class PlanetUnlocker : GrabbableObject
         }
 
         playerHeldBy.inSpecialInteractAnimation = false;
-        if (!playerHeldBy.IsLocalPlayer())
+        if (!playerHeldBy.IsLocalPlayer)
         {
             yield break;
         }

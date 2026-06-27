@@ -90,7 +90,7 @@ static class MiscFixesPatch
         cursor.EmitDelegate((PlayerControllerB playerControllerB, GrabbableObject grabbableObject) =>
         {
             playerControllerB.carryWeight = Mathf.Clamp(playerControllerB.carryWeight - (grabbableObject.itemProperties.weight - 1f), 1f, 10f);
-            if (playerControllerB.IsLocalPlayer())
+            if (playerControllerB.IsLocalPlayer)
             {
                 StartOfRoundRefs.Instance.SendChangedWeightEvent();
             }
