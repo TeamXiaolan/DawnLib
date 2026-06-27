@@ -37,7 +37,7 @@ public static class DuskAchievementExtensions
     {
         if (registry.TryGetValue(achievementKey, out DuskAchievementDefinition? value))
         {
-            value.ResetProgress();
+            value.SoftResetProgress();
         }
     }
 }
