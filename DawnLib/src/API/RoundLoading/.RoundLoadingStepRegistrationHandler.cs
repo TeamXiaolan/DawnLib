@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Dawn.Internal;
+using HarmonyLib;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
 
@@ -11,7 +14,7 @@ namespace Dawn;
 static class RoundLoadingStepRegistrationHandler
 {
     internal static List<DawnRoundLoadingStepInfo> orderedRoundLoadingSteps = new();
-    private static TaskCompletionSource<object?> _dungeonCompletionSource = new();
+    private static bool _dungeonCompletionInProgress = true;
 
     internal static void Init()
     {
@@ -54,24 +57,38 @@ static class RoundLoadingStepRegistrationHandler
             return;
         }
 
+        FieldInfo dungeonCompletionInProgressField = AccessTools.Field(typeof(RoundLoadingStepRegistrationHandler), nameof(RoundLoadingStepRegistrationHandler._dungeonCompletionInProgress));
+
+        ILLabel continueVanilla = cursor.DefineLabel();
+
+        cursor.Emit(OpCodes.Ldsfld, dungeonCompletionInProgressField);
+        cursor.Emit(OpCodes.Brfalse_S, continueVanilla);
+
+        cursor.Emit(OpCodes.Ldarg_0);
         cursor.EmitDelegate(FinishInteriorLoadingStep);
+        cursor.Emit(OpCodes.Ret);
+
+        cursor.MarkLabel(continueVanilla);
     }
 
     static void HandleInteriorLoadingStep()
     {
         DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior_loading")];
         interiorLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+        _dungeonCompletionInProgress = true;
     }
 
-    static async void FinishInteriorLoadingStep()
+    static async void FinishInteriorLoadingStep(RoundManager roundManager)
     {
         DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior_loading")];
-        _dungeonCompletionSource.SetResult(null);
         List<DawnRoundLoadingStepInfo> dependencies = interiorLoadingStepEntry.GetOrderedDependencies();
         foreach (DawnRoundLoadingStepInfo dependency in dependencies)
         {
             await dependency.Callback.Invoke(new EnteringAtmosphereLoadingContext());
         }
+
+        _dungeonCompletionInProgress = false;
+        roundManager.FinishGeneratingNewLevelClientRpc();
     }
 
     #region Vanilla Round Loading Steps

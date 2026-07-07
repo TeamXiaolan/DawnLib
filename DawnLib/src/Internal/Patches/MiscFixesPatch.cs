@@ -87,8 +87,13 @@ static class MiscFixesPatch
         }
 
         cursor.Emit(OpCodes.Ldloc, 0);
-        cursor.EmitDelegate((PlayerControllerB playerControllerB, GrabbableObject grabbableObject) =>
+        cursor.EmitDelegate((PlayerControllerB playerControllerB, GrabbableObject? grabbableObject) =>
         {
+            if (grabbableObject == null)
+            {
+                return;
+            }
+
             playerControllerB.carryWeight = Mathf.Clamp(playerControllerB.carryWeight - (grabbableObject.itemProperties.weight - 1f), 1f, 10f);
             if (playerControllerB.IsLocalPlayer)
             {
