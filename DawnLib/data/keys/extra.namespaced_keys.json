@@ -6,5 +6,9 @@
   "WeatherKeys": {
     "__type": "DawnWeatherEffectInfo",
     "None": "lethal_company:none"
+  },
+  "RoundLoadingStepKeys": {
+    "__type": "DawnRoundLoadingStepInfo",
+    "InteriorLoading": "lethal_company:interior_loading"
   }
 }

@@ -45,7 +45,11 @@ static class RoundLoadingStepRegistrationHandler
     static void FinishInjectInteriorLoadingStep(ILContext il)
     {
         ILCursor cursor = new(il);
-        if (!cursor.TryGotoNext(MoveType.After,
+        if (!cursor.TryGotoNext(MoveType.Before,
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.loadingText)),
+            il => il.MatchLdcI4(0),
+            il => il.MatchCallvirt<UnityEngine.Behaviour>("set_enabled"),
             il => il.MatchCall<HUDManager>("get_Instance"),
             il => il.MatchLdfld<HUDManager>(nameof(HUDManager.LoadingScreen)),
             il => il.MatchLdstr("IsLoading"),
@@ -73,14 +77,14 @@ static class RoundLoadingStepRegistrationHandler
 
     static void HandleInteriorLoadingStep()
     {
-        DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior_loading")];
+        DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InteriorLoading];
         interiorLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
         _dungeonCompletionInProgress = true;
     }
 
     static async void FinishInteriorLoadingStep(RoundManager roundManager)
     {
-        DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior_loading")];
+        DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InteriorLoading];
         List<DawnRoundLoadingStepInfo> dependencies = interiorLoadingStepEntry.GetOrderedDependencies();
         foreach (DawnRoundLoadingStepInfo dependency in dependencies)
         {
