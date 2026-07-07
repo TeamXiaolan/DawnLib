@@ -557,7 +557,7 @@ static class MapObjectRegistrationHandler
                 level.indoorMapHazards = newIndoorMapHazard.ToArray();
             }
 
-            indoorMapHazard.numberToSpawn = insideInfo.GetRarity(level.DawnInfo, RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow?.DawnInfo, level.currentWeather.DawnInfo) ?? AnimationCurve.Constant(0, 1, 0);
+            indoorMapHazard.numberToSpawn = insideInfo.GetRarity(level.DawnInfo, RoundManagerRefs.GetCurrentDungeon()?.DawnInfo, level.currentWeather.DawnInfo) ?? AnimationCurve.Constant(0, 1, 0);
         }
     }
 

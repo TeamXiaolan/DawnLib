@@ -1,21 +1,60 @@
+using Dawn.Internal;
+using EasyTextEffects;
 using UnityEngine;
 
 namespace Dawn;
 
 public class EnteringAtmosphereLoadingContext : ILoadingContext
 {
-    public void SetColor(Color color)
+    public void SetBackgroundColor(Color color)
     {
-
-    }
-
-    public void SetText(string text)
-    {
-        if (HUDManager.Instance == null)
+        if (HUDManagerRefs.Instance == null)
         {
             return;
         }
 
-        HUDManager.Instance.loadingText.text = text;
+        HUDManagerRefs.MainLoadingBackground.color = color;
+    }
+
+    public void SetMainText(string text)
+    {
+        if (HUDManagerRefs.Instance == null)
+        {
+            return;
+        }
+
+        HUDManagerRefs.MainLoadingText.text = text;
+    }
+
+    public void SetMainTextColor(Color startColor, Color endColor)
+    {
+        if (HUDManagerRefs.Instance == null)
+        {
+            return;
+        }
+
+        HUDManagerRefs.MainTextEffectColor.startColor = startColor;
+        HUDManagerRefs.MainTextEffectColor.endColor = endColor;
+        HUDManagerRefs.MainLoadingTextEffect.Refresh();
+    }
+
+    public void SetSecondaryText(string text)
+    {
+        if (HUDManagerRefs.Instance == null)
+        {
+            return;
+        }
+
+        HUDManagerRefs.SecondaryLoadingText.text = text;
+    }
+
+    public void SetSecondaryTextColor(Color color)
+    {
+        if (HUDManagerRefs.Instance == null)
+        {
+            return;
+        }
+
+        HUDManagerRefs.SecondaryLoadingText.color = color;
     }
 }

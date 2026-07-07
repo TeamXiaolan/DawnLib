@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Dawn;
+using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ public class PlanetUnlocker : GrabbableObject
 
         if (!TryUnlock()) // failed to unlock
         {
-            HUDManager.Instance.DisplayTip(new HUDDisplayTip(
+            HUDManagerRefs.Instance.DisplayTip(new HUDDisplayTip(
                 "Error",
                 $"Coordinates to {_moonReference.Key.Key} could not be verified, Cancelling.",
                 HUDDisplayTip.AlertType.Warning

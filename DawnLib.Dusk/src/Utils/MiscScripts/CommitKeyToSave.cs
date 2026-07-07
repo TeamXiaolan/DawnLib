@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Dawn;
+using Dawn.Internal;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -91,7 +92,7 @@ public class CommitKeyToSave : MonoBehaviour
                 break;
         }
 
-        HUDManager.Instance.DisplayGlobalNotification(FoundEntryText);
+        HUDManagerRefs.Instance.DisplayGlobalNotification(FoundEntryText);
         if (!SaveImmediately && !StartOfRound.Instance.inShipPhase)
         {
             return;

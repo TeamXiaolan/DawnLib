@@ -41,7 +41,7 @@ public class ScanNodeAdditionalData
             return true;
         }
 
-        if (HUDManager.Instance.scanNodes.TryGetValue(_rectTransform, out scanNodeProperties))
+        if (HUDManagerRefs.Instance.scanNodes.TryGetValue(_rectTransform, out scanNodeProperties))
         {
             return true;
         }

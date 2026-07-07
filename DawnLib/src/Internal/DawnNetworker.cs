@@ -97,6 +97,6 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     [ClientRpc]
     public void BroadcastDisplayTipClientRpc(HUDDisplayTip displayTip)
     {
-        HUDManager.Instance.DisplayTip(displayTip);
+        HUDManagerRefs.Instance.DisplayTip(displayTip);
     }
 }

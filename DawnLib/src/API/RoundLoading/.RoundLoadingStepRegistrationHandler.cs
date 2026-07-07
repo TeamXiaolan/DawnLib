@@ -98,13 +98,24 @@ static class RoundLoadingStepRegistrationHandler
     #region Vanilla Round Loading Steps
     private static void RegisterVanillaRoundLoadingSteps()
     {
-        DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior_loading"), InteriorLoading, _ => { }, true);
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InteriorLoading, InteriorLoading, _ => { }, true);
+        // DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior"), InteriorLoading, _ => { }, true);
     }
 
     static Task InteriorLoading(ILoadingContext context)
     {
-        context.SetText($"Random seed: {StartOfRoundRefs.Instance.randomMapSeed}");
-        context.SetColor(Color.blue);
+        // TODO: do this before the UI appears so the colour doesnt change awkwardly
+        context.SetMainText("ENTERING THE ATMOSPHERE...");
+        ColorUtility.TryParseHtmlString("#3D4A5B", out Color mainTextStartColor);
+        ColorUtility.TryParseHtmlString("#7DB5BE", out Color mainTextEndColor);
+        context.SetMainTextColor(mainTextStartColor, mainTextEndColor);
+
+        context.SetSecondaryText($"Random seed: {StartOfRoundRefs.Instance.randomMapSeed}");
+        ColorUtility.TryParseHtmlString("#465A6F8D", out Color secondaryTextColor);
+        context.SetSecondaryTextColor(secondaryTextColor);
+
+        ColorUtility.TryParseHtmlString("#0F171F9F", out Color backgroundColor);
+        context.SetBackgroundColor(backgroundColor);
         DawnPlugin.Logger.LogFatal("Loading interior...");
         return Task.CompletedTask;
     }

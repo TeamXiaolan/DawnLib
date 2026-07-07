@@ -4,6 +4,9 @@ namespace Dawn;
 
 public interface ILoadingContext
 {
-    void SetText(string text);
-    void SetColor(Color color);
+    void SetBackgroundColor(Color color);
+    void SetMainText(string text);
+    void SetSecondaryText(string text);
+    void SetMainTextColor(Color startColor, Color endColor);
+    void SetSecondaryTextColor(Color color);
 }

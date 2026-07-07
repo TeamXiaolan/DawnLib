@@ -1,4 +1,5 @@
 using Dawn;
+using Dawn.Internal;
 using Dawn.Utils;
 using GameNetcodeStuff;
 using Unity.Netcode;
@@ -50,7 +51,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
         {
             if (_failGuaranteed)
             {
-                HUDManager.Instance.DisplayTip(_failureDisplayTip);
+                HUDManagerRefs.Instance.DisplayTip(_failureDisplayTip);
                 return;
             }
             if (!unlockableUpgradeScrap.UnlockableReference.TryResolve(out DawnUnlockableItemInfo definition))
@@ -80,7 +81,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
         {
             if (_failGuaranteed)
             {
-                HUDManager.Instance.DisplayTip(_failureDisplayTip);
+                HUDManagerRefs.Instance.DisplayTip(_failureDisplayTip);
                 return;
             }
             if (!itemUpgradeScrap.ItemReference.TryResolve(out DawnItemInfo definition))
@@ -116,7 +117,7 @@ public class UnlockProgressiveObject : NetworkBehaviour
         {
             if (_failGuaranteed)
             {
-                HUDManager.Instance.DisplayTip(_failureDisplayTip);
+                HUDManagerRefs.Instance.DisplayTip(_failureDisplayTip);
                 return;
             }
             if (!moonProgressiveScrap.MoonReference.TryResolve(out DawnMoonInfo definition))

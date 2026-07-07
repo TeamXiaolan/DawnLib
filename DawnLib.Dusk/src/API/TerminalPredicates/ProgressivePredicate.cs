@@ -76,7 +76,7 @@ public class ProgressivePredicate : DuskTerminalPredicate
 
         if (displayTip != null)
         {
-            HUDManager.Instance.DisplayTip(displayTip);
+            HUDManagerRefs.Instance.DisplayTip(displayTip);
         }
     }
 

@@ -38,10 +38,10 @@ public class ForceScanColorOnItem : MonoBehaviour
             HandleChangingColor(rectTransform);
         }
 
-        if (!HUDManager.Instance.scanNodes.ContainsValue(scanNodeProperties))
+        if (!HUDManagerRefs.Instance.scanNodes.ContainsValue(scanNodeProperties))
             return;
 
-        foreach (var (key, value) in HUDManager.Instance.scanNodes)
+        foreach (var (key, value) in HUDManagerRefs.Instance.scanNodes)
         {
             if (value == scanNodeProperties)
             {
