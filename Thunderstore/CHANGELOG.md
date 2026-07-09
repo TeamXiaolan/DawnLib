@@ -10,6 +10,11 @@
 - Added a tag to moons that support weather `SupportsWeather`, this is decided by checking whether the moon is both a company moon has any `randomWeathers` set to it.
 - Added more information related to issues such as incorrect folder structure.
 - Added the ability to set your custom surface to be snowy footprints compatible.
+- Added SisterRandomScrapSpawn component for more control over spawning items in interiors.
+- Added `RoundLoadingSteps` registry.
+  - This allows you to "depend" and run code after certain parts of base game's loading steps.
+  - This will allow you to edit the `ENTERING THE ATMOSPHERE` UI, text, etc.
+  - i.e. You create a mod that waits for each player to do a certain action after the interior generates, so you'd depend on the interior generation and run an async func that can edit the text to something like "`3/4` players ready".
 
 ## TODO
 
