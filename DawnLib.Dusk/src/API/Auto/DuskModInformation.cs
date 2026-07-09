@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "Mod Information", menuName = $"{DuskModConstants.MenuName}/Mod Information", order = DuskModConstants.DuskModInfoOrder)]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4099-b2-registering-via-unity-editor/")]
 public class DuskModInformation : ScriptableObject
 {
     [field: SerializeField]

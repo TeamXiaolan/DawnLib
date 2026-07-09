@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Dungeon Definition", menuName = $"{DuskModConstants.Definitions}/Dungeon Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4730-interiors-editor-setup/")]
 public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 {
     [field: SerializeField]

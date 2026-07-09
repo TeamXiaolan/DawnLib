@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Instant Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Instant Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4107-d1-achievements/")]
 public class DuskInstantAchievement : DuskAchievementDefinition
 {
     [field: SerializeField]
