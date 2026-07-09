@@ -37,7 +37,11 @@ static class MiscFixesPatch
         // TODO end
         LethalContent.Dungeons.OnFreeze += FixTileSetSockets;
         LethalContent.Items.OnFreeze += FixItemSpawnPositionTypes;
-        IL.GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot += FixVariousErrors;
+        using (new DetourContext(priority: 999))
+        {
+            IL.GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot += FixVariousErrors;
+        }
+
         On.MenuManager.Awake += PatchTerminalFormatter;
     }
 
@@ -86,11 +90,12 @@ static class MiscFixesPatch
             return;
         }
 
+        int insertIndex = cursor.Index;
+
         cursor.Emit(OpCodes.Ldloc, 0);
         cursor.EmitDelegate((PlayerControllerB playerControllerB, GrabbableObject grabbableObject) =>
         {
-            playerControllerB.carryWeight = Mathf.Clamp(playerControllerB.carryWeight - (grabbableObject.itemProperties.weight - 1f), 1f, 10f);
-            if (playerControllerB.IsLocalPlayer())
+            if (playerControllerB.IsLocalPlayer)
             {
                 StartOfRoundRefs.Instance.SendChangedWeightEvent();
             }
@@ -102,24 +107,40 @@ static class MiscFixesPatch
             il => il.MatchLdarg(0),
             il => il.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.carryWeight)),
             il => il.MatchLdarg(0),
-            il => il.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.currentlyHeldObjectServer)),
-            il => il.MatchLdfld<GrabbableObject>(nameof(GrabbableObject.itemProperties)),
-            il => il.MatchLdfld<Item>(nameof(Item.weight)),
-            il => il.MatchLdcR4(1),
-            il => il.MatchSub(),
-            il => il.MatchSub(),
-            il => il.MatchLdcR4(1),
+            il => il.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.currentlyHeldObjectServer))))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot (2) IL.");
+            return;
+        }
+        int startIndex = cursor.Index;
+
+        if (!cursor.TryGotoNext(MoveType.After,
             il => il.MatchLdcR4(10),
             il => il.MatchCall<Mathf>(nameof(Mathf.Clamp)),
             il => il.MatchStfld<PlayerControllerB>(nameof(PlayerControllerB.carryWeight))
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot (2) IL.");
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot (3) IL.");
             return;
         }
+        int endIndex = cursor.Index;
 
-        cursor.RemoveRange(14);
+        List<Instruction> instructions = new();
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            instructions.Add(il.Instrs[i]);
+        }
 
+        cursor.Index = startIndex;
+        cursor.RemoveRange(endIndex - startIndex);
+
+        cursor.Index = insertIndex;
+        foreach (Instruction instruction in instructions)
+        {
+            cursor.Emit(instruction.OpCode, instruction.Operand);
+        }
+
+        cursor.Index = endIndex;
         if (!cursor.TryGotoNext(MoveType.Before,
             il => il.MatchLdfld<HUDManager>(nameof(HUDManager.itemSlotIcons)),
             il => il.MatchLdarg(1),
@@ -128,7 +149,7 @@ static class MiscFixesPatch
             il => il.MatchCallvirt<Behaviour>($"set_{nameof(Behaviour.enabled)}")
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot (3) IL.");
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot (4) IL.");
             return;
         }
 

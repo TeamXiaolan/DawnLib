@@ -1,4 +1,8 @@
-# v0.9.24
+# v0.9.25
+
+- Fixed incompat with Lategame Upgrades.
+
+## v0.9.24
 
 - Added null-safety checks to `LethalQuantitiesCompat` and `TerminalFormatterCompat` to prevent a crash when a dependency updates and renames an internal method.
 - Fixed a minor issue with moons's Route nodes that was missing a value (did not cause any issues in game as far as I know).
