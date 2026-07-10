@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Dawn.Utils;
 using Unity.Netcode;
@@ -98,5 +99,71 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     public void BroadcastDisplayTipClientRpc(HUDDisplayTip displayTip)
     {
         HUDManagerRefs.Instance.DisplayTip(displayTip);
+    }
+
+    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    internal void StartScrapLoadingRpc()
+    {
+        DawnRoundLoadingStepInfo scrapLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.ScrapLoading];
+        scrapLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+    }
+
+    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    internal void FinishScrapLoadingRpc()
+    {
+        FinishScrapLoading();
+    }
+
+    private async void FinishScrapLoading()
+    {
+        DawnRoundLoadingStepInfo scrapLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.ScrapLoading];
+        List<DawnRoundLoadingStepInfo> dependencies = scrapLoadingStepEntry.GetOrderedDependants();
+        foreach (DawnRoundLoadingStepInfo dependency in dependencies)
+        {
+            await dependency.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+        }
+
+        InformServerFinishedScrapLoadingRpc();
+    }
+
+    private int _clientsFinished = 0;
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    private void InformServerFinishedScrapLoadingRpc()
+    {
+        _clientsFinished++;
+        if (_clientsFinished >= GameNetworkManager.Instance.connectedPlayers)
+        {
+            ServerSpawnMapObjects();
+        }
+    }
+
+    private void ServerSpawnMapObjects()
+    {
+        RoundManagerRefs.Instance.SpawnMapObjects();
+    }
+
+    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    internal void StartInsideMapObjectsLoadingRpc()
+    {
+        DawnRoundLoadingStepInfo insideMapObjectLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InsideMapObjectLoading];
+        insideMapObjectLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+    }
+
+    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    internal void FinishInsideMapObjectsLoadingRpc()
+    {
+        FinishInsideMapObjectsLoading();
+    }
+
+    private async void FinishInsideMapObjectsLoading()
+    {
+        DawnRoundLoadingStepInfo insideMapObjectLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InsideMapObjectLoading];
+        List<DawnRoundLoadingStepInfo> dependencies = insideMapObjectLoadingStepEntry.GetOrderedDependants();
+        foreach (DawnRoundLoadingStepInfo dependency in dependencies)
+        {
+            await dependency.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+        }
+
+        RoundLoadingStepRegistrationHandler.scrapAndMapObjectsSpawned = true;
     }
 }

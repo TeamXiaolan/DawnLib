@@ -10,6 +10,9 @@
   "RoundLoadingStepKeys": {
     "__type": "DawnRoundLoadingStepInfo",
     "InteriorLoading": "lethal_company:interior_loading",
-    "CurrentLevelSceneLoading": "lethal_company:current_level_scene_loading"
+    "CurrentLevelSceneLoading": "lethal_company:current_level_scene_loading",
+    "ScrapLoading": "lethal_company:scrap_loading",
+    "InsideMapObjectLoading": "lethal_company:inside_map_object_loading",
+    "OutsideMapObjectLoading": "lethal_company:outside_map_object_loading"
   }
 }

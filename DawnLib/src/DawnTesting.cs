@@ -15,23 +15,27 @@ internal class DawnTesting
     }
 
     [LoadingStepHardDependency("lethal_company", "interior_loading")]
-    private static Task ExampleLoadingStep1(ILoadingContext context)
+    private static async Task ExampleLoadingStep1(ILoadingContext context)
     {
         DawnPlugin.Logger.LogFatal("Loading example_loading_step1...");
-        return Task.CompletedTask;
+        await Task.Delay(5000);
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step1... awaited!!!");
     }
 
-    [LoadingStepHardDependency("dawn_lib", "example_loading_step1")]
-    private static Task ExampleLoadingStep2(ILoadingContext context)
+    [LoadingStepHardDependency("lethal_company", "inside_map_object_loading")]
+    private static async Task ExampleLoadingStep2(ILoadingContext context)
     {
         DawnPlugin.Logger.LogFatal("Loading example_loading_step2...");
-        return Task.CompletedTask;
+        await Task.Delay(5000);
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step2... awaited!!!");
     }
 
-    private static Task ExampleLoadingStep3(ILoadingContext context)
+    [LoadingStepHardDependency("lethal_company", "scrap_loading")]
+    private static async Task ExampleLoadingStep3(ILoadingContext context)
     {
         DawnPlugin.Logger.LogFatal("Loading example_loading_step3...");
-        return Task.CompletedTask;
+        await Task.Delay(5000);
+        DawnPlugin.Logger.LogFatal("Loading example_loading_step3... awaited!!!");
     }
 
     [LoadingStepSoftDependency("lethal_company", "current_level_scene_loading")]

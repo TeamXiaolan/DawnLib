@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,7 @@ using Dawn.Internal;
 using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,7 +31,79 @@ static class RoundLoadingStepRegistrationHandler
 
         IL.StartOfRound.SceneManager_OnLoad += StartInjectSceneLoadingStep;
         IL.StartOfRound.SceneManager_OnLoadComplete1 += FinishInjectSceneLoadingStep;
+
+        MethodInfo loadNewLevelWait = AccessTools.Method(typeof(RoundManager), nameof(RoundManager.LoadNewLevelWait), [typeof(int)]);
+        MethodInfo moveNext = AccessTools.EnumeratorMoveNext(loadNewLevelWait);
+        DawnPlugin.ILHooks.Add(new ILHook(moveNext, WaitUntilScrapAndMapObjectsSpawn));
+        IL.RoundManager.GeneratedFloorPostProcessing += RemoveSpawnMapObjectsCall;
+        On.RoundManager.SpawnScrapInLevel += StartInjectScrapLoadingStep;
+        On.RoundManager.SpawnMapObjects += StartInjectMapObjectsLoadingStep;
     }
+
+    private static void StartInjectScrapLoadingStep(On.RoundManager.orig_SpawnScrapInLevel orig, RoundManager self)
+    {
+        DawnNetworker.Instance?.StartScrapLoadingRpc();
+        orig(self);
+        DawnNetworker.Instance?.FinishScrapLoadingRpc();
+    }
+
+    private static void StartInjectMapObjectsLoadingStep(On.RoundManager.orig_SpawnMapObjects orig, RoundManager self)
+    {
+        DawnNetworker.Instance?.StartInsideMapObjectsLoadingRpc();
+        orig(self);
+        DawnNetworker.Instance?.FinishInsideMapObjectsLoadingRpc();
+    }
+
+    private static void RemoveSpawnMapObjectsCall(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        cursor.EmitDelegate(() =>
+        {
+            scrapAndMapObjectsSpawned = false;
+        });
+
+        if (!cursor.TryGotoNext(MoveType.Before,
+            il => il.MatchLdarg(0),
+            il => il.MatchCall<RoundManager>(nameof(RoundManager.SpawnMapObjects))))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match RoundManager.GeneratedFloorPostProcessing (1) IL.");
+            return;
+        }
+
+        cursor.RemoveRange(2);
+    }
+
+    private static void WaitUntilScrapAndMapObjectsSpawn(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchBrfalse(out _),
+            il => il.MatchLdloc(1),
+            il => il.MatchCall<RoundManager>(nameof(RoundManager.GeneratedFloorPostProcessing)),
+            il => il.MatchLdarg(0)
+        ))
+        {
+            DawnPlugin.Logger.LogError("Couldn't match RoundManager.LoadNewLevelWait (1) IL.");
+            return;
+        }
+
+        cursor.Remove();
+        cursor.EmitDelegate(GetPostProcessingYield);
+    }
+
+    private static object GetPostProcessingYield()
+    {
+        return WaitAfterScrapAndMapObjectSpawn();
+    }
+
+    private static IEnumerator WaitAfterScrapAndMapObjectSpawn()
+    {
+        yield return new WaitUntil(() => scrapAndMapObjectsSpawned);
+        yield return null;
+    }
+
+    internal static bool scrapAndMapObjectsSpawned = false;
 
     private static void StartInjectSceneLoadingStep(ILContext il)
     {
@@ -106,6 +180,12 @@ static class RoundLoadingStepRegistrationHandler
 
     private static async void FinishSceneLoadingStep(StartOfRound startOfRound, ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
     {
+        startOfRound.ClientPlayerList.TryGetValue(clientId, out int playerIndex);
+        if (playerIndex != 0 && startOfRound.IsServer)
+        {
+            return;
+        }
+
         _playerLoadedIntoScene.SetResult(null);
 
         DawnRoundLoadingStepInfo sceneLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.CurrentLevelSceneLoading];
@@ -206,7 +286,17 @@ static class RoundLoadingStepRegistrationHandler
     {
         DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InteriorLoading, InteriorLoading, _ => { }, true);
         DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.CurrentLevelSceneLoading, CurrentLevelSceneLoading, _ => { }, true);
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.ScrapLoading, ScrapLoading, _ => { }, true);
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InsideMapObjectLoading, InsideMapObjectLoading, _ => { }, true);
         // DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior"), InteriorLoading, _ => { }, true);
+    }
+
+    private static async Task InsideMapObjectLoading(ILoadingContext context)
+    {
+    }
+
+    private static async Task ScrapLoading(ILoadingContext context)
+    {
     }
 
     private static TaskCompletionSource<object?> _playerLoadedIntoScene = new();

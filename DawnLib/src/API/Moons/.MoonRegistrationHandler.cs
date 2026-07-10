@@ -812,7 +812,7 @@ static class MoonRegistrationHandler
         while (enumerator.MoveNext())
         {
             yield return enumerator.Current;
-            if (enumerator.Current is WaitForSeconds wfs && Mathf.Approximately(wfs.m_Seconds, self.currentLevel.timeToArrive) && DawnMoonNetworker.IsNotNull)
+            if (enumerator.Current is WaitForSeconds wfs && wfs.m_Seconds == self.currentLevel.timeToArrive && DawnMoonNetworker.IsNotNull)
             {
                 yield return new WaitUntil(() => DawnMoonNetworker.Instance.allPlayersDone);
             }
