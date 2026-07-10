@@ -32,6 +32,7 @@ public static class HUDManagerRefs
 
                 MainLoadingBackground = _instance.LoadingScreen.transform.Find("TextBG").GetComponent<Image>();
                 MainLoadingText = _instance.LoadingScreen.transform.Find("LoadText").GetComponent<TextMeshProUGUI>();
+                MainLoadingTextEffect = MainLoadingText.GetComponent<TextEffect>();
                 MainTextEffectColor = (Effect_Color)((Effect_Composite)MainLoadingTextEffect.globalEffects[0].effect).effects[0];
                 SecondaryLoadingText = _instance.loadingText;
             }

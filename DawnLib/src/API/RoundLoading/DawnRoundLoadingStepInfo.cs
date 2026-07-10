@@ -15,58 +15,41 @@ public sealed class DawnRoundLoadingStepInfo : DawnBaseInfo<DawnRoundLoadingStep
         Callback = callback;
 
         MethodInfo method = callback.Method;
+        HardDependencies = method
+            .GetCustomAttributes<LoadingStepHardDependencyAttribute>()
+            .Select(attribute => attribute.Dependency)
+            .ToArray();
 
-        LoadingStepHardDependencyAttribute[] hardDependencyAttributes = method.GetCustomAttributes<LoadingStepHardDependencyAttribute>().ToArray();
-        LoadingStepSoftDependencyAttribute[] softDependencyAttributes = method.GetCustomAttributes<LoadingStepSoftDependencyAttribute>().ToArray();
-
-        NamespacedKey[] hardDependencies = new NamespacedKey[hardDependencyAttributes.Length];
-        foreach ((int index, LoadingStepHardDependencyAttribute attribute) in hardDependencyAttributes.WithIndex())
-        {
-            hardDependencies[index] = attribute.Dependency;
-        }
-
-        NamespacedKey[] softDependencies = new NamespacedKey[softDependencyAttributes.Length];
-        foreach ((int index, LoadingStepSoftDependencyAttribute attribute) in softDependencyAttributes.WithIndex())
-        {
-            softDependencies[index] = attribute.Dependency;
-        }
-
-        HardDependencies = hardDependencies;
-        SoftDependencies = softDependencies;
+        SoftDependencies = method
+            .GetCustomAttributes<LoadingStepSoftDependencyAttribute>()
+            .Select(attribute => attribute.Dependency)
+            .ToArray();
     }
 
     public Func<ILoadingContext, Task> Callback { get; }
     public NamespacedKey[] HardDependencies { get; }
     public NamespacedKey[] SoftDependencies { get; }
 
-    // The idea is that the different steps are only created by dawnlib for vanilla, which others would have to inherently rely on, i.e. relying on `DawnKeys.InteriorLoadingStep`
-    public List<DawnRoundLoadingStepInfo> GetOrderedDependencies()
+    public List<DawnRoundLoadingStepInfo> GetOrderedDependants()
     {
-        foreach ((int index, DawnRoundLoadingStepInfo entry) in RoundLoadingStepRegistrationHandler.orderedRoundLoadingSteps.WithIndex())
+        List<DawnRoundLoadingStepInfo> dependants = [];
+        HashSet<NamespacedKey> reachableKeys = [Key];
+
+        foreach (DawnRoundLoadingStepInfo entry in RoundLoadingStepRegistrationHandler.orderedRoundLoadingSteps)
         {
-            if (entry.Equals(this))
+            bool dependsOnReachableStep = entry.HardDependencies
+                .Concat(entry.SoftDependencies)
+                .Any(reachableKeys.Contains);
+
+            if (!dependsOnReachableStep)
             {
-                List<DawnRoundLoadingStepInfo> nextEntries = new();
-                if (RoundLoadingStepRegistrationHandler.orderedRoundLoadingSteps.Count == index + 1)
-                {
-                    return nextEntries;
-                }
-
-                for (int i = index + 1; i < RoundLoadingStepRegistrationHandler.orderedRoundLoadingSteps.Count; i++)
-                {
-                    DawnRoundLoadingStepInfo nextEntry = RoundLoadingStepRegistrationHandler.orderedRoundLoadingSteps[i];
-                    if (nextEntry.Key.Namespace == NamespacedKey.VanillaNamespace)
-                    {
-                        return nextEntries;
-                    }
-
-                    nextEntries.Add(RoundLoadingStepRegistrationHandler.orderedRoundLoadingSteps[i]);
-                }
-
-                return nextEntries;
+                continue;
             }
+
+            dependants.Add(entry);
+            reachableKeys.Add(entry.Key);
         }
 
-        throw new ArgumentException($"Could not find round loading step entry with key '{Key}'.");
+        return dependants;
     }
 }

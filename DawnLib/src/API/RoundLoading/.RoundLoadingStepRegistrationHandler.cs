@@ -8,6 +8,7 @@ using HarmonyLib;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Dawn;
 
@@ -15,6 +16,7 @@ static class RoundLoadingStepRegistrationHandler
 {
     internal static List<DawnRoundLoadingStepInfo> orderedRoundLoadingSteps = new();
     private static bool _dungeonCompletionInProgress = true;
+    private static bool _sceneLoadingInProgress = true;
 
     internal static void Init()
     {
@@ -24,21 +26,123 @@ static class RoundLoadingStepRegistrationHandler
 
         IL.RoundManager.GenerateNewLevelClientRpc += StartInjectInteriorLoadingStep;
         IL.RoundManager.FinishGeneratingNewLevelClientRpc += FinishInjectInteriorLoadingStep;
+
+        IL.StartOfRound.SceneManager_OnLoad += StartInjectSceneLoadingStep;
+        IL.StartOfRound.SceneManager_OnLoadComplete1 += FinishInjectSceneLoadingStep;
+    }
+
+    private static void StartInjectSceneLoadingStep(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(MoveType.Before,
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.loadingText)),
+            il => il.MatchLdcI4(1),
+            il => il.MatchCallvirt<UnityEngine.Behaviour>("set_enabled"),
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.loadingText)),
+            il => il.MatchLdstr("LOADING WORLD..."),
+            il => il.MatchCallvirt<TMPro.TMP_Text>("set_text")))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match StartOfRound.SceneManager_OnLoad (1) IL.");
+            return;
+        }
+
+        cursor.Index++;
+        cursor.RemoveRange(7);
+        cursor.EmitDelegate(HandleSceneLoadingStep);
+    }
+
+    private static void FinishInjectSceneLoadingStep(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(MoveType.After,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<StartOfRound>(nameof(StartOfRound.shipDoorsEnabled)),
+            il => il.MatchBrtrue(out _),
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.loadingText)),
+            il => il.MatchLdcI4(1),
+            il => il.MatchCallvirt<UnityEngine.Behaviour>("set_enabled"),
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.LoadingScreen)),
+            il => il.MatchLdstr("IsLoading"),
+            il => il.MatchLdcI4(1),
+            il => il.MatchCallvirt<UnityEngine.Animator>(nameof(UnityEngine.Animator.SetBool)),
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.loadingText)),
+            il => il.MatchLdstr("Waiting for crew..."),
+            il => il.MatchCallvirt<TMPro.TMP_Text>("set_text")))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match StartOfRound.SceneManager_OnLoadComplete1 (1) IL.");
+            return;
+        }
+
+        FieldInfo sceneLoadingInProgressField = AccessTools.Field(typeof(RoundLoadingStepRegistrationHandler), nameof(RoundLoadingStepRegistrationHandler._sceneLoadingInProgress));
+
+        ILLabel continueVanilla = cursor.DefineLabel();
+
+        cursor.Emit(OpCodes.Ldsfld, sceneLoadingInProgressField);
+        cursor.Emit(OpCodes.Brfalse_S, continueVanilla);
+
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldarg_1);
+        cursor.Emit(OpCodes.Ldarg_2);
+        cursor.Emit(OpCodes.Ldarg_3);
+        cursor.EmitDelegate(FinishSceneLoadingStep);
+        cursor.Emit(OpCodes.Ret);
+
+        cursor.MarkLabel(continueVanilla);
+    }
+
+    private static void HandleSceneLoadingStep(HUDManager hudManager)
+    {
+        DawnRoundLoadingStepInfo sceneLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.CurrentLevelSceneLoading];
+        sceneLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+        _sceneLoadingInProgress = true;
+        hudManager.LoadingScreen.SetBool(IsLoadingHash, true);
+        hudManager.loadingText.enabled = true;
+    }
+
+    private static async void FinishSceneLoadingStep(StartOfRound startOfRound, ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
+    {
+        _playerLoadedIntoScene.SetResult(null);
+
+        DawnRoundLoadingStepInfo sceneLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.CurrentLevelSceneLoading];
+        List<DawnRoundLoadingStepInfo> dependencies = sceneLoadingStepEntry.GetOrderedDependants();
+        foreach (DawnRoundLoadingStepInfo dependency in dependencies)
+        {
+            await dependency.Callback.Invoke(new EnteringAtmosphereLoadingContext());
+        }
+
+        _sceneLoadingInProgress = false;
+        startOfRound.SceneManager_OnLoadComplete1(clientId, sceneName, loadSceneMode);
     }
 
     static void StartInjectInteriorLoadingStep(ILContext il)
     {
         ILCursor cursor = new(il);
         if (!cursor.TryGotoNext(MoveType.Before,
-            il => il.MatchLdarg(0),
-            il => il.MatchLdcI4(0),
-            il => il.MatchStfld<RoundManager>(nameof(RoundManager.dungeonCompletedGenerating))
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.loadingText)),
+            il => il.MatchLdstr("Random seed: {0}"),
+            il => il.MatchLdarg(1),
+            il => il.MatchBox(typeof(System.Int32)),
+            il => il.MatchCall<System.String>("Format"),
+            il => il.MatchCallvirt<TMPro.TMP_Text>("set_text"),
+            il => il.MatchCall<HUDManager>("get_Instance"),
+            il => il.MatchLdfld<HUDManager>(nameof(HUDManager.LoadingScreen)),
+            il => il.MatchLdstr("IsLoading"),
+            il => il.MatchLdcI4(1),
+            il => il.MatchCallvirt<UnityEngine.Animator>(nameof(UnityEngine.Animator.SetBool))
             ))
         {
             DawnPlugin.Logger.LogError($"Couldn't match RoundManager.GenerateNewLevelClientRpc (1) IL.");
             return;
         }
 
+        cursor.Index++;
+        cursor.RemoveRange(11);
         cursor.EmitDelegate(HandleInteriorLoadingStep);
     }
 
@@ -75,17 +179,19 @@ static class RoundLoadingStepRegistrationHandler
         cursor.MarkLabel(continueVanilla);
     }
 
-    static void HandleInteriorLoadingStep()
+    private static readonly int IsLoadingHash = Animator.StringToHash("IsLoading"); // Bool
+    static void HandleInteriorLoadingStep(HUDManager hudManager)
     {
         DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InteriorLoading];
         interiorLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
         _dungeonCompletionInProgress = true;
+        hudManager.LoadingScreen.SetBool(IsLoadingHash, true);
     }
 
-    static async void FinishInteriorLoadingStep(RoundManager roundManager)
+    private static async void FinishInteriorLoadingStep(RoundManager roundManager)
     {
         DawnRoundLoadingStepInfo interiorLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InteriorLoading];
-        List<DawnRoundLoadingStepInfo> dependencies = interiorLoadingStepEntry.GetOrderedDependencies();
+        List<DawnRoundLoadingStepInfo> dependencies = interiorLoadingStepEntry.GetOrderedDependants();
         foreach (DawnRoundLoadingStepInfo dependency in dependencies)
         {
             await dependency.Callback.Invoke(new EnteringAtmosphereLoadingContext());
@@ -95,28 +201,50 @@ static class RoundLoadingStepRegistrationHandler
         roundManager.FinishGeneratingNewLevelClientRpc();
     }
 
-    #region Vanilla Round Loading Steps
+    #region Vanilla Loading Steps
     private static void RegisterVanillaRoundLoadingSteps()
     {
         DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InteriorLoading, InteriorLoading, _ => { }, true);
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.CurrentLevelSceneLoading, CurrentLevelSceneLoading, _ => { }, true);
         // DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior"), InteriorLoading, _ => { }, true);
+    }
+
+    private static TaskCompletionSource<object?> _playerLoadedIntoScene = new();
+    static async Task CurrentLevelSceneLoading(ILoadingContext context)
+    {
+        ColorUtility.TryParseHtmlString("#3D4A5B", out Color mainTextStartColor);
+        ColorUtility.TryParseHtmlString("#7DB5BE", out Color mainTextEndColor);
+        ColorUtility.TryParseHtmlString("#465A6F8D", out Color secondaryTextColor);
+        ColorUtility.TryParseHtmlString("#0F171F9F", out Color backgroundColor);
+
+        context.SetMainText("ENTERING THE ATMOSPHERE...");
+        context.SetMainTextColor(mainTextStartColor, mainTextEndColor);
+        context.SetSecondaryText($"LOADING WORLD...");
+        context.SetSecondaryTextColor(secondaryTextColor);
+        context.SetBackgroundColor(backgroundColor);
+
+        _playerLoadedIntoScene = new();
+        await _playerLoadedIntoScene.Task;
+
+        context.SetMainText("ENTERING THE ATMOSPHERE...");
+        context.SetMainTextColor(mainTextStartColor, mainTextEndColor);
+        context.SetSecondaryText($"Waiting for crew...");
+        context.SetSecondaryTextColor(secondaryTextColor);
+        context.SetBackgroundColor(backgroundColor);
     }
 
     static Task InteriorLoading(ILoadingContext context)
     {
-        // TODO: do this before the UI appears so the colour doesnt change awkwardly
-        context.SetMainText("ENTERING THE ATMOSPHERE...");
         ColorUtility.TryParseHtmlString("#3D4A5B", out Color mainTextStartColor);
         ColorUtility.TryParseHtmlString("#7DB5BE", out Color mainTextEndColor);
-        context.SetMainTextColor(mainTextStartColor, mainTextEndColor);
-
-        context.SetSecondaryText($"Random seed: {StartOfRoundRefs.Instance.randomMapSeed}");
         ColorUtility.TryParseHtmlString("#465A6F8D", out Color secondaryTextColor);
-        context.SetSecondaryTextColor(secondaryTextColor);
-
         ColorUtility.TryParseHtmlString("#0F171F9F", out Color backgroundColor);
+
+        context.SetMainText("ENTERING THE ATMOSPHERE...");
+        context.SetMainTextColor(mainTextStartColor, mainTextEndColor);
+        context.SetSecondaryText($"Random seed: {StartOfRoundRefs.Instance.randomMapSeed}");
+        context.SetSecondaryTextColor(secondaryTextColor);
         context.SetBackgroundColor(backgroundColor);
-        DawnPlugin.Logger.LogFatal("Loading interior...");
         return Task.CompletedTask;
     }
     #endregion
@@ -124,16 +252,15 @@ static class RoundLoadingStepRegistrationHandler
     #region Sorting
     private static void SortRoundLoadingSteps()
     {
-        Dictionary<NamespacedKey, DawnRoundLoadingStepInfo> entriesByKey = [];
+        Dictionary<NamespacedKey, DawnRoundLoadingStepInfo> eligibleByKey = [];
+
         foreach (DawnRoundLoadingStepInfo entry in LethalContent.RoundLoadingSteps.Values)
         {
-            if (!entriesByKey.TryAdd(entry.Key, entry))
+            if (!eligibleByKey.TryAdd(entry.Key, entry))
             {
                 DawnPlugin.Logger.LogWarning($"Duplicate round loading step key registered: {entry.Key}");
             }
         }
-
-        Dictionary<NamespacedKey, DawnRoundLoadingStepInfo> eligibleByKey = new(entriesByKey);
 
         bool removedAny;
         do
@@ -142,82 +269,22 @@ static class RoundLoadingStepRegistrationHandler
 
             foreach (DawnRoundLoadingStepInfo entry in eligibleByKey.Values.ToArray())
             {
-                foreach (NamespacedKey dependency in entry.HardDependencies)
+                NamespacedKey? missingDependency = entry.HardDependencies.FirstOrDefault(dependency => !eligibleByKey.ContainsKey(dependency));
+                if (missingDependency == null)
                 {
-                    if (eligibleByKey.ContainsKey(dependency))
-                    {
-                        continue;
-                    }
-
-                    DawnPlugin.Logger.LogError($"Round loading step {entry.Key} was removed because hard dependency {dependency} is missing or unavailable.");
-
-                    eligibleByKey.Remove(entry.Key);
-                    removedAny = true;
-                    break;
+                    continue;
                 }
+
+                DawnPlugin.Logger.LogError($"Round loading step {entry.Key} was removed because hard dependency {missingDependency} is missing or unavailable.");
+
+                eligibleByKey.Remove(entry.Key);
+                removedAny = true;
             }
         }
         while (removedAny);
 
-        Dictionary<DawnRoundLoadingStepInfo, HashSet<DawnRoundLoadingStepInfo>> stepToDependencies = [];
-
-        foreach (DawnRoundLoadingStepInfo entry in eligibleByKey.Values)
-        {
-            HashSet<DawnRoundLoadingStepInfo> dependencies = [];
-
-            foreach (NamespacedKey dependency in entry.HardDependencies)
-            {
-                if (eligibleByKey.TryGetValue(dependency, out DawnRoundLoadingStepInfo? dependencyEntry))
-                {
-                    dependencies.Add(dependencyEntry);
-                }
-            }
-
-            foreach (NamespacedKey dependency in entry.SoftDependencies)
-            {
-                if (eligibleByKey.TryGetValue(dependency, out DawnRoundLoadingStepInfo? dependencyEntry))
-                {
-                    dependencies.Add(dependencyEntry);
-                }
-            }
-
-            stepToDependencies[entry] = dependencies;
-        }
-
-        List<DawnRoundLoadingStepInfo> sorted = [];
-
-        while (stepToDependencies.Count > 0)
-        {
-            List<DawnRoundLoadingStepInfo> ready = stepToDependencies
-                .Where(pair => pair.Value.Count == 0)
-                .Select(pair => pair.Key)
-                .OrderBy(entry => entry.Key.Key)
-                .ThenBy(entry => entry.Key.Namespace)
-                .ToList();
-
-            if (ready.Count == 0)
-            {
-                DawnPlugin.Logger.LogError("Circular round loading step dependency detected.");
-                LogCircularDependency(stepToDependencies);
-
-                // sorted.AddRange(stepToDependencies.Keys.OrderBy(entry => entry.NamespacedKey.Key).ThenBy(entry => entry.NamespacedKey.Namespace));
-                break;
-            }
-
-            foreach (DawnRoundLoadingStepInfo entry in ready)
-            {
-                sorted.Add(entry);
-                stepToDependencies.Remove(entry);
-
-                foreach (HashSet<DawnRoundLoadingStepInfo> dependencies in stepToDependencies.Values)
-                {
-                    dependencies.Remove(entry);
-                }
-            }
-        }
-
         orderedRoundLoadingSteps.Clear();
-        orderedRoundLoadingSteps.AddRange(sorted);
+        orderedRoundLoadingSteps.AddRange(SortSteps(eligibleByKey.Values.ToArray()));
 
         DawnPlugin.Logger.LogInfo($"Finished sorting {orderedRoundLoadingSteps.Count} round loading steps.");
 
@@ -227,6 +294,82 @@ static class RoundLoadingStepRegistrationHandler
         }
 
         LethalContent.RoundLoadingSteps.Freeze();
+    }
+
+    private static List<DawnRoundLoadingStepInfo> SortSteps(IReadOnlyCollection<DawnRoundLoadingStepInfo> entries)
+    {
+        Dictionary<NamespacedKey, DawnRoundLoadingStepInfo> entriesByKey = entries.ToDictionary(entry => entry.Key);
+
+        Dictionary<DawnRoundLoadingStepInfo, int> remainingDependencies = [];
+        Dictionary<DawnRoundLoadingStepInfo, List<DawnRoundLoadingStepInfo>> dependants = [];
+
+        foreach (DawnRoundLoadingStepInfo entry in entries)
+        {
+            remainingDependencies[entry] = 0;
+            dependants[entry] = [];
+        }
+
+        foreach (DawnRoundLoadingStepInfo entry in entries)
+        {
+            foreach (NamespacedKey dependencyKey in entry.HardDependencies.Concat(entry.SoftDependencies))
+            {
+                if (!entriesByKey.TryGetValue(dependencyKey, out DawnRoundLoadingStepInfo? dependency))
+                {
+                    continue;
+                }
+
+                remainingDependencies[entry]++;
+                dependants[dependency].Add(entry);
+            }
+        }
+
+        Stack<DawnRoundLoadingStepInfo> ready = new(
+            entries.Where(entry => remainingDependencies[entry] == 0).Reverse()
+        );
+
+        List<DawnRoundLoadingStepInfo> sorted = [];
+
+        while (ready.TryPop(out DawnRoundLoadingStepInfo? entry))
+        {
+            sorted.Add(entry);
+
+            // Reverse so registration order is preserved when pushing onto the stack.
+            foreach (DawnRoundLoadingStepInfo dependant in dependants[entry].AsEnumerable().Reverse())
+            {
+                remainingDependencies[dependant]--;
+
+                if (remainingDependencies[dependant] == 0)
+                {
+                    ready.Push(dependant);
+                }
+            }
+        }
+
+        if (sorted.Count != entries.Count)
+        {
+            Dictionary<DawnRoundLoadingStepInfo, HashSet<DawnRoundLoadingStepInfo>> unresolved = [];
+
+            foreach (DawnRoundLoadingStepInfo entry in entries)
+            {
+                if (remainingDependencies[entry] == 0)
+                {
+                    continue;
+                }
+
+                unresolved[entry] = entry
+                    .HardDependencies
+                    .Concat(entry.SoftDependencies)
+                    .Select(key => entriesByKey.GetValueOrDefault(key))
+                    .Where(dependency =>
+                        dependency != null &&
+                        remainingDependencies[dependency] > 0)
+                    .ToHashSet()!;
+            }
+
+            LogCircularDependency(unresolved);
+        }
+
+        return sorted;
     }
 
     private enum VisitState

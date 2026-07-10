@@ -9,6 +9,7 @@
   },
   "RoundLoadingStepKeys": {
     "__type": "DawnRoundLoadingStepInfo",
-    "InteriorLoading": "lethal_company:interior_loading"
+    "InteriorLoading": "lethal_company:interior_loading",
+    "CurrentLevelSceneLoading": "lethal_company:current_level_scene_loading"
   }
 }
