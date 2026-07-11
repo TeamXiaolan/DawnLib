@@ -102,13 +102,8 @@ public static class DawnLib
     /// <summary>
     /// Do not use the vanilla namespace.
     /// </summary>
-    public static DawnRoundLoadingStepInfo DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo> loadingKey, Func<ILoadingContext, Task> loadingContextCallback, Action<RoundLoadingStepInfoBuilder> callback, bool bypassVanillaCheck = false)
+    public static DawnRoundLoadingStepInfo DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo> loadingKey, Func<ILoadingContext, Task> loadingContextCallback, Action<RoundLoadingStepInfoBuilder> callback)
     {
-        if (!bypassVanillaCheck && loadingKey.Namespace == NamespacedKey.VanillaNamespace)
-        {
-            throw new ArgumentException("Do not use the vanilla namespace to create round loading steps.");
-        }
-
         RoundLoadingStepInfoBuilder builder = new(loadingKey, loadingContextCallback);
         callback(builder);
         DawnRoundLoadingStepInfo loadingStepInfo = builder.Build();

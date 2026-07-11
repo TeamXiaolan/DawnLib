@@ -2,33 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Dawn.Utils;
 
 namespace Dawn;
 
 public sealed class DawnRoundLoadingStepInfo : DawnBaseInfo<DawnRoundLoadingStepInfo>
 {
-    internal DawnRoundLoadingStepInfo(NamespacedKey<DawnRoundLoadingStepInfo> key, HashSet<NamespacedKey> tags, Func<ILoadingContext, Task> callback, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnRoundLoadingStepInfo(NamespacedKey<DawnRoundLoadingStepInfo> key, HashSet<NamespacedKey> tags, Func<ILoadingContext, Task> callback, List<NamespacedKey> hardDependencies, List<NamespacedKey> softDependencies, IDataContainer? customData) : base(key, tags, customData)
     {
         Callback = callback;
-
-        MethodInfo method = callback.Method;
-        HardDependencies = method
-            .GetCustomAttributes<LoadingStepHardDependencyAttribute>()
-            .Select(attribute => attribute.Dependency)
-            .ToArray();
-
-        SoftDependencies = method
-            .GetCustomAttributes<LoadingStepSoftDependencyAttribute>()
-            .Select(attribute => attribute.Dependency)
-            .ToArray();
+        HardDependencies = hardDependencies;
+        SoftDependencies = softDependencies;
     }
 
     public Func<ILoadingContext, Task> Callback { get; }
-    public NamespacedKey[] HardDependencies { get; }
-    public NamespacedKey[] SoftDependencies { get; }
+    public List<NamespacedKey> HardDependencies { get; }
+    public List<NamespacedKey> SoftDependencies { get; }
 
     public List<DawnRoundLoadingStepInfo> GetOrderedDependants()
     {

@@ -81,20 +81,17 @@ static class RoundLoadingStepRegistrationHandler
             il => il.MatchBrfalse(out _),
             il => il.MatchLdloc(1),
             il => il.MatchCall<RoundManager>(nameof(RoundManager.GeneratedFloorPostProcessing)),
-            il => il.MatchLdarg(0)
+            il => il.MatchLdarg(0),
+            il => il.MatchLdnull()
         ))
         {
             DawnPlugin.Logger.LogError("Couldn't match RoundManager.LoadNewLevelWait (1) IL.");
             return;
         }
 
+        cursor.Index--;
         cursor.Remove();
-        cursor.EmitDelegate(GetPostProcessingYield);
-    }
-
-    private static object GetPostProcessingYield()
-    {
-        return WaitAfterScrapAndMapObjectSpawn();
+        cursor.EmitDelegate(WaitAfterScrapAndMapObjectSpawn);
     }
 
     private static IEnumerator WaitAfterScrapAndMapObjectSpawn()
@@ -284,11 +281,11 @@ static class RoundLoadingStepRegistrationHandler
     #region Vanilla Loading Steps
     private static void RegisterVanillaRoundLoadingSteps()
     {
-        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InteriorLoading, InteriorLoading, _ => { }, true);
-        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.CurrentLevelSceneLoading, CurrentLevelSceneLoading, _ => { }, true);
-        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.ScrapLoading, ScrapLoading, _ => { }, true);
-        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InsideMapObjectLoading, InsideMapObjectLoading, _ => { }, true);
-        // DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior"), InteriorLoading, _ => { }, true);
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InteriorLoading, InteriorLoading, _ => { });
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.CurrentLevelSceneLoading, CurrentLevelSceneLoading, _ => { });
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.ScrapLoading, ScrapLoading, _ => { });
+        DawnLib.DefineRoundLoadingStep(RoundLoadingStepKeys.InsideMapObjectLoading, InsideMapObjectLoading, _ => { });
+        // DawnLib.DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo>.Vanilla("interior"), InteriorLoading, _ => { });
     }
 
     private static async Task InsideMapObjectLoading(ILoadingContext context)
