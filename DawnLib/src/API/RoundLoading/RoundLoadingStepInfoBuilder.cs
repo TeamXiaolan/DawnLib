@@ -6,7 +6,7 @@ namespace Dawn;
 
 public class RoundLoadingStepInfoBuilder : BaseInfoBuilder<DawnRoundLoadingStepInfo, Func<ILoadingContext, Task>, RoundLoadingStepInfoBuilder>
 {
-    private List<NamespacedKey> _hardDependencies, _softDependencies = new();
+    private List<NamespacedKey> _hardDependencies = new(), _softDependencies = new();
     internal RoundLoadingStepInfoBuilder(NamespacedKey<DawnRoundLoadingStepInfo> key, Func<ILoadingContext, Task> value) : base(key, value)
     {
     }

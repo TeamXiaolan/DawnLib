@@ -8,7 +8,7 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace Dawn;
 
-public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
+public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>, IAdditionalResolvableKeys
 {
     internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, int maxDaytimeDiversityPowerCount, int maxWeedEnemyPowerCount, int maxWeedDiversityPowerCount, List<SpawnableEnemyWithRarity> weedEnemies, AnimationCurve weedEnemySpawnChanceThroughDay, float weedEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {
@@ -127,6 +127,14 @@ public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
         }
 
         return returnString;
+    }
+
+    public IEnumerable<NamespacedKey> AdditionalResolvableKeys()
+    {
+        foreach (IMoonSceneInfo moonSceneInfo in Scenes)
+        {
+            yield return moonSceneInfo.Key;
+        }
     }
 
     public DawnPurchaseInfo DawnPurchaseInfo { get; }

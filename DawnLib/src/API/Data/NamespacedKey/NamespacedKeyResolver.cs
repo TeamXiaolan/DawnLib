@@ -71,7 +71,7 @@ public class NamespacedKeyResolver : IDisposable
 
         if (key == null)
         {
-            Debuggers.NamespacedKeys?.Log($"Could not resolve NamespacedKey input '{input}'."); // TODO: warning?
+            Debuggers.NamespacedKeys?.Log($"Could not resolve NamespacedKey input '{input}'.");
             return false;
         }
 
@@ -335,32 +335,34 @@ public class NamespacedKeyResolver<T> : IDisposable where T : INamespaced
                 yield return value.Key;
             }
 
-            if (value is not ITaggable tagged)
+            if (value is ITaggable tagged)
             {
-                continue;
-            }
-
-            foreach (NamespacedKey tag in tagged.AllTags())
-            {
-                if (tag == null)
+                foreach (NamespacedKey tag in tagged.AllTags())
                 {
-                    continue;
-                }
-
-                if (seen.Add(tag))
-                {
-                    yield return tag;
-                }
-            }
-
-            // TODO: adjust this to be better than just casting for specifically dawnmooninfo?
-            if (value is DawnMoonInfo moonInfo)
-            {
-                foreach (IMoonSceneInfo moonSceneInfo in moonInfo.Scenes)
-                {
-                    if (seen.Add(moonSceneInfo.Key))
+                    if (tag == null)
                     {
-                        yield return moonSceneInfo.Key;
+                        continue;
+                    }
+
+                    if (seen.Add(tag))
+                    {
+                        yield return tag;
+                    }
+                }
+            }
+
+            if (value is IAdditionalResolvableKeys additionalKeysProvider)
+            {
+                foreach (NamespacedKey additionalKey in additionalKeysProvider.AdditionalResolvableKeys())
+                {
+                    if (additionalKey == null)
+                    {
+                        continue;
+                    }
+
+                    if (seen.Add(additionalKey))
+                    {
+                        yield return additionalKey;
                     }
                 }
             }
