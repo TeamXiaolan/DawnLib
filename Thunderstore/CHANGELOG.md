@@ -13,8 +13,15 @@
 - Added SisterRandomScrapSpawn component for more control over spawning items in interiors.
 - Added `RoundLoadingSteps` registry.
   - This allows you to "depend" and run code after certain parts of base game's loading steps.
+  - Currently supports the following:
+    - InteriorLoading
+    - InsideMapObjectLoading
+    - ScrapLoading
+    - CurrentLevelSceneLoading
   - This will allow you to edit the `ENTERING THE ATMOSPHERE` UI, text, etc.
   - i.e. You create a mod that waits for each player to do a certain action after the interior generates, so you'd depend on the interior generation and run an async func that can edit the text to something like "`3/4` players ready".
+- Added the ability to rebuild DawnLib's gathered weights on non-dawnlib content (and dawnlib content if you modify the configs).
+  - You'd need to call `DawnWeightSystem.NotifyProfilesChanged` if you want DawnLib to recollect every item's weights etc from moons.
 
 ## TODO
 
@@ -26,6 +33,8 @@
 - Add a sibiling component to RandomScrapSpawn.
   - Add option to prevent Empty ItemGroup items from spawning there.
   - Allows fixing the rotation of spawned items to the spawnedItemsCopyRotation?
+- Add dusk config definitions
+- Make it possible to give spawnsyncobjects a namespacedkey and make a component for spawning em with said namespacedkey.
 
 ## v0.9.23
 
