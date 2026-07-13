@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Internal;
@@ -39,11 +40,34 @@ static class EnemyRegistrationHandler
         {
             On.Terminal.Awake += AddBestiaryNodes;
             On.GameNetworkManager.Start += CollectAllEnemyTypes;
+            On.Terminal.Start += GrabModdedBestiaryNodes;
         }
 
         LethalContent.Moons.OnFreezeWithContext += _ => RegisterEnemies();
         LethalContent.Enemies.OnFreezeWithContext += _ => RedoEnemiesDebugMenu();
         LethalContent.Enemies.OnFreezeWithContext += _ => FixDawnEnemyReferences();
+    }
+
+    private static void GrabModdedBestiaryNodes(On.Terminal.orig_Start orig, Terminal self)
+    {
+        orig(self);
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            ScanNodeProperties scanNodeProperties = enemyInfo.EnemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
+            if (scanNodeProperties != null)
+            {
+                int creatureScanID = scanNodeProperties.creatureScanID;
+                foreach (CompatibleNoun compatibleNoun in TerminalRefs.InfoKeyword.compatibleNouns)
+                {
+                    if (compatibleNoun.result.creatureFileID != creatureScanID)
+                        continue;
+
+                    enemyInfo.BestiaryNode = compatibleNoun.result;
+                    enemyInfo.NameKeyword = compatibleNoun.noun;
+                    break;
+                }
+            }
+        }
     }
 
     private static void StopDawnEnemyResetting(ILContext il)
@@ -202,10 +226,10 @@ static class EnemyRegistrationHandler
     {
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (enemyInfo.ShouldSkipIgnoreOverride() || !enemyInfo.BestiaryNode || !enemyInfo.NameKeyword)
+            if (enemyInfo.ShouldSkipIgnoreOverride() || enemyInfo.BestiaryNode == null || enemyInfo.NameKeyword == null)
                 continue;
 
-            AddScanNodeToBestiaryEvent(enemyInfo.EnemyType.enemyPrefab, enemyInfo.BestiaryNode!, enemyInfo.NameKeyword!);
+            AddScanNodeToBestiaryEvent(enemyInfo.EnemyType.enemyPrefab, enemyInfo.BestiaryNode, enemyInfo.NameKeyword);
         }
         orig(self);
     }
@@ -514,20 +538,6 @@ static class EnemyRegistrationHandler
 
             TerminalNode? bestiaryNode = null;
             TerminalKeyword? nameKeyword = null;
-
-            ScanNodeProperties scanNodeProperties = enemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
-            if (scanNodeProperties != null)
-            {
-                int creatureScanID = scanNodeProperties.creatureScanID;
-                foreach (CompatibleNoun compatibleNoun in infoKeyword.compatibleNouns)
-                {
-                    if (compatibleNoun.result.creatureFileID != creatureScanID)
-                        continue;
-
-                    bestiaryNode = compatibleNoun.result;
-                    nameKeyword = compatibleNoun.noun;
-                }
-            }
 
             DawnEnemyInfo enemyInfo = new(
                 key, tags, enemyType,
