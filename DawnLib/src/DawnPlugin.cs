@@ -68,6 +68,7 @@ public class DawnPlugin : BaseUnityPlugin
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
+        RoundLoadingStepRegistrationHandler.Init();
         HandleCorruptedDataPatch.Init();
         TerminalCommandRegistration.Init();
 
@@ -81,7 +82,7 @@ public class DawnPlugin : BaseUnityPlugin
         ExtraScanEventsPatch.Init();
         DawnCommands.Init();
         SisterRandomScrapSpawn.Init();
-        RoundLoadingStepRegistrationHandler.Init();
+        EntranceTeleportPatches.Init();
 
         // Testing
         // DawnTesting.TestCommands();

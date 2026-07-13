@@ -262,7 +262,7 @@ static class MapObjectRegistrationHandler
         System.Random everyoneRandom = new(StartOfRound.Instance.randomMapSeed + 69);
         System.Random serverOnlyRandom = new(StartOfRound.Instance.randomMapSeed + 6969);
         List<(DawnOutsideMapObjectInfo outsideMapObjectInfo, Vector3 position)> occupiedPositions = new();
-        EntranceTeleport[] entranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+        List<EntranceTeleport> entranceTeleports = DawnNetworker.EntranceTeleports;
         Transform[] shipSpawnPathPoints = RoundManager.Instance.shipSpawnPathPoints;
         GameObject[] spawnDenialPoints = GameObject.FindGameObjectsWithTag("SpawnDenialPoint");
         GameObject itemShipLandingNode = GameObject.FindGameObjectWithTag("ItemShipLandingNode");
@@ -285,7 +285,7 @@ static class MapObjectRegistrationHandler
         _spawnedObjects = 0;
     }
 
-    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<(DawnOutsideMapObjectInfo outsideMapObjectInfo, Vector3 position)> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom, EntranceTeleport[] entranceTeleports, Transform[] shipSpawnPathPoints, GameObject[] spawnDenialPoints, GameObject itemShipLandingNode)
+    private static void HandleSpawningOutsideObjects(DawnOutsideMapObjectInfo outsideInfo, List<(DawnOutsideMapObjectInfo outsideMapObjectInfo, Vector3 position)> occupiedPositions, System.Random everyoneRandom, System.Random serverOnlyRandom, List<EntranceTeleport> entranceTeleports, Transform[] shipSpawnPathPoints, GameObject[] spawnDenialPoints, GameObject itemShipLandingNode)
     {
         if (RoundManager.Instance.outsideAINodes.Length <= outsideInfo.MinimumAINodeSpawnRequirement)
         {
