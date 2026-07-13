@@ -22,6 +22,7 @@
   - i.e. You create a mod that waits for each player to do a certain action after the interior generates, so you'd depend on the interior generation and run an async func that can edit the text to something like "`3/4` players ready".
 - Added the ability to rebuild DawnLib's gathered weights on non-dawnlib content (and dawnlib content if you modify the configs).
   - You'd need to call `DawnWeightSystem.NotifyProfilesChanged` if you want DawnLib to recollect every item's weights etc from moons.
+- Added compatibility with LethalConstellations editing the moons terminal page.
 
 ## TODO
 
