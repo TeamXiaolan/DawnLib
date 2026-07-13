@@ -1,18 +1,19 @@
+using System;
 using System.Collections.Generic;
 
 namespace Dawn;
 
-public sealed class GlobalBaseIntSource : IWeightModifierSource<int>
+public sealed class GlobalBaseIntSource : WeightModifierSource<int>
 {
-    private readonly int _value;
+    private readonly Func<int> _getValue;
 
-    public GlobalBaseIntSource(int value)
+    public GlobalBaseIntSource(Func<int> getValue)
     {
-        _value = value;
+        _getValue = getValue;
     }
 
-    public void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
+    public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        modifiers.Add(new GlobalBaseIntModifier(_value));
+        modifiers.Add(new GlobalBaseIntModifier(_getValue()));
     }
 }

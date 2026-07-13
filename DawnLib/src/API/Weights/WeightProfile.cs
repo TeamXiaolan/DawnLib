@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dawn.Internal;
 
 namespace Dawn;
 
@@ -18,14 +19,12 @@ public sealed class WeightProfile<T> : IWeightProfile
         DawnLib.Weights.RegisterProfile(this);
     }
 
-    public Type ValueType => typeof(T);
-
     public WeightModifierHandle AddSource(IWeightModifierSource<T> source)
     {
         WeightModifierHandle handle = WeightModifierHandle.New();
 
         _sources.Add(new Entry(handle, source));
-        Refresh();
+        MarkDirty();
 
         return handle;
     }
@@ -37,28 +36,42 @@ public sealed class WeightProfile<T> : IWeightProfile
         if (removed <= 0)
             return false;
 
-        Refresh();
+        MarkDirty();
         return true;
     }
 
-    public void ClearSources()
-    {
-        _sources.Clear();
-        Refresh();
-    }
-
-    public void Refresh()
+    public void MarkDirty()
     {
         _dirty = true;
-        DawnLib.Weights.NotifyProfilesChanged();
+    }
+
+    public void Rebuild(WeightBuildContext context)
+    {
+        _compiled.Clear();
+        foreach (Entry entry in _sources)
+        {
+            try
+            {
+                entry.Source.RefreshSource(context);
+                entry.Source.Build(context, _compiled);
+            }
+            catch (Exception ex)
+            {
+                DawnPlugin.Logger.LogError($"Failed to build weight source {entry.Source}:\n{ex}");
+            }
+        }
+
+        _dirty = false;
     }
 
     public T Evaluate(WeightContext context)
     {
-        RebuildIfDirty();
+        if (_dirty)
+        {
+            Rebuild(new WeightBuildContext());
+        }
 
         T value = _policy.InitialValue;
-
         foreach (IWeightModifier<T> modifier in _compiled.OrderBy(x => x.Phase).ThenBy(x => x.Priority))
         {
             if (!modifier.CanApply(context))
@@ -68,35 +81,6 @@ public sealed class WeightProfile<T> : IWeightProfile
         }
 
         return _policy.Finalize(value, context);
-    }
-
-    void IWeightProfile.Refresh()
-    {
-        Refresh();
-    }
-
-    private void RebuildIfDirty()
-    {
-        if (!_dirty)
-            return;
-
-        _compiled.Clear();
-
-        WeightBuildContext buildContext = new();
-
-        foreach (Entry entry in _sources)
-        {
-            try
-            {
-                entry.Source.Build(buildContext, _compiled);
-            }
-            catch (Exception ex)
-            {
-                DawnPlugin.Logger.LogError($"Failed to build weight source {entry.Source}:\n{ex}");
-            }
-        }
-
-        _dirty = false;
     }
 
     public static WeightProfile<T> Create(IWeightValuePolicy<T> policy) => new(policy);

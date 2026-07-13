@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Dawn;
 
-public sealed class CompositeIntWeightSource : IWeightModifierSource<int>
+public sealed class CompositeIntWeightSource : WeightModifierSource<int>
 {
     private readonly List<IWeightModifierSource<int>> _sources = new();
 
@@ -12,10 +12,11 @@ public sealed class CompositeIntWeightSource : IWeightModifierSource<int>
         return this;
     }
 
-    public void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
+    public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
         foreach (IWeightModifierSource<int> source in _sources)
         {
+            source.RefreshSource(context);
             source.Build(context, modifiers);
         }
     }

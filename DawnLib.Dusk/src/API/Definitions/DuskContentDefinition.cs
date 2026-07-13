@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
@@ -76,15 +77,46 @@ public abstract class DuskContentDefinition : ScriptableObject
         builder.SoloAddTags(_tags);
     }
 
-    protected IWeightModifierSource<int> CreateSpawnWeightSource(List<UnresolvedNamespacedWeight> moons, List<UnresolvedNamespacedWeight> interiors, List<UnresolvedNamespacedWeight> weathers, List<IntComparisonConfigWeight> routes, int defaultWeight)
+    public static IWeightModifierSource<int> CreateSpawnWeightSource(Func<IEnumerable<UnresolvedNamespacedWeight>> getMoons, Func<IEnumerable<UnresolvedNamespacedWeight>> getInteriors, Func<IEnumerable<UnresolvedNamespacedWeight>> getWeathers, Func<IEnumerable<IntComparisonConfigWeight>> getRoutes, Func<int> getDefaultWeight)
     {
         return new CompositeIntWeightSource()
-            .Add(new MoonIntWeightSource(moons))
-            .Add(new MoonSceneIntWeightSource(moons))
-            .Add(new DungeonIntWeightSource(interiors))
-            .Add(new WeatherIntWeightSource(weathers))
-            .Add(new RoutePriceIntWeightSource(routes))
-            .Add(new GlobalBaseIntSource(defaultWeight));
+            .Add(new MoonIntWeightSource(getMoons))
+            .Add(new MoonSceneIntWeightSource(getMoons))
+            .Add(new DungeonIntWeightSource(getInteriors))
+            .Add(new WeatherIntWeightSource(getWeathers))
+            .Add(new RoutePriceIntWeightSource(getRoutes))
+            .Add(new GlobalBaseIntSource(getDefaultWeight));
+    }
+
+    public static IEnumerable<UnresolvedNamespacedWeight> GetConfigWeights(ConfigEntry<string>? spawnWeightsConfig, List<NamespacedConfigWeight> spawnWeightDefaults)
+    {
+        if (spawnWeightsConfig != null)
+        {
+            return UnresolvedNamespacedWeight.ConvertManyFromString(spawnWeightsConfig.Value);
+        }
+
+        return spawnWeightDefaults.ToUnresolvedWeights();
+    }
+
+    public static IEnumerable<IntComparisonConfigWeight> GetConfigWeights(ConfigEntry<string>? spawnWeightsConfig, List<IntComparisonConfigWeight> spawnWeightDefaults)
+    {
+        if (spawnWeightsConfig != null)
+        {
+            return IntComparisonConfigWeight.ConvertManyFromString(spawnWeightsConfig.Value);
+        }
+
+        return spawnWeightDefaults;
+    }
+
+    public static string CurvesToConfigString(IEnumerable<NamespacedKeyWithAnimationCurve> curves)
+    {
+        List<string> parts = new();
+        foreach (NamespacedKeyWithAnimationCurve curve in curves)
+        {
+            parts.Add($"{curve.Key} - {ConfigManager.ParseString(curve.Curve)}");
+        }
+
+        return string.Join(" | ", parts);
     }
 }
 

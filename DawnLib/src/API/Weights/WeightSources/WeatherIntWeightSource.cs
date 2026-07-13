@@ -1,21 +1,24 @@
+using System;
 using System.Collections.Generic;
+using Dawn.Internal;
 
 namespace Dawn;
 
-public sealed class WeatherIntWeightSource : IWeightModifierSource<int>
+public sealed class WeatherIntWeightSource : WeightModifierSource<int>
 {
-    private readonly List<UnresolvedNamespacedWeight> _weights;
+    private readonly Func<IEnumerable<UnresolvedNamespacedWeight>> _getWeights;
 
-    public WeatherIntWeightSource(List<UnresolvedNamespacedWeight> weights)
+    public WeatherIntWeightSource(Func<IEnumerable<UnresolvedNamespacedWeight>> getWeights)
     {
-        _weights = weights;
+        _getWeights = getWeights;
     }
 
-    public void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
+    public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
         using NamespacedKeyResolver<DawnWeatherEffectInfo> resolver = new(context.Weathers.Values);
-        foreach (UnresolvedNamespacedWeight unresolved in _weights)
+        foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
+            Debuggers.Weights?.Log($"Building WeatherIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");
             ResolvedNamespacedWeight<DawnWeatherEffectInfo>? resolved = resolver.ResolveWeight(unresolved);
 
             if (resolved == null)

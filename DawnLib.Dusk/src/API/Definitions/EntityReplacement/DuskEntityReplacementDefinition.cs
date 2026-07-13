@@ -84,7 +84,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     internal void RegisterAsDefault()
     {
         IsDefault = true;
-        Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(new GlobalBaseIntSource(100))));
+        // TODO: make this a proper config entry
+        Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(new GlobalBaseIntSource(() => 100))));
     }
 
     public override void Register(DuskMod mod)
@@ -100,31 +101,12 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         Config = CreateEntityReplacementConfig(section);
         BaseConfig = Config;
 
-        List<UnresolvedNamespacedWeight> Moons = MoonSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.MoonSpawnWeights != null)
-        {
-            Moons = UnresolvedNamespacedWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
-        }
-
-        List<UnresolvedNamespacedWeight> Interiors = InteriorSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.InteriorSpawnWeights != null)
-        {
-            Interiors = UnresolvedNamespacedWeight.ConvertManyFromString(Config.InteriorSpawnWeights.Value);
-        }
-
-        List<UnresolvedNamespacedWeight> Weathers = WeatherSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.WeatherSpawnWeights != null)
-        {
-            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
-        }
-
-        List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
-        if (Config.RouteSpawnWeights != null)
-        {
-            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
-        }
-
-        _spawnWeightSource = CreateSpawnWeightSource(Moons, Interiors, Weathers, Routes, 0);
+        _spawnWeightSource = CreateSpawnWeightSource(
+            () => GetConfigWeights(Config.MoonSpawnWeights, MoonSpawnWeightsConfig),
+            () => GetConfigWeights(Config.InteriorSpawnWeights, InteriorSpawnWeightsConfig),
+            () => GetConfigWeights(Config.WeatherSpawnWeights, WeatherSpawnWeightsConfig),
+            () => GetConfigWeights(Config.RouteSpawnWeights, RouteSpawnWeightsConfig),
+            () => 0);
 
         Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(_spawnWeightSource)));
 

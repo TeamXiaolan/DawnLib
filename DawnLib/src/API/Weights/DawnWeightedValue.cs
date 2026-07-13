@@ -37,14 +37,4 @@ public sealed class DawnWeightedValue<T>
     {
         return Profile.RemoveSource(handle);
     }
-
-    public void ClearSources()
-    {
-        Profile.ClearSources();
-    }
-
-    public void Refresh()
-    {
-        Profile.Refresh();
-    }
 }

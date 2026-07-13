@@ -447,75 +447,7 @@ static class EnemyRegistrationHandler
 
     private static void RegisterEnemies()
     {
-        Dictionary<string, WeightProfile<int>> enemyInsideWeightProfile = new();
-        Dictionary<string, WeightProfile<int>> enemyOutsideWeightProfile = new();
-        Dictionary<string, WeightProfile<int>> enemyDaytimeWeightProfile = new();
-        Dictionary<string, WeightProfile<int>> enemyWeedWeightProfile = new();
-
-        foreach (SpawnableEnemyWithRarity enemyWithRarity in RoundManagerRefs.Instance.WeedEnemies)
-        {
-            if (enemyWithRarity.enemyType == null)
-                continue;
-
-            if (!enemyWeedWeightProfile.TryGetValue(enemyWithRarity.enemyType.name, out WeightProfile<int> weightProfile))
-            {
-                weightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
-                enemyWeedWeightProfile[enemyWithRarity.enemyType.name] = weightProfile;
-            }
-            Debuggers.Enemies?.Log($"Adding weed weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on all levels");
-            weightProfile.AddSource(new GlobalBaseIntSource(enemyWithRarity.rarity));
-        }
-
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-        {
-            SelectableLevel level = moonInfo.Level;
-            NamespacedKey<DawnMoonInfo> moonKey = moonInfo.TypedKey;
-
-            foreach (SpawnableEnemyWithRarity enemyWithRarity in level.Enemies)
-            {
-                if (enemyWithRarity.enemyType == null)
-                    continue;
-
-                if (!enemyInsideWeightProfile.TryGetValue(enemyWithRarity.enemyType.name, out WeightProfile<int> weightProfile))
-                {
-                    weightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
-                    enemyInsideWeightProfile[enemyWithRarity.enemyType.name] = weightProfile;
-                }
-                Debuggers.Enemies?.Log($"Adding inside weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
-                weightProfile.AddSource(new MoonBaseIntSource(moonKey, enemyWithRarity.rarity));
-            }
-
-            foreach (SpawnableEnemyWithRarity enemyWithRarity in level.OutsideEnemies)
-            {
-                if (enemyWithRarity.enemyType == null)
-                    continue;
-
-                if (!enemyOutsideWeightProfile.TryGetValue(enemyWithRarity.enemyType.name, out WeightProfile<int> weightProfile))
-                {
-                    weightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
-                    enemyOutsideWeightProfile[enemyWithRarity.enemyType.name] = weightProfile;
-                }
-                Debuggers.Enemies?.Log($"Adding outside weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
-                weightProfile.AddSource(new MoonBaseIntSource(moonKey, enemyWithRarity.rarity));
-            }
-
-            foreach (SpawnableEnemyWithRarity enemyWithRarity in level.DaytimeEnemies)
-            {
-                if (enemyWithRarity.enemyType == null)
-                    continue;
-
-                if (!enemyDaytimeWeightProfile.TryGetValue(enemyWithRarity.enemyType.name, out WeightProfile<int> weightProfile))
-                {
-                    weightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
-                    enemyDaytimeWeightProfile[enemyWithRarity.enemyType.name] = weightProfile;
-                }
-                Debuggers.Enemies?.Log($"Adding daytime weight {enemyWithRarity.rarity} for {enemyWithRarity.enemyType} on level {level.PlanetName}");
-                weightProfile.AddSource(new MoonBaseIntSource(moonKey, enemyWithRarity.rarity));
-            }
-        }
-
         TerminalKeyword infoKeyword = TerminalRefs.InfoKeyword;
-
         foreach (EnemyType? enemyType in _networkPrefabEnemyTypes)
         {
             if (enemyType == null || enemyType.enemyPrefab == null)
@@ -557,29 +489,25 @@ static class EnemyRegistrationHandler
             DawnEnemyLocationInfo? daytimeInfo = null;
             DawnEnemyLocationInfo? weedInfo = null;
 
-            if (enemyInsideWeightProfile.ContainsKey(enemyType.name))
-            {
-                DawnWeightedValue<int> rarity = new(DawnWeightChannels.EnemyRarity, enemyInsideWeightProfile[enemyType.name]);
-                insideInfo = new DawnEnemyLocationInfo(rarity);
-            }
+            WeightProfile<int> weedWeightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
+            weedWeightProfile.AddSource(new EnemyListBaseRaritySource(enemyType, level => RoundManagerRefs.Instance.WeedEnemies));
+            DawnWeightedValue<int> weedRarity = new(DawnWeightChannels.EnemyRarity, weedWeightProfile);
+            weedInfo = new DawnEnemyLocationInfo(weedRarity);
 
-            if (enemyOutsideWeightProfile.ContainsKey(enemyType.name))
-            {
-                DawnWeightedValue<int> rarity = new(DawnWeightChannels.EnemyRarity, enemyOutsideWeightProfile[enemyType.name]);
-                outsideInfo = new DawnEnemyLocationInfo(rarity);
-            }
+            WeightProfile<int> insideWeightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
+            insideWeightProfile.AddSource(new EnemyListBaseRaritySource(enemyType, level => level.Enemies));
+            DawnWeightedValue<int> insideRarity = new(DawnWeightChannels.EnemyRarity, insideWeightProfile);
+            insideInfo = new DawnEnemyLocationInfo(insideRarity);
 
-            if (enemyDaytimeWeightProfile.ContainsKey(enemyType.name))
-            {
-                DawnWeightedValue<int> rarity = new(DawnWeightChannels.EnemyRarity, enemyDaytimeWeightProfile[enemyType.name]);
-                daytimeInfo = new DawnEnemyLocationInfo(rarity);
-            }
+            WeightProfile<int> outsideWeightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
+            outsideWeightProfile.AddSource(new EnemyListBaseRaritySource(enemyType, level => level.OutsideEnemies));
+            DawnWeightedValue<int> outsideRarity = new(DawnWeightChannels.EnemyRarity, outsideWeightProfile);
+            outsideInfo = new DawnEnemyLocationInfo(outsideRarity);
 
-            if (enemyWeedWeightProfile.ContainsKey(enemyType.name))
-            {
-                DawnWeightedValue<int> rarity = new(DawnWeightChannels.EnemyRarity, enemyWeedWeightProfile[enemyType.name]);
-                weedInfo = new DawnEnemyLocationInfo(rarity);
-            }
+            WeightProfile<int> daytimeWeightProfile = new(DawnWeightChannels.EnemyRarity.Policy);
+            daytimeWeightProfile.AddSource(new EnemyListBaseRaritySource(enemyType, level => level.DaytimeEnemies));
+            DawnWeightedValue<int> daytimeRarity = new(DawnWeightChannels.EnemyRarity, daytimeWeightProfile);
+            daytimeInfo = new DawnEnemyLocationInfo(daytimeRarity);
 
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(enemyType, tags);

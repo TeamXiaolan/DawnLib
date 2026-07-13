@@ -401,29 +401,6 @@ static class DungeonRegistrationHandler
 
     private static void CollectNonDawnDungeons()
     {
-        Dictionary<string, WeightProfile<int>> dungeonWeightProfile = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-        {
-            SelectableLevel level = moonInfo.Level;
-            List<IntWithRarity> intsWithRarity = level.dungeonFlowTypes.ToList();
-            if (LethalLevelLoaderCompat.Enabled)
-            {
-                intsWithRarity.AddRange(LethalLevelLoaderCompat.GetCustomDungeonsWithRarities(level));
-            }
-
-            foreach (IntWithRarity intWithRarity in intsWithRarity)
-            {
-                DungeonFlow dungeonFlow = RoundManagerRefs.Instance.dungeonFlowTypes[intWithRarity.id].dungeonFlow;
-                if (!dungeonWeightProfile.TryGetValue(dungeonFlow.name, out WeightProfile<int> weightProfile))
-                {
-                    weightProfile = new WeightProfile<int>(DawnWeightChannels.DungeonRarity.Policy);
-                    dungeonWeightProfile[dungeonFlow.name] = weightProfile;
-                }
-                Debuggers.Dungeons?.Log($"Grabbing weight {intWithRarity.rarity} to {dungeonFlow.name} on level {level.PlanetName}");
-                weightProfile.AddSource(new MoonBaseIntSource(moonInfo.TypedKey, intWithRarity.rarity));
-            }
-        }
-
         foreach (IndoorMapType indoorMapType in RoundManagerRefs.Instance.dungeonFlowTypes)
         {
             if (indoorMapType == null)
@@ -458,8 +435,8 @@ static class DungeonRegistrationHandler
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(indoorMapType.dungeonFlow, tags);
 
-            dungeonWeightProfile.TryGetValue(indoorMapType.dungeonFlow.name, out WeightProfile<int>? weightProfile);
-            weightProfile ??= new WeightProfile<int>(DawnWeightChannels.DungeonRarity.Policy);
+            WeightProfile<int> weightProfile = new(DawnWeightChannels.DungeonRarity.Policy);
+            weightProfile.AddSource(new DungeonListBaseRaritySource(indoorMapType.dungeonFlow));
 
             PersistentDataContainer customData = new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{key.Namespace}_{key.Key}"));
             if (!customData.Has(DawnKeys.StingerPlayed))

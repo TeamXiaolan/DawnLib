@@ -143,7 +143,6 @@ static class ItemRegistrationHandler
 
     private static void FreezeItemContent()
     {
-        Dictionary<string, WeightProfile<int>> itemWeightProfile = new();
         Dictionary<string, DawnShopItemInfo> itemsWithShopInfo = new();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -161,17 +160,6 @@ static class ItemRegistrationHandler
                 }
 
                 nonRepeatSpawnableScrapDict[itemWithRarity.spawnableItem] = itemWithRarity;
-            }
-
-            foreach ((Item item, SpawnableItemWithRarity spawnableItemWithRarity) in nonRepeatSpawnableScrapDict)
-            {
-                if (!itemWeightProfile.TryGetValue(item.name, out WeightProfile<int> weightProfile))
-                {
-                    weightProfile = new WeightProfile<int>(DawnWeightChannels.ScrapRarity.Policy);
-                    itemWeightProfile[item.name] = weightProfile;
-                }
-                Debuggers.Items?.Log($"Adding weight {spawnableItemWithRarity.rarity} to {item.name} on level {level.PlanetName}");
-                weightProfile.AddSource(new MoonBaseIntSource(moonInfo.TypedKey, spawnableItemWithRarity.rarity));
             }
         }
 
@@ -270,14 +258,11 @@ static class ItemRegistrationHandler
                 continue;
             }
 
-            itemWeightProfile.TryGetValue(item.name, out WeightProfile<int>? weightProfile);
-            DawnScrapItemInfo? scrapInfo = null;
-            itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);
+            WeightProfile<int> itemWeightProfile = new(DawnWeightChannels.ScrapRarity.Policy);
+            itemWeightProfile.AddSource(new ItemListBaseRaritySource(item));
+            DawnScrapItemInfo scrapInfo = new(new DawnWeightedValue<int>(DawnWeightChannels.ScrapRarity, itemWeightProfile));
 
-            if (weightProfile != null)
-            {
-                scrapInfo = new(new DawnWeightedValue<int>(DawnWeightChannels.ScrapRarity, weightProfile));
-            }
+            itemsWithShopInfo.TryGetValue(item.name, out DawnShopItemInfo? shopInfo);
 
             if (!item.spawnPrefab)
             {

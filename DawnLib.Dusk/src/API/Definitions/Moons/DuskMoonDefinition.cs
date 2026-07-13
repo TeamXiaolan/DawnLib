@@ -234,21 +234,12 @@ public class DuskMoonSceneData
 
         MoonSceneConfig = CreateMoonSceneConfig(section);
 
-        List<UnresolvedNamespacedWeight> Weathers = WeatherSpawnWeightsConfig.ToUnresolvedWeights();
-        if (MoonSceneConfig.WeatherSpawnWeights != null)
-        {
-            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(MoonSceneConfig.WeatherSpawnWeights.Value);
-        }
-
-        int globalIntWeight = BaseWeight;
-        if (MoonSceneConfig.BaseWeight != null)
-        {
-            globalIntWeight = MoonSceneConfig.BaseWeight.Value;
-        }
-
-        _spawnWeightSource = new CompositeIntWeightSource()
-            .Add(new WeatherIntWeightSource(Weathers))
-            .Add(new GlobalBaseIntSource(globalIntWeight));
+        _spawnWeightSource = DuskContentDefinition.CreateSpawnWeightSource(
+            () => DuskContentDefinition.GetConfigWeights(null, new List<NamespacedConfigWeight>()),
+            () => DuskContentDefinition.GetConfigWeights(null, new List<NamespacedConfigWeight>()),
+            () => DuskContentDefinition.GetConfigWeights(MoonSceneConfig.WeatherSpawnWeights, WeatherSpawnWeightsConfig),
+            () => DuskContentDefinition.GetConfigWeights(null, new List<IntComparisonConfigWeight>()),
+            () => MoonSceneConfig.BaseWeight?.Value ?? BaseWeight);
 
         WeightProfile<int> weightProfile = new(DawnWeightChannels.MoonSceneRarity.Policy);
         weightProfile.AddSource(_spawnWeightSource);

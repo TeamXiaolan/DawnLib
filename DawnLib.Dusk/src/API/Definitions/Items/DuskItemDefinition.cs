@@ -87,31 +87,13 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
-        List<UnresolvedNamespacedWeight> Moons = MoonSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.MoonSpawnWeights != null)
-        {
-            Moons = UnresolvedNamespacedWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
-        }
+        _spawnWeightSource = CreateSpawnWeightSource(
+            () => GetConfigWeights(Config.MoonSpawnWeights, MoonSpawnWeightsConfig),
+            () => GetConfigWeights(Config.InteriorSpawnWeights, InteriorSpawnWeightsConfig),
+            () => GetConfigWeights(Config.WeatherSpawnWeights, WeatherSpawnWeightsConfig),
+            () => GetConfigWeights(Config.RouteSpawnWeights, RouteSpawnWeightsConfig),
+            () => 0);
 
-        List<UnresolvedNamespacedWeight> Interiors = InteriorSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.InteriorSpawnWeights != null)
-        {
-            Interiors = UnresolvedNamespacedWeight.ConvertManyFromString(Config.InteriorSpawnWeights.Value);
-        }
-
-        List<UnresolvedNamespacedWeight> Weathers = WeatherSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.WeatherSpawnWeights != null)
-        {
-            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(Config.WeatherSpawnWeights.Value);
-        }
-
-        List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
-        if (Config.RouteSpawnWeights != null)
-        {
-            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
-        }
-
-        _spawnWeightSource = CreateSpawnWeightSource(Moons, Interiors, Weathers, Routes, 0);
         DawnLib.DefineItem(TypedKey, Item, builder =>
         {
             if (Config.IsScrapItem?.Value ?? IsScrap)

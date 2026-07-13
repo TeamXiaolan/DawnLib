@@ -23,14 +23,20 @@ public sealed class DawnWeightSystem
         _profiles.Add(profile);
     }
 
-    public void RefreshAll()
+    public void NotifyProfilesChanged(bool rebuildImmediately = false)
     {
+        WeightBuildContext buildContext = new();
         foreach (IWeightProfile profile in _profiles)
         {
-            profile.Refresh();
+            profile.MarkDirty();
+
+            if (rebuildImmediately)
+            {
+                profile.Rebuild(buildContext);
+            }
         }
 
-        NotifyProfilesChanged();
+        ProfilesChanged?.Invoke();
     }
 
     public T Evaluate<T>(WeightProfile<T> profile, WeightQuery query)
@@ -45,21 +51,9 @@ public sealed class DawnWeightSystem
 
         foreach (IWeightContextContributor contributor in _contextContributors)
         {
-            try
-            {
-                contributor.Contribute(builder);
-            }
-            catch (Exception ex)
-            {
-                DawnPlugin.Logger.LogError($"Weight context contributor failed: {contributor}\n{ex}");
-            }
+            contributor.Contribute(builder);
         }
 
         return builder.Build();
-    }
-
-    internal void NotifyProfilesChanged()
-    {
-        ProfilesChanged?.Invoke();
     }
 }

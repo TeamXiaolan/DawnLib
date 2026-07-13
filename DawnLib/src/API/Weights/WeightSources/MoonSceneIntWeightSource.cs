@@ -1,22 +1,25 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dawn.Internal;
 
 namespace Dawn;
 
-public sealed class MoonSceneIntWeightSource : IWeightModifierSource<int>
+public sealed class MoonSceneIntWeightSource : WeightModifierSource<int>
 {
-    private readonly List<UnresolvedNamespacedWeight> _weights;
+    private readonly Func<IEnumerable<UnresolvedNamespacedWeight>> _getWeights;
 
-    public MoonSceneIntWeightSource(List<UnresolvedNamespacedWeight> weights)
+    public MoonSceneIntWeightSource(Func<IEnumerable<UnresolvedNamespacedWeight>> getWeights)
     {
-        _weights = weights;
+        _getWeights = getWeights;
     }
 
-    public void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
+    public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
         using NamespacedKeyResolver<IMoonSceneInfo> resolver = new(context.Moons.Values.SelectMany(x => x.Scenes));
-        foreach (UnresolvedNamespacedWeight unresolved in _weights)
+        foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
+            Debuggers.Weights?.Log($"Building MoonSceneIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");
             ResolvedNamespacedWeight<IMoonSceneInfo>? resolved = resolver.ResolveWeight(unresolved);
 
             if (resolved == null)

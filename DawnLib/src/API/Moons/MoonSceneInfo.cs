@@ -22,7 +22,7 @@ public class VanillaMoonSceneInfo : IMoonSceneInfo
 {
     public string SceneName { get; private set; }
     public DawnWeightedValue<int> Rarity { get; private set; } = new DawnWeightedValue<int>(DawnWeightChannels.MoonSceneRarity,
-        WeightProfile<int>.Create(DawnWeightChannels.MoonSceneRarity.Policy, weightProfile => weightProfile.AddSource(new GlobalBaseIntSource(100)))); // todo: config?
+        WeightProfile<int>.Create(DawnWeightChannels.MoonSceneRarity.Policy, weightProfile => weightProfile.AddSource(new GlobalBaseIntSource(() => 100)))); // todo: config?
 
     internal VanillaMoonSceneInfo(NamespacedKey<IMoonSceneInfo> key, string sceneName)
     {

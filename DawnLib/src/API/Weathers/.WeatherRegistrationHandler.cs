@@ -208,7 +208,10 @@ static class WeatherRegistrationHandler
         {
             string noneName = NamespacedKey.NormalizeStringForNamespacedKey("none", true);
             NamespacedKey<DawnWeatherEffectInfo> noneKey = NamespacedKey.Vanilla(noneName).AsTyped<DawnWeatherEffectInfo>();
-            DawnWeightedValue<int> noneWeights = new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, WeightProfile<int>.Create(DawnWeightChannels.WeatherRarity.Policy, x => x.AddSource(new GlobalBaseIntSource(100))));
+            DawnWeightedValue<int> noneWeights = new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, WeightProfile<int>
+                .Create(DawnWeightChannels.WeatherRarity.Policy, x => x
+                    .AddSource(new GlobalBaseIntSource(() => 100))));
+
             // TODO: ugh none isn't even a weather technically, should this really have a weight at all? should I ignore zeekerss' way of getting none weight via the curve? should i try to replicate the curve logic but through pure numerical weights???
             DawnWeatherEffectInfo noneEffectInfo = new(noneKey, [DawnLibTags.IsExternal], null!, noneWeights, 1f, null);
             LethalContent.Weathers.Register(noneEffectInfo);
@@ -247,17 +250,10 @@ static class WeatherRegistrationHandler
 
             // TODO: Grab each weather's weights on the moons, their weather to weather weights too and their base weight since WR supports that
             WeightProfile<int> weatherWeights = new WeightProfile<int>(DawnWeightChannels.WeatherRarity.Policy);
-            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-            {
-                foreach (RandomWeatherWithVariables randomWeatherWithVariables in moonInfo.Level.randomWeathers)
-                {
-                    if ((int)randomWeatherWithVariables.weatherType == i)
-                    {
-                        weatherWeights.AddSource(new MoonBaseIntSource(moonInfo.TypedKey, 100));
-                    }
-                }
-            }
-            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, weatherWeights), 1f, null);
+            weatherWeights.AddSource(new WeatherListBaseRaritySource((LevelWeatherType)i, () => 100));
+            DawnWeightedValue<int> weightedValue = new DawnWeightedValue<int>(DawnWeightChannels.WeatherRarity, weatherWeights);
+
+            DawnWeatherEffectInfo weatherEffectInfo = new(key, [DawnLibTags.IsExternal], weatherEffect, weightedValue, 1f, null);
             LethalContent.Weathers.Register(weatherEffectInfo);
             weatherEffect.DawnInfo = weatherEffectInfo;
         }

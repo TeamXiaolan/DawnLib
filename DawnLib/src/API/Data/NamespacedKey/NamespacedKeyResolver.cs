@@ -142,7 +142,7 @@ public class NamespacedKeyResolver : IDisposable
         }
 
         DawnPlugin.Logger.LogError(
-            $"Fuzzy NamespacedKey match used. Input '{input}' resolved to '{fuzzyMatch}'. " +
+            $"Fuzzy NamespacedKey match used. Input '{input}' resolved to '{fuzzyMatch}'. \n" +
             $"This should be changed to the exact key '{fuzzyMatch}'.");
 
         key = fuzzyMatch;

@@ -132,8 +132,8 @@ static class MapObjectRegistrationHandler
 
     private static void FreezeMapObjectContents()
     {
-        Dictionary<IndoorMapHazardType, WeightProfile<AnimationCurve?>> insideWeightsByHazardType = new();
-        Dictionary<SpawnableOutsideObject, WeightProfile<AnimationCurve?>> outsideWeightsByOutsideObject = new();
+        HashSet<IndoorMapHazardType> insideMapHazards = new();
+        HashSet<SpawnableOutsideObject> spawnableOutsideObjects = new();
 
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -151,13 +151,7 @@ static class MapObjectRegistrationHandler
                     continue;
                 }
 
-                if (!insideWeightsByHazardType.TryGetValue(indoorMapHazardType, out WeightProfile<AnimationCurve?> builder))
-                {
-                    builder = new WeightProfile<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve.Policy);
-                    insideWeightsByHazardType[indoorMapHazardType] = builder;
-                }
-
-                builder.AddSource(new MoonCurveSource(moonInfo.TypedKey, indoorMapHazard.numberToSpawn));
+                insideMapHazards.Add(indoorMapHazardType);
             }
 
             foreach (SpawnableOutsideObjectWithRarity outsideMapObject in selectableLevel.spawnableOutsideObjects)
@@ -173,45 +167,15 @@ static class MapObjectRegistrationHandler
                     continue;
                 }
 
-                if (!outsideWeightsByOutsideObject.TryGetValue(spawnableOutsideObject, out WeightProfile<AnimationCurve?> builder))
-                {
-                    builder = new WeightProfile<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve.Policy);
-                    outsideWeightsByOutsideObject[spawnableOutsideObject] = builder;
-                }
-
-                builder.AddSource(new MoonCurveSource(moonInfo.TypedKey, outsideMapObject.randomAmount));
+                spawnableOutsideObjects.Add(spawnableOutsideObject);
             }
         }
 
-        Dictionary<GameObject, DawnInsideMapObjectInfo> realInsideMapObjectsDict = new();
-        foreach (KeyValuePair<IndoorMapHazardType, WeightProfile<AnimationCurve?>> kvp in insideWeightsByHazardType)
-        {
-            IndoorMapHazardType indoorMapHazardType = kvp.Key;
-            DawnWeightedValue<AnimationCurve?> dawnWeightedValue = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve, kvp.Value);
-            DawnInsideMapObjectInfo insideInfo = new(
-                kvp.Key,
-                dawnWeightedValue
-            );
+        Dictionary<GameObject, IndoorMapHazardType> realIndoorMapHazardDict = insideMapHazards.ToDictionary(x => x.prefabToSpawn);
+        Dictionary<GameObject, SpawnableOutsideObject> realSpawnableOutsideObjectDict = spawnableOutsideObjects.ToDictionary(x => x.prefabToSpawn);
 
-            realInsideMapObjectsDict[indoorMapHazardType.prefabToSpawn] = insideInfo;
-        }
-
-        Dictionary<GameObject, DawnOutsideMapObjectInfo> realOutsideMapObjectsDict = new();
-        foreach (KeyValuePair<SpawnableOutsideObject, WeightProfile<AnimationCurve?>> kvp in outsideWeightsByOutsideObject)
-        {
-            SpawnableOutsideObject spawnableOutsideObject = kvp.Key;
-            DawnWeightedValue<AnimationCurve?> dawnWeightedValue = new DawnWeightedValue<AnimationCurve?>(DawnWeightChannels.MapObjectSpawnCurve, kvp.Value);
-            DawnOutsideMapObjectInfo outsideInfo = new(
-                spawnableOutsideObject,
-                dawnWeightedValue,
-                false,
-                0
-            );
-            realOutsideMapObjectsDict[spawnableOutsideObject.prefabToSpawn] = outsideInfo;
-        }
-
-        List<GameObject> realMapObjects = insideWeightsByHazardType.Keys.Select(x => x.prefabToSpawn)
-            .Concat(outsideWeightsByOutsideObject.Keys.Select(x => x.prefabToSpawn))
+        List<GameObject> realMapObjects = insideMapHazards.Select(x => x.prefabToSpawn)
+            .Concat(spawnableOutsideObjects.Select(x => x.prefabToSpawn))
             .Distinct()
             .ToList();
 
@@ -232,24 +196,38 @@ static class MapObjectRegistrationHandler
                 key = NamespacedKey<DawnMapObjectInfo>.From("unknown_lib", mapObject.name);
             }
 
-            realInsideMapObjectsDict.TryGetValue(mapObject, out DawnInsideMapObjectInfo? insideMapObjectInfo);
-            realOutsideMapObjectsDict.TryGetValue(mapObject, out DawnOutsideMapObjectInfo? outsideMapObjectInfo);
+            DawnInsideMapObjectInfo? insideMapObjectInfo = null;
+            DawnOutsideMapObjectInfo? outsideMapObjectInfo = null;
+
+            if (realIndoorMapHazardDict.TryGetValue(mapObject, out IndoorMapHazardType? indoorMapHazardType))
+            {
+                WeightProfile<AnimationCurve?> indoorWeightProfile = new(DawnWeightChannels.MapObjectSpawnCurve.Policy);
+                indoorWeightProfile.AddSource(new IndoorMapHazardBaseCurveSource(indoorMapHazardType));
+                DawnWeightedValue<AnimationCurve?> indoorRarity = new(DawnWeightChannels.MapObjectSpawnCurve, indoorWeightProfile);
+                insideMapObjectInfo = new(indoorMapHazardType, indoorRarity);
+            }
+
+            if (realSpawnableOutsideObjectDict.TryGetValue(mapObject, out SpawnableOutsideObject? spawnableOutsideObject))
+            {
+                WeightProfile<AnimationCurve?> outdoorWeightProfile = new(DawnWeightChannels.MapObjectSpawnCurve.Policy);
+                outdoorWeightProfile.AddSource(new OutsideMapObjectBaseCurveSource(spawnableOutsideObject));
+                DawnWeightedValue<AnimationCurve?> outdoorRarity = new(DawnWeightChannels.MapObjectSpawnCurve, outdoorWeightProfile);
+                outsideMapObjectInfo = new(spawnableOutsideObject, outdoorRarity, false, 0);
+            }
 
             DawnMapObjectInfo mapObjectInfo = new(key, [DawnLibTags.IsExternal], insideMapObjectInfo, outsideMapObjectInfo, null);
-            if (!mapObject.TryGetComponent(out IIndoorMapHazard _))
+
+            DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
+            container.Value = key;
+
+            if (indoorMapHazardType != null)
             {
-                DawnMapObjectNamespacedKeyContainer container = mapObject.AddComponent<DawnMapObjectNamespacedKeyContainer>();
-                container.Value = key;
+                indoorMapHazardType.DawnInfo = mapObjectInfo;
             }
 
-            if (insideMapObjectInfo != null)
+            if (spawnableOutsideObject != null)
             {
-                insideMapObjectInfo.IndoorMapHazardType.DawnInfo = mapObjectInfo;
-            }
-
-            if (outsideMapObjectInfo != null)
-            {
-                outsideMapObjectInfo.SpawnableOutsideObject.DawnInfo = mapObjectInfo;
+                spawnableOutsideObject.DawnInfo = mapObjectInfo;
             }
 
             if (LethalContent.MapObjects.TryGetValue(mapObjectInfo.TypedKey, out DawnMapObjectInfo existingMapObjectInfo))

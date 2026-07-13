@@ -52,25 +52,13 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
         Config = CreateWeatherConfig(section);
         BaseConfig = Config;
 
-        List<UnresolvedNamespacedWeight> Moons = MoonSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.MoonSpawnWeights != null)
-        {
-            Moons = UnresolvedNamespacedWeight.ConvertManyFromString(Config.MoonSpawnWeights.Value);
-        }
+        _spawnWeightSource = CreateSpawnWeightSource(
+            () => GetConfigWeights(Config.MoonSpawnWeights, MoonSpawnWeightsConfig),
+            () => GetConfigWeights(null, new List<NamespacedConfigWeight>()),
+            () => GetConfigWeights(Config.WeatherToWeatherSpawnWeights, WeatherToWeatherSpawnWeightsConfig),
+            () => GetConfigWeights(Config.RouteSpawnWeights, RouteSpawnWeightsConfig),
+            () => 0);
 
-        List<UnresolvedNamespacedWeight> Weathers = WeatherToWeatherSpawnWeightsConfig.ToUnresolvedWeights();
-        if (Config.WeatherToWeatherSpawnWeights != null)
-        {
-            Weathers = UnresolvedNamespacedWeight.ConvertManyFromString(Config.WeatherToWeatherSpawnWeights.Value);
-        }
-
-        List<IntComparisonConfigWeight> Routes = RouteSpawnWeightsConfig;
-        if (Config.RouteSpawnWeights != null)
-        {
-            Routes = IntComparisonConfigWeight.ConvertManyFromString(Config.RouteSpawnWeights.Value);
-        }
-
-        _spawnWeightSource = CreateSpawnWeightSource(Moons, new(), Weathers, Routes, 0);
         DawnLib.DefineWeatherEffect(TypedKey, WeatherEffect, builder =>
         {
             builder.OverrideLerpSpeed(LerpSpeed);

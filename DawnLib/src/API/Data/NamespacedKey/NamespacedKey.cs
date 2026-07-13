@@ -177,6 +177,26 @@ public class NamespacedKey : INetworkSerializable
         serializer.SerializeValue(ref _key);
     }
 
+    public static bool operator ==(NamespacedKey? left, NamespacedKey? right)
+    {
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(NamespacedKey? left, NamespacedKey? right)
+    {
+        return !(left == right);
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is null)

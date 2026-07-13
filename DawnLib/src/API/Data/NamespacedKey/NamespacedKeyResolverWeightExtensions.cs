@@ -27,7 +27,6 @@ public static class NamespacedKeyResolverWeightExtensions
     {
         if (!resolver.TryResolve(weight.KeyInput, out NamespacedKey<T>? key))
         {
-            Debuggers.Weights?.Log($"Could not resolve weight key input '{weight.KeyInput}'.");
             return null;
         }
 
