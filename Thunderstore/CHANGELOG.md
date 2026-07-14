@@ -23,6 +23,8 @@
 - Added the ability to rebuild DawnLib's gathered weights on non-dawnlib content (and dawnlib content if you modify the configs).
   - You'd need to call `DawnWeightSystem.NotifyProfilesChanged` if you want DawnLib to recollect every item's weights etc from moons.
 - Added compatibility with LethalConstellations editing the moons terminal page.
+- Grabbed modded enemy bestiaries more reliably.
+- Added DawnSpawnDenialPoint to better control the radius of SpawnDenialPoints for enemy spawning and outside hazard spawning.
 
 ## TODO
 

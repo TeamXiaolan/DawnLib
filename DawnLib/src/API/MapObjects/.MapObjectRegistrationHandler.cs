@@ -408,22 +408,27 @@ static class MapObjectRegistrationHandler
             if (blocked)
                 continue;
 
-            if (spawnDenialPoints != null)
+
+            for (int d = 0; d < spawnDenialPoints.Length; d++)
             {
-                for (int d = 0; d < spawnDenialPoints.Length; d++)
+                float denialPointPadding = 6f;
+                if (spawnDenialPoints[d].TryGetComponent(out DawnSpawnDenialPoint dawnSpawnDenialPoint))
                 {
-                    if (Vector3.Distance(spawnDenialPoints[d].transform.position, finalPos) < objectWidth)
-                    {
-                        blocked = true;
-                        break;
-                    }
+                    denialPointPadding = dawnSpawnDenialPoint.SpawnDenialPointOutsideHazardDistanceBlocker;
+                }
+
+                if (Vector3.Distance(spawnDenialPoints[d].transform.position, finalPos) < objectWidth + denialPointPadding)
+                {
+                    blocked = true;
+                    break;
                 }
             }
+
 
             if (blocked)
                 continue;
 
-            if (itemShipLandingNode != null && Vector3.Distance(itemShipLandingNode.transform.position, finalPos) < objectWidth)
+            if (itemShipLandingNode != null && Vector3.Distance(itemShipLandingNode.transform.position, finalPos) < objectWidth + 4f)
             {
                 continue;
             }
