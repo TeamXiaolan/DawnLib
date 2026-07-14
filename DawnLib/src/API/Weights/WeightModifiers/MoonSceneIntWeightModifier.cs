@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Dawn;
 
 public sealed class MoonSceneIntWeightModifier : IWeightModifier<int>

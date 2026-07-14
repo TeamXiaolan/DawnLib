@@ -1,5 +1,4 @@
 using Dawn.Internal;
-using EasyTextEffects;
 using UnityEngine;
 
 namespace Dawn;
