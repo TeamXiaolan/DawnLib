@@ -99,12 +99,25 @@ public static class DawnLib
         return commandInfo;
     }
 
-    /// <summary>
-    /// Do not use the vanilla namespace.
-    /// </summary>
-    public static DawnRoundLoadingStepInfo DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo> loadingKey, Func<ILoadingContext, Task> loadingContextCallback, Action<RoundLoadingStepInfoBuilder> callback)
+    public static DawnDeadBodyInfo DefineDeadBodyInfo(NamespacedKey<DawnDeadBodyInfo> key, GameObject deadBodyPrefab, Action<DeadBodyInfoBuilder> callback)
     {
-        RoundLoadingStepInfoBuilder builder = new(loadingKey, loadingContextCallback);
+        DeadBodyInfoBuilder builder = new(key, deadBodyPrefab);
+        callback(builder);
+        DawnDeadBodyInfo dawnBodyInfo = builder.Build();
+        DawnStoryLogNamespacedKeyContainer container = deadBodyPrefab.AddComponent<DawnStoryLogNamespacedKeyContainer>();
+        container.Value = dawnBodyInfo.Key;
+
+        if (dawnBodyInfo.DeadBodyPrefab.TryGetComponent(out DeadBodyInfo deadBodyInfo))
+        {
+            deadBodyInfo.DawnInfo = dawnBodyInfo;
+        }
+        LethalContent.DeadBodies.Register(dawnBodyInfo);
+        return dawnBodyInfo;
+    }
+
+    public static DawnRoundLoadingStepInfo DefineRoundLoadingStep(NamespacedKey<DawnRoundLoadingStepInfo> key, Func<ILoadingContext, Task> loadingContextCallback, Action<RoundLoadingStepInfoBuilder> callback)
+    {
+        RoundLoadingStepInfoBuilder builder = new(key, loadingContextCallback);
         callback(builder);
         DawnRoundLoadingStepInfo loadingStepInfo = builder.Build();
         LethalContent.RoundLoadingSteps.Register(loadingStepInfo);
@@ -127,7 +140,7 @@ public static class DawnLib
         callback(builder);
         DawnStoryLogInfo storyLogInfo = builder.Build();
         DawnStoryLogNamespacedKeyContainer container = storyLogGameObject.AddComponent<DawnStoryLogNamespacedKeyContainer>();
-        container.Value = storyLogInfo.TypedKey;
+        container.Value = storyLogInfo.Key;
         LethalContent.StoryLogs.Register(storyLogInfo);
         return storyLogInfo;
     }

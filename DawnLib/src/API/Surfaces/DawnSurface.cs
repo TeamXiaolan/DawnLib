@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Dawn.Utils;
 
 [RequireComponent(typeof(Collider))]
-[AddComponentMenu($"{DawnConstants.MenuName}/Dawn Surface")]
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Dawn Surface")]
 public class DawnSurface : MonoBehaviour
 {
     [field: SerializeField]

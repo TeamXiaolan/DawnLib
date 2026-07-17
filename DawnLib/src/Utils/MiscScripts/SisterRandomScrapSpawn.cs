@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Sister RandomScrapSpawn")]
 public class SisterRandomScrapSpawn : MonoBehaviour
 {
     [field: SerializeField]

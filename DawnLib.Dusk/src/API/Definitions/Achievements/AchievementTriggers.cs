@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace Dusk;
 
-[AddComponentMenu($"{DuskModConstants.MenuName}/Achievements/Achivement Triggers")]
+[AddComponentMenu($"{DuskModConstants.MenuName}/Achievements/Achievement Triggers")]
 public class AchievementTriggers : MonoBehaviour
 {
     [SerializeReference]

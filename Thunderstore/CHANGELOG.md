@@ -10,7 +10,7 @@
 - Added a tag to moons that support weather `SupportsWeather`, this is decided by checking whether the moon is both a company moon has any `randomWeathers` set to it.
 - Added more information related to issues such as incorrect folder structure.
 - Added the ability to set your custom surface to be snowy footprints compatible.
-- Added SisterRandomScrapSpawn component for more control over spawning items in interiors.
+- Added `SisterRandomScrapSpawn` component for more control over spawning items in interiors.
 - Added `RoundLoadingSteps` registry.
   - This allows you to "depend" and run code after certain parts of base game's loading steps.
   - Currently supports the following:
@@ -24,7 +24,10 @@
   - You'd need to call `DawnWeightSystem.NotifyProfilesChanged` if you want DawnLib to recollect every item's weights etc from moons.
 - Added compatibility with LethalConstellations editing the moons terminal page.
 - Grabbed modded enemy bestiaries more reliably.
-- Added DawnSpawnDenialPoint to better control the radius of SpawnDenialPoints for enemy spawning and outside hazard spawning.
+- Added `DawnSpawnDenialPoint` component to better control the radius of SpawnDenialPoints for enemy spawning and outside hazard spawning.
+- Added DeadBodyregistration to add custom dead bodies.
+  - You can spawn them using `PlayerControllerB.KillPlayer`, identical method to vanilla except it replaces the `int deathAnimation` with a `NamespacedKey deathAnimationKey`.
+  - i.e. `PlayerControllerB.KillPlayer(DeadBodyKeys.PlayerRagdollElectrocutedVariant);`
 
 ## TODO
 

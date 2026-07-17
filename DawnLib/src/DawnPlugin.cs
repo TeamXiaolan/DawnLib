@@ -68,6 +68,7 @@ public class DawnPlugin : BaseUnityPlugin
         UnlockableRegistrationHandler.Init();
         MapObjectRegistrationHandler.Init();
         WeatherRegistrationHandler.Init();
+        DeadBodyRegistrationHandler.Init();
         RoundLoadingStepRegistrationHandler.Init();
         HandleCorruptedDataPatch.Init();
         TerminalCommandRegistration.Init();
@@ -108,6 +109,7 @@ public class DawnPlugin : BaseUnityPlugin
         DebugPrintRegistryResult("Surfaces", LethalContent.Surfaces, surfaceInfo => surfaceInfo.Surface.surfaceTag);
         DebugPrintRegistryResult("Terminal Commands", LethalContent.TerminalCommands, commandInfo => commandInfo.CommandBasicInformation.CommandName);
         DebugPrintRegistryResult("RoundLoading Steps", LethalContent.RoundLoadingSteps, stepInfo => stepInfo.Key.Key.ToCapitalized());
+        DebugPrintRegistryResult("DeadBody Info", LethalContent.DeadBodies, deadBodyInfo => deadBodyInfo.DeadBodyPrefab.name);
 
         PersistentData = this.GetPersistentDataContainer();
         DawnLib.ApplyAllTagsInFolder(RelativePath("data", "tags"));

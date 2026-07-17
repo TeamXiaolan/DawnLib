@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Dawn.Utils;
 
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Dawn SpawnDenialPoint")]
 public class DawnSpawnDenialPoint : MonoBehaviour
 {
     [field: SerializeField]

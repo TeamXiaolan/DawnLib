@@ -16,6 +16,7 @@ public static class LethalContent
     public static Registry<DawnSurfaceInfo> Surfaces = new();
     public static Registry<DawnTerminalCommandInfo> TerminalCommands = new();
     public static Registry<DawnRoundLoadingStepInfo> RoundLoadingSteps = new();
+    public static Registry<DawnDeadBodyInfo> DeadBodies = new();
 }
 
 public static class DawnLibTags

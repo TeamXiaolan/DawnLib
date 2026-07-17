@@ -62,7 +62,9 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         {
             List<GameObject> potentialPrefabs = new();
             foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+            {
                 potentialPrefabs.Add(networkPrefab.Prefab);
+            }
 
             foreach (SpawnSyncedObject spawnSyncedObject in importantDungeonInfo.SpawnSyncedObjects)
             {
@@ -70,14 +72,13 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 {
                     DawnPlugin.Logger.LogError("SpawnSyncedObject prefab is null");
                     DawnPlugin.Logger.LogError($"Path: {spawnSyncedObject.GetPathInTilePrefab()}");
-
                     continue;
                 }
 
                 //blank references should not have that anyway
                 //if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var _)) continue;
 
-                var fixedPrefab = potentialPrefabs.FirstOrDefault(pp => pp.name == spawnSyncedObject.spawnPrefab.name);
+                GameObject? fixedPrefab = potentialPrefabs.FirstOrDefault(potentialPrefab => potentialPrefab.name == spawnSyncedObject.spawnPrefab.name);
 
                 if (fixedPrefab == null)
                 {
@@ -103,7 +104,9 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         else
         {
             foreach (GameObject obj in _objectsToUnregister)
+            {
                 NetworkManager.Singleton.PrefabHandler.RemoveNetworkPrefab(obj);
+            }
 
             _objectsToUnregister.Clear();
         }

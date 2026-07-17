@@ -111,6 +111,11 @@ public class EnemyInfoBuilder : BaseInfoBuilder<DawnEnemyInfo, EnemyType, EnemyI
 
     override internal DawnEnemyInfo Build()
     {
+        _outside ??= new DawnEnemyLocationInfo(new DawnWeightedValue<int>(DawnWeightChannels.EnemyRarity));
+        _inside ??= new DawnEnemyLocationInfo(new DawnWeightedValue<int>(DawnWeightChannels.EnemyRarity));
+        _daytime ??= new DawnEnemyLocationInfo(new DawnWeightedValue<int>(DawnWeightChannels.EnemyRarity));
+        _weed ??= new DawnEnemyLocationInfo(new DawnWeightedValue<int>(DawnWeightChannels.EnemyRarity));
+
         return new DawnEnemyInfo(key, tags, value, _outside, _inside, _daytime, _weed, _bestiaryNode, _nameKeyword, customData);
     }
 }

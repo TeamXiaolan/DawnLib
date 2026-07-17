@@ -377,5 +377,20 @@
     "ZThree": "lethal_company:zthree",
     "SwitchRadarCamPlayerOne": "lethal_company:switchradarcamplayerone",
     "EjectPlayers": "lethal_company:eject_players"
+  },
+  "DeadBodyKeys": {
+    "__type": "DawnDeadBodyInfo",
+    "PlayerRagdoll": "lethal_company:playerragdoll",
+    "PlayerRagdollHeadBurstVariant": "lethal_company:playerragdollheadburst_variant",
+    "PlayerRagdollSprintVariant": "lethal_company:playerragdollsprint_variant",
+    "PlayerRagdollElectrocutedVariant": "lethal_company:playerragdolleelectrocuted_variant",
+    "PlayerRagdollWithComedyMaskVariant": "lethal_company:playerragdollwithcomedymask_variant",
+    "PlayerRagdollWithTragedyMaskVariant": "lethal_company:playerragdollwithtragedymask_variant",
+    "PlayerRagdollBurntVariant": "lethal_company:playerragdollburnt_variant",
+    "PlayerRagdollSlicedInHalfVariant": "lethal_company:playerragdollslicedinhalf_variant",
+    "PlayerRagdollHeadGoneVariant": "lethal_company:playerragdollheadgone_variant",
+    "RagdollPieces": "lethal_company:ragdollpieces",
+    "PlayerRagdollScratchedVariant": "lethal_company:playerragdollscratched_variant",
+    "PlayerRagdollFlowersVariant": "lethal_company:playerragdollflowers_variant"
   }
 }

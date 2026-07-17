@@ -176,9 +176,6 @@ static class EnemyRegistrationHandler
             if (enemyInfo.EnemyType.spawningDisabled)
                 continue;
 
-            if (enemyInfo.Inside == null)
-                continue;
-
             if (enemyInfo.Inside.GetRarity() > 0)
                 continue;
 
@@ -268,25 +265,25 @@ static class EnemyRegistrationHandler
 
             SpawnableEnemyWithRarity spawnDef = new(enemyInfo.EnemyType, 0);
 
-            if (enemyInfo.Inside != null && testLevel.Enemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
+            if (testLevel.Enemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
                 Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} inside.");
                 testLevel.Enemies.Add(spawnDef);
             }
 
-            if (enemyInfo.Outside != null && testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
+            if (testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
                 Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} outside.");
                 testLevel.OutsideEnemies.Add(spawnDef);
             }
 
-            if (enemyInfo.Daytime != null && testLevel.DaytimeEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
+            if (testLevel.DaytimeEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
                 Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} daytime.");
                 testLevel.DaytimeEnemies.Add(spawnDef);
             }
 
-            if (enemyInfo.Weed != null && testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
+            if (testLevel.OutsideEnemies.All(enemy => enemy.enemyType != enemyInfo.EnemyType))
             {
                 Debuggers.Enemies?.Log($"Adding {enemyInfo.EnemyType} to test level {testLevel.name} outside (but it is a weed!).");
                 testLevel.OutsideEnemies.Add(spawnDef);
@@ -313,12 +310,12 @@ static class EnemyRegistrationHandler
 
         GameObject[]? insideNodes = RoundManager.Instance.insideAINodes;
         GameObject[]? outsideNodes = RoundManager.Instance.outsideAINodes;
-        bool insideIsClosest = true;
 
         float closestDistance = float.MaxValue;
+        bool insideIsClosest = true;
         if (insideNodes != null)
         {
-            foreach (var node in insideNodes)
+            foreach (GameObject node in insideNodes)
             {
                 if (node == null)
                     continue;
@@ -332,7 +329,7 @@ static class EnemyRegistrationHandler
         }
         if (outsideNodes != null)
         {
-            foreach (var node in outsideNodes)
+            foreach (GameObject node in outsideNodes)
             {
                 if (node == null)
                     continue;
@@ -347,12 +344,6 @@ static class EnemyRegistrationHandler
             }
         }
 
-        bool previouslyDaytime = self.enemyType.isDaytimeEnemy;
-        if (enemyInfo.Daytime != null)
-        {
-            self.enemyType.isDaytimeEnemy = true;
-        }
-
         bool previouslyOutside = self.enemyType.isOutsideEnemy;
         if (insideIsClosest)
         {
@@ -365,10 +356,6 @@ static class EnemyRegistrationHandler
 
         orig(self);
 
-        if (previouslyDaytime != self.enemyType.isDaytimeEnemy)
-        {
-            self.enemyType.isDaytimeEnemy = previouslyDaytime;
-        }
         if (previouslyOutside != self.enemyType.isOutsideEnemy)
         {
             self.enemyType.isOutsideEnemy = previouslyOutside;
@@ -400,62 +387,50 @@ static class EnemyRegistrationHandler
                 continue;
 
             Debuggers.Enemies?.Log($"Updating weights for {enemyInfo.EnemyType} on level {level.PlanetName}");
-            if (enemyInfo.Outside != null)
+            Debuggers.Enemies?.Log($"Updating Outside weights");
+            SpawnableEnemyWithRarity? outsideSpawnableEnemyWithRarity = level.OutsideEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+            if (outsideSpawnableEnemyWithRarity == null)
             {
-                Debuggers.Enemies?.Log($"Updating Outside weights");
-                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.OutsideEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
-                if (spawnableEnemyWithRarity == null)
-                {
-                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
-                    level.OutsideEnemies.Add(spawnableEnemyWithRarity);
-                }
-
-                int rarity = enemyInfo.Outside.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
-                spawnableEnemyWithRarity.rarity = rarity;
+                outsideSpawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
+                level.OutsideEnemies.Add(outsideSpawnableEnemyWithRarity);
             }
 
-            if (enemyInfo.Inside != null)
-            {
-                Debuggers.Enemies?.Log($"Updating Inside weights");
-                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.Enemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
-                if (spawnableEnemyWithRarity == null)
-                {
-                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
-                    level.Enemies.Add(spawnableEnemyWithRarity);
-                }
+            int outsideRarity = enemyInfo.Outside.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            outsideSpawnableEnemyWithRarity.rarity = outsideRarity;
 
-                int rarity = enemyInfo.Inside.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
-                spawnableEnemyWithRarity.rarity = rarity;
+            Debuggers.Enemies?.Log($"Updating Inside weights");
+            SpawnableEnemyWithRarity? insideSpawnableEnemyWithRarity = level.Enemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+            if (insideSpawnableEnemyWithRarity == null)
+            {
+                insideSpawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
+                level.Enemies.Add(insideSpawnableEnemyWithRarity);
             }
 
-            if (enemyInfo.Daytime != null)
-            {
-                Debuggers.Enemies?.Log($"Updating Daytime weights");
-                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.DaytimeEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
-                if (spawnableEnemyWithRarity == null)
-                {
-                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
-                    level.DaytimeEnemies.Add(spawnableEnemyWithRarity);
-                }
+            int insideRarity = enemyInfo.Inside.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            insideSpawnableEnemyWithRarity.rarity = insideRarity;
 
-                int rarity = enemyInfo.Daytime.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
-                spawnableEnemyWithRarity.rarity = rarity;
+            Debuggers.Enemies?.Log($"Updating Daytime weights");
+            SpawnableEnemyWithRarity? daytimeSpawnableEnemyWithRarity = level.DaytimeEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+            if (daytimeSpawnableEnemyWithRarity == null)
+            {
+                daytimeSpawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
+                level.DaytimeEnemies.Add(daytimeSpawnableEnemyWithRarity);
             }
 
-            if (enemyInfo.Weed != null)
-            {
-                Debuggers.Enemies?.Log($"Updating Weed weights");
-                SpawnableEnemyWithRarity? spawnableEnemyWithRarity = level.WeedEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
-                if (spawnableEnemyWithRarity == null)
-                {
-                    Debuggers.Enemies?.Log($"Adding weed spawnable {enemyInfo.EnemyType} to the moon");
-                    spawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
-                    level.WeedEnemies.Add(spawnableEnemyWithRarity);
-                }
+            int daytimeRarity = enemyInfo.Daytime.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            daytimeSpawnableEnemyWithRarity.rarity = daytimeRarity;
 
-                int rarity = enemyInfo.Weed.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
-                spawnableEnemyWithRarity.rarity = rarity;
+            Debuggers.Enemies?.Log($"Updating Weed weights");
+            SpawnableEnemyWithRarity? weedSpawnableEnemyWithRarity = level.WeedEnemies.FirstOrDefault(x => x.enemyType == enemyInfo.EnemyType);
+            if (weedSpawnableEnemyWithRarity == null)
+            {
+                Debuggers.Enemies?.Log($"Adding weed spawnable {enemyInfo.EnemyType} to the moon");
+                weedSpawnableEnemyWithRarity = new(enemyInfo.EnemyType, 0);
+                level.WeedEnemies.Add(weedSpawnableEnemyWithRarity);
             }
+
+            int weedRarity = enemyInfo.Weed.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            weedSpawnableEnemyWithRarity.rarity = weedRarity;
         }
 
         RoundManagerRefs.Instance.WeedEnemies.RemoveAll(x => !x.enemyType.DawnInfo.ShouldSkipRespectOverride());
@@ -556,17 +531,10 @@ static class EnemyRegistrationHandler
                 if (enemyInfo.ShouldSkipRespectOverride())
                     continue;
 
-                if (enemyInfo.Outside != null)
-                    TryAddToEnemyList(enemyInfo, level.OutsideEnemies);
-
-                if (enemyInfo.Daytime != null)
-                    TryAddToEnemyList(enemyInfo, level.DaytimeEnemies);
-
-                if (enemyInfo.Inside != null)
-                    TryAddToEnemyList(enemyInfo, level.Enemies);
-
-                if (enemyInfo.Weed != null)
-                    TryAddToEnemyList(enemyInfo, level.WeedEnemies);
+                TryAddToEnemyList(enemyInfo, level.OutsideEnemies);
+                TryAddToEnemyList(enemyInfo, level.DaytimeEnemies);
+                TryAddToEnemyList(enemyInfo, level.Enemies);
+                TryAddToEnemyList(enemyInfo, level.WeedEnemies);
             }
         }
 

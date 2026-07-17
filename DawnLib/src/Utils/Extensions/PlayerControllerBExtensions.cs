@@ -3,7 +3,7 @@ using GameNetcodeStuff;
 
 namespace Dawn.Utils;
 
-public static class PlayerControllerBExtensions
+public static partial class PlayerControllerBExtensions
 {
     extension(PlayerControllerB playerControllerB)
     {

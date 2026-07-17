@@ -4,6 +4,7 @@ using System.Globalization;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using Dawn;
 using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
@@ -58,6 +59,7 @@ public static class ConfigReaderTypeUtility
     }
 }
 
+[AddComponentMenu($"{DawnConstants.MiscUtils}/Config Reader")]
 public class ConfigReader : MonoBehaviour
 {
     [Header("Config Target")]
