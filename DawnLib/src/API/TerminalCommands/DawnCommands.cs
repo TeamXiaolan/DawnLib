@@ -111,6 +111,10 @@ public static class DawnCommands
             for (int i = 0; i < possibleDungeons.Count; i++)
             {
                 string dungeonName = possibleDungeons[i].Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
+                if (dungeonName.Length > 16)
+                {
+                    dungeonName = dungeonName[..13] + "...";
+                }
                 int paddingNeeded = Mathf.Max(spaceForName - dungeonName.Length, 0);
                 builder.Append($"* {dungeonName}{new string(' ', paddingNeeded)}");
                 builder.Append($"// Chance: ");

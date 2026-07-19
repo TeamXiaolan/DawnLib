@@ -916,7 +916,11 @@ static class MoonRegistrationHandler
             List<NamespacedKey<IMoonSceneInfo>> moonSceneKeys = new();
             if (key.IsVanilla())
             {
-                moonSceneKeys.Add(NamespacedKey<IMoonSceneInfo>.From(NamespacedKey.VanillaNamespace, level.sceneName));
+                moonSceneKeys.Add(NamespacedKey<IMoonSceneInfo>.Vanilla(level.sceneName));
+            }
+            else
+            {
+                moonSceneKeys.Add(NamespacedKey<IMoonSceneInfo>.From(key.Namespace, level.sceneName));
             }
             foreach (NamespacedKey<IMoonSceneInfo> moonSceneKey in moonSceneKeys)
             {

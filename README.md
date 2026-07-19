@@ -20,6 +20,8 @@ DawnLib is a modern API for Lethal Company content and all sizes of mods. It con
   - Map Objects (Inside and Outside hazards)
   - Unlockables (Ship Upgrades and Furniture)
   - Additional Tile Sets (injecting more tilesets to interiors)
+  - Dead Bodies
+  - Round Loading Steps
 
 - DuskMod API
   - Ship Creation (In-progress)

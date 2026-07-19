@@ -11,6 +11,7 @@ public sealed class MoonSceneWeightContextContributor : IWeightContextContributo
         if (moon == null)
             return;
 
-        builder.Set(DawnWeightContextKeys.MoonScene, moon.Scenes.First(x => x.SceneName == moon.Level.sceneName));
+        IMoonSceneInfo sceneInfo = moon.Scenes.FirstOrDefault(x => x.SceneName == moon.Level.sceneName) ?? moon.Scenes.First();
+        builder.Set(DawnWeightContextKeys.MoonScene, sceneInfo);
     }
 }

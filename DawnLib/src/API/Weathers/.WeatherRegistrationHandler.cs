@@ -28,9 +28,21 @@ static class WeatherRegistrationHandler
         }
 
         On.GameNetcodeStuff.PlayerControllerB.ConnectClientToPlayerObject += SyncWeathers;
+        On.StartOfRound.SetPlanetsWeather += CancelIfNotFrozen;
         IL.StartOfRound.SetPlanetsWeather += ModifyWeatherWeighting;
 
         DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(Enum), nameof(Enum.ToString), Type.EmptyTypes), ProvideDawnWeatherNames));
+    }
+
+    private static void CancelIfNotFrozen(On.StartOfRound.orig_SetPlanetsWeather orig, StartOfRound self, int connectedPlayersOnServer)
+    {
+        if (LethalContent.Weathers.IsFrozen)
+        {
+            orig(self, connectedPlayersOnServer);
+            return;
+        }
+
+        DawnPlugin.Logger.LogWarning($"{nameof(LethalContent.Weathers)} not frozen, skipping {nameof(StartOfRound.SetPlanetsWeather)}, Please do not call this method that early!");
     }
 
     private static void RegisterVanillaAndModdedWeathers(On.Terminal.orig_Start orig, Terminal self)
