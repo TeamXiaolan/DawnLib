@@ -36,9 +36,10 @@ public static class DawnCommands
             return "RoundManager not initialized yet.\n\n";
         }
 
-        DawnMoonInfo relevantMoonInfo = RoundManagerRefs.Instance.currentLevel.DawnInfo;
+        DawnMoonInfo? relevantMoonInfo = RoundManagerRefs.Instance.currentLevel.DawnInfo;
         if (!string.IsNullOrEmpty(userInput))
         {
+            relevantMoonInfo = null;
             foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
             {
                 if (moonInfo.GetNumberlessPlanetName().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
@@ -49,7 +50,7 @@ public static class DawnCommands
             }
         }
 
-        DawnDungeonInfo? relevantDungeonInfo = RoundManagerRefs.GetCurrentDungeon()?.DawnInfo;
+        DawnDungeonInfo? relevantDungeonInfo = null;
         if (!string.IsNullOrEmpty(userInput))
         {
             foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
@@ -124,10 +125,6 @@ public static class DawnCommands
 
         if (relevantDungeonInfo != null)
         {
-            if (relevantMoonInfo != null)
-            {
-                builder.Append($"\n----------------------------\n\n");
-            }
             string dungeonName = relevantDungeonInfo.Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
             builder.Append($"Simulating the structure {dungeonName}\nAnalyzing the pathways of the structure.\nChecking the Weather forecast.\nListing generated probabilities below.\n\n");
             builder.Append($"----------------------------\n\n");
