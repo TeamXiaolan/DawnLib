@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
 
@@ -30,33 +31,34 @@ public static class DawnCommands
 
     private static string SimulateCommand(string userInput)
     {
-        if (string.IsNullOrEmpty(userInput))
+        if (RoundManagerRefs.Instance == null)
         {
-            return "Please enter a moon or interior name.\n\n";
+            return "RoundManager not initialized yet.\n\n";
         }
 
-        if (userInput.Length <= 2)
+        DawnMoonInfo relevantMoonInfo = RoundManagerRefs.Instance.currentLevel.DawnInfo;
+        if (!string.IsNullOrEmpty(userInput))
         {
-            return "Please enter a name for an interior or moon longer than 2 characters.\n\n";
-        }
-
-        DawnMoonInfo? relevantMoonInfo = null;
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-        {
-            if (moonInfo.GetNumberlessPlanetName().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
             {
-                relevantMoonInfo = moonInfo;
-                break;
+                if (moonInfo.GetNumberlessPlanetName().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                {
+                    relevantMoonInfo = moonInfo;
+                    break;
+                }
             }
         }
 
-        DawnDungeonInfo? relevantDungeonInfo = null;
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        DawnDungeonInfo? relevantDungeonInfo = RoundManagerRefs.GetCurrentDungeon()?.DawnInfo;
+        if (!string.IsNullOrEmpty(userInput))
         {
-            if (dungeonInfo.Key.Key.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
             {
-                relevantDungeonInfo = dungeonInfo;
-                break;
+                if (dungeonInfo.Key.Key.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                {
+                    relevantDungeonInfo = dungeonInfo;
+                    break;
+                }
             }
         }
 
@@ -122,6 +124,10 @@ public static class DawnCommands
 
         if (relevantDungeonInfo != null)
         {
+            if (relevantMoonInfo != null)
+            {
+                builder.Append($"\n----------------------------\n\n");
+            }
             string dungeonName = relevantDungeonInfo.Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
             builder.Append($"Simulating the structure {dungeonName}\nAnalyzing the pathways of the structure.\nChecking the Weather forecast.\nListing generated probabilities below.\n\n");
             builder.Append($"----------------------------\n\n");
