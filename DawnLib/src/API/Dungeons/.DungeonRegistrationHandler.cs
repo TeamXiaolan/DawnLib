@@ -134,6 +134,12 @@ static class DungeonRegistrationHandler
         if (!self.checkedForFirstTime)
         {
             self.checkedForFirstTime = true;
+            if (self.isEntranceToBuilding)
+            {
+                orig(self);
+                return;
+            }
+
             DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeon()?.DawnInfo;
             if (dungeonInfo == null || dungeonInfo.StingerDetail.FirstTimeAudio == null)
             {
@@ -243,7 +249,6 @@ static class DungeonRegistrationHandler
     private static void DelayDungeonGeneration(ILContext il)
     {
         ILCursor c = new(il);
-
         if (c.TryGotoNext(MoveType.Before,
                 i => i.MatchLdarg(0),
                 i => i.MatchLdfld<RoundManager>("dungeonGenerator"),
@@ -620,6 +625,8 @@ static class DungeonRegistrationHandler
                 {
                     archetype.TileSets.Add(tileSetInfo.TileSet);
                 }
+
+                Debuggers.Dungeons?.Log($"Added {tileSetInfo.TileSet.name} to {archetype.name}");
             }
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Dawn;
+using Dawn.Internal;
 using Dawn.Utils;
 using Dusk.Utils;
 using Dusk.Weights;
@@ -87,6 +89,15 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             builder.SetExtraScrapGeneration(ExtraScrapGeneration);
             builder.SetWeights(weightProfile => weightProfile.AddSource(_spawnWeightSource));
             ApplyTagsTo(builder);
+
+            builder.SetCustomData(new PersistentDataContainer(Path.Combine(PersistentDataHandler.RootPath, $"dungeon_{TypedKey.Namespace}_{TypedKey.Key}")));
+            builder.EditCustomData(customData =>
+            {
+                if (!customData.Has<bool>(DawnKeys.StingerPlayed))
+                {
+                    customData.Set(DawnKeys.StingerPlayed, false);
+                }
+            });
         });
     }
 

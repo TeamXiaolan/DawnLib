@@ -14,7 +14,11 @@ public sealed class DawnArchetypeInfo : DawnBaseInfo<DawnArchetypeInfo>
 
     public void AddTileSet(DawnTileSetInfo info)
     {
-        if (LethalContent.Dungeons.IsFrozen) throw new RegistryFrozenException();
+        if (LethalContent.Dungeons.IsFrozen)
+        {
+            throw new RegistryFrozenException();
+        }
+
         _tileSets.Add(info);
     }
 
