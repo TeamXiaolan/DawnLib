@@ -499,53 +499,69 @@ static class DungeonRegistrationHandler
                 {
                     archetypeTags.Add(DawnLibTags.IsExternal);
                 }
-                DawnArchetypeInfo info = new DawnArchetypeInfo(archetypeKey, archetypeTags, dungeonArchetype, null);
-                dungeonArchetype.DawnInfo = info;
-                info.ParentInfo = dungeonInfo;
-                LethalContent.Archetypes.Register(info);
+                DawnArchetypeInfo archetypeInfo = new DawnArchetypeInfo(archetypeKey, archetypeTags, dungeonArchetype, null);
+                dungeonArchetype.DawnInfo = archetypeInfo;
+                archetypeInfo.ParentInfo = dungeonInfo;
+                LethalContent.Archetypes.Register(archetypeInfo);
 
                 List<TileSet> allTiles = [.. dungeonArchetype.TileSets, .. dungeonArchetype.BranchCapTileSets];
                 foreach (TileSet tileSet in allTiles)
                 {
-                    NamespacedKey<DawnTileSetInfo>? tileSetKey;
-                    Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
-                    if (dungeonInfo.Key.IsVanilla())
-                    {
-                        string name = FormatTileSetName(tileSet);
-                        tileSetKey = DungeonTileSetKeys.GetByReflection(name);
-                        if (tileSetKey == null)
-                        {
-                            DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeKey}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey, tileset has formatted name: {name}!");
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, tileSet.name);
-                    }
-
-                    if (LethalContent.TileSets.ContainsKey(tileSetKey))
-                    {
-                        Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
-                        tileSet.DawnInfo = LethalContent.TileSets[tileSetKey];
-                        continue;
-                    }
-
-                    HashSet<NamespacedKey> tileSetTags = [];
-                    if (dungeonInfo.HasTag(DawnLibTags.IsExternal))
-                    {
-                        tileSetTags.Add(DawnLibTags.IsExternal);
-                    }
-                    DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, tileSetTags, ConstantPredicate.True, tileSet, dungeonArchetype.BranchCapTileSets.Contains(tileSet), dungeonArchetype.TileSets.Contains(tileSet), null);
-                    info.AddTileSet(tileSetInfo);
-                    tileSet.DawnInfo = tileSetInfo;
-                    LethalContent.TileSets.Register(tileSetInfo);
+                    TryRegisterTileSet(dungeonInfo, tileSet, archetypeInfo);
                 }
+            }
+
+            foreach (TileSet tileSet in dungeonInfo.DungeonFlow.GetUsedTileSets())
+            {
+                TryRegisterTileSet(dungeonInfo, tileSet, null);
             }
         }
 
         LethalContent.Archetypes.Freeze();
         LethalContent.TileSets.Freeze();
+    }
+
+    private static void TryRegisterTileSet(DawnDungeonInfo dungeonInfo, TileSet tileSet, DawnArchetypeInfo? archetypeInfo)
+    {
+        if (tileSet.DawnInfo != null)
+        {
+            return;
+        }
+
+        NamespacedKey<DawnTileSetInfo>? tileSetKey;
+        Debuggers.Dungeons?.Log($"tileSet.name: {tileSet.name}");
+        if (dungeonInfo.Key.IsVanilla())
+        {
+            string name = FormatTileSetName(tileSet);
+            tileSetKey = DungeonTileSetKeys.GetByReflection(name);
+            if (tileSetKey == null)
+            {
+                string archetypeName = archetypeInfo?.TypedKey.ToString() ?? "no archetype";
+                DawnPlugin.Logger.LogWarning($"tileset: '{tileSet.name}' (part of {archetypeName}) is vanilla, but DawnLib couldn't get a corresponding NamespacedKey, tileset has formatted name: {name}!");
+                return;
+            }
+        }
+        else
+        {
+            tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, tileSet.name);
+        }
+
+        if (LethalContent.TileSets.ContainsKey(tileSetKey))
+        {
+            Debuggers.Dungeons?.Log($"LethalContent.TileSets already contains {tileSetKey}");
+            tileSet.DawnInfo = LethalContent.TileSets[tileSetKey];
+            return;
+        }
+
+        HashSet<NamespacedKey> tileSetTags = [];
+        if (dungeonInfo.HasTag(DawnLibTags.IsExternal))
+        {
+            tileSetTags.Add(DawnLibTags.IsExternal);
+        }
+        DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, tileSetTags, ConstantPredicate.True, tileSet, archetypeInfo?.DungeonArchetype.BranchCapTileSets.Contains(tileSet) ?? false, archetypeInfo?.DungeonArchetype.TileSets.Contains(tileSet) ?? false, null);
+        archetypeInfo?.AddTileSet(tileSetInfo);
+        tileSet.DawnInfo = tileSetInfo;
+        LethalContent.TileSets.Register(tileSetInfo);
     }
 
     private static string FormatTileSetName(TileSet tileSet)
@@ -606,6 +622,12 @@ static class DungeonRegistrationHandler
             Debuggers.Dungeons?.Log($"Injecting tile sets for {archetype.name}");
             foreach (DawnTileSetInfo tileSetInfo in archetype.DawnInfo.TileSets)
             {
+                if (tileSetInfo.TileSet == null)
+                {
+                    Debuggers.Dungeons?.Log("TileSet is null in archetype: " + archetype.name);
+                    continue;
+                }
+
                 if (tileSetInfo.ShouldSkipIgnoreOverride())
                     continue;
 

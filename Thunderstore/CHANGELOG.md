@@ -28,6 +28,9 @@
 - Added DeadBodyregistration to add custom dead bodies.
   - You can spawn them using `PlayerControllerB.KillPlayer`, identical method to vanilla except it replaces the `int deathAnimation` with a `NamespacedKey deathAnimationKey`.
   - i.e. `PlayerControllerB.KillPlayer(DeadBodyKeys.PlayerRagdollElectrocutedVariant);`
+- Fixed Mineshaft's CaveTilesAndTunnels TileSet from not being picked up.
+- Fixed SpawnSyncedObject's not being registered with AdditionalTileSets.
+- Applied the performance fix for interiors onto all interiors rather than just DawnLib interiors.
 
 ## TODO
 
@@ -36,9 +39,6 @@
 - Add Combined, Progressing, Unknown and terminal predicate related weather things.
 - ItemGroup registration needs to be done better.
   - Allow injecting to items that aren't your own too?
-- Add a sibiling component to RandomScrapSpawn.
-  - Add option to prevent Empty ItemGroup items from spawning there.
-  - Allows fixing the rotation of spawned items to the spawnedItemsCopyRotation?
 - Add dusk config definitions
 - Make it possible to give spawnsyncobjects a namespacedkey and make a component for spawning em with said namespacedkey.
 

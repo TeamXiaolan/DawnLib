@@ -82,12 +82,12 @@ public static class DawnLib
         MiscFixesPatch.soundPrefabsToFix.Add(prefab);
     }
 
-    public static void FixDoorwaySockets(GameObject prefab)
+    public static void FixDoorwaySockets(GameObject tilePrefab)
     {
-        if (!prefab)
-            throw new ArgumentNullException(nameof(prefab));
+        if (!tilePrefab)
+            throw new ArgumentNullException(nameof(tilePrefab));
 
-        MiscFixesPatch.tilesToFixSockets.Add(prefab);
+        MiscFixesPatch.tilesToFixSockets.Add(tilePrefab);
     }
 
     public static DawnTerminalCommandInfo DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, Action<TerminalCommandInfoBuilder> callback)

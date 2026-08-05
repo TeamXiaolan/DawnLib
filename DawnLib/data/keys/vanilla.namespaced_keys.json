@@ -209,6 +209,7 @@
     "MineshaftCaveBranch": "lethal_company:mineshaft_cave_branch_tiles",
     "MineshaftEndTunnel": "lethal_company:mineshaft_end_tunnel_tiles",
     "MineshaftEndTunnelBranchCaps": "lethal_company:mineshaft_end_tunnel_branch_caps_tiles",
+    "MineshaftCaveAndTunnels": "lethal_company:mineshaft_cave_tiles_and_tunnels",
     "StartRooms": "lethal_company:start_rooms"
   },
   "DungeonArchetypeKeys": {
@@ -382,7 +383,7 @@
     "__type": "DawnDeadBodyInfo",
     "PlayerRagdoll": "lethal_company:playerragdoll",
     "PlayerRagdollHeadBurstVariant": "lethal_company:playerragdollheadburst_variant",
-    "PlayerRagdollSprintVariant": "lethal_company:playerragdollsprint_variant",
+    "PlayerRagdollSpringVariant": "lethal_company:playerragdollspring_variant",
     "PlayerRagdollElectrocutedVariant": "lethal_company:playerragdolleelectrocuted_variant",
     "PlayerRagdollWithComedyMaskVariant": "lethal_company:playerragdollwithcomedymask_variant",
     "PlayerRagdollWithTragedyMaskVariant": "lethal_company:playerragdollwithtragedymask_variant",

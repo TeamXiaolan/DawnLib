@@ -29,35 +29,32 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     public BranchCapSetting BranchCap { get; private set; } = BranchCapSetting.Regular | BranchCapSetting.BranchCap;
 
     [field: SerializeField]
-    public DuskPredicate Predicate { get; private set; }
+    public DuskPredicate? Predicate { get; private set; }
 
     public override void Register(DuskMod mod)
     {
         base.Register(mod);
-
-        foreach (GameObjectChance chance in TilesToAdd.TileWeights.Weights)
-        {
-            DawnLib.FixDoorwaySockets(chance.Value);
-        }
-
         DawnTileSetInfo tileSetInfo = DawnLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
             ApplyTagsTo(builder);
             builder.SetIsRegular(BranchCap.HasFlag(BranchCapSetting.Regular));
             builder.SetIsBranchCap(BranchCap.HasFlag(BranchCapSetting.BranchCap));
-            if (Predicate)
+            if (Predicate != null)
             {
                 builder.SetInjectionPredicate(Predicate);
             }
         });
 
+        tileSetInfo.SetupDetails();
+        tileSetInfo.RegisterSpawnSyncedObjects();
+
         LethalContent.Archetypes.BeforeFreezeWithContext += _ =>
         {
             foreach (NamespacedKey<DawnArchetypeInfo> key in archetypeKeys)
             {
-                if (LethalContent.Archetypes.TryGetValue(key, out DawnArchetypeInfo dungeonInfo))
+                if (LethalContent.Archetypes.TryGetValue(key, out DawnArchetypeInfo archetypeInfo))
                 {
-                    dungeonInfo.AddTileSet(tileSetInfo);
+                    archetypeInfo.AddTileSet(tileSetInfo);
                 }
             }
         };

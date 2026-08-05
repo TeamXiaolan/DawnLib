@@ -76,14 +76,13 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 }
 
                 //blank references should not have that anyway
-                //if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var _)) continue;
+                //if (spawnSyncedObject.spawnPrefab.TryGetComponent(out NetworkObject _)) continue;
 
                 GameObject? fixedPrefab = potentialPrefabs.FirstOrDefault(potentialPrefab => potentialPrefab.name == spawnSyncedObject.spawnPrefab.name);
-
                 if (fixedPrefab == null)
                 {
                     //ig they can have it, but its creator fault ig
-                    if (spawnSyncedObject.spawnPrefab.TryGetComponent<NetworkObject>(out var nObject))
+                    if (spawnSyncedObject.spawnPrefab.TryGetComponent(out NetworkObject nObject))
                     {
                         RegisterPrefab(spawnSyncedObject.spawnPrefab, nObject);
                     }
@@ -244,6 +243,20 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         DawnDungeonInfo dungeonInfo = LethalContent.Dungeons[_currentDungeonKey];
         DungeonFlow flowToClear = dungeonInfo.DungeonFlow;
 
+        foreach (TileSet tileSet in flowToClear.GetUsedTileSets())
+        {
+            if (tileSet.DawnInfo == null)
+            {
+                DawnPlugin.Logger.LogWarning("TileSet has no DawnInfo: " + tileSet.name + ", skipping.");
+                continue;
+            }
+            tileSet.DawnInfo.sockets.Clear();
+            tileSet.DawnInfo.doorways.Clear();
+            tileSet.DawnInfo.spawnSyncedObjects.Clear();
+            tileSet.DawnInfo.tiles.Clear();
+            tileSet.DawnInfo.TileSet = null;
+        }
+
         if (DungeonGenerationPlusCompat.Enabled)
         {
             DungeonGenerationPlusCompat.HandleExtenderForBundle(currentBundle, flowToClear, false);
@@ -253,15 +266,9 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         if (_temporaryDungeonFlow != null)
         {
             SwapReferences(flowToClear, _temporaryDungeonFlow);
-
             ScriptableObject.Destroy(_temporaryDungeonFlow);
             _temporaryDungeonFlow = null;
         }
-
-        dungeonInfo.sockets.Clear();
-        dungeonInfo.doorways.Clear();
-        dungeonInfo.spawnSyncedObjects.Clear();
-        dungeonInfo.tiles.Clear();
 
         _currentlyLoadedDungeonFlow = null;
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type. 
@@ -330,7 +337,19 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         ApplyDawnInfoToTileSets(matchingFlow);
         ApplyDawnInfoToArchetypes(matchingFlow);
 
-        DawnDungeonInfo dungeonInfo = RebuildDungeonInfoCache(matchingFlow);
+        DawnDungeonInfo dungeonInfo = matchingFlow.DawnInfo;
+        foreach (TileSet tileSet in matchingFlow.GetUsedTileSets())
+        {
+            if (tileSet.DawnInfo == null)
+            {
+                DawnPlugin.Logger.LogWarning("tileSet.DawnInfo is null in tileSet: " + tileSet.name);
+                DawnPlugin.Logger.LogWarning($"This is probably because I fucked up pre V1.0.0 of DawnLib, so please update to the latest editor dll and rebuild your interior!");
+                continue;
+            }
+            tileSet.DawnInfo.SetupDetails();
+        }
+
+        MiscFixesPatch.FixTileSetSockets();
 
         if (DungeonGenerationPlusCompat.Enabled && sourceBundle != null)
         {
@@ -363,6 +382,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 if (tileSetName.Equals(tileSetInfo.Key.Key, StringComparison.InvariantCultureIgnoreCase))
                 {
                     tileSet.DawnInfo = tileSetInfo;
+                    tileSetInfo.TileSet = tileSet;
                     break;
                 }
             }
@@ -390,71 +410,8 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
                 if (archetypeName.Equals(archetypeInfo.Key.Key, StringComparison.InvariantCultureIgnoreCase))
                 {
                     dungeonArchetype.DawnInfo = archetypeInfo;
+                    archetypeInfo.DungeonArchetype = dungeonArchetype;
                     break;
-                }
-            }
-        }
-    }
-
-    private static DawnDungeonInfo RebuildDungeonInfoCache(DungeonFlow flow)
-    {
-        DawnDungeonInfo dungeonInfo = flow.DawnInfo;
-
-        dungeonInfo.sockets = new();
-
-        IEnumerable<TileSet> tileSets = flow.TileInjectionRules
-            .Select(it => it.TileSet)
-            .Concat(flow.GetUsedTileSets())
-            .Distinct();
-
-        dungeonInfo.tiles = tileSets
-            .Select(it => it.TileWeights.Weights)
-            .SelectMany(it => it)
-            .SelectMany(it => it.Value.GetComponentsInChildren<Tile>())
-            .ToList();
-
-        dungeonInfo.doorways = new();
-        dungeonInfo.spawnSyncedObjects = new();
-
-        foreach (Tile dungeonTile in dungeonInfo.Tiles)
-        {
-            foreach (Doorway dungeonDoorway in dungeonTile.gameObject.GetComponentsInChildren<Doorway>())
-            {
-                if (!dungeonInfo.Doorways.Contains(dungeonDoorway))
-                {
-                    dungeonInfo.doorways.Add(dungeonDoorway);
-                }
-
-                if (!dungeonInfo.Sockets.Contains(dungeonDoorway.socket))
-                {
-                    dungeonInfo.sockets.Add(dungeonDoorway.socket);
-                }
-
-                AddSpawnSyncedObjectsFromWeights(dungeonInfo, dungeonDoorway.ConnectorPrefabWeights);
-                AddSpawnSyncedObjectsFromWeights(dungeonInfo, dungeonDoorway.BlockerPrefabWeights);
-            }
-
-            foreach (SpawnSyncedObject spawnSyncedObject in dungeonTile.gameObject.GetComponentsInChildren<SpawnSyncedObject>())
-            {
-                if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
-                {
-                    dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
-                }
-            }
-        }
-
-        return dungeonInfo;
-    }
-
-    private static void AddSpawnSyncedObjectsFromWeights(DawnDungeonInfo dungeonInfo, IEnumerable<GameObjectWeight> weights)
-    {
-        foreach (GameObjectWeight doorwayTileWeight in weights)
-        {
-            foreach (SpawnSyncedObject spawnSyncedObject in doorwayTileWeight.GameObject.GetComponentsInChildren<SpawnSyncedObject>())
-            {
-                if (!dungeonInfo.SpawnSyncedObjects.Contains(spawnSyncedObject))
-                {
-                    dungeonInfo.spawnSyncedObjects.Add(spawnSyncedObject);
                 }
             }
         }

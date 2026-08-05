@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
@@ -10,6 +11,9 @@ public class SisterRandomScrapSpawn : MonoBehaviour
     [field: SerializeField]
     public bool SpawnedItemsCopyRotation { get; private set; }
 
+    [field: SerializeField]
+    public bool RemoveNoItemGroupItemSpawning { get; private set; }
+
     public static void Init()
     {
         IL.RoundManager.SpawnScrapInLevel += ApplySisterChanges;
@@ -18,6 +22,39 @@ public class SisterRandomScrapSpawn : MonoBehaviour
     private static void ApplySisterChanges(ILContext il)
     {
         ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.After,
+            il => il.MatchBeq(out _),
+            il => il.MatchLdloc(8),
+            il => il.MatchCall(out _),
+            il => il.MatchStloc(9),
+            il => il.MatchBr(out _)
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match RoundManager.SpawnScrapInLevel IL (1).");
+            return;
+        }
+
+        cursor.Emit(OpCodes.Ldloc, 9);
+        cursor.Emit(OpCodes.Ldloc, 2);
+        cursor.EmitDelegate((List<RandomScrapSpawn> randomScrapSpawns, int sidNumber) =>
+        {
+            if (sidNumber != -1)
+            {
+                return;
+            }
+
+            for (int i = randomScrapSpawns.Count - 1; i >= 0; i--)
+            {
+                RandomScrapSpawn randomScrapSpawn = randomScrapSpawns[i];
+                SisterRandomScrapSpawn? sisterRandomScrapSpawn = randomScrapSpawn.GetComponent<SisterRandomScrapSpawn>();
+                if (sisterRandomScrapSpawn != null && sisterRandomScrapSpawn.RemoveNoItemGroupItemSpawning)
+                {
+                    randomScrapSpawns.RemoveAt(i);
+                }
+            }
+        });
+
         if (!cursor.TryGotoNext(
             MoveType.Before,
             il => il.MatchLdloc(18),
@@ -29,7 +66,7 @@ public class SisterRandomScrapSpawn : MonoBehaviour
             il => il.MatchCallvirt<UnityEngine.Transform>("set_rotation")
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match RoundManager.SpawnScrapInLevel IL.");
+            DawnPlugin.Logger.LogError($"Couldn't match RoundManager.SpawnScrapInLevel IL (2).");
             return;
         }
 

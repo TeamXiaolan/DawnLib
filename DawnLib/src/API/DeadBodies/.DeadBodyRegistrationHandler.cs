@@ -15,11 +15,12 @@ static class DeadBodyRegistrationHandler
         if (LethalContent.DeadBodies.IsFrozen)
         {
             orig(self);
+            return;
         }
 
         foreach ((int index, GameObject ragdollPrefab) in self.playerRagdolls.WithIndex())
         {
-            string name = ragdollPrefab.name;
+            string name = NamespacedKey.NormalizeStringForNamespacedKey(ragdollPrefab.name, true);
             NamespacedKey<DawnDeadBodyInfo>? key = DeadBodyKeys.GetByReflection(name);
             if (key == null)
             {

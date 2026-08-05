@@ -10,7 +10,7 @@ public static class SpawnSyncedObjectExtensions
         Transform current = sso.transform;
         string path = current.name;
 
-        while (current.parent != null && !current.TryGetComponent<Tile>(out var _))
+        while (current.parent != null && !current.TryGetComponent(out Tile _))
         {
             current = current.parent;
             path = current.name + "/" + path;

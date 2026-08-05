@@ -5,7 +5,7 @@ namespace Dawn;
 
 public sealed class DawnArchetypeInfo : DawnBaseInfo<DawnArchetypeInfo>
 {
-    public DungeonArchetype DungeonArchetype { get; }
+    public DungeonArchetype DungeonArchetype { get; internal set; }
 
     internal DawnArchetypeInfo(NamespacedKey<DawnArchetypeInfo> key, HashSet<NamespacedKey> tags, DungeonArchetype archetype, IDataContainer? customData) : base(key, tags, customData)
     {

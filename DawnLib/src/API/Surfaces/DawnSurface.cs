@@ -51,7 +51,7 @@ public class DawnSurface : MonoBehaviour
         {
             if (Terrain == null)
             {
-                DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' on '{gameObject.name}' on not found.");
+                DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' on '{gameObject.transform.GetPath()}' on not found.");
             }
             return;
         }
@@ -60,7 +60,7 @@ public class DawnSurface : MonoBehaviour
         {
             if (Terrain == null)
             {
-                DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' on '{gameObject.name}' has no footstep surface defined.");
+                DawnPlugin.Logger.LogWarning($"Surface: '{NamespacedKey}' on '{gameObject.transform.GetPath()}' has no footstep surface defined.");
             }
             return;
         }

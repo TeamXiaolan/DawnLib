@@ -329,23 +329,31 @@ static class MiscFixesPatch
         soundPrefabsToFix.Clear();
     }
 
-    private static void FixTileSetSockets()
+    internal static void FixTileSetSockets()
     {
         Dictionary<string, DoorwaySocket> mapped = new(); // improve performance
         foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
             Debuggers.Dungeons?.Log($"Mapping sockets for {dungeonInfo.Key}");
-            foreach (DoorwaySocket socket in dungeonInfo.Sockets)
+            foreach (TileSet tileSet in dungeonInfo.DungeonFlow.GetUsedTileSets())
             {
-                Debuggers.Dungeons?.Log($" - {socket.name}");
-                mapped[socket.name] = socket;
+                if (tileSet.DawnInfo == null)
+                {
+                    Debuggers.Dungeons?.Log($"tileSet: {tileSet.name} has no DawnInfo, skipping.");
+                    continue;
+                }
+
+                foreach (DoorwaySocket socket in tileSet.DawnInfo.Sockets)
+                {
+                    Debuggers.Dungeons?.Log($" - {socket.name}");
+                    mapped[socket.name] = socket;
+                }
             }
         }
 
         foreach (GameObject tile in tilesToFixSockets)
         {
             Doorway[] doorways = tile.GetComponentsInChildren<Doorway>();
-
             foreach (Doorway doorway in doorways)
             {
                 doorway.socket = mapped[doorway.socket.name];
