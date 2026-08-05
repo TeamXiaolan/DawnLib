@@ -357,7 +357,6 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
         }
 
         SyncSpawnSyncedObjects(dungeonInfo, true);
-
         return temporaryFlow;
     }
 

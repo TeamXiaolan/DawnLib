@@ -58,6 +58,38 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
                 }
             }
         };
+
+        LethalContent.Dungeons.OnFreezeWithContext += _ =>
+        {
+            List<GameObject> potentialPrefabs = new();
+            foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
+            {
+                potentialPrefabs.Add(networkPrefab.Prefab);
+            }
+
+            foreach (SpawnSyncedObject spawnSyncedObject in tileSetInfo.SpawnSyncedObjects)
+            {
+                if (spawnSyncedObject.spawnPrefab == null)
+                {
+                    DuskPlugin.Logger.LogWarning("SpawnSyncedObject.spawnPrefab is null in tileSet: " + tileSetInfo.TypedKey);
+                    continue;
+                }
+
+                if (spawnSyncedObject.spawnPrefab.TryGetComponent(out NetworkObject networkObject))
+                {
+                    continue;
+                }
+
+                GameObject? fixedPrefab = potentialPrefabs.FirstOrDefault(potentialPrefab => potentialPrefab.name == spawnSyncedObject.spawnPrefab.name);
+                if (fixedPrefab == null)
+                {
+                    DuskPlugin.Logger.LogWarning("SpawnSyncedObject's network prefab is missing in tileSet: " + tileSetInfo.TypedKey + ", prefab: " + spawnSyncedObject.spawnPrefab.name + ", spawner: " + spawnSyncedObject.gameObject.name);
+                    continue;
+                }
+
+                spawnSyncedObject.spawnPrefab = fixedPrefab;
+            }
+        };
     }
 
     public override void TryNetworkRegisterAssets()

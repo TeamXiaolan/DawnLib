@@ -43,7 +43,7 @@ public sealed class DawnTileSetInfo : DawnBaseInfo<DawnTileSetInfo>
                 continue;
             }
 
-            if (spawnSyncedObject.spawnPrefab.TryGetComponent(out NetworkObject _))
+            if (!spawnSyncedObject.spawnPrefab.TryGetComponent(out NetworkObject _))
             {
                 continue;
             }
