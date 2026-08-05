@@ -11,7 +11,6 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal event Action OnSave = delegate { };
     internal PersistentDataContainer SaveContainer { get; private set; }
     internal PersistentDataContainer ContractContainer { get; private set; }
-    public static List<EntranceTeleport> EntranceTeleports { get; internal set; } = new();
 
     private void Awake()
     {

@@ -34,6 +34,9 @@
 
 ## TODO
 
+- For some reason I break WR weather colors on ship screen when loading the lobby?
+- Stop someone leaving midgame messing with the ship screen.
+- Figure out what the conflict is between ExpandedFacility and additional facility tilesets.
 - Made an AddOn mod for allowing adding colours to every weather.
 - Finish out Weather Registration weighting logic.
 - Add Combined, Progressing, Unknown and terminal predicate related weather things.

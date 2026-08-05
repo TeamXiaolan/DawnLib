@@ -6,7 +6,6 @@ namespace Dawn.Interfaces;
 
 [HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
 [InjectInterface(typeof(PlaceableShipObject))]
-[InjectInterface(typeof(EntranceTeleport))]
 interface IOnDestroyMethod
 {
     [HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
