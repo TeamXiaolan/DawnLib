@@ -19,15 +19,15 @@ public readonly record struct WeightQuery
 
     public WeightQuery ResolveGameState()
     {
-        SelectableLevel? level = StartOfRoundRefs.GetCurrentlLevel();
-        DungeonFlow? dungeonFlow = RoundManagerRefs.GetCurrentDungeon();
-        DawnWeatherEffectInfo? weather = TimeOfDayRefs.GetCurrentWeather();
+        DawnMoonInfo? moonInfo = StartOfRoundRefs.GetCurrentlLevelInfo();
+        DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeonInfo();
+        DawnWeatherEffectInfo? weatherInfo = TimeOfDayRefs.GetCurrentWeather();
 
         return this with
         {
-            Moon = Moon ?? level?.DawnInfo,
-            Dungeon = Dungeon ?? dungeonFlow?.DawnInfo,
-            Weather = Weather ?? weather
+            Moon = Moon ?? moonInfo,
+            Dungeon = Dungeon ?? dungeonInfo,
+            Weather = Weather ?? weatherInfo
         };
     }
 }

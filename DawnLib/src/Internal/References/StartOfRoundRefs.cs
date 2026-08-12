@@ -26,4 +26,9 @@ public static class StartOfRoundRefs
     {
         return Instance?.currentLevel;
     }
+
+    public static DawnMoonInfo? GetCurrentlLevelInfo()
+    {
+        return GetCurrentlLevel()?.DawnInfo;
+    }
 }

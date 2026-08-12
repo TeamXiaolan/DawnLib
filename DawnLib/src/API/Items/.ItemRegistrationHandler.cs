@@ -136,7 +136,7 @@ static class ItemRegistrationHandler
                 level.spawnableScrap.Add(spawnableItemWithRarity);
             }
 
-            int rarity = scrapInfo.GetRarity(level.DawnInfo, RoundManagerRefs.GetCurrentDungeon()?.DawnInfo, level.currentWeather.DawnInfo);
+            int rarity = scrapInfo.GetRarity(level.DawnInfo, RoundManagerRefs.GetCurrentDungeonInfo(), level.currentWeather.DawnInfo);
             spawnableItemWithRarity.rarity = rarity;
         }
     }

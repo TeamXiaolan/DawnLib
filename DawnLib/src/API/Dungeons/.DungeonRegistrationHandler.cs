@@ -121,7 +121,7 @@ static class DungeonRegistrationHandler
 
     private static int GetExtraScrapForCurrentlyLoadedInterior()
     {
-        DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeon()?.DawnInfo;
+        DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeonInfo();
         if (dungeonInfo == null)
         {
             return 0;
@@ -134,13 +134,13 @@ static class DungeonRegistrationHandler
         if (!self.checkedForFirstTime)
         {
             self.checkedForFirstTime = true;
-            if (self.isEntranceToBuilding)
+            if (!self.isEntranceToBuilding)
             {
                 orig(self);
                 return;
             }
 
-            DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeon()?.DawnInfo;
+            DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeonInfo();
             if (dungeonInfo == null || dungeonInfo.StingerDetail.FirstTimeAudio == null)
             {
                 orig(self);

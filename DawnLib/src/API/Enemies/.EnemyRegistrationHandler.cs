@@ -379,7 +379,7 @@ static class EnemyRegistrationHandler
         if (!LethalContent.Weathers.IsFrozen || !LethalContent.Enemies.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
-        DungeonFlow? dungeonFlow = RoundManagerRefs.GetCurrentDungeon();
+        DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeonInfo();
         DawnMoonInfo moonInfo = level.DawnInfo;
         foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
@@ -395,7 +395,7 @@ static class EnemyRegistrationHandler
                 level.OutsideEnemies.Add(outsideSpawnableEnemyWithRarity);
             }
 
-            int outsideRarity = enemyInfo.Outside.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            int outsideRarity = enemyInfo.Outside.GetRarity(moonInfo, dungeonInfo, level.currentWeather.DawnInfo);
             outsideSpawnableEnemyWithRarity.rarity = outsideRarity;
 
             Debuggers.Enemies?.Log($"Updating Inside weights");
@@ -406,7 +406,7 @@ static class EnemyRegistrationHandler
                 level.Enemies.Add(insideSpawnableEnemyWithRarity);
             }
 
-            int insideRarity = enemyInfo.Inside.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            int insideRarity = enemyInfo.Inside.GetRarity(moonInfo, dungeonInfo, level.currentWeather.DawnInfo);
             insideSpawnableEnemyWithRarity.rarity = insideRarity;
 
             Debuggers.Enemies?.Log($"Updating Daytime weights");
@@ -417,7 +417,7 @@ static class EnemyRegistrationHandler
                 level.DaytimeEnemies.Add(daytimeSpawnableEnemyWithRarity);
             }
 
-            int daytimeRarity = enemyInfo.Daytime.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            int daytimeRarity = enemyInfo.Daytime.GetRarity(moonInfo, dungeonInfo, level.currentWeather.DawnInfo);
             daytimeSpawnableEnemyWithRarity.rarity = daytimeRarity;
 
             Debuggers.Enemies?.Log($"Updating Weed weights");
@@ -429,7 +429,7 @@ static class EnemyRegistrationHandler
                 level.WeedEnemies.Add(weedSpawnableEnemyWithRarity);
             }
 
-            int weedRarity = enemyInfo.Weed.GetRarity(moonInfo, dungeonFlow?.DawnInfo, level.currentWeather.DawnInfo);
+            int weedRarity = enemyInfo.Weed.GetRarity(moonInfo, dungeonInfo, level.currentWeather.DawnInfo);
             weedSpawnableEnemyWithRarity.rarity = weedRarity;
         }
 

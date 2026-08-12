@@ -28,4 +28,9 @@ public static class RoundManagerRefs
     {
         return Instance?.dungeonGenerator?.Generator?.DungeonFlow;
     }
+
+    public static DawnDungeonInfo? GetCurrentDungeonInfo()
+    {
+        return GetCurrentDungeon()?.DawnInfo;
+    }
 }

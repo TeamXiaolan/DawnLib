@@ -407,27 +407,27 @@ static class SurfaceRegistrationHandler
     {
         return il =>
         {
-            ILCursor c = new ILCursor(il);
+            ILCursor cursor = new ILCursor(il);
             int location = -1;
-            if (!c.TryGotoNext(
+            if (!cursor.TryGotoNext(
                 MoveType.Before,
-                i => i.MatchStloc(out location),
-                i => i.MatchLdarg(0),
-                i => i.MatchLdfld(type, "movementAudio"),
-                i => i.MatchCall<StartOfRound>("get_Instance"),
-                i => i.MatchLdfld<StartOfRound>(nameof(StartOfRound.footstepSurfaces)),
-                i => i.MatchLdarg(0)
+                il => il.MatchStloc(out location),
+                il => il.MatchLdarg(0),
+                il => il.MatchLdfld(type, "movementAudio"),
+                il => il.MatchCall<StartOfRound>("get_Instance"),
+                il => il.MatchLdfld<StartOfRound>(nameof(StartOfRound.footstepSurfaces)),
+                il => il.MatchLdarg(0)
             ))
             {
                 DawnPlugin.Logger.LogWarning($"Failed to apply {type.Name}.PlayFootstepSound patch (0)!");
                 return;
             }
 
-            c.GotoNext(MoveType.After, i => i.MatchLdarg(0));
+            cursor.GotoNext(MoveType.After, il => il.MatchLdarg(0));
 
-            c.EmitLdfld(type, "currentFootstepSurfaceIndex");
-            c.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, location);
-            c.EmitDelegate((int currentFootstepSurfaceIndex, ref float volume) =>
+            cursor.EmitLdfld(type, "currentFootstepSurfaceIndex");
+            cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, location);
+            cursor.EmitDelegate((int currentFootstepSurfaceIndex, ref float volume) =>
             {
                 FootstepSurface footstepSurface = StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex];
                 DawnSurfaceInfo? surfaceInfo = footstepSurface.DawnInfo;
@@ -438,7 +438,7 @@ static class SurfaceRegistrationHandler
 
                 volume *= surfaceInfo.Volume;
             });
-            c.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
+            cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_0);
         };
     }
 
