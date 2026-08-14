@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -331,36 +332,53 @@ static class MiscFixesPatch
 
     internal static void FixTileSetSockets()
     {
-        Dictionary<string, DoorwaySocket> mapped = new(); // improve performance
         foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
             Debuggers.Dungeons?.Log($"Mapping sockets for {dungeonInfo.Key}");
-            foreach (TileSet tileSet in dungeonInfo.DungeonFlow.GetUsedTileSets())
-            {
-                if (tileSet.DawnInfo == null)
-                {
-                    Debuggers.Dungeons?.Log($"tileSet: {tileSet.name} has no DawnInfo, skipping.");
-                    continue;
-                }
 
-                foreach (DoorwaySocket socket in tileSet.DawnInfo.Sockets)
-                {
-                    Debuggers.Dungeons?.Log($" - {socket.name}");
-                    mapped[socket.name] = socket;
-                }
-            }
+            FixDungeonFlowSockets(dungeonInfo);
         }
+    }
 
-        foreach (GameObject tile in tilesToFixSockets)
+    internal static void FixDungeonFlowSockets(DawnDungeonInfo dungeonInfo)
+    {
+        Dictionary<string, DoorwaySocket> mapped = new();
+
+        foreach (DawnTileSetInfo tileSetInfo in dungeonInfo.DungeonFlow.GetUsedArchetypes().SelectMany(x => x.DawnInfo.TileSets))
         {
-            Doorway[] doorways = tile.GetComponentsInChildren<Doorway>();
-            foreach (Doorway doorway in doorways)
+            foreach (DoorwaySocket socket in tileSetInfo.Sockets)
             {
-                doorway.socket = mapped[doorway.socket.name];
+                if (socket == null)
+                    continue;
+
+                if (!mapped.ContainsKey(socket.name))
+                {
+                    mapped.Add(socket.name, socket);
+                    Debuggers.Dungeons?.Log($"[{dungeonInfo.Key}] Mapping socket '{socket.name}'");
+                }
             }
         }
 
-        tilesToFixSockets.Clear();
+        foreach (DawnTileSetInfo tileSetInfo in dungeonInfo.DungeonFlow.GetUsedArchetypes().SelectMany(x => x.DawnInfo.TileSets))
+        {
+            foreach (Tile tile in tileSetInfo.Tiles)
+            {
+                foreach (Doorway doorway in tile.GetComponentsInChildren<Doorway>())
+                {
+                    if (doorway.socket == null)
+                        continue;
+
+                    if (mapped.TryGetValue(doorway.socket.name, out DoorwaySocket canonicalSocket))
+                    {
+                        doorway.socket = canonicalSocket;
+                    }
+                    else
+                    {
+                        DawnPlugin.Logger.LogWarning($"Could not map socket '{doorway.socket.name}' on '{doorway.name}' in dungeon '{dungeonInfo.Key}'.");
+                    }
+                }
+            }
+        }
     }
 
     private static void AddNetworkPrefabToNetworkConfig(On.GameNetworkManager.orig_Start orig, GameNetworkManager self)
