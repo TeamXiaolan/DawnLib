@@ -31,6 +31,10 @@
 - Fixed Mineshaft's CaveTilesAndTunnels TileSet from not being picked up.
 - Fixed SpawnSyncedObject's not being registered with AdditionalTileSets.
 - Applied the performance fix for interiors onto all interiors rather than just DawnLib interiors.
+- Fixed DawnLib Stingers not playing + playing when entering and exiting the interior.
+- Fixed AdditionalTileSet issues with interior that have the exact same named Doorway Sockets.
+- Simplified EntranceTeleport grabbing stuff.
+- Added `SisterEntranceTeleport` component to be able to control the sounds your entranceteleport makes when creaking and being shut.
 
 ## TODO
 

@@ -84,6 +84,7 @@ public class DawnPlugin : BaseUnityPlugin
         DawnCommands.Init();
         SisterRandomScrapSpawn.Init();
         DawnSpawnDenialPoint.Init();
+        SisterEntranceTeleport.Init();
 
         // Testing
         // DawnTesting.TestCommands();
