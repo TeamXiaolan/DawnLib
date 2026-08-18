@@ -38,7 +38,7 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     public string BestiaryWordOverride { get; private set; } = string.Empty;
 
     [field: Space(10)]
-    [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
+    [field: Header("Configs | Spawn Weights")]
     [field: SerializeField]
     public List<NamespacedConfigWeight> MoonSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]

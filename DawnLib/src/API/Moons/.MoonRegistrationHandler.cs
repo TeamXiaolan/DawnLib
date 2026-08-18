@@ -734,7 +734,6 @@ static class MoonRegistrationHandler
         }
     }
 
-    // I think I wrote this nicely, I hope you're proud of me Bongo
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
         if (node != TerminalRefs.MoonCatalogueNode || LethalConstellationsCompat.Enabled)

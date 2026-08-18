@@ -37,7 +37,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     // bongo todo: this is awful, and when migrating this stuff to be dawn info, this should probably be an interface or something
     internal bool IsDefault = false;
 
-    [field: Header("Configs | Spawn Weights | Format: <Namespace>:<Key>=<Operation><Value>, i.e. magic_wesleys_mod:trite=+20")]
+    [field: Header("Configs | Spawn Weights")]
     [field: SerializeField]
     public List<NamespacedConfigWeight> MoonSpawnWeightsConfig { get; private set; } = new();
     [field: SerializeField]

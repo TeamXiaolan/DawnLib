@@ -191,6 +191,12 @@ public static class StringExtensions
     internal static string CleanStringForConfig(this string input)
     {
         // The regex pattern matches: newline, tab, double quote, backtick, apostrophe, [ or ].
-        return ConfigCleanerRegex.Replace(input, string.Empty);
+        string result = ConfigCleanerRegex.Replace(input, string.Empty);
+        if (string.IsNullOrEmpty(result))
+        {
+            return "Value was Empty";
+        }
+
+        return result;
     }
 }

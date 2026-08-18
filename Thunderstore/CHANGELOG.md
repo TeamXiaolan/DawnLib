@@ -1,4 +1,11 @@
-# v1.0.0
+# pre-v1.0.1
+
+- Fixed an issue with `SisterEntranceTeleport` incompatibility with the mod `X`.
+- Included Enemy, Items and Weather to the DawnLib simulate command.
+- Added `SearchBufferDistance` for the buffer when calculating how close to get to a pathfinding node and `ReachedNodeInSearch` UnityEvent for when reaching a pathfinding node for `SmartAgentNavigator`.
+- Fixed an issue with Entity Replacement Registration forcing the need to replace the EnemyType's audioclips which caused some enemies like nutcrackers to break when replacing them.
+
+## pre-v1.0.0
 
 - Added the ability to register weed enemies per moon.
 - Added the ability to register vain shrouds associated with terrains.
@@ -47,6 +54,14 @@
   - Allow injecting to items that aren't your own too?
 - Add dusk config definitions
 - Make it possible to give spawnsyncobjects a namespacedkey and make a component for spawning em with said namespacedkey.
+
+## v0.9.25
+
+- Fixed incompat with Lategame Upgrades.
+
+## v0.9.24
+
+- Added null-safety checks to `LethalQuantitiesCompat` and `TerminalFormatterCompat` to prevent a crash when a dependency updates and renames an internal method.
 
 ## v0.9.23
 

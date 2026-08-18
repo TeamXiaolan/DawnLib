@@ -63,6 +63,11 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             List<GameObject> potentialPrefabs = new();
             foreach (NetworkPrefab networkPrefab in NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs)
             {
+                if (networkPrefab.Prefab == null)
+                {
+                    continue;
+                }
+
                 potentialPrefabs.Add(networkPrefab.Prefab);
             }
 

@@ -1,4 +1,5 @@
-﻿using BepInEx.Bootstrap;
+﻿using System.Reflection;
+using BepInEx.Bootstrap;
 using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using TerminalFormatter;
@@ -14,6 +15,14 @@ static class TerminalFormatterCompat
     {
         // teehee maxxing :3
         alreadyPatched = true;
-        DawnPlugin.ILHooks.Add(new ILHook(AccessTools.DeclaredMethod(typeof(TerminalFormatter.Nodes.Store), "GetNodeText"), TerminalPatches.UseFailedNameResults));
+        MethodInfo getNodeText = AccessTools.DeclaredMethod(typeof(TerminalFormatter.Nodes.Store), "GetNodeText");
+        if (getNodeText != null)
+        {
+            DawnPlugin.ILHooks.Add(new ILHook(getNodeText, TerminalPatches.UseFailedNameResults));
+        }
+        else
+        {
+            DawnPlugin.Logger.LogWarning("[TerminalFormatterCompat] Could not find Store.GetNodeText — TerminalFormatter compat disabled.");
+        }
     }
 }

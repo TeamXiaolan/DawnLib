@@ -9,17 +9,16 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 using OpCodes = Mono.Cecil.Cil.OpCodes;
-using Random = System.Random;
 
 namespace Dusk.Internal;
 
 static class EntityReplacementRegistrationPatch
 {
-    internal static Random? itemReplacementRandom = null;
-    internal static Random? nestReplacementRandom = null;
-    internal static Random? enemyReplacementRandom = null;
-    internal static Random? unlockableReplacementRandom = null;
-    internal static Random? mapObjectReplacementRandom = null;
+    internal static System.Random? itemReplacementRandom = null;
+    internal static System.Random? nestReplacementRandom = null;
+    internal static System.Random? enemyReplacementRandom = null;
+    internal static System.Random? unlockableReplacementRandom = null;
+    internal static System.Random? mapObjectReplacementRandom = null;
 
     internal static void Init()
     {
@@ -515,7 +514,7 @@ static class EntityReplacementRegistrationPatch
 
         if (itemReplacementRandom == null)
         {
-            itemReplacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+            itemReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
         }
 
         int chosenWeight = itemReplacementRandom.Next(0, totalWeight);
@@ -571,7 +570,7 @@ static class EntityReplacementRegistrationPatch
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<AudioClip[], EnemyAI, AudioClip[]>>((existingAudioClips, self) =>
                 {
-                    if (!self.TryGetEnemyReplacement(out var replacement))
+                    if (!self.TryGetEnemyReplacement(out var replacement) || replacement.AudioClips.Length <= 0)
                     {
                         return existingAudioClips;
                     }
@@ -673,7 +672,7 @@ static class EntityReplacementRegistrationPatch
         int totalWeight = replacements.Sum(it => it.GetRarity());
         if (nestReplacementRandom == null)
         {
-            nestReplacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+            nestReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
         }
 
         int chosenWeight = nestReplacementRandom.Next(0, totalWeight);
@@ -707,6 +706,8 @@ static class EntityReplacementRegistrationPatch
                     list = [defaultSkin];
                     enemyInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
+
+                Debuggers.EntityReplacements?.Log($"Registering replacement for '{enemyReplacementDefinition.EntityToReplaceKey}' as '{enemyReplacementDefinition.TypedKey}'");
                 list.Add(enemyReplacementDefinition);
             }
         }
@@ -723,11 +724,13 @@ static class EntityReplacementRegistrationPatch
 
         if (!self.enemyType.DawnInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? replacements))
         {
+            DuskPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it doesn't have any replacements! (there may be other problems)");
             return;
         }
 
-        if (self.TryGetEnemyReplacement(out var _))
+        if (self.TryGetEnemyReplacement(out _))
         {
+            DawnPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it already has a replacement! (there may be other problems)");
             return;
         }
 
@@ -735,11 +738,13 @@ static class EntityReplacementRegistrationPatch
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskEnemyReplacementDefinition replacement = newReplacements[i];
+            Debuggers.EntityReplacements?.Log($"Taking into account replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}'");
             if (replacement.DatePredicate == null)
                 continue;
 
             if (!replacement.DatePredicate.Evaluate())
             {
+                Debuggers.EntityReplacements?.Log($"Removing replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}'");
                 newReplacements.RemoveAt(i);
             }
         }
@@ -747,12 +752,13 @@ static class EntityReplacementRegistrationPatch
         int totalWeight = newReplacements.Sum(it => it.GetRarity());
         if (enemyReplacementRandom == null)
         {
-            enemyReplacementRandom = new Random(StartOfRound.Instance.randomMapSeed + 234780);
+            enemyReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
         }
 
         int chosenWeight = enemyReplacementRandom.Next(0, totalWeight);
         foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
+            Debuggers.EntityReplacements?.Log($"Trying replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}'");
             chosenWeight -= replacement.GetRarity();
             if (chosenWeight > 0)
                 continue;

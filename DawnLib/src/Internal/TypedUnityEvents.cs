@@ -14,3 +14,5 @@ namespace Dawn.Internal;
 [Serializable] public class AnimationCurveEvent : UnityEvent<AnimationCurve> { }
 
 [Serializable] public class BoundedRangeEvent : UnityEvent<BoundedRange> { }
+
+[Serializable] public class GameObjectEvent : UnityEvent<GameObject> { }

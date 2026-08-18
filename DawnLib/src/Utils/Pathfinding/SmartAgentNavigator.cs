@@ -24,9 +24,10 @@ public class SmartAgentNavigator : NetworkBehaviour
     [Header("Events")]
     public UnityEvent<bool> OnUseEntranceTeleport = new();
     public UnityEvent<bool> OnEnableOrDisableAgent = new();
+    public UnityEvent ReachedNodeInSearch = new();
 
     [Header("Extra Settings")]
-    [SerializeField]
+    public float SearchBufferDistance = 3f;
     public bool CanTryToFlyToDestination = true;
 
     [HideInInspector]
@@ -490,8 +491,9 @@ public class SmartAgentNavigator : NetworkBehaviour
                 GoToDestination(positionToTravel);
                 yield return new WaitForSeconds(1f);
 
-                if (!agent.enabled || Vector3.Distance(this.transform.position, positionToTravel) <= 3 + agent.stoppingDistance)
+                if (!agent.enabled || Vector3.Distance(this.transform.position, positionToTravel) <= SearchBufferDistance + agent.stoppingDistance)
                 {
+                    ReachedNodeInSearch.Invoke();
                     reachedDestination = true;
                 }
             }
@@ -569,4 +571,10 @@ public class SmartAgentNavigator : NetworkBehaviour
         }
     }
     #endregion
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        StopAllCoroutines();
+    }
 }

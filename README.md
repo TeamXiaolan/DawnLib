@@ -134,8 +134,8 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 - [Bongo Xiaolan](https://github.com/LoafOrc)
 - [Xu Xiaolan](https://github.com/XuuXiaolan)
-- [Darmuh](https://github.com/darmuh)
 - [Pacoito](https://github.com/pacoito123)
+- [Darmuh](https://github.com/darmuh)
 - [Fumo](https://github.com/xntkrnl)
 - [Ratijas](https://github.com/ratijas)
 
@@ -152,7 +152,9 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 ### Credits - Testers
 
 - Crafty
-- SkittyMuffins
 - Kiszony
 - TheCheeseXD
 - Boom Hen
+- Zerowe
+- DistinctBlaze
+- SkittyMuffins
