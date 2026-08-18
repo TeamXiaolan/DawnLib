@@ -1,3 +1,4 @@
+using Dawn.Internal;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
@@ -75,8 +76,28 @@ public class SisterEntranceTeleport : MonoBehaviour
             il => il.MatchBrfalse(out markedLabel)
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match EntranceTeleport.PlayAudioAtTeleportPositions IL (1).");
-            return;
+            if (LethalLevelLoaderCompat.Enabled)
+            {
+                if (!cursor.TryGotoNext(
+                    MoveType.After,
+                    il => il.MatchStloc(0),
+                    il => il.MatchLdloca(0),
+                    il => il.MatchLdloca(1),
+                    il => il.MatchCall(out _),
+                    il => il.MatchLdarg(0),
+                    il => il.MatchLdfld<EntranceTeleport>(nameof(EntranceTeleport.isEntranceToBuilding)),
+                    il => il.MatchBrfalse(out markedLabel)
+                ))
+                {
+                    DawnPlugin.Logger.LogError($"Couldn't match EntranceTeleport.PlayAudioAtTeleportPositions IL (1) despite adding LethalLevelLoader fallback.");
+                    return;
+                }
+            }
+            else
+            {
+                DawnPlugin.Logger.LogError($"Couldn't match EntranceTeleport.PlayAudioAtTeleportPositions IL (1).");
+                return;
+            }
         }
 
         cursor.Emit(OpCodes.Ldarg_0);
