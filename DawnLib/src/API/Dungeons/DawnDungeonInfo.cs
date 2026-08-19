@@ -55,5 +55,10 @@ public sealed class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
         return result;
     }
 
+    public string GetPublicName()
+    {
+        return Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
+    }
+
     public const int FireExitGlobalPropID = 1231;
 }

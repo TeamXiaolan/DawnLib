@@ -81,21 +81,28 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
         }
     }
 
-    internal void RegisterAsDefault()
+    internal void RegisterAsDefault(string @namespace, string key)
     {
         IsDefault = true;
         // TODO: make this a proper config entry
-        Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(new GlobalBaseIntSource(() => 100))));
+        NamespacedKey<DuskEntityReplacementDefinition> defaultKey = NamespacedKey<DuskEntityReplacementDefinition>.From(@namespace, key);
+        Key = defaultKey;
+        EntityToReplaceKey = defaultKey;
+        this.name = $"EntityReplacementDefinition_Default_{defaultKey}";
+        SkinName = key;
+
+        _spawnWeightSource = CreateSpawnWeightSource(
+            () => [],
+            () => [],
+            () => [],
+            () => [],
+            () => 100);
+
+        Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(_spawnWeightSource)));
     }
 
     public override void Register(DuskMod mod)
     {
-        if (IsDefault)
-        {
-            RegisterAsDefault();
-            return;
-        }
-
         base.Register(mod);
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
         Config = CreateEntityReplacementConfig(section);

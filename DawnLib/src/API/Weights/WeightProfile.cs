@@ -83,7 +83,12 @@ public sealed class WeightProfile<T> : IWeightProfile
     }
 
     public static WeightProfile<T> Create(IWeightValuePolicy<T> policy) => new(policy);
-    public static WeightProfile<T> Create(IWeightValuePolicy<T> policy, Action<WeightProfile<T>> callback) => new(policy);
+    public static WeightProfile<T> Create(IWeightValuePolicy<T> policy, Action<WeightProfile<T>> callback)
+    {
+        WeightProfile<T> profile = new WeightProfile<T>(policy);
+        callback(profile);
+        return profile;
+    }
 
     private readonly record struct Entry(WeightModifierHandle Handle, IWeightModifierSource<T> Source);
 }

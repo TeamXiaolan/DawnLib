@@ -20,4 +20,19 @@ public static class IListExtensions
 
         return ts;
     }
+
+    public static void SortWithWeight<T>(this IList<T> valueList, IList<float> weightList)
+    {
+        for (int i = 0; i < valueList.Count; i++)
+        {
+            for (int j = i + 1; j < valueList.Count; j++)
+            {
+                if (weightList[i] < weightList[j])
+                {
+                    (valueList[i], valueList[j]) = (valueList[j], valueList[i]);
+                    (weightList[i], weightList[j]) = (weightList[j], weightList[i]);
+                }
+            }
+        }
+    }
 }

@@ -376,7 +376,7 @@ static class EntityReplacementRegistrationPatch
                 if (!mapObjectInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskMapObjectReplacementDefinition>? list))
                 {
                     DuskMapObjectReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskMapObjectReplacementDefinition>();
-                    vanilla.RegisterAsDefault();
+                    vanilla.RegisterAsDefault(mapObjectInfo.Key.Namespace, mapObjectInfo.GetMapObjectPrefab()?.name ?? mapObjectInfo.Key.Key);
                     list = [vanilla];
                     mapObjectInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
@@ -421,7 +421,7 @@ static class EntityReplacementRegistrationPatch
                 if (!unlockableItemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? list))
                 {
                     DuskUnlockableReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskUnlockableReplacementDefinition>();
-                    vanilla.RegisterAsDefault();
+                    vanilla.RegisterAsDefault(unlockableItemInfo.Key.Namespace, unlockableItemInfo.Key.Key);
                     list = [vanilla];
                     unlockableItemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
@@ -442,7 +442,7 @@ static class EntityReplacementRegistrationPatch
                 if (!itemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? list))
                 {
                     DuskItemReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
-                    vanilla.RegisterAsDefault();
+                    vanilla.RegisterAsDefault(itemInfo.Key.Namespace, itemInfo.Item.itemName);
                     list = [vanilla];
                     itemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
@@ -702,7 +702,7 @@ static class EntityReplacementRegistrationPatch
                 if (!enemyInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? list))
                 {
                     DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
-                    defaultSkin.RegisterAsDefault();
+                    defaultSkin.RegisterAsDefault(enemyInfo.Key.Namespace, enemyInfo.EnemyType.enemyName);
                     list = [defaultSkin];
                     enemyInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
@@ -755,11 +755,14 @@ static class EntityReplacementRegistrationPatch
             enemyReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
         }
 
+        Debuggers.EntityReplacements?.Log($"Total weight for '{self.enemyType.enemyName}' is {totalWeight}");
+
         int chosenWeight = enemyReplacementRandom.Next(0, totalWeight);
         foreach (DuskEnemyReplacementDefinition replacement in newReplacements)
         {
-            Debuggers.EntityReplacements?.Log($"Trying replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}'");
-            chosenWeight -= replacement.GetRarity();
+            int weight = replacement.GetRarity();
+            Debuggers.EntityReplacements?.Log($"Trying replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}' with weight {weight}");
+            chosenWeight -= weight;
             if (chosenWeight > 0)
                 continue;
 

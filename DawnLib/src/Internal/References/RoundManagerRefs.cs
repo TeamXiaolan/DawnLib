@@ -26,11 +26,31 @@ public static class RoundManagerRefs
 
     public static DungeonFlow? GetCurrentDungeon()
     {
-        return Instance?.dungeonGenerator?.Generator?.DungeonFlow;
+        if (Instance == null)
+        {
+            return null;
+        }
+
+        if (Instance.dungeonGenerator == null)
+        {
+            return null;
+        }
+
+        if (Instance.dungeonGenerator.Generator == null)
+        {
+            return null;
+        }
+
+        return Instance.dungeonGenerator.Generator.DungeonFlow;
     }
 
     public static DawnDungeonInfo? GetCurrentDungeonInfo()
     {
-        return GetCurrentDungeon()?.DawnInfo;
+        DungeonFlow? dungeonFlow = GetCurrentDungeon();
+        if (dungeonFlow == null)
+        {
+            return null;
+        }
+        return dungeonFlow.DawnInfo;
     }
 }

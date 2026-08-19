@@ -55,7 +55,7 @@ public static class DawnCommands
         {
             foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
             {
-                if (dungeonInfo.Key.Key.StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
+                if (dungeonInfo.GetPublicName().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
                 {
                     relevantDungeonInfo = dungeonInfo;
                     break;
@@ -68,123 +68,232 @@ public static class DawnCommands
             return $"No moons or interiors found with the user input '{userInput}'.\n\n";
         }
 
-        bool includeWeather = true;
-        if (userInput.EndsWith("-w"))
-        {
-            includeWeather = false;
-        }
-
         int spaceForName = 20;
         StringBuilder builder = new StringBuilder();
         if (relevantMoonInfo != null)
         {
-            builder.Append($"Simulating arrival to {relevantMoonInfo.Level.PlanetName}\nAnalyzing potential remnants found on surface.\nChecking the Weather forecast.\nListing generated probabilities below.\n\n");
-            builder.Append($"----------------------------\n\n");
-            builder.Append($"POSSIBLE STRUCTURES:\n");
-            List<DawnDungeonInfo> possibleDungeons = new();
-            List<float> possibleDungeonWeights = new();
-
-            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            bool includeScrap = true;
+            if (userInput.Contains("-s", StringComparison.OrdinalIgnoreCase))
             {
-                int rarity = dungeonInfo.GetRarity(relevantMoonInfo, includeWeather ? relevantMoonInfo.Level.currentWeather.DawnInfo : null);
-                if (rarity > 0)
-                {
-                    possibleDungeons.Add(dungeonInfo);
-                    possibleDungeonWeights.Add(rarity);
-                }
+                includeScrap = false;
             }
 
-            // sort by rarity
-            for (int i = 0; i < possibleDungeons.Count; i++)
+            bool includeEnemies = true;
+            if (userInput.Contains("-e", StringComparison.OrdinalIgnoreCase))
             {
-                for (int j = i + 1; j < possibleDungeons.Count; j++)
-                {
-                    if (possibleDungeonWeights[i] < possibleDungeonWeights[j])
-                    {
-                        (possibleDungeons[i], possibleDungeons[j]) = (possibleDungeons[j], possibleDungeons[i]);
-                        (possibleDungeonWeights[i], possibleDungeonWeights[j]) = (possibleDungeonWeights[j], possibleDungeonWeights[i]);
-                    }
-                }
+                includeEnemies = false;
             }
-
-            float sumOfWeights = possibleDungeonWeights.Sum();
-            for (int i = 0; i < possibleDungeons.Count; i++)
-            {
-                string dungeonName = possibleDungeons[i].Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
-                if (dungeonName.Length > 16)
-                {
-                    dungeonName = dungeonName[..13] + "...";
-                }
-                int paddingNeeded = Mathf.Max(spaceForName - dungeonName.Length, 0);
-                builder.Append($"* {dungeonName}{new string(' ', paddingNeeded)}");
-                builder.Append($"// Chance: ");
-                float weight = (possibleDungeonWeights[i] / sumOfWeights) * 100f;
-                if (weight < 10f)
-                {
-                    builder.Append(" ");
-                }
-                builder.Append($"{weight:F2}%\n");
-            }
+            BuildMoonSimulation(builder, relevantMoonInfo, includeScrap, includeEnemies, spaceForName);
         }
 
         if (relevantDungeonInfo != null)
         {
-            string dungeonName = relevantDungeonInfo.Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
-            builder.Append($"Simulating the structure {dungeonName}\nAnalyzing the pathways of the structure.\nChecking the Weather forecast.\nListing generated probabilities below.\n\n");
-            builder.Append($"----------------------------\n\n");
-            builder.Append($"POSSIBLE MOONS:\n");
-            List<DawnMoonInfo> possibleMoons = new();
-            List<float> possibleMoonWeights = new();
-
-            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-            {
-                if (moonInfo.HasTag(Tags.Unimplemented))
-                {
-                    continue;
-                }
-
-                float rarityWithThisDungeon = relevantDungeonInfo.GetRarity(moonInfo, includeWeather ? moonInfo.Level.currentWeather.DawnInfo : null);
-                if (rarityWithThisDungeon <= 0)
-                {
-                    continue;
-                }
-
-                float sumOfWeightsOfAllDungeons = LethalContent.Dungeons.Values.Sum(d => d.GetRarity(moonInfo, includeWeather ? moonInfo.Level.currentWeather.DawnInfo : null));
-                float rarity = (rarityWithThisDungeon / sumOfWeightsOfAllDungeons) * 100f;
-
-                possibleMoons.Add(moonInfo);
-                possibleMoonWeights.Add(rarity);
-            }
-
-            // sort by rarity
-            for (int i = 0; i < possibleMoons.Count; i++)
-            {
-                for (int j = i + 1; j < possibleMoons.Count; j++)
-                {
-                    if (possibleMoonWeights[i] < possibleMoonWeights[j])
-                    {
-                        (possibleMoons[i], possibleMoons[j]) = (possibleMoons[j], possibleMoons[i]);
-                        (possibleMoonWeights[i], possibleMoonWeights[j]) = (possibleMoonWeights[j], possibleMoonWeights[i]);
-                    }
-                }
-            }
-
-            for (int i = 0; i < possibleMoons.Count; i++)
-            {
-                string moonName = possibleMoons[i].Key.Key.RemoveLeadingNumbers().ToCapitalized().ReplaceNumbersWithWords().Replace(" ", "_");
-                int paddingNeeded = Mathf.Max(spaceForName - moonName.Length, 0);
-                builder.Append($"* {moonName}{new string(' ', paddingNeeded)}");
-                builder.Append($"// Chance: ");
-                float weight = possibleMoonWeights[i];
-                if (weight < 10f)
-                {
-                    builder.Append(" ");
-                }
-                builder.Append($"{weight:F2}%\n");
-            }
+            BuildDungeonSimulation(builder, relevantDungeonInfo, spaceForName);
         }
 
         return builder.ToString();
+    }
+
+    private static void BuildMoonSimulation(StringBuilder builder, DawnMoonInfo moonInfo, bool includeScrap, bool includeEnemies, int spaceForName)
+    {
+        builder.Append($"Simulating arrival to {moonInfo.Level.PlanetName}\nAnalyzing potential remnants found on surface.\nChecking the Weather forecast.\nListing generated probabilities below.\n\n");
+
+        BuildStructureInfo(builder, moonInfo, spaceForName);
+        if (includeScrap)
+        {
+            BuildScrapsInfo(builder, moonInfo, spaceForName);
+        }
+        if (includeEnemies)
+        {
+            BuildEnemiesInfo(builder, moonInfo, spaceForName);
+        }
+    }
+
+    private static void BuildEnemiesInfo(StringBuilder builder, DawnMoonInfo moonInfo, int spaceForName)
+    {
+        builder.Append($"----------------------------\n\n");
+        builder.Append($"POSSIBLE ENEMIES:\n");
+
+        List<DawnEnemyInfo> possibleEnemies = new();
+        List<float> possibleEnemyWeights = new();
+
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            int rarity;
+            if (enemyInfo.EnemyType.spawnFromWeeds)
+            {
+                rarity = enemyInfo.Weed.GetRarity(moonInfo, null, null);
+            }
+            else if (enemyInfo.EnemyType.isDaytimeEnemy)
+            {
+                rarity = enemyInfo.Daytime.GetRarity(moonInfo, null, null);
+            }
+            else if (enemyInfo.EnemyType.isOutsideEnemy)
+            {
+                rarity = enemyInfo.Outside.GetRarity(moonInfo, null, null);
+            }
+            else
+            {
+                rarity = enemyInfo.Inside.GetRarity(moonInfo, null, null);
+            }
+
+            if (rarity > 0)
+            {
+                possibleEnemies.Add(enemyInfo);
+                possibleEnemyWeights.Add(rarity);
+            }
+        }
+
+        // sort by rarity
+        possibleEnemies.SortWithWeight(possibleEnemyWeights);
+        float sumOfEnemyWeights = possibleEnemyWeights.Sum();
+        for (int i = 0; i < possibleEnemies.Count; i++)
+        {
+            string enemyName = possibleEnemies[i].EnemyType.enemyName;
+            if (enemyName.Length > 16)
+            {
+                enemyName = enemyName[..13] + "...";
+            }
+            int paddingNeeded = Mathf.Max(spaceForName - enemyName.Length, 0);
+            builder.Append($"* {enemyName}{new string(' ', paddingNeeded)}");
+            builder.Append($"// Chance: ");
+            float percentileWeight = (possibleEnemyWeights[i] / sumOfEnemyWeights) * 100f;
+            if (percentileWeight < 10f)
+            {
+                builder.Append(" ");
+            }
+            builder.Append($"{percentileWeight:F2}% ({possibleEnemyWeights[i]})\n");
+        }
+    }
+
+    private static void BuildScrapsInfo(StringBuilder builder, DawnMoonInfo moonInfo, int spaceForName)
+    {
+        builder.Append($"----------------------------\n\n");
+        builder.Append($"POSSIBLE ITEMS:\n");
+
+        List<DawnItemInfo> possibleItems = new();
+        List<float> possibleItemWeights = new();
+
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            if (itemInfo.ScrapInfo == null)
+            {
+                continue;
+            }
+
+            int rarity = itemInfo.ScrapInfo.GetRarity(moonInfo, null, null);
+            if (rarity > 0)
+            {
+                possibleItems.Add(itemInfo);
+                possibleItemWeights.Add(rarity);
+            }
+        }
+
+        // sort by rarity
+        possibleItems.SortWithWeight(possibleItemWeights);
+        float sumOfItemWeights = possibleItemWeights.Sum();
+        for (int i = 0; i < possibleItems.Count; i++)
+        {
+            string itemName = possibleItems[i].Item.itemName;
+            if (itemName.Length > 16)
+            {
+                itemName = itemName[..13] + "...";
+            }
+            int paddingNeeded = Mathf.Max(spaceForName - itemName.Length, 0);
+            builder.Append($"* {itemName}{new string(' ', paddingNeeded)}");
+            builder.Append($"// Chance: ");
+            float percentileWeight = (possibleItemWeights[i] / sumOfItemWeights) * 100f;
+            if (percentileWeight < 10f)
+            {
+                builder.Append(" ");
+            }
+            builder.Append($"{percentileWeight:F2}% ({possibleItemWeights[i]})\n");
+        }
+    }
+
+    private static void BuildStructureInfo(StringBuilder builder, DawnMoonInfo moonInfo, int spaceForName)
+    {
+        builder.Append($"----------------------------\n\n");
+        builder.Append($"POSSIBLE STRUCTURES:\n");
+        List<DawnDungeonInfo> possibleDungeons = new();
+        List<float> possibleDungeonWeights = new();
+
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        {
+            int rarity = dungeonInfo.GetRarity(moonInfo, null);
+            if (rarity > 0)
+            {
+                possibleDungeons.Add(dungeonInfo);
+                possibleDungeonWeights.Add(rarity);
+            }
+        }
+
+        // sort by rarity
+        possibleDungeons.SortWithWeight(possibleDungeonWeights);
+        float sumOfDungeonWeights = possibleDungeonWeights.Sum();
+        for (int i = 0; i < possibleDungeons.Count; i++)
+        {
+            string dungeonName = possibleDungeons[i].GetPublicName();
+            if (dungeonName.Length > 16)
+            {
+                dungeonName = dungeonName[..13] + "...";
+            }
+            int paddingNeeded = Mathf.Max(spaceForName - dungeonName.Length, 0);
+            builder.Append($"* {dungeonName}{new string(' ', paddingNeeded)}");
+            builder.Append($"// Chance: ");
+            float percentileWeight = (possibleDungeonWeights[i] / sumOfDungeonWeights) * 100f;
+            if (percentileWeight < 10f)
+            {
+                builder.Append(" ");
+            }
+            builder.Append($"{percentileWeight:F2}% ({possibleDungeonWeights[i]})\n");
+        }
+    }
+
+    private static void BuildDungeonSimulation(StringBuilder builder, DawnDungeonInfo dungeonInfo, int spaceForName)
+    {
+        string dungeonName = dungeonInfo.GetPublicName();
+        builder.Append($"Simulating the structure {dungeonName}\nAnalyzing the pathways of the structure.\nChecking the Weather forecast.\nListing generated probabilities below.\n\n");
+        builder.Append($"----------------------------\n\n");
+        builder.Append($"POSSIBLE MOONS:\n");
+        List<DawnMoonInfo> possibleMoons = new();
+        List<float> possibleMoonWeights = new();
+
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.HasTag(Tags.Unimplemented))
+            {
+                continue;
+            }
+
+            float rarityWithThisDungeon = dungeonInfo.GetRarity(moonInfo, null);
+            if (rarityWithThisDungeon <= 0)
+            {
+                continue;
+            }
+
+            float sumOfWeightsOfAllDungeons = LethalContent.Dungeons.Values.Sum(d => d.GetRarity(moonInfo, null));
+            float rarity = (rarityWithThisDungeon / sumOfWeightsOfAllDungeons) * 100f;
+
+            possibleMoons.Add(moonInfo);
+            possibleMoonWeights.Add(rarity);
+        }
+
+        // sort by rarity
+        possibleMoons.SortWithWeight(possibleMoonWeights);
+        for (int i = 0; i < possibleMoons.Count; i++)
+        {
+            string moonName = possibleMoons[i].GetNumberlessPlanetName();
+            int paddingNeeded = Mathf.Max(spaceForName - moonName.Length, 0);
+            builder.Append($"* {moonName}{new string(' ', paddingNeeded)}");
+            builder.Append($"// Chance: ");
+            float percentileWeight = possibleMoonWeights[i];
+            if (percentileWeight < 10f)
+            {
+                builder.Append(" ");
+            }
+            builder.Append($"{percentileWeight:F2}%\n");
+        }
     }
 
     private static void CreateFilterCommand()

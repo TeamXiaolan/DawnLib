@@ -186,11 +186,22 @@ public class TextureReplacement : Hierarchy
         Material[] existingMaterials = targetRenderer.materials;
         foreach (MaterialPropertiesWithIndex materialPropertyWithIndex in ReplacementMaterialProperties)
         {
-            if (materialPropertyWithIndex != null && materialPropertyWithIndex.Index >= 0 && materialPropertyWithIndex.Index < existingMaterials.Length)
+            if (materialPropertyWithIndex.Index < existingMaterials.Length)
             {
+                foreach (UnknownMap unknownMap in materialPropertyWithIndex.UnknownMaps)
+                {
+                    if (existingMaterials[materialPropertyWithIndex.Index].HasTexture(unknownMap.MaskName))
+                    {
+                        existingMaterials[materialPropertyWithIndex.Index].SetTexture(unknownMap.MaskName, unknownMap.Texture);
+                    }
+                }
                 if (materialPropertyWithIndex.BaseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_MainTex"))
                 {
                     existingMaterials[materialPropertyWithIndex.Index].mainTexture = materialPropertyWithIndex.BaseMap;
+                }
+                if (materialPropertyWithIndex.DiffuseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_Diffuse"))
+                {
+                    existingMaterials[materialPropertyWithIndex.Index].SetTexture("_Diffuse", materialPropertyWithIndex.DiffuseMap);
                 }
                 if (materialPropertyWithIndex.MaskMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_MaskMap"))
                 {
@@ -216,14 +227,28 @@ public class MaterialPropertiesWithIndex
     [field: SerializeField]
     public Texture2D? BaseMap { get; private set; }
     [field: SerializeField]
+    public Texture2D? DiffuseMap { get; private set; }
+    [field: SerializeField]
     public Texture2D? MaskMap { get; private set; }
     [field: SerializeField]
     public Texture2D? NormalMap { get; private set; }
+    [field: SerializeField]
+    public List<UnknownMap> UnknownMaps { get; private set; } = new();
 
     [field: Tooltip("I think only hydrogere would make use of this?")]
     [field: SerializeField]
     public Color GradientColor { get; private set; } = Color.black;
 
     [field: SerializeField]
+    [field: Min(0)]
     public int Index { get; private set; }
+}
+
+[Serializable]
+public class UnknownMap
+{
+    [field: SerializeField]
+    public Texture2D? Texture { get; private set; }
+    [field: SerializeField]
+    public string MaskName { get; private set; }
 }
