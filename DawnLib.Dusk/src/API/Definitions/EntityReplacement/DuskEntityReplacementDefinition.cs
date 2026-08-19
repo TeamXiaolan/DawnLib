@@ -58,7 +58,7 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     public DawnWeightedValue<int> Rarity { get; private set; }
     public EntityReplacementConfig Config { get; private set; }
 
-    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null)
+    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null, bool resolveAutomatically = true)
     {
         return Rarity.GetValue(new WeightQuery
         {
@@ -66,7 +66,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
             Moon = moonInfo,
             Dungeon = dungeonInfo,
             Weather = weatherEffectInfo,
-            Channel = DuskWeightChannels.EntityReplacementRarity.Key
+            Channel = DuskWeightChannels.EntityReplacementRarity.Key,
+            ResolveAutomatically = resolveAutomatically
         });
     }
 

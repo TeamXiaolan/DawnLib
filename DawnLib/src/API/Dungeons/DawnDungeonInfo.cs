@@ -20,14 +20,15 @@ public sealed class DawnDungeonInfo : DawnBaseInfo<DawnDungeonInfo>
 
     public DawnWeightedValue<int> Rarity { get; }
 
-    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null)
+    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null, bool resolveAutomatically = true)
     {
         return Rarity.GetValue(new WeightQuery
         {
             Subject = this,
             Moon = moonInfo,
             Weather = weatherEffectInfo,
-            Channel = DawnWeightChannels.ScrapRarity.Key
+            Channel = DawnWeightChannels.ScrapRarity.Key,
+            ResolveAutomatically = resolveAutomatically
         });
     }
 

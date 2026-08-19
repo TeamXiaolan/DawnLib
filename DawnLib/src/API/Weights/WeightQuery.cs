@@ -16,8 +16,15 @@ public readonly record struct WeightQuery
 
     public DawnWeatherEffectInfo? Weather { get; init; }
 
+    public bool ResolveAutomatically { get; init; }
+
     public WeightQuery ResolveGameState()
     {
+        if (!ResolveAutomatically)
+        {
+            return this;
+        }
+
         DawnMoonInfo? moonInfo = StartOfRoundRefs.GetCurrentlLevelInfo();
         DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeonInfo();
         DawnWeatherEffectInfo? weatherInfo = TimeOfDayRefs.GetCurrentWeather();

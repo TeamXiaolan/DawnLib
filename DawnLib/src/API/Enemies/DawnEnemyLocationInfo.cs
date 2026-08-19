@@ -11,7 +11,7 @@ public sealed class DawnEnemyLocationInfo
 
     public DawnWeightedValue<int> Rarity { get; }
 
-    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null)
+    public int GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null, bool resolveAutomatically = true)
     {
         return Rarity.GetValue(new WeightQuery
         {
@@ -20,7 +20,8 @@ public sealed class DawnEnemyLocationInfo
             Moon = moonInfo,
             Dungeon = dungeonInfo,
             Weather = weatherEffectInfo,
-            Channel = DawnWeightChannels.EnemyRarity.Key
+            Channel = DawnWeightChannels.EnemyRarity.Key,
+            ResolveAutomatically = resolveAutomatically
         });
     }
 }

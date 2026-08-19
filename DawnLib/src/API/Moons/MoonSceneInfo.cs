@@ -7,13 +7,14 @@ public interface IMoonSceneInfo : INamespaced<IMoonSceneInfo>
 {
     string SceneName { get; }
     DawnWeightedValue<int> Rarity { get; }
-    public int GetRarity(DawnWeatherEffectInfo? weatherEffectInfo = null)
+    public int GetRarity(DawnWeatherEffectInfo? weatherEffectInfo = null, bool resolveAutomatically = true)
     {
         return Rarity.GetValue(new WeightQuery
         {
             Subject = this,
             Weather = weatherEffectInfo,
-            Channel = DawnWeightChannels.ScrapRarity.Key
+            Channel = DawnWeightChannels.ScrapRarity.Key,
+            ResolveAutomatically = resolveAutomatically
         });
     }
 }
