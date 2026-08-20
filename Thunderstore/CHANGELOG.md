@@ -7,6 +7,8 @@
 - Fixed an issue with Entity Replacement Registration forcing the need to replace the EnemyType's audioclips which caused some enemies like nutcrackers to break when replacing them.
 - Added `DiffuseMap` to MaterialReplacements.
 - Added `UnknownMaps` to MaterialReplacements.
+- Created `VisualEffectTextureReplacement`.
+- Added some cache-ing to texture replacements.
 
 ## pre-v1.0.0
 
@@ -49,7 +51,6 @@
 ## TODO
 
 - For some reason I break WR weather colors on ship screen when loading the lobby?
-- Stop someone leaving midgame messing with the ship screen.
 - Made an AddOn mod for allowing adding colours to every weather.
 - Finish out Weather Registration weighting logic.
 - Add Combined, Progressing, Unknown and terminal predicate related weather things.

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -19,5 +20,33 @@ public class VisualEffectReplacement : Hierarchy
 
         VisualEffect visualEffect = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
         visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
+    }
+}
+
+[CreateAssetMenu(fileName = "New VisualEffect Texture Replacement", menuName = $"Entity Replacements/Actions/Texture Replacement")]
+public class VisualEffectTextureReplacement : Hierarchy
+{
+    [field: SerializeField]
+    public List<UnknownMap> ReplacementUnknownMaps { get; private set; } = new();
+
+    public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
+    {
+        if (!immediate)
+        {
+            yield return null;
+        }
+
+        ReplaceTextures(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>());
+    }
+
+    private void ReplaceTextures(VisualEffect visualEffect)
+    {
+        foreach (UnknownMap unknownMap in ReplacementUnknownMaps)
+        {
+            if (visualEffect.HasTexture(unknownMap.MaskName))
+            {
+                visualEffect.SetTexture(unknownMap.MaskName, unknownMap.Texture);
+            }
+        }
     }
 }

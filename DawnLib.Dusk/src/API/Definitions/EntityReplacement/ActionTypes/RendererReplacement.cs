@@ -171,6 +171,12 @@ public class TextureReplacement : Hierarchy
     [field: SerializeField]
     public List<MaterialPropertiesWithIndex> ReplacementMaterialProperties { get; private set; } = new();
 
+    private static readonly int _mainTex = Shader.PropertyToID("_MainTex");
+    private static readonly int _diffuse = Shader.PropertyToID("_Diffuse");
+    private static readonly int _maskMap = Shader.PropertyToID("_MaskMap");
+    private static readonly int _normalMap = Shader.PropertyToID("_NormalMap");
+    private static readonly int _gradient_color = Shader.PropertyToID("_Gradient_Color");
+
     public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
         if (!immediate)
@@ -178,10 +184,10 @@ public class TextureReplacement : Hierarchy
             yield return null;
         }
 
-        ReplaceMaterials(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
+        ReplaceTextures(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
     }
 
-    private void ReplaceMaterials(Renderer targetRenderer)
+    private void ReplaceTextures(Renderer targetRenderer)
     {
         Material[] existingMaterials = targetRenderer.materials;
         foreach (MaterialPropertiesWithIndex materialPropertyWithIndex in ReplacementMaterialProperties)
@@ -195,25 +201,25 @@ public class TextureReplacement : Hierarchy
                         existingMaterials[materialPropertyWithIndex.Index].SetTexture(unknownMap.MaskName, unknownMap.Texture);
                     }
                 }
-                if (materialPropertyWithIndex.BaseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_MainTex"))
+                if (materialPropertyWithIndex.BaseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture(_mainTex))
                 {
                     existingMaterials[materialPropertyWithIndex.Index].mainTexture = materialPropertyWithIndex.BaseMap;
                 }
-                if (materialPropertyWithIndex.DiffuseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_Diffuse"))
+                if (materialPropertyWithIndex.DiffuseMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture(_diffuse))
                 {
-                    existingMaterials[materialPropertyWithIndex.Index].SetTexture("_Diffuse", materialPropertyWithIndex.DiffuseMap);
+                    existingMaterials[materialPropertyWithIndex.Index].SetTexture(_diffuse, materialPropertyWithIndex.DiffuseMap);
                 }
-                if (materialPropertyWithIndex.MaskMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_MaskMap"))
+                if (materialPropertyWithIndex.MaskMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture(_maskMap))
                 {
-                    existingMaterials[materialPropertyWithIndex.Index].SetTexture("_MaskMap", materialPropertyWithIndex.MaskMap);
+                    existingMaterials[materialPropertyWithIndex.Index].SetTexture(_maskMap, materialPropertyWithIndex.MaskMap);
                 }
-                if (materialPropertyWithIndex.NormalMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture("_NormalMap"))
+                if (materialPropertyWithIndex.NormalMap != null && existingMaterials[materialPropertyWithIndex.Index].HasTexture(_normalMap))
                 {
-                    existingMaterials[materialPropertyWithIndex.Index].SetTexture("_NormalMap", materialPropertyWithIndex.NormalMap);
+                    existingMaterials[materialPropertyWithIndex.Index].SetTexture(_normalMap, materialPropertyWithIndex.NormalMap);
                 }
-                if (materialPropertyWithIndex.GradientColor != Color.black && existingMaterials[materialPropertyWithIndex.Index].HasColor("_Gradient_Color"))
+                if (materialPropertyWithIndex.GradientColor != Color.black && existingMaterials[materialPropertyWithIndex.Index].HasColor(_gradient_color))
                 {
-                    existingMaterials[materialPropertyWithIndex.Index].SetColor("_Gradient_Color", materialPropertyWithIndex.GradientColor);
+                    existingMaterials[materialPropertyWithIndex.Index].SetColor(_gradient_color, materialPropertyWithIndex.GradientColor);
                 }
             }
         }
