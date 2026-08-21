@@ -115,12 +115,13 @@ static class SurfaceRegistrationHandler
             il => il.MatchStloc(1)
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.BatchChildren (1) IL.");
+            DawnPlugin.Logger.LogError($"Couldn't match MoldSpreadManager.GenerateMold (1) IL.");
             return;
         }
 
         cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 3);
         cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_1);
         cursor.EmitDelegate(CollectTransformForBatch);
 
         if (!cursor.TryGotoNext(
@@ -138,12 +139,13 @@ static class SurfaceRegistrationHandler
             il => il.MatchStloc(1)
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.BatchChildren (2) IL.");
+            DawnPlugin.Logger.LogError($"Couldn't match MoldSpreadManager.GenerateMold (2) IL.");
             return;
         }
 
         cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 3);
         cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_1);
         cursor.EmitDelegate(CollectTransformForBatch);
 
         if (!cursor.TryGotoNext(
@@ -161,22 +163,28 @@ static class SurfaceRegistrationHandler
             il => il.MatchStloc(1)
         ))
         {
-            DawnPlugin.Logger.LogError($"Couldn't match BatchAllMeshChildren.BatchChildren (3) IL.");
+            DawnPlugin.Logger.LogError($"Couldn't match MoldSpreadManager.GenerateMold (3) IL.");
             return;
         }
 
         cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloca, 3);
         cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_1);
+        cursor.Emit(Mono.Cecil.Cil.OpCodes.Ldarg_1);
         cursor.EmitDelegate(CollectTransformForBatch);
     }
 
     private const int MaxBatchSize = 1023;
 
-    private static void CollectTransformForBatch(ref RaycastHit raycastHit, GameObject vainShroudGameObject)
+    private static void CollectTransformForBatch(ref RaycastHit raycastHit, GameObject vainShroudGameObject, Vector3 startingPosition)
     {
-        Transform terrainTransform = raycastHit.transform;
-        MeshFilter meshFilter = vainShroudGameObject.GetComponent<MeshFilter>();
-        if (meshFilter == null)
+        Transform? terrainTransform = raycastHit.transform;
+        if (terrainTransform == null)
+        {
+            DawnPlugin.Logger.LogError($"Raycast failed to find terrain for Generating Mold, likely outside node at position: {startingPosition} is either somewhere nonsensical or is under the terrain.\nIt could also be that your terrain is not in the correct layer (Colliders, Room or Default).");
+            return;
+        }
+
+        if (!vainShroudGameObject.TryGetComponent(out MeshFilter meshFilter))
         {
             return;
         }

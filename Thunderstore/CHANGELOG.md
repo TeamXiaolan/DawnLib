@@ -1,7 +1,11 @@
-# pre-v1.0.1
+# v1.0.0-pre3
+
+- Fixed an early return in restoring audiosources.
+
+## v1.0.0-pre2
 
 - Fixed an issue with `SisterEntranceTeleport` incompatibility with `LethalLevelLoader` and `RuntimeIcons` (this is an issue that comes from load order lol).
-- Included Enemy, Items and Weather to the DawnLib simulate command.
+- Included Enemy and Items to the DawnLib simulate command.
 - Added `SearchBufferDistance` for the buffer when calculating how close to get to a pathfinding node and `ReachedNodeInSearch` UnityEvent for when reaching a pathfinding node for `SmartAgentNavigator`.
 - Fixed EntityReplacementRegistry weights not working at all.
 - Fixed an issue with Entity Replacement Registration forcing the need to replace the EnemyType's audioclips which caused some enemies like nutcrackers to break when replacing them.
@@ -10,7 +14,7 @@
 - Created `VisualEffectTextureReplacement`.
 - Added some cache-ing to texture replacements.
 
-## pre-v1.0.0
+## v1.0.0-pre1
 
 - Added the ability to register weed enemies per moon.
 - Added the ability to register vain shrouds associated with terrains.

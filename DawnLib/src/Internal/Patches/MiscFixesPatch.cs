@@ -316,7 +316,7 @@ static class MiscFixesPatch
             {
                 if (audioSource.outputAudioMixerGroup == null)
                 {
-                    return;
+                    continue;
                 }
 
                 AudioMixerGroup targetMixerGroup = audioSource.outputAudioMixerGroup;
