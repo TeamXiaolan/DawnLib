@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dusk;
@@ -16,9 +17,13 @@ public class ParticleSystemReplacement : Hierarchy
             yield return null;
         }
 
-        GameObject oldGameObject = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
-        GameObject newGameObject = GameObject.Instantiate(NewParticleSystem.gameObject, oldGameObject.transform.parent);
-        newGameObject.name = oldGameObject.name;
-        Destroy(oldGameObject);
+        List<Transform> oldTransforms = GetComponentsWithHierarchyPaths<Transform>(rootTransform);
+        foreach (Transform oldTransform in oldTransforms)
+        {
+            GameObject oldGameObject = oldTransform.gameObject;
+            GameObject newGameObject = GameObject.Instantiate(NewParticleSystem.gameObject, oldGameObject.transform.parent);
+            newGameObject.name = oldGameObject.name;
+            Destroy(oldGameObject);
+        }
     }
 }

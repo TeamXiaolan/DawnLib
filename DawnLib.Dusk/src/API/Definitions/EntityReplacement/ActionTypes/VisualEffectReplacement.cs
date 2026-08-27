@@ -18,8 +18,11 @@ public class VisualEffectReplacement : Hierarchy
             yield return null;
         }
 
-        VisualEffect visualEffect = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>();
-        visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
+        List<VisualEffect> visualEffects = GetComponentsWithHierarchyPaths<VisualEffect>(rootTransform);
+        foreach (VisualEffect visualEffect in visualEffects)
+        {
+            visualEffect.visualEffectAsset = VisualEffectAssetReplacement;
+        }
     }
 }
 
@@ -36,7 +39,11 @@ public class VisualEffectTextureReplacement : Hierarchy
             yield return null;
         }
 
-        ReplaceTextures(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<VisualEffect>() : rootTransform.GetComponent<VisualEffect>());
+        List<VisualEffect> visualEffects = GetComponentsWithHierarchyPaths<VisualEffect>(rootTransform);
+        foreach (VisualEffect visualEffect in visualEffects)
+        {
+            ReplaceTextures(visualEffect);
+        }
     }
 
     private void ReplaceTextures(VisualEffect visualEffect)

@@ -39,6 +39,15 @@ public sealed class WeightProfile<T> : IWeightProfile
         return true;
     }
 
+    public void RemoveAllSources()
+    {
+        if (_sources.Count <= 0)
+            return;
+
+        _sources.Clear();
+        MarkDirty();
+    }
+
     public void MarkDirty()
     {
         _dirty = true;

@@ -1,6 +1,8 @@
 # v1.0.0-pre3
 
 - Fixed an early return in restoring audiosources.
+- Adjusted `EntityReplacement` Replacement's with the HierarchyPaths being changed into a list to help better improve workflow when enemy/item etc uses LOD's with the same replacements needed.
+- Added `RemoveAllSources` to `WeightProfile`.
 
 ## v1.0.0-pre2
 

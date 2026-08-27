@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -34,12 +35,15 @@ public class ScanNodePropertiesReplacement : Hierarchy
             yield return null;
         }
 
-        ScanNodeProperties scanNodeProperties = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<ScanNodeProperties>() : rootTransform.GetComponent<ScanNodeProperties>();
-        if (MaxRange > -1) scanNodeProperties.maxRange = MaxRange;
-        if (MinRange > -1) scanNodeProperties.minRange = MinRange;
-        if (NodeType > -1) scanNodeProperties.nodeType = NodeType;
-        scanNodeProperties.requiresLineOfSight = RequiresLineOfSight;
-        if (HeaderText != "Leave as such if not replacing") scanNodeProperties.headerText = HeaderText;
-        if (SubText != "Leave as such if not replacing") scanNodeProperties.subText = SubText;
+        List<ScanNodeProperties> scanNodePropertieses = GetComponentsWithHierarchyPaths<ScanNodeProperties>(rootTransform);
+        foreach (ScanNodeProperties scanNodeProperties in scanNodePropertieses)
+        {
+            if (MaxRange > -1) scanNodeProperties.maxRange = MaxRange;
+            if (MinRange > -1) scanNodeProperties.minRange = MinRange;
+            if (NodeType > -1) scanNodeProperties.nodeType = NodeType;
+            scanNodeProperties.requiresLineOfSight = RequiresLineOfSight;
+            if (HeaderText != "Leave as such if not replacing") scanNodeProperties.headerText = HeaderText;
+            if (SubText != "Leave as such if not replacing") scanNodeProperties.subText = SubText;
+        }
     }
 }

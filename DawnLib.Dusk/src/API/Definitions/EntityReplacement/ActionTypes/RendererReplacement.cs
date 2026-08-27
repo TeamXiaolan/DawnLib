@@ -18,7 +18,11 @@ public class SkinnedMeshReplacement : Hierarchy
             yield return null;
         }
 
-        ReplaceSkinnedMeshRenderer(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<SkinnedMeshRenderer>() : rootTransform.GetComponent<SkinnedMeshRenderer>());
+        List<SkinnedMeshRenderer> skinnedMeshRenderers = GetComponentsWithHierarchyPaths<SkinnedMeshRenderer>(rootTransform);
+        foreach (SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers)
+        {
+            ReplaceSkinnedMeshRenderer(skinnedMeshRenderer);
+        }
     }
 
     private void ReplaceSkinnedMeshRenderer(SkinnedMeshRenderer targetSkinned)
@@ -88,7 +92,11 @@ public class MeshReplacement : Hierarchy
             yield return null;
         }
 
-        ReplaceMeshRenderer(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshRenderer>() : rootTransform.GetComponent<MeshRenderer>(), !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<MeshFilter>() : rootTransform.GetComponent<MeshFilter>());
+        List<MeshRenderer> meshRenderers = GetComponentsWithHierarchyPaths<MeshRenderer>(rootTransform);
+        foreach (MeshRenderer meshRenderer in meshRenderers)
+        {
+            ReplaceMeshRenderer(meshRenderer, meshRenderer.GetComponent<MeshFilter>());
+        }
     }
 
     private void ReplaceMeshRenderer(MeshRenderer targetMeshRenderer, MeshFilter targetMeshFilter)
@@ -111,7 +119,11 @@ public class MaterialsReplacement : Hierarchy
             yield return null;
         }
 
-        ReplaceMaterials(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
+        List<Renderer> renderers = GetComponentsWithHierarchyPaths<Renderer>(rootTransform);
+        foreach (Renderer renderer in renderers)
+        {
+            ReplaceMaterials(renderer);
+        }
     }
 
     private void ReplaceMaterials(Renderer targetRenderer)
@@ -184,7 +196,11 @@ public class TextureReplacement : Hierarchy
             yield return null;
         }
 
-        ReplaceTextures(!string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Renderer>() : rootTransform.GetComponent<Renderer>());
+        List<Renderer> renderers = GetComponentsWithHierarchyPaths<Renderer>(rootTransform);
+        foreach (Renderer renderer in renderers)
+        {
+            ReplaceTextures(renderer);
+        }
     }
 
     private void ReplaceTextures(Renderer targetRenderer)

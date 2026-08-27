@@ -22,24 +22,27 @@ public class AnimationClipReplacement : Hierarchy
             yield return null;
         }
 
-        Animator animator = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).GetComponent<Animator>() : rootTransform.GetComponent<Animator>();
-        AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
-        foreach (AnimationEventData animationEventAddition in PotentialAnimationEvents)
+        List<Animator> animators = GetComponentsWithHierarchyPaths<Animator>(rootTransform);
+        foreach (Animator animator in animators)
         {
-            AnimationEvent animationEvent = new()
+            AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
+            foreach (AnimationEventData animationEventAddition in PotentialAnimationEvents)
             {
-                functionName = animationEventAddition.AnimationEventName,
-                time = animationEventAddition.Time,
+                AnimationEvent animationEvent = new()
+                {
+                    functionName = animationEventAddition.AnimationEventName,
+                    time = animationEventAddition.Time,
 
-                stringParameter = animationEventAddition.StringParameter,
-                intParameter = animationEventAddition.IntParameter,
-                floatParameter = animationEventAddition.FloatParameter,
-                objectReferenceParameter = animationEventAddition.ObjectParameter
-            };
+                    stringParameter = animationEventAddition.StringParameter,
+                    intParameter = animationEventAddition.IntParameter,
+                    floatParameter = animationEventAddition.FloatParameter,
+                    objectReferenceParameter = animationEventAddition.ObjectParameter
+                };
 
-            NewAnimationClip.AddEvent(animationEvent);
+                NewAnimationClip.AddEvent(animationEvent);
+            }
+            animatorOverrideController[OriginalClipName] = NewAnimationClip;
+            animator.runtimeAnimatorController = animatorOverrideController;
         }
-        animatorOverrideController[OriginalClipName] = NewAnimationClip;
-        animator.runtimeAnimatorController = animatorOverrideController;
     }
 }

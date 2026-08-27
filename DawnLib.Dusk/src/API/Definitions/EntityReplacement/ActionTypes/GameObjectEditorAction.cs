@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -25,26 +26,29 @@ public class GameObjectEditorAction : Hierarchy
             yield return null;
         }
 
-        GameObject gameObject = !string.IsNullOrWhiteSpace(HierarchyPath) ? rootTransform.Find(HierarchyPath).gameObject : rootTransform.gameObject;
-        if (DeleteGameObject)
+        List<Transform> transforms = GetComponentsWithHierarchyPaths<Transform>(rootTransform);
+        foreach (Transform transform in transforms)
         {
-            if (gameObject.TryGetComponent(out NetworkObject networkObject) && NetworkManager.Singleton.IsServer)
+            if (DeleteGameObject)
             {
-                networkObject.Despawn(true);
+                if (transform.gameObject.TryGetComponent(out NetworkObject networkObject) && NetworkManager.Singleton.IsServer)
+                {
+                    networkObject.Despawn(true);
+                }
+
+                if (networkObject == null)
+                {
+                    Destroy(transform.gameObject);
+                }
+                yield break;
             }
 
-            if (networkObject == null)
+            if (DisableGameObject)
             {
-                Destroy(gameObject);
+                transform.gameObject.SetActive(false);
             }
-            yield break;
+            transform.gameObject.transform.localPosition += PositionOffset;
+            transform.gameObject.transform.localRotation *= Quaternion.Euler(RotationOffset);
         }
-
-        if (DisableGameObject)
-        {
-            gameObject.SetActive(false);
-        }
-        gameObject.transform.localPosition += PositionOffset;
-        gameObject.transform.localRotation *= Quaternion.Euler(RotationOffset);
     }
 }
