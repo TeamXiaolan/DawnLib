@@ -35,6 +35,7 @@ internal static class Debuggers
     internal static DebugLogSource? NamespacedKeys;
     internal static DebugLogSource? StoryLogs;
     internal static DebugLogSource? Terminal;
+    internal static DebugLogSource? NamespacedObjects;
 
     internal static void Bind(ConfigFile file)
     {

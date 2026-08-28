@@ -2,7 +2,7 @@
 
 static class DuskModConstants
 {
-    internal const string MenuName = "DawnLib";
+    internal const string MenuName = "DuskMod";
 
     // Scriptable Objects
     internal const string Definitions = $"{MenuName}/Definitions";
@@ -13,6 +13,7 @@ static class DuskModConstants
 
     // Components
     internal const string ProgressiveComponents = $"{MenuName}/Progressive";
+    internal const string NetworkingComponents = $"{MenuName}/Networking";
 
     internal const int PredicateOrder = -50;
     internal const int PricingStrategyOrder = -70;

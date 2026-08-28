@@ -3,6 +3,8 @@
 - Fixed an early return in restoring audiosources.
 - Adjusted `EntityReplacement` Replacement's with the HierarchyPaths being changed into a list to help better improve workflow when enemy/item etc uses LOD's with the same replacements needed.
 - Added `RemoveAllSources` to `WeightProfile`.
+- Added `DuskNamespacedObjectDefinition` and `NamespacedSpawnSyncedObject` component.
+  - This should help with trying to use SpawnSyncedObject prefabs that have a generic name such as "lamp" where other mods/even vanilla will have and thus cause issues with your own "lamp".
 
 ## v1.0.0-pre2
 
