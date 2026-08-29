@@ -61,11 +61,11 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     private IWeightModifierSource<int> _spawnWeightSource = null!;
     public ItemConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         BoundedRange itemWorth = new(Item.minValue * 0.4f, Item.maxValue * 0.4f);
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateItemConfig(section);
         BaseConfig = Config;
 
@@ -75,7 +75,7 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
 
             if (configValue.Min == -1 || configValue.Max == -1)
             {
-                mod.Logger?.LogInfo($"Migrating scrap value of {Item.itemName} from -1,-1.");
+                registrationContext.Mod.Logger?.LogInfo($"Migrating scrap value of {Item.itemName} from -1,-1.");
                 Config.Worth.Value = itemWorth;
             }
             else

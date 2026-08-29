@@ -12,12 +12,12 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
     [field: FormerlySerializedAs("ChildrenAchievementNames")]
     public List<DuskAchievementReference> ChildrenAchievementReferences { get; private set; } = new();
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         DuskAchievementHandler.OnAchievementUnlocked += definition =>
         {
-            if (definition.Mod != mod)
+            if (definition.registrationContext != registrationContext)
                 return;
 
             if (CountCompleted() >= ChildrenAchievementReferences.Count)

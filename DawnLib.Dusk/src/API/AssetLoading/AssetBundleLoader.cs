@@ -104,26 +104,15 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
     public AssetBundleData AssetBundleData { get; set; }
     public DuskContentDefinition[] Content { get; }
-    public Dictionary<string, ConfigEntryBase> ConfigEntries => Content.SelectMany(c => c.generalConfigs).ToDictionary(it => it.Key, it => it.Value); // TODO please do better than me here
+    public DuskConfigRegistry Configs { get; } = new();
 
+    [Obsolete("Use Configs.Get<T>() instead.")]
     public ConfigEntry<T> GetConfig<T>(string configName)
-    {
-        return (ConfigEntry<T>)ConfigEntries[configName];
-    }
+        => Configs.Get<T>(configName);
 
+    [Obsolete("Use Configs.TryGet<T>() instead.")]
     public bool TryGetConfig<T>(string configName, [NotNullWhen(true)] out ConfigEntry<T>? entry)
-    {
-        if (ConfigEntries.TryGetValue(configName, out ConfigEntryBase configBase))
-        {
-            entry = (ConfigEntry<T>)configBase;
-            return true;
-        }
-
-        Content.FirstOrDefault()?.Mod.Logger?.LogWarning($"TryGetConfig: '{configName}' does not exist on '{Content}', returning false and entry will be null");
-
-        entry = null;
-        return false;
-    }
+        => Configs.TryGet(configName, out entry);
 
     internal void TryUnload()
     {

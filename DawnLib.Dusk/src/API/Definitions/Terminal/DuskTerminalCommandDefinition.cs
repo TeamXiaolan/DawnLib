@@ -187,9 +187,9 @@ public class DuskTerminalCommandDefinition : DuskContentDefinition<DawnTerminalC
     [field: SerializeField]
     public SimpleInputCommand SimpleInputCommand { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         DawnLib.DefineTerminalCommand(TypedKey, CommandBasicInformation, builder =>
         {
             builder.SetKeywords(CommandKeywordsList);

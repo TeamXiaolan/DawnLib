@@ -39,7 +39,7 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
 
     NamespacedKey<DuskVehicleDefinition> INamespaced<DuskVehicleDefinition>.TypedKey => TypedKey.AsTyped<DuskVehicleDefinition>();
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
         if (BuyableVehiclePreset.StationPrefab != null)
         {
@@ -79,8 +79,8 @@ public class DuskVehicleDefinition : DuskContentDefinition<DawnVehicleInfo>, INa
             });
         }
 
-        base.Register(mod);
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        base.Register(registrationContext);
+        using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateVehicleConfig(section);
         BaseConfig = Config;
 

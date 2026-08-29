@@ -13,15 +13,15 @@ public abstract class ContentHandler(DuskMod mod)
         {
             return false;
         }
+
         return IsContentEnabled(data);
     }
 
     [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     protected bool IsContentEnabled(AssetBundleData assetBundleData)
     {
-        string configName = assetBundleData.configName;
-
         using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData);
+        string configName = assetBundleData.configName;
         ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", assetBundleData.enabledByDefault);
         mod._configEntries.Add(isEnabled);
         return isEnabled.Value;
@@ -30,7 +30,6 @@ public abstract class ContentHandler(DuskMod mod)
     protected bool TryLoadContentBundle<TAsset>(string assetBundleName, out TAsset? asset, bool forceEnabled = false) where TAsset : AssetBundleLoader<TAsset>
     {
         asset = null;
-
         if (!mod.TryGetBundleDataFromName(assetBundleName, out AssetBundleData? assetBundleData))
         {
             mod.Logger?.LogWarning($"Assetbundle name: {assetBundleName} is not implemented yet!");
@@ -58,13 +57,11 @@ public abstract class ContentHandler(DuskMod mod)
 
     protected void LoadAllContent(IAssetBundleLoader bundle)
     {
-        DuskContentDefinition[] definitions = bundle.Content;
-        foreach (DuskContentDefinition definition in definitions)
+        DuskRegistrationContext registrationContext = new(mod, bundle);
+        foreach (DuskContentDefinition definition in bundle.Content)
         {
-            definition.AssetBundleData = bundle.AssetBundleData;
-            definition.Register(mod);
-            definition.RegisterPost(mod);
-            definition.RegisterConfigs(mod);
+            definition.Register(registrationContext);
+            definition.RegisterPost(registrationContext);
         }
     }
 

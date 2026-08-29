@@ -38,19 +38,18 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
 
     private void AddAllAchievementsToContents()
     {
-        foreach (var duskMod in DuskMod.AllMods)
+        foreach (DuskMod duskMod in DuskMod.AllMods)
         {
             // instantiate a mod element if it has ANY achievements
-            if (DuskModContent.Achievements.Values.Count(a => a.Mod == duskMod) > 0)
+            if (DuskModContent.Achievements.Values.Count(a => a.registrationContext.Mod == duskMod) > 0)
             {
-                var uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
+                GameObject uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
                 AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();
                 modUIElement._achievementsContainer = _achievementContents;
                 _modUIElements.Add(modUIElement);
                 modUIElement.SetupModUI(duskMod);
             }
         }
-
     }
 
     public void BackButtonOnClick()

@@ -20,47 +20,29 @@ public abstract class DuskContentDefinition : ScriptableObject
     [SerializeField, UnlockedNamespacedKey]
     internal List<NamespacedKey> _tags = new();
 
-    internal readonly Dictionary<string, ConfigEntryBase> generalConfigs = new();
     public DuskBaseConfig? BaseConfig { get; set; }
-    public DuskMod Mod { get; private set; }
 
-    internal AssetBundleData AssetBundleData;
-
-    public virtual void Register(DuskMod mod)
+    public virtual void Register(DuskRegistrationContext registrationContext)
     {
-        if (AssetBundleData == null)
-        {
-            mod.Logger?.LogError($"BUG! Tried to register {name} without setting AssetBundleData?");
-            return;
-        }
-
-        Mod = mod;
         TryNetworkRegisterAssets();
     }
 
-    public virtual void RegisterPost(DuskMod mod)
+    public virtual void RegisterPost(DuskRegistrationContext registrationContext)
     {
-        using ConfigContext context = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        using ConfigContext context = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         foreach (DuskDynamicConfig configDefinition in _configEntries)
         {
-            ConfigEntryBase entry = mod.ConfigManager.CreateDynamicConfig(BaseConfig?.UserAllowedToEdit() ?? true, configDefinition, context);
-            generalConfigs[configDefinition.settingName.CleanStringForConfig()] = entry;
+            ConfigEntryBase entry = registrationContext.Mod.ConfigManager.CreateDynamicConfig(BaseConfig?.UserAllowedToEdit() ?? true, configDefinition, context);
+            registrationContext.RegisterConfig(configDefinition.settingName.CleanStringForConfig(), entry);
         }
-    }
 
-    public void RegisterConfigs(DuskMod mod)
-    {
-        foreach (KeyValuePair<string, ConfigEntryBase> entry in generalConfigs)
+        if (BaseConfig != null)
         {
-            mod._configEntries.Add(entry.Value);
+            foreach (ConfigEntryBase entry in BaseConfig.ConfigEntries())
+            {
+                registrationContext.RegisterConfig(entry);
+            }
         }
-
-        if (BaseConfig == null)
-        {
-            return;
-        }
-
-        mod._configEntries.AddRange(BaseConfig.ConfigEntries());
     }
 
     public abstract void TryNetworkRegisterAssets();

@@ -45,6 +45,8 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     public NamespacedKey<DuskAchievementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskAchievementDefinition>(); }
 
+    internal DuskRegistrationContext registrationContext;
+
     protected virtual AchievementSaveData GetSaveData()
     {
         return new AchievementSaveData(Completed);
@@ -106,9 +108,10 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
         ResetProgress();
     }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
+        this.registrationContext = registrationContext;
         DuskModContent.Achievements.Register(this);
     }
 

@@ -24,10 +24,9 @@ public class DuskStoryLogDefinition : DuskContentDefinition<DawnStoryLogInfo>
     [field: SerializeField]
     public TerminalNode? OverrideTerminalNode { get; private set; } = null;
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
-
+        base.Register(registrationContext);
         DawnLib.DefineStoryLog(TypedKey, StoryLogGameObject, builder =>
         {
             builder.OverrideTerminalNode(OverrideTerminalNode);

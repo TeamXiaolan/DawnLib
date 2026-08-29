@@ -31,9 +31,9 @@ public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetIn
     [field: SerializeField]
     public DuskPredicate? Predicate { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         DawnTileSetInfo tileSetInfo = DawnLib.DefineTileSet(TypedKey, TilesToAdd, builder =>
         {
             ApplyTagsTo(builder);

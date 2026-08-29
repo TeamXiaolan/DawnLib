@@ -68,9 +68,9 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
 
     public MoonConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         if (WeedEnemies == null)
         {
             EnemyType blankKidnapperFox = EnemyType.CreateInstance<EnemyType>();
@@ -82,7 +82,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             ];
         }
 
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateMoonConfig(section);
         BaseConfig = Config;
 
@@ -95,7 +95,7 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
                     sceneData.ShipLandingOverrideAnimation,
                     sceneData.ShipTakeoffOverrideAnimation,
                     sceneData.Weight(section, _scenes.Count),
-                    mod.GetRelativePath("Assets", sceneData.BundleName),
+                    registrationContext.Mod.GetRelativePath("Assets", sceneData.BundleName),
                     sceneData.Scene.ScenePath
                 );
             }

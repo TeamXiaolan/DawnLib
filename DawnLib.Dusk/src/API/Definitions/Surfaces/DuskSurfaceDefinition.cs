@@ -29,10 +29,9 @@ public class DuskSurfaceDefinition : DuskContentDefinition<DawnSurfaceInfo>
     [field: SerializeField]
     public Vector3 PositionOffset { get; private set; } = Vector3.zero;
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
-
+        base.Register(registrationContext);
         if (FootstepVFXPrefab != null && FootstepVFXPrefab.GetComponentInChildren<ParticleSystem>() == null)
         {
             DuskPlugin.Logger.LogError($"The FootstepVFXPrefab: {FootstepVFXPrefab.name} has no ParticleSystem component, removed.");

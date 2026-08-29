@@ -58,10 +58,10 @@ public class DuskEnemyDefinition : DuskContentDefinition<DawnEnemyInfo>
     private IWeightModifierSource<int> _spawnWeightSource = null!;
     public EnemyConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        base.Register(registrationContext);
+        using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateEnemyConfig(section);
         BaseConfig = Config;
 

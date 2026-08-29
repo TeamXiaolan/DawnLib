@@ -52,15 +52,15 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
     private IWeightModifierSource<int> _spawnWeightSource = null!;
     public DungeonConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         if (DungeonRangeClamp.Min == 0 && DungeonRangeClamp.Max == 0)
         {
             DungeonRangeClamp = new BoundedRange(0, 999);
         }
 
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateDungeonConfig(section);
         BaseConfig = Config;
 
@@ -77,7 +77,7 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
             {
                 builder.SetArchetypeTileSetMapping(mapping.ArchetypeName, mapping.TileSetNames);
             }
-            builder.SetAssetBundlePath(mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
+            builder.SetAssetBundlePath(registrationContext.Mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             if (StingerAudio != null)
             {

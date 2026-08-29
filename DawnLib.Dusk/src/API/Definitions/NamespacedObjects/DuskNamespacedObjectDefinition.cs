@@ -16,9 +16,9 @@ public class DuskNamespacedObjectDefinition : DuskContentDefinition, INamespaced
     public NamespacedKey<DuskNamespacedObjectDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskNamespacedObjectDefinition>(); }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         DuskModContent.NamespacedObjects.Register(this);
     }
 

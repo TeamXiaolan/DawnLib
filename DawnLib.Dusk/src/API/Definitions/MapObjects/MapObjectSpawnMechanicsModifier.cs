@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Dusk;
 
-public sealed class MapObjectSpawnMechanicsModifier : IWeightModifier<AnimationCurve?>
+public class MapObjectSpawnMechanicsModifier : IWeightModifier<AnimationCurve?>
 {
     private static readonly AnimationCurve ZeroCurve = AnimationCurve.Constant(0, 1, 0);
 

@@ -35,9 +35,9 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
     private IWeightModifierSource<int> _spawnWeightSource = null!;
     public WeatherConfig Config { get; private set; }
 
-    public override void Register(DuskMod mod)
+    public override void Register(DuskRegistrationContext registrationContext)
     {
-        base.Register(mod);
+        base.Register(registrationContext);
         if (WeatherEffect.effectObject != null)
         {
             WeatherEffect.effectObject.SetActive(false);
@@ -48,7 +48,7 @@ public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo
             WeatherEffect.effectPermanentObject.SetActive(false);
         }
 
-        using ConfigContext section = mod.ConfigManager.CreateConfigSectionForBundleData(AssetBundleData);
+        using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateWeatherConfig(section);
         BaseConfig = Config;
 
