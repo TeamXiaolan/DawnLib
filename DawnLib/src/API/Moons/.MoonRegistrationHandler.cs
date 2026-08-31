@@ -570,6 +570,7 @@ static class MoonRegistrationHandler
 
         List<TerminalKeyword> allKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
         List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
+        List<CompatibleNoun> infoNouns = TerminalRefs.InfoKeyword.compatibleNouns.ToList();
         List<SelectableLevel> viewableLevels = TerminalRefs.Instance.moonsCatalogueList.ToList();
         foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
         {
@@ -583,6 +584,10 @@ static class MoonRegistrationHandler
             moonInfo.RouteNode.displayPlanetInfo = moonInfo.Level.levelID;
 
             routeNouns.Add(new CompatibleNoun(moonInfo.NameKeyword, moonInfo.RouteNode));
+            if (moonInfo.InfoNode != null)
+            {
+                infoNouns.Add(new CompatibleNoun(moonInfo.NameKeyword, moonInfo.InfoNode));
+            }
             allKeywords.Add(moonInfo.NameKeyword);
             moonInfo.NameKeyword.defaultVerb = TerminalRefs.RouteKeyword;
 
@@ -599,6 +604,7 @@ static class MoonRegistrationHandler
         }
         TerminalRefs.Instance.moonsCatalogueList = viewableLevels.ToArray();
         TerminalRefs.RouteKeyword.compatibleNouns = routeNouns.ToArray();
+        TerminalRefs.InfoKeyword.compatibleNouns = infoNouns.ToArray();
         TerminalRefs.Instance.terminalNodes.allKeywords = allKeywords.ToArray();
         orig(self);
     }
@@ -883,16 +889,30 @@ static class MoonRegistrationHandler
             HashSet<NamespacedKey> tags = [DawnLibTags.IsExternal];
             CollectLLLTags(level, tags);
 
+            TerminalNode? infoNode = null;
             TerminalNode? routeNode = null;
             TerminalNode? receiptNode = null;
             TerminalKeyword? nameKeyword = null;
+
             foreach (CompatibleNoun compatibleNoun in TerminalRefs.RouteKeyword.compatibleNouns)
             {
                 if (compatibleNoun.result.displayPlanetInfo == level.levelID)
                 {
-                    routeNode = compatibleNoun.result;
-                    if (routeNode.terminalOptions.Length > 1) receiptNode = routeNode.terminalOptions[1].result;
                     nameKeyword = compatibleNoun.noun;
+                    routeNode = compatibleNoun.result;
+                    if (routeNode.terminalOptions.Length > 1)
+                    {
+                        receiptNode = routeNode.terminalOptions[1].result;
+                    }
+                    break;
+                }
+            }
+
+            foreach (CompatibleNoun compatibleNoun in TerminalRefs.InfoKeyword.compatibleNouns)
+            {
+                if (compatibleNoun.noun == nameKeyword)
+                {
+                    infoNode = compatibleNoun.result;
                     break;
                 }
             }
@@ -933,7 +953,7 @@ static class MoonRegistrationHandler
                 }
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, moonSceneInfos, routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, moonSceneInfos, infoNode, routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.DawnInfo = moonInfo;
             LethalContent.Moons.Register(moonInfo);
         }
@@ -947,7 +967,7 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new(), null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new(), null, null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
         self.currentLevel.DawnInfo = testMoonInfo;
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);

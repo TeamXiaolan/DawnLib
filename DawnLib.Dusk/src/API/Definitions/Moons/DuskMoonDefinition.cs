@@ -24,6 +24,11 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     [field: SerializeField]
     public DuskPricingStrategy? PricingStrategy { get; private set; }
 
+    [field: Header("Optional | Info Node")]
+    [field: TextArea(2, 20)]
+    [field: SerializeField]
+    public string InfoNodeText { get; private set; } = string.Empty;
+
     [field: Header("Configs | Defaults")]
     [field: SerializeField]
     public int Cost { get; private set; }
@@ -125,6 +130,10 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             builder.OverrideEnemySpawnRanges(Config.InsideEnemySpawnRange?.Value ?? Level.spawnProbabilityRange, Config.OutsideEnemySpawnRange?.Value ?? OutsideEnemiesSpawnProbabilityRange, Config.DaytimeEnemySpawnRange?.Value ?? Level.daytimeEnemiesProbabilityRange, Config.WeedEnemySpawnRange?.Value ?? WeedEnemiesProbabilityRange);
             builder.OverrideDiversityPowerCounts(Config.InsideDiversityPowerCount?.Value ?? Level.maxInsideDiversityPowerCount, Config.OutsideDiversityPowerCount?.Value ?? Level.maxOutsideDiversityPowerCount, Config.DaytimeDiversityPowerCount?.Value ?? MaxDaytimeDiversityPowerCount, Config.WeedDiversityPowerCount?.Value ?? MaxWeedDiversityPowerCount);
             builder.SetWeedEnemies(WeedEnemies.ToList());
+            if (!string.IsNullOrEmpty(InfoNodeText))
+            {
+                builder.CreateInfoNode(InfoNodeText);
+            }
             ApplyTagsTo(builder);
         });
     }

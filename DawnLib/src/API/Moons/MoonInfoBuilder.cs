@@ -6,7 +6,7 @@ namespace Dawn;
 
 public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, MoonInfoBuilder>
 {
-    private TerminalNode? _routeNode, _receiptNode;
+    private TerminalNode? _routeNode, _receiptNode, _infoNode;
     private TerminalKeyword? _nameKeyword;
     private List<IMoonSceneInfo> _scenes = [];
 
@@ -26,6 +26,14 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     public MoonInfoBuilder OverrideRouteNode(TerminalNode node)
     {
         _routeNode = node;
+        return this;
+    }
+
+    public MoonInfoBuilder CreateInfoNode(string text)
+    {
+        _infoNode = new TerminalNodeBuilder($"{value.PlanetName}InfoNode")
+            .SetDisplayText(text)
+            .Build();
         return this;
     }
 
@@ -172,7 +180,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
 
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _outsideEnemiesProbabilityRange, _maxDaytimeDiversityPowerCount, _maxWeedEnemyPowerCount, _maxWeedDiversityPowerCount, _weedEnemies, _weedEnemySpawnChanceThroughDay, _weedEnemiesProbabilityRange, _scenes, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _outsideEnemiesProbabilityRange, _maxDaytimeDiversityPowerCount, _maxWeedEnemyPowerCount, _maxWeedDiversityPowerCount, _weedEnemies, _weedEnemySpawnChanceThroughDay, _weedEnemiesProbabilityRange, _scenes, _infoNode, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
         return info;
     }
 }

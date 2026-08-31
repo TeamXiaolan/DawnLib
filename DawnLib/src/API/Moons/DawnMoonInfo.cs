@@ -10,7 +10,7 @@ namespace Dawn;
 
 public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 {
-    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, int maxDaytimeDiversityPowerCount, int maxWeedEnemyPowerCount, int maxWeedDiversityPowerCount, List<SpawnableEnemyWithRarity> weedEnemies, AnimationCurve weedEnemySpawnChanceThroughDay, float weedEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
+    internal DawnMoonInfo(NamespacedKey<DawnMoonInfo> key, HashSet<NamespacedKey> tags, SelectableLevel level, float outsideEnemiesProbabilityRange, int maxDaytimeDiversityPowerCount, int maxWeedEnemyPowerCount, int maxWeedDiversityPowerCount, List<SpawnableEnemyWithRarity> weedEnemies, AnimationCurve weedEnemySpawnChanceThroughDay, float weedEnemiesProbabilityRange, List<IMoonSceneInfo> scenes, TerminalNode? infoNode, TerminalNode? routeNode, TerminalNode? receiptNode, TerminalKeyword? nameKeyword, DawnPurchaseInfo dawnPurchaseInfo, IDataContainer? customData) : base(key, tags, customData)
     {
         Level = level;
 
@@ -26,6 +26,7 @@ public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
 
         Scenes.AddRange(scenes);
 
+        InfoNode = infoNode;
         RouteNode = routeNode;
         ReceiptNode = receiptNode;
         NameKeyword = nameKeyword;
@@ -34,6 +35,7 @@ public sealed class DawnMoonInfo : DawnBaseInfo<DawnMoonInfo>
     }
 
     public SelectableLevel Level { get; }
+    public TerminalNode? InfoNode { get; }
     public TerminalNode? RouteNode { get; }
     public TerminalNode? ReceiptNode { get; }
     public TerminalKeyword? NameKeyword { get; }
