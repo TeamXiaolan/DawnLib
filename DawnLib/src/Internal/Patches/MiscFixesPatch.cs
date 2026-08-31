@@ -19,6 +19,7 @@ static class MiscFixesPatch
     internal static HashSet<GameObject> tilesToFixSockets = new();
 
     private static HashSet<AudioMixerGroup> _originalAudioMixerGroups = new();
+    private static List<ItemGroup> _vanillaItemGroups = new();
 
     internal static void Init()
     {
@@ -43,6 +44,34 @@ static class MiscFixesPatch
         }
 
         On.MenuManager.Awake += PatchTerminalFormatter;
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(RandomScrapSpawn), "Awake"), FixRandomScrapSpawn));
+    }
+
+    private static void FixRandomScrapSpawn(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomScrapSpawn> orig, RandomScrapSpawn self)
+    {
+        if (self.spawnableItems == null)
+        {
+            return;
+        }
+
+        foreach (ItemGroup vanillaItemGroup in _vanillaItemGroups)
+        {
+            if (vanillaItemGroup == null)
+                continue;
+
+            if (self.spawnableItems == vanillaItemGroup)
+            {
+                return;
+            }
+
+            if (self.spawnableItems.name == vanillaItemGroup.name)
+            {
+                Debuggers.Items?.Log($"Replacing fake item group {self.spawnableItems.name} on {self.gameObject.name} with real one");
+                self.spawnableItems = vanillaItemGroup;
+                break;
+            }
+        }
+        orig(self);
     }
 
     private static void PatchTerminalFormatter(On.MenuManager.orig_Awake orig, MenuManager self)
@@ -265,7 +294,6 @@ static class MiscFixesPatch
 
     private static void FixItemSpawnPositionTypes()
     {
-        List<ItemGroup> vanillaItemGroups = new();
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
             if (!itemInfo.Key.IsVanilla())
@@ -273,10 +301,10 @@ static class MiscFixesPatch
 
             foreach (ItemGroup itemGroup in itemInfo.Item.spawnPositionTypes)
             {
-                if (itemGroup == null || vanillaItemGroups.Contains(itemGroup))
+                if (itemGroup == null || _vanillaItemGroups.Contains(itemGroup))
                     continue;
 
-                vanillaItemGroups.Add(itemGroup);
+                _vanillaItemGroups.Add(itemGroup);
             }
         }
 
@@ -290,7 +318,7 @@ static class MiscFixesPatch
                 if (itemGroup == null)
                     continue;
 
-                foreach (ItemGroup vanillaItemGroup in vanillaItemGroups)
+                foreach (ItemGroup vanillaItemGroup in _vanillaItemGroups)
                 {
                     if (vanillaItemGroup == null)
                         continue;

@@ -4,10 +4,8 @@ using InjectionLibrary.Attributes;
 
 namespace Dawn.Interfaces;
 
-[HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
 [InjectInterface(typeof(PlaceableShipObject))]
 interface IOnDestroyMethod
 {
-    [HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
     void OnDestroy();
 }

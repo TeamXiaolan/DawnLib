@@ -10,6 +10,9 @@ public class DungeonFlowReference
     private string _flowAssetName;
 
     [field: SerializeField]
+    private string _flowAssetGuid;
+
+    [field: SerializeField]
     private string _bundleName;
 
     [field: SerializeField]
@@ -21,6 +24,7 @@ public class DungeonFlowReference
     [field: SerializeField]
     private ArchetypeTileSetMapping[] _archetypeTileSets = Array.Empty<ArchetypeTileSetMapping>();
 
+    public string FlowAssetGuid => _flowAssetGuid;
     public string FlowAssetName => _flowAssetName;
     public string[] DungeonArchetypeNames => _dungeonArchetypeNames;
     public string[] TileSetNames => _tileSetNames;

@@ -20,7 +20,6 @@ public sealed class MoonIntWeightSource : WeightModifierSource<int>
         {
             Debuggers.Weights?.Log($"Building MoonIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");
             ResolvedNamespacedWeight<DawnMoonInfo>? resolved = resolver.ResolveWeight(unresolved);
-
             if (resolved == null)
                 continue;
 
