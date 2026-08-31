@@ -5,7 +5,6 @@
 - Added `RemoveAllSources` to `WeightProfile`.
 - Added `DuskNamespacedObjectDefinition` and `NamespacedSpawnSyncedObject` component.
   - This should help with trying to use SpawnSyncedObject prefabs that have a generic name such as "lamp" where other mods/even vanilla will have and thus cause issues with your own "lamp".
-- Added `DuskConfigDefinition`.
 - Added the ability to add an info node to your moon.
 - Improved DungeonFlowReference editor workflow for interior creators.
 - Fixed not replacing `RandomScrapSpawn` `ItemGroup`'s with vanilla ones.
@@ -68,8 +67,6 @@
 - Add Combined, Progressing, Unknown and terminal predicate related weather things.
 - ItemGroup registration needs to be done better.
   - Allow injecting to items that aren't your own too?
-- Add dusk config definitions
-- Make it possible to give spawnsyncobjects a namespacedkey and make a component for spawning em with said namespacedkey.
 
 ## v0.9.25
 
