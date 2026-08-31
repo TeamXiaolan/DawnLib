@@ -334,7 +334,6 @@ static class DungeonRegistrationHandler
 
     private static void AdjustFireExits(DungeonFlow dungeonFlow)
     {
-        GameObject environmentRoot = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh");
         EntranceTeleport[] moonEntranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID).Where(e => e.entranceId != 0).ToArray();
         for (int i = 0; i < moonEntranceTeleports.Length; i++)
         {
