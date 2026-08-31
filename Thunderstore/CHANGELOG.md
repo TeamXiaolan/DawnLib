@@ -5,6 +5,10 @@
 - Added `RemoveAllSources` to `WeightProfile`.
 - Added `DuskNamespacedObjectDefinition` and `NamespacedSpawnSyncedObject` component.
   - This should help with trying to use SpawnSyncedObject prefabs that have a generic name such as "lamp" where other mods/even vanilla will have and thus cause issues with your own "lamp".
+- Added `DuskConfigDefinition`.
+- Added the ability to add an info node to your moon.
+- Improved DungeonFlowReference editor workflow for interior creators.
+- Fixed not replacing `RandomScrapSpawn` `ItemGroup`'s with vanilla ones.
 
 ## v1.0.0-pre2
 
