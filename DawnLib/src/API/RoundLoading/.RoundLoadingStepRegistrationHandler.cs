@@ -96,7 +96,7 @@ static class RoundLoadingStepRegistrationHandler
 
     private static IEnumerator WaitAfterScrapAndMapObjectSpawn()
     {
-        yield return new WaitUntil(() => scrapAndMapObjectsSpawned);
+        yield return new WaitUntil(() => scrapAndMapObjectsSpawned || !RoundManagerRefs.Instance.currentLevel.spawnEnemiesAndScrap);
         yield return null;
     }
 

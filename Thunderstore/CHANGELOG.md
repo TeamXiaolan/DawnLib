@@ -1,4 +1,8 @@
-# v1.0.0-pre3
+# v1.0.0-pre4
+
+- Fixed not being able to land at company moons, whoops?
+
+## v1.0.0-pre3
 
 - Fixed an early return in restoring audiosources.
 - Adjusted `EntityReplacement` Replacement's with the HierarchyPaths being changed into a list to help better improve workflow when enemy/item etc uses LOD's with the same replacements needed.

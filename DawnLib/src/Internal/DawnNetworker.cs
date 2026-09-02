@@ -157,6 +157,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
     private async void FinishInsideMapObjectsLoading()
     {
+        Debuggers.RoundLoadingSteps?.Log("FinishInsideMapObjectsLoading");
         DawnRoundLoadingStepInfo insideMapObjectLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InsideMapObjectLoading];
         List<DawnRoundLoadingStepInfo> dependencies = insideMapObjectLoadingStepEntry.GetOrderedDependants();
         foreach (DawnRoundLoadingStepInfo dependency in dependencies)
