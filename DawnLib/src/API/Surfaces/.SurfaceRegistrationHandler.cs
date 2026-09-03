@@ -490,7 +490,7 @@ static class SurfaceRegistrationHandler
                 return false; // Vanilla logic
             }
 
-            if (!surface.TryGetFootstepIndex(hit.point, true, out int footstepSurfaceIndex) || footstepSurfaceIndex == -1)
+            if (!surface.TryGetFootstepIndex(hit.point, false, out int footstepSurfaceIndex) || footstepSurfaceIndex == -1)
             {
                 return false; // Vanilla logic
             }

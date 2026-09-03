@@ -82,7 +82,6 @@ public class DawnSurface : MonoBehaviour
     public bool TryGetFootstepIndex(Vector3 point, bool checkStandingOnTerrain, out int footstepIndex, PlayerControllerB? playerControllerB = null)
     {
         footstepIndex = -1;
-
         if (Terrain != null)
         {
             if (playerControllerB != null)

@@ -1,8 +1,12 @@
 # v1.0.0-pre4
 
-- Fixed not being able to land at company moons, whoops?
+- Fixed earth leviathan not being able to come out with DawnSurface stuff.
 
 ## v1.0.0-pre3
+
+- Fixed not being able to land at company moons, whoops?
+
+## v1.0.0-pre2
 
 - Fixed an early return in restoring audiosources.
 - Adjusted `EntityReplacement` Replacement's with the HierarchyPaths being changed into a list to help better improve workflow when enemy/item etc uses LOD's with the same replacements needed.
@@ -13,7 +17,7 @@
 - Improved DungeonFlowReference editor workflow for interior creators.
 - Fixed not replacing `RandomScrapSpawn` `ItemGroup`'s with vanilla ones.
 
-## v1.0.0-pre2
+## v1.0.0-pre1
 
 - Fixed an issue with `SisterEntranceTeleport` incompatibility with `LethalLevelLoader` and `RuntimeIcons` (this is an issue that comes from load order lol).
 - Included Enemy and Items to the DawnLib simulate command.
@@ -25,7 +29,7 @@
 - Created `VisualEffectTextureReplacement`.
 - Added some cache-ing to texture replacements.
 
-## v1.0.0-pre1
+## v1.0.0-pre
 
 - Added the ability to register weed enemies per moon.
 - Added the ability to register vain shrouds associated with terrains.
