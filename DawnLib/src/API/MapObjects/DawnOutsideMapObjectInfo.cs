@@ -19,7 +19,7 @@ public sealed class DawnOutsideMapObjectInfo
     public bool AlignWithTerrain { get; private set; }
     public int MinimumAINodeSpawnRequirement { get; private set; }
 
-    public AnimationCurve? GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null)
+    public AnimationCurve? GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null, bool resolveAutomatically = true)
     {
         return Rarity.GetValue(new WeightQuery
         {
@@ -28,7 +28,8 @@ public sealed class DawnOutsideMapObjectInfo
             Moon = moonInfo,
             Dungeon = dungeonInfo,
             Weather = weatherEffectInfo,
-            Channel = DawnWeightChannels.MapObjectSpawnCurve.Key
+            Channel = DawnWeightChannels.MapObjectSpawnCurve.Key,
+            ResolveAutomatically = resolveAutomatically
         });
     }
 }

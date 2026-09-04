@@ -338,6 +338,7 @@ public static class TerminalExtensions
             //return the singular matching keyword
             if (inputWords.Count == 1)
             {
+                DawnPlugin.Logger.LogMessage($"DawnTryResolveKeyword has only one matching keyword [{inputWords[0].word}]");
                 word = inputWords[0];
                 return word != null;
             }

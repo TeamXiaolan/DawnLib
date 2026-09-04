@@ -44,7 +44,6 @@ public class MapObjectSpawnMechanicsModifier : IWeightModifier<AnimationCurve?>
             return ZeroCurve;
 
         DawnDungeonInfo? dungeonInfo = context.Dungeon;
-
         if (_prioritiseMoons && _curvesByMoonOrTagName.TryGetValue(moonInfo.Key, out AnimationCurve curve))
         {
             return curve;
@@ -64,7 +63,6 @@ public class MapObjectSpawnMechanicsModifier : IWeightModifier<AnimationCurve?>
             return ZeroCurve;
 
         List<AnimationCurve> tagCurveCandidates = GetTagCurveCandidates(moonInfo, dungeonInfo);
-
         if (tagCurveCandidates.Count > 0)
         {
             return AverageCurves(tagCurveCandidates);
