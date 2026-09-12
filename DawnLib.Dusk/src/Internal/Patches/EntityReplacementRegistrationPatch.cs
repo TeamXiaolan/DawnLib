@@ -502,6 +502,7 @@ static class EntityReplacementRegistrationPatch
                     list = [vanilla];
                     itemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
                 }
+
                 list.Add(itemReplacementDefinition);
             }
         }
@@ -521,7 +522,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (StartOfRound.Instance.inShipPhase)
+        if (StartOfRound.Instance.inShipPhase && !StartOfRound.Instance.beganLoadingNewLevel)
         {
             orig(self);
             return;
@@ -537,10 +538,7 @@ static class EntityReplacementRegistrationPatch
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskItemReplacementDefinition replacement = newReplacements[i];
-            if (replacement.DatePredicate == null)
-                continue;
-
-            if (!replacement.DatePredicate.Evaluate())
+            if (replacement.DatePredicate != null && !replacement.DatePredicate.Evaluate())
             {
                 newReplacements.RemoveAt(i);
                 continue;
@@ -550,7 +548,6 @@ static class EntityReplacementRegistrationPatch
             if (weight <= 0)
             {
                 newReplacements.RemoveAt(i);
-                continue;
             }
         }
 

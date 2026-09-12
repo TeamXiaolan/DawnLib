@@ -1,4 +1,9 @@
-# v1.0.0-pre7
+# v1.0.0-pre8
+
+- Implemented some fixes to item entity registries.
+- Fixed some issues with rpc's timing out and causing issues with DeferLocal being set to true?
+
+## v1.0.0-pre7
 
 - Removed some fatal logging that was left on?
 - Implemented minor optimisation to `FixRandomMapObject` method.

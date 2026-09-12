@@ -101,14 +101,14 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         HUDManagerRefs.Instance.DisplayTip(displayTip);
     }
 
-    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    [Rpc(SendTo.Everyone)]
     internal void StartScrapLoadingRpc()
     {
         DawnRoundLoadingStepInfo scrapLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.ScrapLoading];
         scrapLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
     }
 
-    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    [Rpc(SendTo.Everyone)]
     internal void FinishScrapLoadingRpc()
     {
         FinishScrapLoading();
@@ -142,14 +142,14 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
         RoundManagerRefs.Instance.SpawnMapObjects();
     }
 
-    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    [Rpc(SendTo.Everyone)]
     internal void StartInsideMapObjectsLoadingRpc()
     {
         DawnRoundLoadingStepInfo insideMapObjectLoadingStepEntry = LethalContent.RoundLoadingSteps[RoundLoadingStepKeys.InsideMapObjectLoading];
         insideMapObjectLoadingStepEntry.Callback.Invoke(new EnteringAtmosphereLoadingContext());
     }
 
-    [Rpc(SendTo.Everyone, DeferLocal = true)]
+    [Rpc(SendTo.Everyone)]
     internal void FinishInsideMapObjectsLoadingRpc()
     {
         FinishInsideMapObjectsLoading();
