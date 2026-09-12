@@ -649,15 +649,11 @@ static class EntityReplacementRegistrationPatch
     {
         return (existing, self) =>
         {
-            ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
-            if (replacement.CurrentEntityReplacement == null)
+            if (!self.TryGetEnemyReplacement(out DuskEnemyReplacementDefinition? replacement))
                 return existing;
 
-            AudioClip? replacedClip = generator((DuskEnemyReplacementDefinition)replacement.CurrentEntityReplacement);
-            if (!replacedClip)
-                return existing;
-
-            return replacedClip;
+            AudioClip? replacedClip = generator(replacement);
+            return replacedClip != null ? replacedClip : existing;
         };
     }
 
@@ -665,11 +661,10 @@ static class EntityReplacementRegistrationPatch
     {
         return (self, existing) =>
         {
-            ICurrentEntityReplacement replacement = (ICurrentEntityReplacement)self;
-            if (replacement.CurrentEntityReplacement == null)
+            if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement))
                 return existing;
 
-            return generator((DuskItemReplacementDefinition)replacement.CurrentEntityReplacement);
+            return generator(replacement);
         };
     }
 
