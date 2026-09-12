@@ -7,6 +7,7 @@ using Dawn.Utils;
 using Dusk.Utils;
 using Dusk.Weights;
 using UnityEngine;
+using static Dusk.Utils.DungeonFlowReference;
 
 namespace Dusk;
 
@@ -73,10 +74,16 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
         DawnLib.DefineDungeon(TypedKey, DungeonFlowReference.FlowAssetName, builder =>
         {
-            foreach (var mapping in DungeonFlowReference.ArchetypeTileSets)
+            foreach (ArchetypeTileSetMapping mapping in DungeonFlowReference.ArchetypeTileSets)
             {
-                builder.SetArchetypeTileSetMapping(mapping.ArchetypeName, mapping.TileSetNames);
+                builder.SetArchetypeTileSetsMapping(mapping.ArchetypeName, mapping.BranchCapTileSetNames, mapping.TileSetNames);
             }
+
+            foreach (GraphNodeReference graphNodeReference in DungeonFlowReference.GraphNodeReferences)
+            {
+                builder.SetTileSet(graphNodeReference.TileSetNames);
+            }
+
             builder.SetAssetBundlePath(registrationContext.Mod.GetRelativePath("Assets", DungeonFlowReference.BundleName));
             builder.SetMapTileSize(MapTileSize);
             if (StingerAudio != null)

@@ -2,6 +2,8 @@
 
 - Implemented some fixes to item entity registries.
 - Fixed some issues with rpc's timing out and causing issues with DeferLocal being set to true?
+- Improved info coming from editor to runtime for hotloaded interiors.
+- Fixed compatibility issues with DunGenPlus' Debug.
 
 ## v1.0.0-pre7
 

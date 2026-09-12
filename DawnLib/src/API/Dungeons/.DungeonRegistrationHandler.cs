@@ -469,6 +469,11 @@ static class DungeonRegistrationHandler
         {
             foreach (DungeonArchetype dungeonArchetype in dungeonInfo.DungeonFlow.GetUsedArchetypes())
             {
+                if (dungeonArchetype.DawnInfo != null)
+                {
+                    continue;
+                }
+
                 Debuggers.Dungeons?.Log($"dungeonArchetype.name: {dungeonArchetype.name}");
                 NamespacedKey<DawnArchetypeInfo>? archetypeKey;
                 if (dungeonInfo.Key.IsVanilla())

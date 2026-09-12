@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn.Utils;
 using DunGen;
 using DunGen.Graph;
@@ -19,89 +20,75 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
     private FuncProvider<bool> _allowStingerToPlay = new FuncProvider<bool>(() => true);
     private int _extraScrapGeneration;
 
+    private List<TileSet> _tileSetsCreated = new();
+
     internal DungeonFlowInfoBuilder(NamespacedKey<DawnDungeonInfo> key, DungeonFlow value) : base(key, value)
     {
     }
 
-    public DungeonFlowInfoBuilder SetArchetypeTileSetMapping(string archetypeName, IEnumerable<string> tileSetNames)
+    public DungeonFlowInfoBuilder SetArchetypeTileSetsMapping(string archetypeName, IEnumerable<string> branchCapTileSetNames, IEnumerable<string> tileSetNames)
     {
         GraphLine line = new GraphLine(value);
         value.Lines.Add(line);
 
-        TileSet[] allExistingTileSets = value.GetUsedTileSets() ?? Array.Empty<TileSet>();
-        var tileSetLookup = new Dictionary<string, TileSet>(StringComparer.Ordinal);
-
-        foreach (var ts in allExistingTileSets)
+        HashSet<TileSet> branchCapTileSets = new();
+        foreach (string rawName in branchCapTileSetNames)
         {
-            if (!tileSetLookup.ContainsKey(ts.name))
+            string name = rawName.Trim();
+            if (_tileSetsCreated.Exists(tileSet => tileSet.name == name))
             {
-                tileSetLookup.Add(ts.name, ts);
+                branchCapTileSets.Add(_tileSetsCreated.First(tileSet => tileSet.name == name));
+                continue;
             }
+            TileSet tileSet = ScriptableObject.CreateInstance<TileSet>();
+            tileSet.name = name;
+            branchCapTileSets.Add(tileSet);
+            _tileSetsCreated.Add(tileSet);
         }
 
-        List<TileSet> tileSetsToUse = new();
-
+        HashSet<TileSet> tileSets = new();
         foreach (string rawName in tileSetNames)
         {
             string name = rawName.Trim();
-            if (!tileSetLookup.TryGetValue(name, out var tileSet))
+            if (_tileSetsCreated.Exists(tileSet => tileSet.name == name))
             {
-                tileSet = ScriptableObject.CreateInstance<TileSet>();
-                tileSet.name = name;
-                tileSetLookup.Add(name, tileSet);
+                tileSets.Add(_tileSetsCreated.First(tileSet => tileSet.name == name));
+                continue;
             }
-
-            if (!tileSetsToUse.Contains(tileSet))
-            {
-                tileSetsToUse.Add(tileSet);
-            }
+            TileSet tileSet = ScriptableObject.CreateInstance<TileSet>();
+            tileSet.name = name;
+            tileSets.Add(tileSet);
+            _tileSetsCreated.Add(tileSet);
         }
 
-        DungeonArchetype? targetArchetype = null;
-        var existingArchetypes = value.GetUsedArchetypes();
-
-        if (existingArchetypes != null)
-        {
-            foreach (var archetype in existingArchetypes)
-            {
-                if (archetype == null) continue;
-
-                if (string.Equals(archetype.name, archetypeName, StringComparison.Ordinal))
-                {
-                    targetArchetype = archetype;
-                    break;
-                }
-            }
-        }
-
-        if (targetArchetype == null)
-        {
-            targetArchetype = ScriptableObject.CreateInstance<DungeonArchetype>();
-            targetArchetype.name = archetypeName;
-        }
-
-        if (targetArchetype.TileSets == null)
-        {
-            targetArchetype.TileSets = new List<TileSet>();
-        }
-        else
-        {
-            targetArchetype.TileSets.Clear();
-        }
-
-        targetArchetype.TileSets.AddRange(tileSetsToUse);
-
-        if (line.DungeonArchetypes == null)
-        {
-            line.DungeonArchetypes = new();
-        }
-        else
-        {
-            line.DungeonArchetypes.Clear();
-        }
-
-        line.DungeonArchetypes.Add(targetArchetype);
+        DungeonArchetype targetArchetype = ScriptableObject.CreateInstance<DungeonArchetype>();
+        targetArchetype.name = archetypeName;
+        targetArchetype.TileSets = [.. tileSets];
+        targetArchetype.BranchCapTileSets = [.. branchCapTileSets];
+        line.DungeonArchetypes = [targetArchetype];
         return this;
+    }
+
+    public void SetTileSet(IEnumerable<string> tileSetNames)
+    {
+        GraphNode node = new GraphNode(value);
+        value.Nodes.Add(node);
+        node.TileSets = [];
+
+        foreach (string tileSetName in tileSetNames)
+        {
+            string name = tileSetName.Trim();
+            if (_tileSetsCreated.Exists(tileSet => tileSet.name == name))
+            {
+                node.TileSets.Add(_tileSetsCreated.Find(tileSet => tileSet.name == name));
+                continue;
+            }
+
+            TileSet tileSet = ScriptableObject.CreateInstance<TileSet>();
+            tileSet.name = name;
+            node.TileSets.Add(tileSet);
+            _tileSetsCreated.Add(tileSet);
+        }
     }
 
     public DungeonFlowInfoBuilder SetMapTileSize(float mapTileSize)
@@ -169,6 +156,25 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
         }
 
         DawnStingerDetail stingerDetail = new(_firstTimeAudio, _stingerPlaysMoreThanOnce, _stingerPlayChance, _allowStingerToPlay);
-        return new DawnDungeonInfo(key, [], value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, _extraScrapGeneration, customData);
+        DawnDungeonInfo dungeonInfo = new DawnDungeonInfo(key, tags, value, _weights, _mapTileSize, stingerDetail, _assetBundlePath, _dungeonRangeClamp, _extraScrapGeneration, customData);
+
+        foreach (DungeonArchetype archetype in value.GetUsedArchetypes())
+        {
+            NamespacedKey<DawnArchetypeInfo> archetypeKey = NamespacedKey<DawnArchetypeInfo>.From(dungeonInfo.Key.Namespace, archetype.name);
+            DawnArchetypeInfo archetypeInfo = new DawnArchetypeInfo(archetypeKey, tags, archetype, null);
+            archetype.DawnInfo = archetypeInfo;
+            archetypeInfo.ParentInfo = dungeonInfo;
+            LethalContent.Archetypes.Register(archetypeInfo);
+            foreach (TileSet tileSet in archetype.TileSets)
+            {
+                NamespacedKey<DawnTileSetInfo> tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, tileSet.name);
+                DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, tags, ConstantPredicate.True, tileSet, archetypeInfo.DungeonArchetype.BranchCapTileSets.Contains(tileSet), archetypeInfo.DungeonArchetype.TileSets.Contains(tileSet), null);
+                archetypeInfo.AddTileSet(tileSetInfo);
+                tileSet.DawnInfo = tileSetInfo;
+                LethalContent.TileSets.Register(tileSetInfo);
+            }
+        }
+
+        return dungeonInfo;
     }
 }

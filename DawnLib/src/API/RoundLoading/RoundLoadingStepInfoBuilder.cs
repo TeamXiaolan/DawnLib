@@ -25,6 +25,6 @@ public class RoundLoadingStepInfoBuilder : BaseInfoBuilder<DawnRoundLoadingStepI
 
     override internal DawnRoundLoadingStepInfo Build()
     {
-        return new DawnRoundLoadingStepInfo(key, [], value, _hardDependencies, _softDependencies, customData);
+        return new DawnRoundLoadingStepInfo(key, tags, value, _hardDependencies, _softDependencies, customData);
     }
 }

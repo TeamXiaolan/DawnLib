@@ -19,16 +19,15 @@ public class DungeonFlowReference
     private string[] _dungeonArchetypeNames = Array.Empty<string>();
 
     [field: SerializeField]
-    private string[] _tileSetNames = Array.Empty<string>();
+    private ArchetypeTileSetMapping[] _archetypeTileSets = Array.Empty<ArchetypeTileSetMapping>();
 
     [field: SerializeField]
-    private ArchetypeTileSetMapping[] _archetypeTileSets = Array.Empty<ArchetypeTileSetMapping>();
+    private GraphNodeReference[] _graphNodeReferences = Array.Empty<GraphNodeReference>();
 
     public string FlowAssetGuid => _flowAssetGuid;
     public string FlowAssetName => _flowAssetName;
     public string[] DungeonArchetypeNames => _dungeonArchetypeNames;
-    public string[] TileSetNames => _tileSetNames;
-
+    public GraphNodeReference[] GraphNodeReferences => _graphNodeReferences;
     public ArchetypeTileSetMapping[] ArchetypeTileSets => _archetypeTileSets;
 
     public string BundleName => _bundleName;
@@ -47,22 +46,37 @@ public class DungeonFlowReference
         [field: SerializeField]
         private string[] _tileSetNames = Array.Empty<string>();
 
+        [field: SerializeField]
+        private string[] _branchCapTileSetNames = Array.Empty<string>();
+
         public string ArchetypeName => _archetypeName;
+        public string[] TileSetNames => _tileSetNames;
+        public string[] BranchCapTileSetNames => _branchCapTileSetNames;
+    }
+
+    [Serializable]
+    public class GraphNodeReference
+    {
+        [field: SerializeField]
+        private string[] _tileSetNames;
+
         public string[] TileSetNames => _tileSetNames;
     }
 
-    public bool TryGetTileSetsForArchetype(string archetypeName, out string[] tileSets)
+    public bool TryGetTileSetsForArchetype(string archetypeName, out string[] branchCapTileSetNames, out string[] tileSetNames)
     {
-        foreach (var mapping in _archetypeTileSets)
+        foreach (ArchetypeTileSetMapping mapping in _archetypeTileSets)
         {
             if (string.Equals(mapping.ArchetypeName, archetypeName, StringComparison.Ordinal))
             {
-                tileSets = mapping.TileSetNames;
+                tileSetNames = mapping.TileSetNames;
+                branchCapTileSetNames = mapping.BranchCapTileSetNames;
                 return true;
             }
         }
 
-        tileSets = Array.Empty<string>();
+        tileSetNames = Array.Empty<string>();
+        branchCapTileSetNames = Array.Empty<string>();
         return false;
     }
 }

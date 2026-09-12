@@ -66,6 +66,6 @@ public class SurfaceInfoBuilder : BaseInfoBuilder<DawnSurfaceInfo, FootstepSurfa
     override internal DawnSurfaceInfo Build()
     {
         value.surfaceTag = "AnomalyObject";
-        return new DawnSurfaceInfo(key, [], value, _crouchClips, _volume, _vainShroudPrefab, _isNatural, _quicksandCompatible, _supportsSnowyFootprints, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
+        return new DawnSurfaceInfo(key, tags, value, _crouchClips, _volume, _vainShroudPrefab, _isNatural, _quicksandCompatible, _supportsSnowyFootprints, _surfaceVFXPrefab, _surfaceVFXOffset, -1, customData);
     }
 }

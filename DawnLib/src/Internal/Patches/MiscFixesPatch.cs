@@ -388,7 +388,6 @@ static class MiscFixesPatch
     internal static void FixDungeonFlowSockets(DawnDungeonInfo dungeonInfo)
     {
         Dictionary<string, DoorwaySocket> mapped = new();
-
         foreach (DawnTileSetInfo tileSetInfo in dungeonInfo.DungeonFlow.GetUsedArchetypes().SelectMany(x => x.DawnInfo.TileSets))
         {
             foreach (DoorwaySocket socket in tileSetInfo.Sockets)
