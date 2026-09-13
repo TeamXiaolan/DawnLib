@@ -4,6 +4,7 @@
 - Fixed some issues with rpc's timing out and causing issues with DeferLocal being set to true?
 - Improved info coming from editor to runtime for hotloaded interiors.
 - Fixed compatibility issues with DunGenPlus' Debug.
+- Fixed entity item replacement tooltips resetting?
 - Applied fixes regarding skin resting rotations when spawning and being dropped.
 - ItemIcon's added to item entity registries.
 - Made all vanilla skins (Mug, etc) become implemented via DawnLib instead.

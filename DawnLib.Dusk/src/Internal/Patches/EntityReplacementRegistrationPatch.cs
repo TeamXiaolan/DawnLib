@@ -177,12 +177,22 @@ static class EntityReplacementRegistrationPatch
         cursor.EmitDelegate((string oldName) =>
         {
             PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
-            if (localPlayer.currentlyHeldObjectServer == null)
+            GrabbableObject? heldItem = null;
+            if (localPlayer.currentItemSlot == 50)
+            {
+                heldItem = localPlayer.ItemOnlySlot;
+            }
+            else if (localPlayer.currentItemSlot < localPlayer.ItemSlots.Length && localPlayer.currentItemSlot >= 0)
+            {
+                heldItem = localPlayer.ItemSlots[localPlayer.currentItemSlot];
+            }
+
+            if (heldItem == null)
             {
                 return oldName;
             }
 
-            if (localPlayer.currentlyHeldObjectServer.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? itemReplacementDefinition) && !string.IsNullOrEmpty(itemReplacementDefinition.DisplayName))
+            if (heldItem.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? itemReplacementDefinition) && !string.IsNullOrEmpty(itemReplacementDefinition.DisplayName))
             {
                 return itemReplacementDefinition.DisplayName;
             }
@@ -372,7 +382,7 @@ static class EntityReplacementRegistrationPatch
                     {
                         return existing;
                     }
-                    return replacement.ToolTips != null ? replacement.ToolTips : existing;
+                    return replacement.ToolTips ?? existing;
                 });
                 continue;
             }
