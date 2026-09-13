@@ -323,7 +323,7 @@ static class EntityReplacementRegistrationPatch
         // evil for loop.
         for (; c.Index < c.Instrs.Count; c.Index++)
         {
-            if (c.Next.OpCode != OpCodes.Ldfld)
+            if (c.Next.OpCode != OpCodes.Ldfld && c.Next.OpCode != OpCodes.Ldflda)
                 continue;
 
             if (c.Next.MatchLdfld<Item>(nameof(Item.verticalOffset)))
@@ -396,7 +396,7 @@ static class EntityReplacementRegistrationPatch
 
             foreach ((string name, var replacer) in offsetReplacerFunctions)
             {
-                if (!c.Next.MatchLdfld<Item>(name))
+                if (!c.Next.MatchLdfld<Item>(name) || !c.Next.MatchLdflda<Item>(name))
                     continue;
 
                 c.Index--;

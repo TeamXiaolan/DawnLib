@@ -5,7 +5,7 @@
 - Improved info coming from editor to runtime for hotloaded interiors.
 - Fixed compatibility issues with DunGenPlus' Debug.
 - Applied fixes regarding skin resting rotations when spawning and being dropped.
-- ItemIcon's added to entity registries.
+- ItemIcon's added to item entity registries.
 - Made all vanilla skins (Mug, etc) become implemented via DawnLib instead.
 - Fixed tags needing the correct namespace to function correctly on WeightModifiers.
 

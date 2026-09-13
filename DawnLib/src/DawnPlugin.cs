@@ -26,6 +26,8 @@ public class DawnPlugin : BaseUnityPlugin
     internal static readonly List<ILHook> ILHooks = new();
     internal static readonly Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
+    public static bool IsExperimental { get; } = true;
+
     private void Awake()
     {
         Logger = base.Logger;
