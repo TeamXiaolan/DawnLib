@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Dawn;
 using Dawn.Internal;
-using Dawn.Interfaces;
 using HarmonyLib;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;

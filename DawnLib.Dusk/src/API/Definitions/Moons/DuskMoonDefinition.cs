@@ -29,6 +29,10 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
     [field: SerializeField]
     public string InfoNodeText { get; private set; } = string.Empty;
 
+    [field: Header("Optional | TimeOfDayCue Overrides")]
+    [field: SerializeField]
+    public DawnTimeOfDayCues TimeOfDayCues { get; private set; } = DawnTimeOfDayCues.Default;
+
     [field: Header("Configs | Defaults")]
     [field: SerializeField]
     public int Cost { get; private set; }
@@ -134,6 +138,8 @@ public class DuskMoonDefinition : DuskContentDefinition<DawnMoonInfo>
             {
                 builder.CreateInfoNode(InfoNodeText);
             }
+
+            builder.OverrideTimeOfDayCues(TimeOfDayCues);
             ApplyTagsTo(builder);
         });
     }

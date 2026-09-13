@@ -19,6 +19,8 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
     private float _weedEnemiesProbabilityRange;
     private List<SpawnableEnemyWithRarity> _weedEnemies = [];
 
+    private DawnTimeOfDayCues _timeOfDayCues;
+
     public MoonInfoBuilder(NamespacedKey<DawnMoonInfo> key, SelectableLevel value) : base(key, value)
     {
     }
@@ -145,6 +147,12 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         return this;
     }
 
+    public MoonInfoBuilder OverrideTimeOfDayCues(DawnTimeOfDayCues timeOfDayCues)
+    {
+        _timeOfDayCues = timeOfDayCues;
+        return this;
+    }
+
     override internal DawnMoonInfo Build()
     {
         if (_routeNode == null)
@@ -180,7 +188,7 @@ public class MoonInfoBuilder : BaseInfoBuilder<DawnMoonInfo, SelectableLevel, Mo
         _purchasePredicate ??= ITerminalPurchasePredicate.AlwaysSuccess();
         _costOverride ??= new SimpleProvider<int>(_routeNode.itemCost);
 
-        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _outsideEnemiesProbabilityRange, _maxDaytimeDiversityPowerCount, _maxWeedEnemyPowerCount, _maxWeedDiversityPowerCount, _weedEnemies, _weedEnemySpawnChanceThroughDay, _weedEnemiesProbabilityRange, _scenes, _infoNode, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
+        DawnMoonInfo info = new DawnMoonInfo(key, tags, value, _timeOfDayCues, _outsideEnemiesProbabilityRange, _maxDaytimeDiversityPowerCount, _maxWeedEnemyPowerCount, _maxWeedDiversityPowerCount, _weedEnemies, _weedEnemySpawnChanceThroughDay, _weedEnemiesProbabilityRange, _scenes, _infoNode, _routeNode, _receiptNode, _nameKeyword, new DawnPurchaseInfo(_costOverride, _purchasePredicate), customData);
         return info;
     }
 }

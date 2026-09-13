@@ -9,6 +9,7 @@
 - ItemIcon's added to item entity registries.
 - Made all vanilla skins (Mug, etc) become implemented via DawnLib instead.
 - Fixed tags needing the correct namespace to function correctly on WeightModifiers.
+- Implemented TimeOfDayCue Overrides into DawnLib Moons (Also collected LLL's clips).
 
 ## v1.0.0-pre7
 

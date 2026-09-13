@@ -77,6 +77,34 @@ static class MoonRegistrationHandler
         IL.RoundManager.SpawnRandomDaytimeEnemy += ReplaceLevelValueWithRoundManager;
 
         IL.RoundManager.SpawnWeedEnemies += IntroduceMoreVariablesToSpawning;
+
+        IL.TimeOfDay.PlayerSeesNewTimeOfDay += ReplaceTimeOfDayCuesDynamically;
+    }
+
+    private static void ReplaceTimeOfDayCuesDynamically(ILContext il)
+    {
+        ILCursor cursor = new(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<TimeOfDay>(nameof(TimeOfDay.timeOfDayCues)),
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<TimeOfDay>(nameof(TimeOfDay.dayMode)),
+            il => il.MatchLdelemRef()
+        ))
+        {
+            DawnPlugin.Logger.LogWarning("Failed to apply TimeOfDay.PlayerSeesNewTimeOfDay patch (1)");
+            return;
+        }
+
+        cursor.RemoveRange(5);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.Emit(OpCodes.Ldarg_0);
+        cursor.EmitLdfld<TimeOfDay>(nameof(TimeOfDay.dayMode));
+        cursor.EmitDelegate((TimeOfDay self, DayMode dayMode) =>
+        {
+            return self.currentLevel.DawnInfo.TimeOfDayCues.GetClip(dayMode);
+        });
     }
 
     private static void IntroduceMoreVariablesToSpawning(ILContext il)
@@ -918,6 +946,16 @@ static class MoonRegistrationHandler
             }
 
             ITerminalPurchasePredicate predicate = ITerminalPurchasePredicate.AlwaysSuccess();
+            DawnTimeOfDayCues timeOfDayCues;
+            if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.ExtendedLevelIsModded(level, out object? cueExtendedLevel))
+            {
+                timeOfDayCues = new(LethalLevelLoaderCompat.GetExtendedLevelCueClip(cueExtendedLevel, DayMode.Dawn), LethalLevelLoaderCompat.GetExtendedLevelCueClip(cueExtendedLevel, DayMode.Noon), LethalLevelLoaderCompat.GetExtendedLevelCueClip(cueExtendedLevel, DayMode.Sundown), LethalLevelLoaderCompat.GetExtendedLevelCueClip(cueExtendedLevel, DayMode.Midnight));
+            }
+            else
+            {
+                timeOfDayCues = new(TimeOfDayRefs.Instance.timeOfDayCues[0], TimeOfDayRefs.Instance.timeOfDayCues[1], TimeOfDayRefs.Instance.timeOfDayCues[2], TimeOfDayRefs.Instance.timeOfDayCues[3]);
+            }
+
             if (LethalLevelLoaderCompat.Enabled && LethalLevelLoaderCompat.ExtendedLevelIsModded(level, out object? extendedLevel))
             {
                 predicate = new LethalLevelLoaderTerminalPredicate(extendedLevel);
@@ -953,7 +991,7 @@ static class MoonRegistrationHandler
                 }
             }
 
-            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, moonSceneInfos, infoNode, routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
+            DawnMoonInfo moonInfo = new DawnMoonInfo(key, tags, level, timeOfDayCues, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, moonSceneInfos, infoNode, routeNode, receiptNode, nameKeyword, new DawnPurchaseInfo(new SimpleProvider<int>(routeNode?.itemCost ?? -1), predicate), null);
             level.DawnInfo = moonInfo;
             LethalContent.Moons.Register(moonInfo);
         }
@@ -967,7 +1005,8 @@ static class MoonRegistrationHandler
             return;
         }
 
-        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new(), null, null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
+        DawnTimeOfDayCues timeOfDayCues = new(TimeOfDayRefs.Instance.timeOfDayCues[0], TimeOfDayRefs.Instance.timeOfDayCues[1], TimeOfDayRefs.Instance.timeOfDayCues[2], TimeOfDayRefs.Instance.timeOfDayCues[3]);
+        DawnMoonInfo testMoonInfo = new(MoonKeys.Test, [DawnLibTags.IsExternal], self.currentLevel, timeOfDayCues, 3f, 100, 4, 100, RoundManagerRefs.Instance.WeedEnemies.ToList(), AnimationCurve.Constant(0f, 1f, 2f), 1f, new(), null, null, null, null, new DawnPurchaseInfo(new SimpleProvider<int>(-1), ITerminalPurchasePredicate.AlwaysHide()), null);
         self.currentLevel.DawnInfo = testMoonInfo;
         LethalContent.Moons.Register(testMoonInfo);
         orig(self);

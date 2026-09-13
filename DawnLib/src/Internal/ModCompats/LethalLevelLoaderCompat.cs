@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -279,5 +280,19 @@ static class LethalLevelLoaderCompat
             allTagsWithModNames.Add((extendedEnemyType.ModName, contentTag.contentTagName));
         }
         return true;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    public static AudioClip GetExtendedLevelCueClip(object extendedLevel, DayMode dawn)
+    {
+        ExtendedLevel cueExtendedLevel = (ExtendedLevel)extendedLevel;
+        return dawn switch
+        {
+            DayMode.Dawn => cueExtendedLevel.OverrideStartOfDayMusic,
+            DayMode.Noon => cueExtendedLevel.OverrideMidDayMusic,
+            DayMode.Sundown => cueExtendedLevel.OverrideLateDayMusic,
+            DayMode.Midnight => cueExtendedLevel.OverrideNightMusic,
+            _ => throw new ArgumentOutOfRangeException(nameof(dawn), dawn, "Invalid DayMode value."),
+        };
     }
 }
