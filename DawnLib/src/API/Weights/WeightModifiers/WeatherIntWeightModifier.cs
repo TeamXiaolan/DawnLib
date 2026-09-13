@@ -23,7 +23,7 @@ public sealed class WeatherIntWeightModifier : IWeightModifier<int>
         if (context.Weather.TypedKey == _weight.Key)
             return true;
 
-        return context.Weather.HasTag(_weight.Key);
+        return context.Weather.HasTag(_weight.Key, true);
     }
 
     public void Apply(ref int value, WeightContext context)

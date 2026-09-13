@@ -27,8 +27,27 @@ public abstract class DawnBaseInfo<T> : INamespaced<T>, ITaggable, IRegistryEven
 
     public NamespacedKey Key => TypedKey;
     public NamespacedKey<T> TypedKey { get; }
+
     public bool HasTag(NamespacedKey tag)
     {
+        return HasTag(tag, false);
+    }
+
+    public bool HasTag(NamespacedKey tag, bool ignoreNamespace = false)
+    {
+        if (ignoreNamespace)
+        {
+            foreach (NamespacedKey candidateTag in _tags)
+            {
+                if (candidateTag.Key == tag.Key)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         return _tags.Contains(tag);
     }
 

@@ -23,7 +23,7 @@ public sealed class DungeonIntWeightModifier : IWeightModifier<int>
         if (context.Dungeon.TypedKey == _weight.Key)
             return true;
 
-        return context.Dungeon.HasTag(_weight.Key);
+        return context.Dungeon.HasTag(_weight.Key, true);
     }
 
     public void Apply(ref int value, WeightContext context)

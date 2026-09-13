@@ -7,6 +7,9 @@ namespace Dusk;
 public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
 {
     [field: SerializeField]
+    public Sprite ItemIcon { get; private set; }
+
+    [field: SerializeField]
     public string DisplayName { get; private set; }
 
     [field: SerializeField]

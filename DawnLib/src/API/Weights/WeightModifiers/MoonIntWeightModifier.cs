@@ -23,7 +23,7 @@ public sealed class MoonIntWeightModifier : IWeightModifier<int>
         if (context.Moon.TypedKey == _weight.Key)
             return true;
 
-        return context.Moon.HasTag(_weight.Key);
+        return context.Moon.HasTag(_weight.Key, true);
     }
 
     public void Apply(ref int value, WeightContext context)

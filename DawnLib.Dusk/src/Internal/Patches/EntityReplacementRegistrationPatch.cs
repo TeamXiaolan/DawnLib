@@ -368,11 +368,28 @@ static class EntityReplacementRegistrationPatch
                 c.Index += 2;
                 c.EmitDelegate<Func<GrabbableObject, string[], string[]>>((self, existing) =>
                 {
-                    if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement) || replacement.ToolTips == null)
+                    if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement))
                     {
                         return existing;
                     }
-                    return replacement.ToolTips;
+                    return replacement.ToolTips != null ? replacement.ToolTips : existing;
+                });
+                continue;
+            }
+
+            if (c.Next.MatchLdfld<Item>(nameof(Item.itemIcon)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, Sprite, Sprite>>((self, existing) =>
+                {
+                    if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement))
+                    {
+                        return existing;
+                    }
+                    return replacement.ItemIcon != null ? replacement.ItemIcon : existing;
                 });
                 continue;
             }
