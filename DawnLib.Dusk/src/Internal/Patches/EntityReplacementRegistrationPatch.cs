@@ -28,8 +28,6 @@ static class EntityReplacementRegistrationPatch
         LethalContent.Unlockables.BeforeFreezeWithContext += _ => RegisterUnlockableReplacements();
         LethalContent.MapObjects.BeforeFreezeWithContext += _ => RegisterMapObjectReplacements();
 
-        LethalContent.Items.OnFreezeWithContext += _ => RegisterItemSkins();
-
         using (new DetourContext(priority: int.MaxValue))
         {
             On.StartOfRound.Awake += RegisterScenePlacedUnlockableReplacements;
@@ -531,13 +529,31 @@ static class EntityReplacementRegistrationPatch
             {
                 foreach ((int index, Mesh mesh) in item.meshVariants.WithIndex())
                 {
-                    if (mesh == item.spawnPrefab.GetComponent<MeshFilter>().mesh)
-                        continue;
-
                     DuskItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
                     itemReplacementDefinition.RegisterAsDefault(itemInfo.Item.spawnPrefab.GetComponent<GrabbableObject>(), itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
-                    // Create the variant's shit
+                    MeshReplacement meshReplacement = ScriptableObject.CreateInstance<MeshReplacement>();
+                    meshReplacement.name = $"{mesh.name}_MeshReplacement";
+                    meshReplacement.ReplacementMesh = mesh;
+                    itemReplacementDefinition.Replacements.Add(meshReplacement);
+                    list.Add(itemReplacementDefinition);
+                }
+            }
 
+
+            if (item.materialVariants != null && item.materialVariants.Length > 0)
+            {
+                foreach ((int index, Material material) in item.materialVariants.WithIndex())
+                {
+                    DuskItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(itemInfo.Item.spawnPrefab.GetComponent<GrabbableObject>(), itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
+                    MaterialsReplacement materialsReplacement = ScriptableObject.CreateInstance<MaterialsReplacement>();
+                    materialsReplacement.name = $"{material.name}_MaterialsReplacement";
+                    materialsReplacement.ReplacementMaterials.Add(new MaterialWithIndex()
+                    {
+                        Index = 0,
+                        Material = material
+                    });
+                    itemReplacementDefinition.Replacements.Add(materialsReplacement);
                     list.Add(itemReplacementDefinition);
                 }
             }

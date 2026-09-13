@@ -86,7 +86,7 @@ public class SkinnedMeshReplacement : Hierarchy
 public class MeshReplacement : Hierarchy
 {
     [field: SerializeField]
-    public Mesh ReplacementMesh { get; private set; }
+    public Mesh ReplacementMesh { get; internal set; }
 
     public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
