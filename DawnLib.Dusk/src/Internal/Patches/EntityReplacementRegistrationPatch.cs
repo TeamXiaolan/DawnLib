@@ -9,6 +9,7 @@ using MonoMod.RuntimeDetour;
 using UnityEngine;
 using OpCodes = Mono.Cecil.Cil.OpCodes;
 using GameNetcodeStuff;
+using Dawn.Utils;
 
 namespace Dusk.Internal;
 
@@ -26,6 +27,9 @@ static class EntityReplacementRegistrationPatch
         LethalContent.Items.BeforeFreezeWithContext += _ => RegisterItemReplacements();
         LethalContent.Unlockables.BeforeFreezeWithContext += _ => RegisterUnlockableReplacements();
         LethalContent.MapObjects.BeforeFreezeWithContext += _ => RegisterMapObjectReplacements();
+
+        LethalContent.Items.OnFreezeWithContext += _ => RegisterItemSkins();
+
         using (new DetourContext(priority: int.MaxValue))
         {
             On.StartOfRound.Awake += RegisterScenePlacedUnlockableReplacements;
@@ -514,6 +518,31 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterItemReplacements()
     {
+        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        {
+            Item item = itemInfo.Item;
+            if (!itemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? list))
+            {
+                list = new();
+                itemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
+            }
+
+            if (item.meshVariants != null && item.meshVariants.Length > 0)
+            {
+                foreach ((int index, Mesh mesh) in item.meshVariants.WithIndex())
+                {
+                    if (mesh == item.spawnPrefab.GetComponent<MeshFilter>().mesh)
+                        continue;
+
+                    DuskItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(itemInfo.Item.spawnPrefab.GetComponent<GrabbableObject>(), itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
+                    // Create the variant's shit
+
+                    list.Add(itemReplacementDefinition);
+                }
+            }
+        }
+
         foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
         {
             if (entityReplacementDefinition is not DuskItemReplacementDefinition itemReplacementDefinition)
@@ -602,9 +631,6 @@ static class EntityReplacementRegistrationPatch
             chosenWeight -= replacement.GetRarity();
             if (chosenWeight > 0)
                 continue;
-
-            if (replacement.IsDefault)
-                break;
 
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(grabbableObject));
             break;
@@ -756,9 +782,6 @@ static class EntityReplacementRegistrationPatch
             if (chosenWeight > 0)
                 continue;
 
-            if (replacement.IsDefault)
-                break;
-
             StartOfRoundRefs.Instance.StartCoroutine(replacement.ApplyNest(self));
         }
         orig(self);
@@ -839,9 +862,6 @@ static class EntityReplacementRegistrationPatch
             chosenWeight -= weight;
             if (chosenWeight > 0)
                 continue;
-
-            if (replacement.IsDefault)
-                break;
 
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
             break;

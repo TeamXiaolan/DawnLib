@@ -15,10 +15,10 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     private NamespacedKey<DuskEntityReplacementDefinition> _typedKey;
 
     [field: SerializeField]
-    public string SkinName { get; private set; }
+    public string SkinName { get; internal set; }
 
     [field: SerializeField, InspectorName("Entity to be Replaced"), UnlockedNamespacedKey, Space(5)]
-    public NamespacedKey EntityToReplaceKey { get; private set; }
+    public NamespacedKey EntityToReplaceKey { get; internal set; }
 
     [field: SerializeField]
     public DatePredicate? DatePredicate { get; private set; }
@@ -33,9 +33,6 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
     public NamespacedKey<DuskEntityReplacementDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskEntityReplacementDefinition>(); }
-
-    // bongo todo: this is awful, and when migrating this stuff to be dawn info, this should probably be an interface or something
-    internal bool IsDefault = false;
 
     [field: Header("Configs | Spawn Weights")]
     [field: SerializeField]
@@ -54,8 +51,8 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
     [field: SerializeField]
     public bool GenerateDisableDateConfig { get; private set; } = true;
 
-    private IWeightModifierSource<int> _spawnWeightSource = null!;
-    public DawnWeightedValue<int> Rarity { get; private set; }
+    internal IWeightModifierSource<int> _spawnWeightSource = null!;
+    public DawnWeightedValue<int> Rarity { get; internal set; }
     public EntityReplacementConfig Config { get; private set; }
 
     public int GetRarity(DawnMoonInfo? moonInfo = null, DawnDungeonInfo? dungeonInfo = null, DawnWeatherEffectInfo? weatherEffectInfo = null, bool resolveAutomatically = true)
@@ -80,26 +77,6 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
             DawnLib.RegisterNetworkPrefab(gameObject);
         }
-    }
-
-    internal void RegisterAsDefault(string @namespace, string key)
-    {
-        IsDefault = true;
-        // TODO: make this a proper config entry
-        NamespacedKey<DuskEntityReplacementDefinition> defaultKey = NamespacedKey<DuskEntityReplacementDefinition>.From(@namespace, key);
-        Key = defaultKey;
-        EntityToReplaceKey = defaultKey;
-        this.name = $"EntityReplacementDefinition_Default_{defaultKey}";
-        SkinName = key;
-
-        _spawnWeightSource = CreateSpawnWeightSource(
-            () => [],
-            () => [],
-            () => [],
-            () => [],
-            () => 100);
-
-        Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(_spawnWeightSource)));
     }
 
     public override void Register(DuskRegistrationContext registrationContext)
@@ -160,6 +137,25 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
+    virtual internal void RegisterAsDefault(TAI ai, string @namespace, string key)
+    {
+        // TODO: make this a proper config entry
+        NamespacedKey<DuskEntityReplacementDefinition> defaultKey = NamespacedKey<DuskEntityReplacementDefinition>.From(@namespace, key);
+        Key = defaultKey;
+        EntityToReplaceKey = defaultKey;
+        this.name = $"EntityReplacementDefinition_Auto_Generated_{defaultKey}";
+        SkinName = key;
+
+        _spawnWeightSource = CreateSpawnWeightSource(
+            () => [],
+            () => [],
+            () => [],
+            () => [],
+            () => 100);
+
+        Rarity = new DawnWeightedValue<int>(DuskWeightChannels.EntityReplacementRarity, WeightProfile<int>.Create(DuskWeightChannels.EntityReplacementRarity.Policy, weightProfile => weightProfile.AddSource(_spawnWeightSource)));
+    }
+
     public abstract IEnumerator Apply(TAI ai, bool immediate = false);
 
     public IEnumerator ApplyReplacementAndAddons(Transform transform, bool immediate = false)

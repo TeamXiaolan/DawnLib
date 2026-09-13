@@ -95,9 +95,6 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             if (chosenWeight > 0)
                 continue;
 
-            if (replacement.IsDefault)
-                break;
-
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(this));
             break;
         }

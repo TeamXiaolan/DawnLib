@@ -109,6 +109,8 @@
 - Add Combined, Progressing, Unknown and terminal predicate related weather things.
 - ItemGroup registration needs to be done better.
   - Allow injecting to items that aren't your own too?
+- Make selecting skins be host based?
+- RuntimeIcons + Matty Fixes support for DawnLib item skins.
 
 ## v0.9.25
 

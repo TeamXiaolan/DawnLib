@@ -80,9 +80,6 @@ public class DuskMapObject : MonoBehaviour, ICurrentEntityReplacement
             if (chosenWeight > 0)
                 continue;
 
-            if (replacement.IsDefault)
-                break;
-
             StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(this));
             break;
         }

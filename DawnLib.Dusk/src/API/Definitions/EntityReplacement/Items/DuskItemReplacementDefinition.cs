@@ -45,6 +45,17 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
     [field: SerializeField]
     public string[] ToolTips { get; private set; }
 
+    internal override void RegisterAsDefault(GrabbableObject grabbableObject, string @namespace, string key)
+    {
+        VerticalOffset = grabbableObject.itemProperties.verticalOffset;
+        FloorYOffset = grabbableObject.itemProperties.floorYOffset;
+        RestingRotation = grabbableObject.itemProperties.restingRotation;
+        RotationOffset = grabbableObject.itemProperties.rotationOffset;
+        PositionOffset = grabbableObject.itemProperties.positionOffset;
+        ToolTips = grabbableObject.itemProperties.toolTips;
+        base.RegisterAsDefault(grabbableObject, @namespace, key);
+    }
+
     public override IEnumerator Apply(GrabbableObject ai, bool immediate = false)
     {
         yield break;
