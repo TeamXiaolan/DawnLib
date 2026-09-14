@@ -10,6 +10,7 @@ using UnityEngine;
 using OpCodes = Mono.Cecil.Cil.OpCodes;
 using GameNetcodeStuff;
 using Dawn.Utils;
+using Unity.Netcode;
 
 namespace Dusk.Internal;
 
@@ -35,6 +36,8 @@ static class EntityReplacementRegistrationPatch
             On.GrabbableObject.Start += ReplaceGrabbableObject;
             On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
         }
+
+        IL.RoundManager.SyncScrapValuesClientRpc += CannabalizeVanillaVariantCode;
 
         On.StartOfRound.OnClientConnect += SyncSkinsWithNewClient;
 
@@ -156,6 +159,40 @@ static class EntityReplacementRegistrationPatch
         IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
 
         DuskPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+
+    private static void CannabalizeVanillaVariantCode(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdloc(2),
+            il => il.MatchLdfld<GrabbableObject>(nameof(GrabbableObject.itemProperties)),
+            il => il.MatchLdfld<Item>(nameof(Item.meshVariants)),
+            il => il.MatchLdlen(),
+            il => il.MatchBrfalse(out _)
+        ))
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name} (1)");
+            return;
+        }
+
+        ILLabel skipLabel = cursor.DefineLabel();
+        cursor.Emit(OpCodes.Br, skipLabel);
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLeaveS(out _),
+            il => il.MatchStloc(4),
+            il => il.MatchLdstr("Item name: {0}; {1}"),
+            il => il.MatchLdloc(2)
+        ))
+        {
+            DuskPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name} (2)");
+            return;
+        }
+
+        cursor.MarkLabel(skipLabel);
     }
 
     private static void ReplaceItemNameWithDisplayName(ILContext il)
@@ -450,24 +487,6 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterMapObjectReplacements()
     {
-        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
-        {
-            if (entityReplacementDefinition is not DuskMapObjectReplacementDefinition mapObjectReplacementDefinition)
-                continue;
-
-            if (LethalContent.MapObjects.TryGetValue(mapObjectReplacementDefinition.EntityToReplaceKey, out DawnMapObjectInfo mapObjectInfo))
-            {
-                if (!mapObjectInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskMapObjectReplacementDefinition>? list))
-                {
-                    DuskMapObjectReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskMapObjectReplacementDefinition>();
-                    vanilla.RegisterAsDefault(mapObjectInfo.Key.Namespace, mapObjectInfo.GetMapObjectPrefab()?.name ?? mapObjectInfo.Key.Key);
-                    list = [vanilla];
-                    mapObjectInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
-                }
-                list.Add(mapObjectReplacementDefinition);
-            }
-        }
-
         foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
         {
             GameObject? prefab = mapObjectInfo.GetMapObjectPrefab();
@@ -475,6 +494,40 @@ static class EntityReplacementRegistrationPatch
                 continue;
 
             prefab.AddComponent<DuskMapObject>();
+        }
+
+
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        {
+            if (mapObjectInfo.HasTag(Tags.Unimplemented))
+                continue;
+
+            GameObject? mapObjectPrefab = mapObjectInfo.GetMapObjectPrefab();
+            if (mapObjectPrefab == null)
+                continue;
+
+            if (!mapObjectPrefab.TryGetComponent(out DuskMapObject duskMapObject))
+                continue;
+
+            if (!mapObjectInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskMapObjectReplacementDefinition>? list))
+            {
+                DefaultMapObjectReplacementDefinition defaultMapObjectReplacementDefinition = ScriptableObject.CreateInstance<DefaultMapObjectReplacementDefinition>();
+                defaultMapObjectReplacementDefinition.RegisterAsDefault(duskMapObject, mapObjectInfo.Key.Key, mapObjectInfo.Key.Namespace, mapObjectInfo.Key.Key);
+                list = [defaultMapObjectReplacementDefinition];
+                mapObjectInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
+            }
+
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            {
+                if (entityReplacementDefinition is not DuskMapObjectReplacementDefinition mapObjectReplacementDefinition)
+                    continue;
+
+                if (mapObjectReplacementDefinition.EntityToReplaceKey != mapObjectInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering map object replacement {mapObjectReplacementDefinition.SkinName} for '{mapObjectInfo.Key}'");
+                list.Add(mapObjectReplacementDefinition);
+            }
         }
     }
 
@@ -495,20 +548,35 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterUnlockableReplacements()
     {
-        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
         {
-            if (entityReplacementDefinition is not DuskUnlockableReplacementDefinition unlockableReplacementDefinition)
+            if (unlockableItemInfo.HasTag(Tags.Unimplemented))
                 continue;
 
-            if (LethalContent.Unlockables.TryGetValue(unlockableReplacementDefinition.EntityToReplaceKey, out DawnUnlockableItemInfo unlockableItemInfo))
+            UnlockableItem unlockableItem = unlockableItemInfo.UnlockableItem;
+            if (unlockableItem.prefabObject == null)
+                continue;
+
+            if (!unlockableItem.prefabObject.TryGetComponent(out DuskUnlockable duskUnlockable))
+                continue;
+
+            if (!unlockableItemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? list))
             {
-                if (!unlockableItemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskUnlockableReplacementDefinition>? list))
-                {
-                    DuskUnlockableReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskUnlockableReplacementDefinition>();
-                    vanilla.RegisterAsDefault(unlockableItemInfo.Key.Namespace, unlockableItemInfo.Key.Key);
-                    list = [vanilla];
-                    unlockableItemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
-                }
+                DefaultUnlockableReplacementDefinition defaultUnlockableReplacementDefinition = ScriptableObject.CreateInstance<DefaultUnlockableReplacementDefinition>();
+                defaultUnlockableReplacementDefinition.RegisterAsDefault(duskUnlockable, unlockableItemInfo.Key.Key, unlockableItemInfo.Key.Namespace, unlockableItemInfo.Key.Key);
+                list = [defaultUnlockableReplacementDefinition];
+                unlockableItemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
+            }
+
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            {
+                if (entityReplacementDefinition is not DuskUnlockableReplacementDefinition unlockableReplacementDefinition)
+                    continue;
+
+                if (unlockableReplacementDefinition.EntityToReplaceKey != unlockableItemInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering unlockable replacement {unlockableReplacementDefinition.SkinName} for '{unlockableItemInfo.Key}'");
                 list.Add(unlockableReplacementDefinition);
             }
         }
@@ -518,34 +586,44 @@ static class EntityReplacementRegistrationPatch
     {
         foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
         {
+            if (itemInfo.HasTag(Tags.Unimplemented))
+                continue;
+
             Item item = itemInfo.Item;
+            GrabbableObject grabbableObject = item.spawnPrefab.GetComponent<GrabbableObject>();
             if (!itemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? list))
             {
                 list = new();
+                if (item.meshVariants.Length == 0 && item.materialVariants.Length == 0)
+                {
+                    DefaultItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DefaultItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(grabbableObject, itemInfo.Key.Key, itemInfo.Key.Namespace, itemInfo.Key.Key);
+                    list.Add(itemReplacementDefinition);
+                }
                 itemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
             }
 
-            if (item.meshVariants != null && item.meshVariants.Length > 0)
+            if (item.meshVariants.Length > 0)
             {
                 foreach ((int index, Mesh mesh) in item.meshVariants.WithIndex())
                 {
-                    DuskItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
-                    itemReplacementDefinition.RegisterAsDefault(itemInfo.Item.spawnPrefab.GetComponent<GrabbableObject>(), itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
+                    DefaultItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DefaultItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(grabbableObject, itemInfo.Key.Key, itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
                     MeshReplacement meshReplacement = ScriptableObject.CreateInstance<MeshReplacement>();
                     meshReplacement.name = $"{mesh.name}_MeshReplacement";
                     meshReplacement.ReplacementMesh = mesh;
                     itemReplacementDefinition.Replacements.Add(meshReplacement);
+                    Debuggers.EntityReplacements?.Log($"Registering item replacement {itemReplacementDefinition.SkinName} for '{itemInfo.Key}'");
                     list.Add(itemReplacementDefinition);
                 }
             }
 
-
-            if (item.materialVariants != null && item.materialVariants.Length > 0)
+            if (item.materialVariants.Length > 0)
             {
                 foreach ((int index, Material material) in item.materialVariants.WithIndex())
                 {
-                    DuskItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
-                    itemReplacementDefinition.RegisterAsDefault(itemInfo.Item.spawnPrefab.GetComponent<GrabbableObject>(), itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
+                    DefaultItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DefaultItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(grabbableObject, itemInfo.Key.Key, itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
                     MaterialsReplacement materialsReplacement = ScriptableObject.CreateInstance<MaterialsReplacement>();
                     materialsReplacement.name = $"{material.name}_MaterialsReplacement";
                     materialsReplacement.ReplacementMaterials.Add(new MaterialWithIndex()
@@ -554,26 +632,20 @@ static class EntityReplacementRegistrationPatch
                         Material = material
                     });
                     itemReplacementDefinition.Replacements.Add(materialsReplacement);
+                    Debuggers.EntityReplacements?.Log($"Registering item replacement {itemReplacementDefinition.SkinName} for '{itemInfo.Key}'");
                     list.Add(itemReplacementDefinition);
                 }
             }
-        }
 
-        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
-        {
-            if (entityReplacementDefinition is not DuskItemReplacementDefinition itemReplacementDefinition)
-                continue;
-
-            if (LethalContent.Items.TryGetValue(itemReplacementDefinition.EntityToReplaceKey, out DawnItemInfo itemInfo))
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
             {
-                if (!itemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskItemReplacementDefinition>? list))
-                {
-                    DuskItemReplacementDefinition vanilla = ScriptableObject.CreateInstance<DuskItemReplacementDefinition>();
-                    vanilla.RegisterAsDefault(itemInfo.Key.Namespace, itemInfo.Item.itemName);
-                    list = [vanilla];
-                    itemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
-                }
+                if (entityReplacementDefinition is not DuskItemReplacementDefinition itemReplacementDefinition)
+                    continue;
 
+                if (itemReplacementDefinition.EntityToReplaceKey != itemInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering item replacement {itemReplacementDefinition.SkinName} for '{itemInfo.Key}'");
                 list.Add(itemReplacementDefinition);
             }
         }
@@ -609,6 +681,7 @@ static class EntityReplacementRegistrationPatch
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskItemReplacementDefinition replacement = newReplacements[i];
+            Debuggers.EntityReplacements?.Log($"Taking into account replacement for '{replacement.EntityToReplaceKey}' with '{replacement.SkinName}'");
             if (replacement.DatePredicate != null && !replacement.DatePredicate.Evaluate())
             {
                 newReplacements.RemoveAt(i);
@@ -618,6 +691,7 @@ static class EntityReplacementRegistrationPatch
             int weight = replacement.GetRarity();
             if (weight <= 0)
             {
+                Debuggers.EntityReplacements?.Log($"Removing invalid replacement {replacement.SkinName} for '{replacement.EntityToReplaceKey}' due to low weight");
                 newReplacements.RemoveAt(i);
             }
         }
@@ -805,22 +879,29 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterEnemyReplacements()
     {
-        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
         {
-            if (entityReplacementDefinition is not DuskEnemyReplacementDefinition enemyReplacementDefinition)
+            if (enemyInfo.HasTag(Tags.Unimplemented))
                 continue;
 
-            if (LethalContent.Enemies.TryGetValue(enemyReplacementDefinition.EntityToReplaceKey, out DawnEnemyInfo enemyInfo))
+            EnemyAI enemyAI = enemyInfo.EnemyType.enemyPrefab.GetComponent<EnemyAI>();
+            if (!enemyInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? list))
             {
-                if (!enemyInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEnemyReplacementDefinition>? list))
-                {
-                    DuskEnemyReplacementDefinition defaultSkin = ScriptableObject.CreateInstance<DuskEnemyReplacementDefinition>();
-                    defaultSkin.RegisterAsDefault(enemyInfo.Key.Namespace, enemyInfo.EnemyType.enemyName);
-                    list = [defaultSkin];
-                    enemyInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
-                }
+                DefaultEnemyReplacementDefinition defaultEnemyReplacementDefinition = ScriptableObject.CreateInstance<DefaultEnemyReplacementDefinition>();
+                defaultEnemyReplacementDefinition.RegisterAsDefault(enemyAI, enemyInfo.Key.Key, enemyInfo.Key.Namespace, enemyInfo.Key.Key);
+                list = [defaultEnemyReplacementDefinition];
+                enemyInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
+            }
 
-                Debuggers.EntityReplacements?.Log($"Registering replacement for '{enemyReplacementDefinition.EntityToReplaceKey}' as '{enemyReplacementDefinition.TypedKey}'");
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            {
+                if (entityReplacementDefinition is not DuskEnemyReplacementDefinition enemyReplacementDefinition)
+                    continue;
+
+                if (enemyReplacementDefinition.EntityToReplaceKey != enemyInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering enemy replacement {enemyReplacementDefinition.SkinName} for '{enemyInfo.Key}'");
                 list.Add(enemyReplacementDefinition);
             }
         }

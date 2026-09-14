@@ -45,7 +45,7 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
     [field: SerializeField]
     public string[] ToolTips { get; private set; }
 
-    internal override void RegisterAsDefault(GrabbableObject grabbableObject, string @namespace, string key)
+    internal override void RegisterAsDefault(GrabbableObject grabbableObject, string baseKey, string @namespace, string variantKey)
     {
         VerticalOffset = grabbableObject.itemProperties.verticalOffset;
         FloorYOffset = grabbableObject.itemProperties.floorYOffset;
@@ -53,7 +53,7 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
         RotationOffset = grabbableObject.itemProperties.rotationOffset;
         PositionOffset = grabbableObject.itemProperties.positionOffset;
         ToolTips = grabbableObject.itemProperties.toolTips;
-        base.RegisterAsDefault(grabbableObject, @namespace, key);
+        base.RegisterAsDefault(grabbableObject, baseKey, @namespace, variantKey);
     }
 
     public override IEnumerator Apply(GrabbableObject ai, bool immediate = false)
@@ -86,6 +86,17 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
             yield break;
         }
 
+        if (grabbableObject is not T)
+        {
+            DuskPlugin.Logger.LogDebug($"Failed to apply replacement item entity for '{grabbableObject.itemProperties.itemName}', it doesn't have the right type!");
+            yield break;
+        }
+
         ApplyTyped((T)grabbableObject);
     }
+}
+
+public class DefaultItemReplacementDefinition : DuskItemReplacementDefinition<PhysicsProp>
+{
+    protected override void ApplyTyped(PhysicsProp physicsProp) { }
 }

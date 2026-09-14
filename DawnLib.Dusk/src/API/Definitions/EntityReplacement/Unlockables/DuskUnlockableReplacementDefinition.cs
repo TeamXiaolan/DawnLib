@@ -36,6 +36,17 @@ public abstract class DuskUnlockableReplacementDefinition<T> : DuskUnlockableRep
             yield break;
         }
 
+        if (dawnUnlockable is not T)
+        {
+            DuskPlugin.Logger.LogDebug($"Failed to apply replacement unlockable entity for '{dawnUnlockable.gameObject.name}', it doesn't have the right type!");
+            yield break;
+        }
+
         ApplyTyped((T)dawnUnlockable);
     }
+}
+
+public class DefaultUnlockableReplacementDefinition : DuskUnlockableReplacementDefinition<DuskUnlockable>
+{
+    protected override void ApplyTyped(DuskUnlockable dawnUnlockable) { }
 }

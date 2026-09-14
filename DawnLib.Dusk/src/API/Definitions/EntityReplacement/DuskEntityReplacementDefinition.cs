@@ -137,14 +137,15 @@ public abstract class DuskEntityReplacementDefinition : DuskContentDefinition, I
 
 public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplacementDefinition where TAI : class
 {
-    virtual internal void RegisterAsDefault(TAI ai, string @namespace, string key)
+    virtual internal void RegisterAsDefault(TAI ai, string baseKey, string @namespace, string variantKey)
     {
         // TODO: make this a proper config entry
-        NamespacedKey<DuskEntityReplacementDefinition> defaultKey = NamespacedKey<DuskEntityReplacementDefinition>.From(@namespace, key);
-        Key = defaultKey;
-        EntityToReplaceKey = defaultKey;
-        this.name = $"EntityReplacementDefinition_Auto_Generated_{defaultKey}";
-        SkinName = key;
+        NamespacedKey<DuskEntityReplacementDefinition> variantNamespacedKey = NamespacedKey<DuskEntityReplacementDefinition>.From(@namespace, variantKey);
+        NamespacedKey<DuskEntityReplacementDefinition> baseNamespacedKey = NamespacedKey<DuskEntityReplacementDefinition>.From(@namespace, baseKey);
+        Key = variantNamespacedKey;
+        EntityToReplaceKey = baseNamespacedKey;
+        this.name = $"EntityReplacementDefinition_Auto_Generated_{variantNamespacedKey}";
+        SkinName = variantKey;
 
         _spawnWeightSource = CreateSpawnWeightSource(
             () => [],

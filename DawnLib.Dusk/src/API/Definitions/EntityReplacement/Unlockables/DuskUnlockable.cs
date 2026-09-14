@@ -69,7 +69,7 @@ public class DuskUnlockable : MonoBehaviour, ICurrentEntityReplacement, IDawnSav
             return;
         }
 
-        List<DuskUnlockableReplacementDefinition> newReplacements = new List<DuskUnlockableReplacementDefinition>(replacements);
+        List<DuskUnlockableReplacementDefinition> newReplacements = new(replacements);
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskUnlockableReplacementDefinition replacement = newReplacements[i];

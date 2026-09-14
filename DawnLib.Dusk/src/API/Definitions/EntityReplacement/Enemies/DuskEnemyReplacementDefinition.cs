@@ -78,6 +78,17 @@ public abstract class DuskEnemyReplacementDefinition<T> : DuskEnemyReplacementDe
             yield break;
         }
 
+        if (enemyAI is not T)
+        {
+            DuskPlugin.Logger.LogDebug($"Failed to apply replacement enemy entity for '{enemyAI.enemyType.enemyName}', it doesn't have the right type!");
+            yield break;
+        }
+
         ApplyTyped((T)enemyAI);
     }
+}
+
+public class DefaultEnemyReplacementDefinition : DuskEnemyReplacementDefinition<EnemyAI>
+{
+    protected override void ApplyTyped(EnemyAI enemyAI) { }
 }

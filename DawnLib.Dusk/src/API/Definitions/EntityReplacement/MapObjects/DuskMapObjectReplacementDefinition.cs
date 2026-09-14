@@ -14,28 +14,39 @@ public class DuskMapObjectReplacementDefinition : DuskEntityReplacementDefinitio
 
 public abstract class DuskMapObjectReplacementDefinition<T> : DuskMapObjectReplacementDefinition where T : DuskMapObject
 {
-    protected abstract void ApplyTyped(T dawnMapObject);
-    public override IEnumerator Apply(DuskMapObject dawnMapObject, bool immediate = false)
+    protected abstract void ApplyTyped(T duskMapObject);
+    public override IEnumerator Apply(DuskMapObject duskMapObject, bool immediate = false)
     {
-        Transform mapObjectTransform = dawnMapObject.transform;
-        dawnMapObject.SetMapObjectReplacement(this);
+        Transform mapObjectTransform = duskMapObject.transform;
+        duskMapObject.SetMapObjectReplacement(this);
 
         if (immediate)
         {
-            StartOfRoundRefs.Instance.StartCoroutine(base.Apply(dawnMapObject, immediate));
+            StartOfRoundRefs.Instance.StartCoroutine(base.Apply(duskMapObject, immediate));
         }
         else
         {
-            yield return StartOfRoundRefs.Instance.StartCoroutine(base.Apply(dawnMapObject, immediate));
+            yield return StartOfRoundRefs.Instance.StartCoroutine(base.Apply(duskMapObject, immediate));
         }
 
         yield return StartOfRoundRefs.Instance.StartCoroutine(ApplyReplacementAndAddons(mapObjectTransform, immediate));
 
-        if (dawnMapObject == null)
+        if (duskMapObject == null)
         {
             yield break;
         }
 
-        ApplyTyped((T)dawnMapObject);
+        if (duskMapObject is not T)
+        {
+            DuskPlugin.Logger.LogDebug($"Failed to apply replacement map object entity for '{duskMapObject.gameObject.name}', it doesn't have the right type!");
+            yield break;
+        }
+
+        ApplyTyped((T)duskMapObject);
     }
+}
+
+public class DefaultMapObjectReplacementDefinition : DuskMapObjectReplacementDefinition<DuskMapObject>
+{
+    protected override void ApplyTyped(DuskMapObject duskMapObject) { }
 }
