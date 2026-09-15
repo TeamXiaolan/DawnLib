@@ -160,6 +160,11 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
 
         foreach (DungeonArchetype archetype in value.GetUsedArchetypes())
         {
+            if (archetype.DawnInfo != null)
+            {
+                continue;
+            }
+
             NamespacedKey<DawnArchetypeInfo> archetypeKey = NamespacedKey<DawnArchetypeInfo>.From(dungeonInfo.Key.Namespace, archetype.name);
             DawnArchetypeInfo archetypeInfo = new DawnArchetypeInfo(archetypeKey, tags, archetype, null);
             archetype.DawnInfo = archetypeInfo;
@@ -167,6 +172,11 @@ public class DungeonFlowInfoBuilder : BaseInfoBuilder<DawnDungeonInfo, DungeonFl
             LethalContent.Archetypes.Register(archetypeInfo);
             foreach (TileSet tileSet in archetype.TileSets)
             {
+                if (tileSet.DawnInfo != null)
+                {
+                    continue;
+                }
+
                 NamespacedKey<DawnTileSetInfo> tileSetKey = NamespacedKey<DawnTileSetInfo>.From(dungeonInfo.Key.Namespace, tileSet.name);
                 DawnTileSetInfo tileSetInfo = new DawnTileSetInfo(tileSetKey, tags, ConstantPredicate.True, tileSet, archetypeInfo.DungeonArchetype.BranchCapTileSets.Contains(tileSet), archetypeInfo.DungeonArchetype.TileSets.Contains(tileSet), null);
                 archetypeInfo.AddTileSet(tileSetInfo);

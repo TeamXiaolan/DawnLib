@@ -1,4 +1,8 @@
-# v1.0.0-pre8
+# v1.0.0-pre9
+
+- Added DawnInfo checks to prevent TileSets from re-registering. if found in multiple DungeonArchetypes.
+
+## v1.0.0-pre8
 
 - Implemented some fixes to item entity registries.
 - Fixed some issues with rpc's timing out and causing issues with DeferLocal being set to true?
