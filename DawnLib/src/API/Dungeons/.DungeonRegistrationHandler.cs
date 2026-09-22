@@ -59,6 +59,14 @@ static class DungeonRegistrationHandler
             TryInjectTileSets(self.Generator.DungeonFlow);
             orig(self);
         };
+
+        LethalContent.Dungeons.OnFreezeWithContext += _ =>
+        {
+            if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn())
+            {
+                DungeonGenerationPlusCompat.ReloadMainPanel();
+            }
+        };
     }
 
     private static void RemoveHotloadingIfDebugDunGenPlus(On.MenuManager.orig_Awake orig, MenuManager self)
@@ -227,6 +235,12 @@ static class DungeonRegistrationHandler
 
     private static void CleanDawnDungeonReferences()
     {
+        if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn())
+        {
+            DawnPlugin.Logger.LogWarning("DunGen+ is in debug mode, so skipping cleaning of DawnDungeonInfo references to avoid breaking DunGen+ debug features.");
+            return;
+        }
+
         foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
         {
             if (dungeonInfo.ShouldSkipIgnoreOverride())

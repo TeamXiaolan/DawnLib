@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using DunGen.Graph;
@@ -13,7 +14,7 @@ static class DungeonGenerationPlusCompat
     public static bool Enabled => Chainloader.PluginInfos.ContainsKey("dev.ladyalice.dungenplus") && Chainloader.PluginInfos["dev.ladyalice.dungenplus"].Metadata.Version >= Version.Parse(COMPATIBLE_VERSION);
     internal static bool RemovedHotloading = false;
 
-    private static object? extenderObject = null;
+    private static Dictionary<string, object> extenderObjectToInteriors = new();
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
     internal static void HandleExtenderForBundle(AssetBundle assetBundle, DungeonFlow dungeonFlow, bool register)
     {
@@ -30,19 +31,17 @@ static class DungeonGenerationPlusCompat
                 DawnPlugin.Logger.LogWarning("Multiple DunGenExtender assets found in bundle " + assetBundle.name + ", there should only be one.");
             }
 
-            extenderObject = extenders[0];
-            ((DunGenExtender)extenderObject).DungeonFlow = dungeonFlow;
-            DunGenPlus.API.AddDunGenExtender(dungeonFlow, (DunGenExtender)extenderObject);
+            extenderObjectToInteriors[dungeonFlow.name] = extenders[0];
+            extenders[0].DungeonFlow = dungeonFlow;
+            DunGenPlus.API.AddDunGenExtender(dungeonFlow, extenders[0]);
         }
         else
         {
-            if (extenderObject == null)
+            if (extenderObjectToInteriors.TryGetValue(dungeonFlow.name, out object extenderObject))
             {
-                return;
+                DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
+                extenderObjectToInteriors.Remove(dungeonFlow.name);
             }
-
-            DunGenPlus.API.RemoveDunGenExtender(dungeonFlow);
-            extenderObject = null;
         }
     }
 
@@ -54,5 +53,15 @@ static class DungeonGenerationPlusCompat
             return true;
         }
         return false;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+    internal static void ReloadMainPanel()
+    {
+        try
+        {
+            GameObject.FindFirstObjectByType<DunGenPlus.DevTools.Panels.MainPanel>().UpdatePanel();
+        }
+        catch { }
     }
 }

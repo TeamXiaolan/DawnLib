@@ -41,8 +41,10 @@ public class DuskDungeonDefinition : DuskContentDefinition<DawnDungeonInfo>
 
     [field: Header("Configs | Misc")]
     [field: SerializeField]
+    [field: Tooltip("The range that determines the min and max size of the dungeon's total length (number does NOT correspond to number of tiles, but rather the final computed length result when taking into account the moon's dungeon size and the dungeon's map tile size).")]
     public BoundedRange DungeonRangeClamp { get; private set; } = new BoundedRange(0, 999);
     [field: SerializeField]
+    [field: Tooltip("The size of each tile in the dungeon, take 1 to mean that the size of the tile to be arbitrarily the same as a facility tile, this works linearly not quadratically. This is used to determine the final length of the dungeon when combined with the moon's dungeon size.")]
     public float MapTileSize { get; private set; } = 1f;
     [field: SerializeField]
     public bool StingerPlaysMoreThanOnce { get; private set; }

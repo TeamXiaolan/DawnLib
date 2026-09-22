@@ -335,7 +335,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             return null;
 
         DungeonFlow temporaryFlow = ScriptableObject.CreateInstance<DungeonFlow>();
-
+        temporaryFlow.name = loadedDungeonFlow.name + "_temporary";
         SwapReferences(temporaryFlow, matchingFlow);
         SwapReferences(matchingFlow, loadedDungeonFlow);
 
