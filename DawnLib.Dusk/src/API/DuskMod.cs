@@ -40,7 +40,16 @@ public class DuskMod
     {
         BepInPlugin plugin = modInfo.CreatePluginMetadata();
         Debuggers.Dusk?.Log("Registering no-code mod!");
-        ConfigManager configManager = new(ConfigManager.GenerateConfigFile(plugin));
+        ConfigManager configManager;
+        if (string.IsNullOrEmpty(modInfo.ConfigFileName))
+        {
+            configManager = new ConfigManager(ConfigManager.GenerateConfigFile(plugin));
+        }
+        else
+        {
+            configManager = new ConfigManager(ConfigManager.GenerateConfigFile(modInfo.ConfigFileName));
+        }
+
         DuskMod noCodeMod = new(plugin, mainBundle, basePath, configManager)
         {
             ModInformation = modInfo,

@@ -22,6 +22,9 @@ public class DuskModInformation : ScriptableObject
     [field: SerializeField]
     public TextAsset? ChangelogFile { get; private set; }
 
+    [field: SerializeField]
+    public string ConfigFileName { get; private set; }
+
     [field: SerializeField, AssertNotEmpty]
     public string ModDescription { get; private set; }
 

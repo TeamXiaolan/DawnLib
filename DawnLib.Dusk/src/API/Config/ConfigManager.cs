@@ -79,6 +79,11 @@ public class ConfigManager(ConfigFile file)
         return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, plugin.GUID + ".cfg"), false, plugin);
     }
 
+    internal static ConfigFile GenerateConfigFile(string configFileName)
+    {
+        return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, configFileName), false);
+    }
+
     public static ConfigEntryBase? FindEntry(ConfigFile file, string section, string key)
     {
         ConfigDefinition definition = new(section, key);
