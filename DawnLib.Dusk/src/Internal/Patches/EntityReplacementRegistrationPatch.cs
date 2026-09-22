@@ -433,11 +433,17 @@ static class EntityReplacementRegistrationPatch
                 c.Index += 2;
                 c.EmitDelegate<Func<GrabbableObject, Sprite, Sprite>>((self, existing) =>
                 {
-                    if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement))
+                    if (!self.TryGetGrabbableObjectReplacement(out DuskItemReplacementDefinition? replacement) || replacement.ItemIcon == null)
                     {
                         return existing;
                     }
-                    return replacement.ItemIcon != null ? replacement.ItemIcon : existing;
+
+                    if (RuntimeIconsCompat.Enabled && replacement.IgnoreIconReplacementWithRuntimeIconsInstalled)
+                    {
+                        return existing;
+                    }
+
+                    return replacement.ItemIcon;
                 });
                 continue;
             }

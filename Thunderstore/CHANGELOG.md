@@ -2,6 +2,7 @@
 
 - Further Improved DungeonGenerationPlus compatibility with Debug mode.
 - Added tooltips to MapTileSize and Dungeon Range Clamp on `DuskDungeonDefinition`.
+- Added `IgnoreIconReplacementWithRuntimeIconsInstalled` field to item entity replacements.
 
 ## v1.0.0-pre9
 

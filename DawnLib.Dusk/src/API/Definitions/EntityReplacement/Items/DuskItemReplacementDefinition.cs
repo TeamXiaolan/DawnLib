@@ -7,6 +7,10 @@ namespace Dusk;
 public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
 {
     [field: SerializeField]
+    [field: Tooltip("If true, this item will not use the skin's item icon that you specified when RuntimeIcons mod is installed.")]
+    public bool IgnoreIconReplacementWithRuntimeIconsInstalled { get; private set; }
+
+    [field: SerializeField]
     public Sprite ItemIcon { get; private set; }
 
     [field: SerializeField]
