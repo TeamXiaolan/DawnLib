@@ -4,6 +4,7 @@
 - Removed `ContentHandler`'s, this is to get rid of the hybrid code+editor registration, now, you should either use code only or editor only to register your assets.
 - Made `Registry`'s implement `IEnumerable<T>` instead of `IReadOnlyDictonary<NamespacedKey<T>, T>`.
 - Removed `IgnoreIconReplacementWithRuntimeIconsInstalled` and replaced it with `ItemIconReplacementOptions`.
+- Improved terminal resolution with two-word queries.
 
 ## v1.0.0-pre10
 

@@ -362,8 +362,8 @@ static class TerminalCommandRegistration
         //reset last command values to be empty/null
         //this runs before ParseWordPrefix
         self.SetLastCommand(string.Empty);
-        self.SetLastVerb(null!);
-        self.SetLastNoun(null!);
+        self.SetLastVerb(null);
+        self.SetLastNoun(null);
 
         if (self.DawnTryResolveKeyword(playerWord, out TerminalKeyword? NonNullResult))
         {
@@ -379,7 +379,6 @@ static class TerminalCommandRegistration
             self.SetLastCommand(playerWord);
             return vanillaResult;
         }
-
     }
 
     private static TerminalKeyword ParseWordPrefix(On.Terminal.orig_ParseWord orig, Terminal self, string playerWord, int specificityRequired)

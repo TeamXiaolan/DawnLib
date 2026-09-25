@@ -62,24 +62,30 @@ public static class TerminalExtensions
         return ((ITerminal)terminal).DawnLastCommand;
     }
 
-    internal static void SetLastNoun(this Terminal terminal, TerminalKeyword value)
+    internal static void SetLastNoun(this Terminal terminal, TerminalKeyword? value)
     {
+#pragma warning disable CS8601 // Possible null reference argument.
         ((ITerminal)terminal).DawnLastNoun = value;
+#pragma warning restore CS8601 // Possible null reference argument.
     }
 
-    public static TerminalKeyword GetLastNoun(this Terminal terminal)
+    public static bool TryGetLastNoun(this Terminal terminal, [NotNullWhen(true)] out TerminalKeyword? lastNoun)
     {
-        return ((ITerminal)terminal).DawnLastNoun;
+        lastNoun = ((ITerminal)terminal).DawnLastNoun;
+        return lastNoun != null;
     }
 
-    internal static void SetLastVerb(this Terminal terminal, TerminalKeyword value)
+    internal static void SetLastVerb(this Terminal terminal, TerminalKeyword? value)
     {
+#pragma warning disable CS8601 // Possible null reference argument.
         ((ITerminal)terminal).DawnLastVerb = value;
+#pragma warning restore CS8601 // Possible null reference argument.
     }
 
-    public static TerminalKeyword GetLastVerb(this Terminal terminal)
+    public static bool TryGetLastVerb(this Terminal terminal, [NotNullWhen(true)] out TerminalKeyword? lastVerb)
     {
-        return ((ITerminal)terminal).DawnLastVerb;
+        lastVerb = ((ITerminal)terminal).DawnLastVerb;
+        return lastVerb != null;
     }
 
     public static bool TryGetKeywordInfoText(this TerminalKeyword terminalKeyword, [NotNullWhen(true)] out string? text)
@@ -255,22 +261,24 @@ public static class TerminalExtensions
         return words.Count != 0;
     }
 
-    private static TerminalKeyword GetBestMatchFromList(string input, List<TerminalKeyword> keywordList)
+    private static TerminalKeyword? GetBestMatchFromList(string input, List<TerminalKeyword> keywordList)
     {
-        TerminalKeyword word = null!;
+        TerminalKeyword? currentChosenKeyword = null;
         int maxScore = 0;
 
         //return null result from 0 matches
         if (keywordList.Count == 0)
         {
-            return word;
+            return null;
         }
 
         //assign match scores for the multiple matching words
+        Debuggers.Terminal?.Log($"GetBestMatchFromList has found {keywordList.Count} matching keywords for input [{input}]");
         Dictionary<TerminalKeyword, int> wordScores = [];
         foreach (TerminalKeyword keyword in keywordList)
         {
             int score = keyword.word.StringMatchScore(input);
+            Debuggers.Terminal?.Log($"Match score for [{keyword.word}] is {score}");
             wordScores.TryAdd(keyword, score);
         }
 
@@ -280,9 +288,9 @@ public static class TerminalExtensions
             if (match.Key == null)
                 continue; //skip null terminalkeywords (just in case)
 
-            if (word == null || maxScore == 0)
+            if (currentChosenKeyword == null || maxScore == 0)
             {
-                word = match.Key;
+                currentChosenKeyword = match.Key;
                 maxScore = match.Value;
                 continue;
             }
@@ -297,13 +305,13 @@ public static class TerminalExtensions
             {
                 //checks if the current match has a keyword priority value lower than the match assigned to the word variable (working match)
                 //a lower keyword priority value indicates a higher priority keyword
-                Debuggers.Terminal?.Log($"Attempting to resolve conflict between matching results [{word.word}] & [{match.Key.word}] by comparing keyword priorities!");
-                int target = (int)word.GetKeywordPriority();
+                Debuggers.Terminal?.Log($"Attempting to resolve conflict between matching results [{currentChosenKeyword.word}] & [{match.Key.word}] by comparing keyword priorities ({currentChosenKeyword.GetKeywordPriority()}) vs ({match.Key.GetKeywordPriority()})!");
+                int target = (int)currentChosenKeyword.GetKeywordPriority();
                 int current = (int)match.Key.GetKeywordPriority();
 
                 if (current < target)
                 {
-                    word = match.Key; //only need to update the word
+                    currentChosenKeyword = match.Key; //only need to update the word
                     continue;
                 }
             }
@@ -314,12 +322,18 @@ public static class TerminalExtensions
         if (maxScore < DawnConfig.TerminalKeywordSpecificity.Value)
         {
             DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has not found a word matching the required specificity! ({DawnConfig.TerminalKeywordSpecificity.Value})");
-            return null!;
+            return null;
+        }
+
+        if (currentChosenKeyword == null)
+        {
+            DawnPlugin.Logger.LogWarning($"GetBestMatchFromList has not found a word. This should not happen since the keywordList has at least one match, but the currentChosenKeyword is null. Returning null.");
+            return null;
         }
 
 
-        DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has found match with highest priority of {word.word} ({word.GetKeywordPriority()})");
-        return word;
+        DawnPlugin.Logger.LogMessage($"GetBestMatchFromList has found match with highest priority of {currentChosenKeyword.word} ({currentChosenKeyword.GetKeywordPriority()})");
+        return currentChosenKeyword;
     }
 
     public static bool DawnTryResolveKeyword(this Terminal terminal, string input, [NotNullWhen(true)] out TerminalKeyword? word)
@@ -356,10 +370,10 @@ public static class TerminalExtensions
 
         //Now that we've checked words that accept input, check all other keywords
         List<TerminalKeyword> keywordList;
-        if (terminal.GetLastVerb() != null && terminal.GetLastVerb().compatibleNouns != null && terminal.GetLastVerb().compatibleNouns.Length > 0)
+        if (terminal.TryGetLastVerb(out TerminalKeyword? lastVerb) && lastVerb.compatibleNouns != null && lastVerb.compatibleNouns.Length > 0)
         {
             //only get words that are compatible nouns to the current verb
-            keywordList = [.. terminal.GetLastVerb().compatibleNouns.Select(x => x.noun)];
+            keywordList = [.. lastVerb.compatibleNouns.Select(x => x.noun)];
 
             //filter for our input
             keywordList = [.. keywordList.FindAll(x => x.word.StringStartsWithInvariant(input))];

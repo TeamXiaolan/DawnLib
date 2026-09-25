@@ -68,37 +68,54 @@ public static class StringExtensions
         }));
     }
 
-    public static bool CompareStringsInvariant(this string input, string str2, bool ignoreCase = true)
+    public static bool CompareStringsInvariant(this string input, string str2, bool ignoreCaseAndSpacing = true)
     {
-        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-        return input.Equals(str2, comparison);
+        if (ignoreCaseAndSpacing)
+        {
+            return input.Replace(" ", string.Empty).Equals(str2.Replace(" ", string.Empty), StringComparison.InvariantCultureIgnoreCase);
+        }
+        else
+        {
+            return input.Equals(str2, StringComparison.InvariantCulture);
+        }
     }
 
-    public static bool StringStartsWithInvariant(this string input, char ch, bool ignoreCase = true)
+    public static bool StringStartsWithInvariant(this string input, char ch, bool ignoreCaseAndSpacing = true)
     {
-        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-        return input.StartsWith($"{ch}", comparison);
+        return StringStartsWithInvariant(input, ch.ToString(), ignoreCaseAndSpacing);
     }
 
-    public static bool StringStartsWithInvariant(this string input, string str, bool ignoreCase = true)
+    public static bool StringStartsWithInvariant(this string input, string str, bool ignoreCaseAndSpacing = true)
     {
-        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-        return input.StartsWith(str, comparison);
+        if (ignoreCaseAndSpacing)
+        {
+            return input.Replace(" ", string.Empty).StartsWith(str.Replace(" ", string.Empty), StringComparison.InvariantCultureIgnoreCase);
+        }
+        else
+        {
+            return input.StartsWith(str, StringComparison.InvariantCulture);
+        }
     }
 
-    public static bool StringContainsInvariant(this string input, string query, bool ignoreCase = true)
+    public static bool StringContainsInvariant(this string input, string query, bool ignoreCaseAndSpacing = true)
     {
-        StringComparison comparison = ignoreCase ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-        return input.Contains(query, comparison);
+        if (ignoreCaseAndSpacing)
+        {
+            return input.Replace(" ", string.Empty).Contains(query.Replace(" ", string.Empty), StringComparison.InvariantCultureIgnoreCase);
+        }
+        else
+        {
+            return input.Contains(query, StringComparison.InvariantCulture);
+        }
     }
 
-    public static int StringMatchScore(this string input, string query, bool ignoreCase = true)
+    public static int StringMatchScore(this string input, string query, bool ignoreCaseAndSpacing = true)
     {
         int value = 0;
-        if (ignoreCase)
+        if (ignoreCaseAndSpacing)
         {
-            input = input.ToLowerInvariant();
-            query = query.ToLowerInvariant();
+            input = input.ToLowerInvariant().Replace(" ", string.Empty);
+            query = query.ToLowerInvariant().Replace(" ", string.Empty);
         }
 
         for (int i = 0; i < input.Length; i++)
