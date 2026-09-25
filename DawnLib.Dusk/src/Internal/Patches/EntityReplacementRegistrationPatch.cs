@@ -438,7 +438,15 @@ static class EntityReplacementRegistrationPatch
                         return existing;
                     }
 
-                    if (RuntimeIconsCompat.Enabled && replacement.IgnoreIconReplacementWithRuntimeIconsInstalled)
+                    if (replacement.ItemIconReplacementOptions == ItemIconReplacementOptions.Default)
+                    {
+                        return replacement.ItemIcon;
+                    }
+                    else if (!RuntimeIconsCompat.Enabled && replacement.ItemIconReplacementOptions == ItemIconReplacementOptions.ReplaceWithRuntimeIconsInstalled)
+                    {
+                        return existing;
+                    }
+                    else if (RuntimeIconsCompat.Enabled && replacement.ItemIconReplacementOptions == ItemIconReplacementOptions.IgnoreWithRuntimeIconsInstalled)
                     {
                         return existing;
                     }

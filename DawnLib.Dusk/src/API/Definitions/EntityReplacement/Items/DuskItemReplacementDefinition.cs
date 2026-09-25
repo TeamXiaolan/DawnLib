@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Dawn.Internal;
 using UnityEngine;
@@ -7,11 +8,10 @@ namespace Dusk;
 public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<GrabbableObject>
 {
     [field: SerializeField]
-    [field: Tooltip("If true, this item will not use the skin's item icon that you specified when RuntimeIcons mod is installed.")]
-    public bool IgnoreIconReplacementWithRuntimeIconsInstalled { get; private set; }
+    public Sprite ItemIcon { get; private set; }
 
     [field: SerializeField]
-    public Sprite ItemIcon { get; private set; }
+    public ItemIconReplacementOptions ItemIconReplacementOptions { get; private set; } = ItemIconReplacementOptions.Default;
 
     [field: SerializeField]
     public string DisplayName { get; private set; }
@@ -103,4 +103,11 @@ public abstract class DuskItemReplacementDefinition<T> : DuskItemReplacementDefi
 public class DefaultItemReplacementDefinition : DuskItemReplacementDefinition<PhysicsProp>
 {
     protected override void ApplyTyped(PhysicsProp physicsProp) { }
+}
+
+public enum ItemIconReplacementOptions
+{
+    Default, // Replaces if the field isn't null
+    IgnoreWithRuntimeIconsInstalled, // Refuses to do any replacement if the RuntimeIcons mod is installed
+    ReplaceWithRuntimeIconsInstalled // Only replaces if the RuntimeIcons mod is installed (and the field isn't null)
 }

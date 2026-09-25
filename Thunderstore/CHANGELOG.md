@@ -3,6 +3,7 @@
 - Likely one of the last experimental versions, contains some of the more important breaking changes.
 - Removed `ContentHandler`'s, this is to get rid of the hybrid code+editor registration, now, you should either use code only or editor only to register your assets.
 - Made `Registry`'s implement `IEnumerable<T>` instead of `IReadOnlyDictonary<NamespacedKey<T>, T>`.
+- Removed `IgnoreIconReplacementWithRuntimeIconsInstalled` and replaced it with `ItemIconReplacementOptions`.
 
 ## v1.0.0-pre10
 
