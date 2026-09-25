@@ -11,8 +11,8 @@ public interface ITerminal
     string DawnLastCommand { get; set; }
 
     //Can be used to determine the last keyword resolved by the terminal
-    TerminalKeyword DawnLastNoun { get; set; }
+    TerminalKeyword? DawnLastNoun { get; set; }
 
     //Used by keyword matching
-    TerminalKeyword DawnLastVerb { get; set; }
+    TerminalKeyword? DawnLastVerb { get; set; }
 }

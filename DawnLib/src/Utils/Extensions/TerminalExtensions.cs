@@ -64,9 +64,7 @@ public static class TerminalExtensions
 
     internal static void SetLastNoun(this Terminal terminal, TerminalKeyword? value)
     {
-#pragma warning disable CS8601 // Possible null reference argument.
         ((ITerminal)terminal).DawnLastNoun = value;
-#pragma warning restore CS8601 // Possible null reference argument.
     }
 
     public static bool TryGetLastNoun(this Terminal terminal, [NotNullWhen(true)] out TerminalKeyword? lastNoun)
@@ -77,9 +75,7 @@ public static class TerminalExtensions
 
     internal static void SetLastVerb(this Terminal terminal, TerminalKeyword? value)
     {
-#pragma warning disable CS8601 // Possible null reference argument.
         ((ITerminal)terminal).DawnLastVerb = value;
-#pragma warning restore CS8601 // Possible null reference argument.
     }
 
     public static bool TryGetLastVerb(this Terminal terminal, [NotNullWhen(true)] out TerminalKeyword? lastVerb)
