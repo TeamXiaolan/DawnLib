@@ -9,7 +9,7 @@ public static class EntityReplacementsExtensions
     {
         entityReplacement = null;
 
-        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in entityReplacementRegistry.Values)
+        foreach (DuskEntityReplacementDefinition entityReplacementDefinition in entityReplacementRegistry)
         {
             if (entityReplacementDefinition.Key.NetworkID != networkID)
                 continue;

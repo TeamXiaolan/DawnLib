@@ -50,7 +50,7 @@ static class EnemyRegistrationHandler
     private static void GrabModdedBestiaryNodes(On.Terminal.orig_Start orig, Terminal self)
     {
         orig(self);
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             ScanNodeProperties scanNodeProperties = enemyInfo.EnemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
             if (scanNodeProperties != null)
@@ -141,7 +141,7 @@ static class EnemyRegistrationHandler
         GameObject FaceSporesPrefab = cadaverGrowthAI.faceSporesPrefab;
         GameObject CadaverSporesParticlePrefab = cadaverGrowthAI.CadaverSporesParticle;
 
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (enemyInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -220,7 +220,7 @@ static class EnemyRegistrationHandler
 
     private static void AddBestiaryNodes(On.Terminal.orig_Awake orig, Terminal self)
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (enemyInfo.ShouldSkipIgnoreOverride() || enemyInfo.BestiaryNode == null || enemyInfo.NameKeyword == null)
                 continue;
@@ -258,7 +258,7 @@ static class EnemyRegistrationHandler
     private static void AddEnemiesToDebugList(On.QuickMenuManager.orig_Start orig, QuickMenuManager self)
     {
         SelectableLevel testLevel = LethalContent.Moons[MoonKeys.Test].Level;
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (enemyInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -381,7 +381,7 @@ static class EnemyRegistrationHandler
 
         DawnDungeonInfo? dungeonInfo = RoundManagerRefs.GetCurrentDungeonInfo();
         DawnMoonInfo moonInfo = level.DawnInfo;
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (enemyInfo.ShouldSkipRespectOverride())
                 continue;
@@ -523,10 +523,10 @@ static class EnemyRegistrationHandler
             LethalContent.Enemies.Register(enemyInfo);
         }
 
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             SelectableLevel level = moonInfo.Level;
-            foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+            foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
             {
                 if (enemyInfo.ShouldSkipRespectOverride())
                     continue;

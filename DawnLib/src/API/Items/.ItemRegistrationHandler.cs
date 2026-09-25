@@ -57,7 +57,7 @@ static class ItemRegistrationHandler
             return;
         }
 
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             if (itemInfo.ShouldSkipIgnoreOverride() || self.allItemsList.itemsList.Contains(itemInfo.Item))
                 continue;
@@ -74,7 +74,7 @@ static class ItemRegistrationHandler
 
     internal static void UpdateAllShopItemPrices()
     {
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             DawnShopItemInfo? shopInfo = itemInfo.ShopInfo;
             if (shopInfo == null || (itemInfo.ShouldSkipRespectOverride()))
@@ -122,7 +122,7 @@ static class ItemRegistrationHandler
         if (!LethalContent.Weathers.IsFrozen || !LethalContent.Items.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
             if (scrapInfo == null || (itemInfo.ShouldSkipRespectOverride()))
@@ -144,7 +144,7 @@ static class ItemRegistrationHandler
     private static void FreezeItemContent()
     {
         Dictionary<string, DawnShopItemInfo> itemsWithShopInfo = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             SelectableLevel level = moonInfo.Level;
             Dictionary<Item, SpawnableItemWithRarity> nonRepeatSpawnableScrapDict = new();
@@ -284,13 +284,13 @@ static class ItemRegistrationHandler
 
     private static void RegisterScrapItemsToAllLevels()
     {
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             DawnScrapItemInfo? scrapInfo = itemInfo.ScrapInfo;
             if (scrapInfo == null || (itemInfo.ShouldSkipRespectOverride()))
                 continue;
 
-            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+            foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
             {
                 SelectableLevel level = moonInfo.Level;
                 bool alreadyExists = false;
@@ -315,7 +315,7 @@ static class ItemRegistrationHandler
     private static void RegisterShopItemsToTerminal(On.Terminal.orig_Awake orig, Terminal self)
     {
         orig(self);
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             TryRegisterItemIntoShop(itemInfo.Item);
         }

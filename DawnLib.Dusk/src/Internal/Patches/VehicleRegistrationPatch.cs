@@ -71,7 +71,7 @@ static class VehicleRegistrationPatch
 
     internal static void UpdateAllVehiclePrices()
     {
-        foreach (DawnVehicleInfo info in DuskModContent.Vehicles.Values.Select(x => x.DawnVehicleInfo))
+        foreach (DawnVehicleInfo info in DuskModContent.Vehicles.Select(x => x.DawnVehicleInfo))
         {
             if (info.ShouldSkipRespectOverride())
                 continue;
@@ -198,7 +198,7 @@ static class VehicleRegistrationPatch
         List<BuyableVehicle> buyableVehiclesList = self.buyableVehicles.ToList();
         int currentVehicleIndex = buyableVehiclesList.Count;
 
-        foreach (DuskVehicleDefinition vehicleDefinition in DuskModContent.Vehicles.Values)
+        foreach (DuskVehicleDefinition vehicleDefinition in DuskModContent.Vehicles)
         {
             BuyableVehicle buyableVehicle = new()
             {

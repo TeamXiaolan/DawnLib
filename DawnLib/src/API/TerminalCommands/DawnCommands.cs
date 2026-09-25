@@ -40,7 +40,7 @@ public static class DawnCommands
         if (!string.IsNullOrEmpty(userInput))
         {
             relevantMoonInfo = null;
-            foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+            foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
             {
                 if (moonInfo.GetNumberlessPlanetName().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
                 {
@@ -53,7 +53,7 @@ public static class DawnCommands
         DawnDungeonInfo? relevantDungeonInfo = null;
         if (!string.IsNullOrEmpty(userInput))
         {
-            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
             {
                 if (dungeonInfo.GetPublicName().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
                 {
@@ -66,7 +66,7 @@ public static class DawnCommands
         DawnWeatherEffectInfo? relevantWeatherEffectInfo = null;
         if (!string.IsNullOrEmpty(userInput))
         {
-            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers.Values)
+            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers)
             {
                 if (weatherEffectInfo.GetLevelWeatherEffect().ToString().StartsWith(userInput, StringComparison.OrdinalIgnoreCase))
                 {
@@ -142,7 +142,7 @@ public static class DawnCommands
     {
         builder.Append("----------------------------\n\n");
         builder.Append("POSSIBLE ENEMIES:\n");
-        IEnumerable<DawnEnemyInfo> enemyInfos = LethalContent.Enemies.Values;
+        IEnumerable<DawnEnemyInfo> enemyInfos = LethalContent.Enemies;
         int count = 0;
         count += BuildWeightedInfo(builder, enemyInfos.Where(enemyInfo => enemyInfo.EnemyType.spawnFromWeeds), enemyInfo => enemyInfo.Weed.GetRarity(moonInfo, dungeonInfo, weatherEffectInfo, false), enemyInfo => enemyInfo.EnemyType.enemyName, spaceForName, "WEED");
         count += BuildWeightedInfo(builder, enemyInfos.Where(enemyInfo => !enemyInfo.EnemyType.spawnFromWeeds && enemyInfo.EnemyType.isDaytimeEnemy), enemyInfo => enemyInfo.Daytime.GetRarity(moonInfo, dungeonInfo, weatherEffectInfo, false), enemyInfo => enemyInfo.EnemyType.enemyName, spaceForName, "DAYTIME");
@@ -158,7 +158,7 @@ public static class DawnCommands
     {
         builder.Append("----------------------------\n\n");
         builder.Append("POSSIBLE ITEMS:\n");
-        int count = BuildWeightedInfo(builder, LethalContent.Items.Values.Where(itemInfo => itemInfo.ScrapInfo != null), itemInfo => itemInfo.ScrapInfo!.GetRarity(moonInfo, dungeonInfo, weatherEffectInfo, false), itemInfo => itemInfo.Item.itemName, spaceForName);
+        int count = BuildWeightedInfo(builder, LethalContent.Items.Where(itemInfo => itemInfo.ScrapInfo != null), itemInfo => itemInfo.ScrapInfo!.GetRarity(moonInfo, dungeonInfo, weatherEffectInfo, false), itemInfo => itemInfo.Item.itemName, spaceForName);
         if (count <= 0)
         {
             builder.Append($"No Scraps found.\n\n");
@@ -169,7 +169,7 @@ public static class DawnCommands
     {
         builder.Append($"----------------------------\n\n");
         builder.Append($"POSSIBLE STRUCTURES:\n");
-        int count = BuildWeightedInfo(builder, LethalContent.Dungeons.Values, dungeonInfo => dungeonInfo.GetRarity(moonInfo, weatherEffectInfo, false), dungeonInfo => dungeonInfo.GetPublicName(), spaceForName);
+        int count = BuildWeightedInfo(builder, LethalContent.Dungeons, dungeonInfo => dungeonInfo.GetRarity(moonInfo, weatherEffectInfo, false), dungeonInfo => dungeonInfo.GetPublicName(), spaceForName);
         if (count <= 0)
         {
             builder.Append($"No Structures found.\n\n");
@@ -185,7 +185,7 @@ public static class DawnCommands
         List<DawnMoonInfo> possibleMoons = new();
         List<float> possibleMoonWeights = new();
 
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.HasTag(Tags.Unimplemented))
             {
@@ -198,7 +198,7 @@ public static class DawnCommands
                 continue;
             }
 
-            float sumOfWeightsOfAllDungeons = LethalContent.Dungeons.Values.Sum(d => d.GetRarity(moonInfo, null, false));
+            float sumOfWeightsOfAllDungeons = LethalContent.Dungeons.Sum(d => d.GetRarity(moonInfo, null, false));
             float rarity = (rarityWithThisDungeon / sumOfWeightsOfAllDungeons) * 100f;
 
             possibleMoons.Add(moonInfo);
@@ -318,7 +318,7 @@ public static class DawnCommands
         }
 
         HashSet<NamespacedKey> tags = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             foreach (NamespacedKey tag in moonInfo.AllTags())
             {

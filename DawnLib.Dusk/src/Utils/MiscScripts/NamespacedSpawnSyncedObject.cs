@@ -17,7 +17,7 @@ public class NamespacedSpawnSyncedObject : MonoBehaviour
 
     internal GameObject? ResolvePrefab()
     {
-        foreach (DuskNamespacedObjectDefinition namespacedObjectDefinition in DuskModContent.NamespacedObjects.Values)
+        foreach (DuskNamespacedObjectDefinition namespacedObjectDefinition in DuskModContent.NamespacedObjects)
         {
             if (namespacedObjectDefinition.TypedKey != SyncedObjectKey)
                 continue;

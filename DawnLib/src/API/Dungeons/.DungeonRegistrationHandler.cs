@@ -80,7 +80,7 @@ static class DungeonRegistrationHandler
         if (DungeonGenerationPlusCompat.Enabled && DungeonGenerationPlusCompat.IsDebugOn() && !DungeonGenerationPlusCompat.RemovedHotloading)
         {
             DungeonGenerationPlusCompat.RemovedHotloading = true;
-            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
             {
                 if (dungeonInfo.ShouldSkipIgnoreOverride())
                 {
@@ -198,7 +198,7 @@ static class DungeonRegistrationHandler
                 continue;
             }
 
-            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
             {
                 GameObject? mapObject = mapObjectInfo.GetMapObjectPrefab();
                 if (mapObject == null)
@@ -241,7 +241,7 @@ static class DungeonRegistrationHandler
             return;
         }
 
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
         {
             if (dungeonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -386,10 +386,10 @@ static class DungeonRegistrationHandler
 
     private static void AddDawnDungeonsToMoons()
     {
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             List<IntWithRarity> intsWithRarity = moonInfo.Level.dungeonFlowTypes.ToList();
-            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+            foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
             {
                 if (dungeonInfo.ShouldSkipIgnoreOverride())
                     continue;
@@ -405,7 +405,7 @@ static class DungeonRegistrationHandler
     private static void RegisterDawnDungeons(On.StartOfRound.orig_Awake orig, StartOfRound self)
     {
         List<IndoorMapType> newIndoorMapTypes = RoundManagerRefs.Instance.dungeonFlowTypes.ToList();
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
         {
             if (dungeonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -479,7 +479,7 @@ static class DungeonRegistrationHandler
 
     private static void CollectArchetypesAndTileSets()
     {
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
         {
             foreach (DungeonArchetype dungeonArchetype in dungeonInfo.DungeonFlow.GetUsedArchetypes())
             {

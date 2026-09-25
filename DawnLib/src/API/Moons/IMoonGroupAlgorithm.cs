@@ -161,7 +161,17 @@ public class IndexBasedOrderingStep : IMoonOrderingStep
 
     private int GetIndex(DawnMoonInfo moonInfo)
     {
-        return LethalContent.Moons.Values.ToList().IndexOf(moonInfo);
+        int index = -1;
+        foreach ((int i, DawnMoonInfo moon) in LethalContent.Moons.WithIndex())
+        {
+            if (moon == moonInfo)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        return index;
     }
 }
 #endregion

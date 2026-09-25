@@ -316,7 +316,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables)
         {
             if (unlockableItemInfo.UnlockableItem.prefabObject == null)
                 continue;
@@ -493,7 +493,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterMapObjectReplacements()
     {
-        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
         {
             GameObject? prefab = mapObjectInfo.GetMapObjectPrefab();
             if (prefab == null || prefab.GetComponent<DuskMapObject>())
@@ -503,7 +503,7 @@ static class EntityReplacementRegistrationPatch
         }
 
 
-        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
         {
             if (mapObjectInfo.HasTag(Tags.Unimplemented))
                 continue;
@@ -523,7 +523,7 @@ static class EntityReplacementRegistrationPatch
                 mapObjectInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
             }
 
-            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements)
             {
                 if (entityReplacementDefinition is not DuskMapObjectReplacementDefinition mapObjectReplacementDefinition)
                     continue;
@@ -554,7 +554,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterUnlockableReplacements()
     {
-        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables)
         {
             if (unlockableItemInfo.HasTag(Tags.Unimplemented))
                 continue;
@@ -574,7 +574,7 @@ static class EntityReplacementRegistrationPatch
                 unlockableItemInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
             }
 
-            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements)
             {
                 if (entityReplacementDefinition is not DuskUnlockableReplacementDefinition unlockableReplacementDefinition)
                     continue;
@@ -590,7 +590,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterItemReplacements()
     {
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             if (itemInfo.HasTag(Tags.Unimplemented))
                 continue;
@@ -643,7 +643,7 @@ static class EntityReplacementRegistrationPatch
                 }
             }
 
-            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements)
             {
                 if (entityReplacementDefinition is not DuskItemReplacementDefinition itemReplacementDefinition)
                     continue;
@@ -885,7 +885,7 @@ static class EntityReplacementRegistrationPatch
 
     private static void RegisterEnemyReplacements()
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (enemyInfo.HasTag(Tags.Unimplemented))
                 continue;
@@ -899,7 +899,7 @@ static class EntityReplacementRegistrationPatch
                 enemyInfo.CustomData.Set(DuskKeys.EntityReplacements, list);
             }
 
-            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements.Values)
+            foreach (DuskEntityReplacementDefinition entityReplacementDefinition in DuskModContent.EntityReplacements)
             {
                 if (entityReplacementDefinition is not DuskEnemyReplacementDefinition enemyReplacementDefinition)
                     continue;

@@ -30,7 +30,7 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
     int CountCompleted()
     {
         int counter = 0;
-        foreach (DuskAchievementDefinition achievement in DuskModContent.Achievements.Values)
+        foreach (DuskAchievementDefinition achievement in DuskModContent.Achievements)
         {
             if (!achievement.Completed)
                 continue;

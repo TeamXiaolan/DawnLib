@@ -22,7 +22,7 @@ public sealed class WeatherListBaseRaritySource : WeightModifierSource<int>
         if (baseRarity <= 0)
             return;
 
-        foreach (DawnMoonInfo moonInfo in context.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in context.Moons)
         {
             if (!MoonHasWeather(moonInfo, _weatherType))
                 continue;

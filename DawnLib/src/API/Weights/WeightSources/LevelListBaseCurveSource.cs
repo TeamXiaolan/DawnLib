@@ -21,7 +21,7 @@ public class LevelListBaseCurveSource<TEntry> : WeightModifierSource<AnimationCu
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<AnimationCurve?>> modifiers)
     {
-        foreach (DawnMoonInfo moonInfo in context.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in context.Moons)
         {
             SelectableLevel level = moonInfo.Level;
             TEntry? entry = _getEntries(level).FirstOrDefault(_matches);

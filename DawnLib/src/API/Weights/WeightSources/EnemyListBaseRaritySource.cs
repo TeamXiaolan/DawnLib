@@ -18,7 +18,7 @@ public sealed class EnemyListBaseRaritySource : WeightModifierSource<int>
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        foreach (DawnMoonInfo moon in context.Moons.Values)
+        foreach (DawnMoonInfo moon in context.Moons)
         {
             SpawnableEnemyWithRarity? entry = _getList(moon.Level).FirstOrDefault(x => x.enemyType == _enemyType);
             if (entry == null)

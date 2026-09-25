@@ -67,7 +67,7 @@ static class UnlockableRegistrationHandler
         List<CompatibleNoun> newBuyCompatibleNouns = buyKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> newInfoCompatibleNouns = infoKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = terminal.terminalNodes.allKeywords.ToList();
-        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables)
         {
             if (unlockableInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -146,7 +146,7 @@ static class UnlockableRegistrationHandler
 
         List<string> linesToAdd = ["SHIP UPGRADES:\n"];
 
-        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.Values.OrderBy(x => x.UnlockableItem.unlockableName).OrderByDescending(x => x.Key.IsVanilla()))
+        foreach (DawnUnlockableItemInfo unlockableInfo in LethalContent.Unlockables.OrderBy(x => x.UnlockableItem.unlockableName).OrderByDescending(x => x.Key.IsVanilla()))
         {
             UpdateUnlockablePrices(unlockableInfo);
             if (!unlockableInfo.UnlockableItem.alwaysInStock)
@@ -187,7 +187,7 @@ static class UnlockableRegistrationHandler
 
     internal static void UpdateAllUnlockablePrices()
     {
-        foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables.Values)
+        foreach (DawnUnlockableItemInfo info in LethalContent.Unlockables)
         {
             if (info.ShouldSkipRespectOverride())
                 continue;

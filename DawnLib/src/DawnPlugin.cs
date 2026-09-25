@@ -127,9 +127,9 @@ public class DawnPlugin : BaseUnityPlugin
         registry.OnFreezeWithContext += _ =>
         {
             Logger.LogDebug($"Registry '{name}' ({typeof(T).Name}) contains '{registry.Count}' entries.");
-            foreach ((NamespacedKey<T> key, T value) in registry)
+            foreach (T value in registry)
             {
-                Logger.LogDebug($"{key} -> {nameGetter(value)}");
+                Logger.LogDebug($"{value.Key} -> {nameGetter(value)}");
             }
         };
     }

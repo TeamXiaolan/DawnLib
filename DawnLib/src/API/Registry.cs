@@ -8,7 +8,7 @@ public class RegistryFrozenException() : Exception("Registry is frozen")
 {
 }
 
-public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : INamespaced<T>
+public class Registry<T> : IEnumerable<T> where T : INamespaced<T>
 {
     protected readonly Dictionary<NamespacedKey<T>, T> _dictionary = [];
 
@@ -119,9 +119,9 @@ public class Registry<T> : IReadOnlyDictionary<NamespacedKey<T>, T> where T : IN
         _dictionary[key] = value;
     }
 
-    public IEnumerator<KeyValuePair<NamespacedKey<T>, T>> GetEnumerator()
+    public IEnumerator<T> GetEnumerator()
     {
-        return _dictionary.GetEnumerator();
+        return _dictionary.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

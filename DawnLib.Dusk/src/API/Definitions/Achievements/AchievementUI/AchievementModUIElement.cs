@@ -45,7 +45,7 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        List<DuskAchievementDefinition> sortedAchievements = DuskModContent.Achievements.Values
+        List<DuskAchievementDefinition> sortedAchievements = DuskModContent.Achievements
             .Where(a => a.registrationContext.Mod == mod)
             .ToList()
             .OrderByDescending(a => a.AchievementName)

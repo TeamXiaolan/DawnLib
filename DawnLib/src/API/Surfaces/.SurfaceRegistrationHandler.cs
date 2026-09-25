@@ -311,7 +311,7 @@ static class SurfaceRegistrationHandler
     private static void CollectCustomVainShroudBatches()
     {
         _batchingDict.Add(VanillaSurface, new() { new() });
-        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces)
         {
             if (surfaceInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -496,7 +496,7 @@ static class SurfaceRegistrationHandler
             }
 
             DawnSurfaceInfo? surfaceInfo = null;
-            foreach (DawnSurfaceInfo potentialSurfaceInfo in LethalContent.Surfaces.Values)
+            foreach (DawnSurfaceInfo potentialSurfaceInfo in LethalContent.Surfaces)
             {
                 if (potentialSurfaceInfo.SurfaceIndex == footstepSurfaceIndex)
                 {
@@ -548,7 +548,7 @@ static class SurfaceRegistrationHandler
         c.Emit(Mono.Cecil.Cil.OpCodes.Ldfld, AccessTools.Field(typeof(PlayerControllerB), nameof(PlayerControllerB.currentFootstepSurfaceIndex)));
         c.EmitDelegate((int currentFootstepSurfaceIndex) =>
         {
-            foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+            foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces)
             {
                 if (surfaceInfo.ShouldSkipIgnoreOverride())
                 {
@@ -615,7 +615,7 @@ static class SurfaceRegistrationHandler
             }
 
             surface = terrain.gameObject.AddComponent<DawnSurface>();
-            foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+            foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces)
             {
                 if (!surfaceInfo.Surface.surfaceTag.Equals(terrain.tag, StringComparison.OrdinalIgnoreCase))
                 {
@@ -804,7 +804,7 @@ static class SurfaceRegistrationHandler
     {
         CollectVanillaSurfaces(self);
         List<FootstepSurface?> newSurfaces = [.. self.footstepSurfaces];
-        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces.Values)
+        foreach (DawnSurfaceInfo surfaceInfo in LethalContent.Surfaces)
         {
             if (surfaceInfo.ShouldSkipIgnoreOverride())
                 continue;

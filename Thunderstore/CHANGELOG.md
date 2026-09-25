@@ -1,4 +1,10 @@
-# v1.0.0-pre10
+# v1.0.0-pre11
+
+- Likely one of the last experimental versions, contains some of the more important breaking changes.
+- Removed `ContentHandler`'s, this is to get rid of the hybrid code+editor registration, now, you should either use code only or editor only to register your assets.
+- Made `Registry`'s implement `IEnumerable<T>` instead of `IReadOnlyDictonary<NamespacedKey<T>, T>`.
+
+## v1.0.0-pre10
 
 - Further Improved DungeonGenerationPlus compatibility with Debug mode.
 - Added tooltips to MapTileSize and Dungeon Range Clamp on `DuskDungeonDefinition`.

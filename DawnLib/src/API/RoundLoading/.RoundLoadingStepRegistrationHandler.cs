@@ -341,7 +341,7 @@ static class RoundLoadingStepRegistrationHandler
     {
         Dictionary<NamespacedKey, DawnRoundLoadingStepInfo> eligibleByKey = [];
 
-        foreach (DawnRoundLoadingStepInfo entry in LethalContent.RoundLoadingSteps.Values)
+        foreach (DawnRoundLoadingStepInfo entry in LethalContent.RoundLoadingSteps)
         {
             if (!eligibleByKey.TryAdd(entry.Key, entry))
             {

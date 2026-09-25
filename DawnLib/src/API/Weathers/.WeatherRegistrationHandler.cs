@@ -61,13 +61,13 @@ static class WeatherRegistrationHandler
 
     private static void AddDawnWeathersToMoons()
     {
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (!moonInfo.HasTag(Tags.SupportsWeather))
                 continue;
 
             List<RandomWeatherWithVariables> randomWeathersWithVariables = moonInfo.Level.randomWeathers.ToList();
-            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers.Values)
+            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers)
             {
                 if (weatherEffectInfo.ShouldSkipIgnoreOverride())
                     continue;
@@ -164,7 +164,7 @@ static class WeatherRegistrationHandler
     private static void InsertDawnWeathers(TimeOfDay self)
     {
         List<WeatherEffect> effectsToSet = self.effects.ToList();
-        foreach (DawnWeatherEffectInfo weatherInfo in LethalContent.Weathers.Values)
+        foreach (DawnWeatherEffectInfo weatherInfo in LethalContent.Weathers)
         {
             if (weatherInfo.ShouldSkipIgnoreOverride() || weatherInfo.WeatherEffect == null)
                 continue;
@@ -198,7 +198,7 @@ static class WeatherRegistrationHandler
 
         self.playersManager.SetMapScreenInfoToCurrentLevel();
         LevelWeatherType[] levelWeatherTypes = new LevelWeatherType[LethalContent.Moons.Count];
-        foreach ((int i, DawnMoonInfo moonInfo) in LethalContent.Moons.Values.WithIndex())
+        foreach ((int i, DawnMoonInfo moonInfo) in LethalContent.Moons.WithIndex())
         {
             levelWeatherTypes[i] = moonInfo.Level.currentWeather;
         }

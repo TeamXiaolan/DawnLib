@@ -22,11 +22,11 @@ public sealed class MapObjectSpawnMechanics : WeightModifierSource<AnimationCurv
     public override void Build(WeightBuildContext context, List<IWeightModifier<AnimationCurve?>> modifiers)
     {
         Debuggers.Weights?.Log($"Building MapObjectSpawnMechanics with moon config '{_getMoonConfigString()}");
-        using NamespacedKeyResolver<DawnMoonInfo> moonResolver = new(context.Moons.Values);
+        using NamespacedKeyResolver<DawnMoonInfo> moonResolver = new(context.Moons);
         Dictionary<NamespacedKey, AnimationCurve> moonCurves = ResolveCurves(_getMoonConfigString(), moonResolver);
 
         Debuggers.Weights?.Log($"Building MapObjectSpawnMechanics with interior config '{_getInteriorConfigString()}'");
-        using NamespacedKeyResolver<DawnDungeonInfo> interiorResolver = new(context.Dungeons.Values);
+        using NamespacedKeyResolver<DawnDungeonInfo> interiorResolver = new(context.Dungeons);
         Dictionary<NamespacedKey, AnimationCurve> interiorCurves = ResolveCurves(_getInteriorConfigString(), interiorResolver);
 
         modifiers.Add(new MapObjectSpawnMechanicsModifier(moonCurves, interiorCurves, _getPrioritiseMoons()));

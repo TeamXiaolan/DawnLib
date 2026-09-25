@@ -15,7 +15,7 @@ public sealed class WeatherIntWeightSource : WeightModifierSource<int>
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        using NamespacedKeyResolver<DawnWeatherEffectInfo> resolver = new(context.Weathers.Values);
+        using NamespacedKeyResolver<DawnWeatherEffectInfo> resolver = new(context.Weathers);
         foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
             Debuggers.Weights?.Log($"Building WeatherIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");

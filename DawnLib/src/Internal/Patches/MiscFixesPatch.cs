@@ -200,7 +200,7 @@ static class MiscFixesPatch
 
     private static void FixLungPropBlankReferences(On.LungProp.orig_Start orig, LungProp self)
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (!enemyInfo.Key.IsVanilla())
                 continue;
@@ -219,7 +219,7 @@ static class MiscFixesPatch
 
     private static void FixKiwiBlankReferences(On.GiantKiwiAI.orig_Start orig, GiantKiwiAI self)
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (!enemyInfo.Key.IsVanilla())
                 continue;
@@ -238,7 +238,7 @@ static class MiscFixesPatch
 
     private static void FixButlerBlankReferences(On.ButlerEnemyAI.orig_Start orig, ButlerEnemyAI self)
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (!enemyInfo.Key.IsVanilla())
                 continue;
@@ -257,7 +257,7 @@ static class MiscFixesPatch
 
     private static void FixNestBlankReferences(RuntimeILReferenceBag.FastDelegateInvokers.Action<EnemyAINestSpawnObject> orig, EnemyAINestSpawnObject self)
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (!enemyInfo.Key.IsVanilla())
                 continue;
@@ -276,7 +276,7 @@ static class MiscFixesPatch
 
     private static void FixHauntedMaskBlankReferences(RuntimeILReferenceBag.FastDelegateInvokers.Action<HauntedMaskItem> orig, HauntedMaskItem self)
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (!enemyInfo.Key.IsVanilla())
                 continue;
@@ -295,7 +295,7 @@ static class MiscFixesPatch
 
     private static void FixItemSpawnPositionTypes()
     {
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             if (!itemInfo.Key.IsVanilla())
                 continue;
@@ -309,7 +309,7 @@ static class MiscFixesPatch
             }
         }
 
-        foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
         {
             if (itemInfo.Key.IsVanilla())
                 continue;
@@ -377,7 +377,7 @@ static class MiscFixesPatch
 
     internal static void FixTileSetSockets()
     {
-        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo dungeonInfo in LethalContent.Dungeons)
         {
             Debuggers.Dungeons?.Log($"Mapping sockets for {dungeonInfo.Key}");
 

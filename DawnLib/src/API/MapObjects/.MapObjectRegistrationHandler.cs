@@ -31,7 +31,7 @@ static class MapObjectRegistrationHandler
 
     private static void AddPrefabsToRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
     {
-        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
         {
             if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride() || !mapObjectInfo.HasNetworkObject)
                 continue;
@@ -49,7 +49,7 @@ static class MapObjectRegistrationHandler
     private static void FixMapObjectBlanksOnDawnMoons()
     {
         List<ScriptableObject> SOsToDelete = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -59,7 +59,7 @@ static class MapObjectRegistrationHandler
                 if (indoorMapHazard.hazardType == null)
                     continue;
 
-                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
                 {
                     if (mapObjectInfo.InsideInfo == null)
                         continue;
@@ -78,7 +78,7 @@ static class MapObjectRegistrationHandler
                 if (spawnableOutsideObjectWithRarity.spawnableObject == null)
                     continue;
 
-                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
                 {
                     if (mapObjectInfo.OutsideInfo == null)
                         continue;
@@ -135,7 +135,7 @@ static class MapObjectRegistrationHandler
         HashSet<IndoorMapHazardType> insideMapHazards = new();
         HashSet<SpawnableOutsideObject> spawnableOutsideObjects = new();
 
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             SelectableLevel selectableLevel = moonInfo.Level;
             foreach (IndoorMapHazard indoorMapHazard in selectableLevel.indoorMapHazards)
@@ -267,7 +267,7 @@ static class MapObjectRegistrationHandler
         GameObject[] spawnDenialPoints = GameObject.FindGameObjectsWithTag("SpawnDenialPoint");
         GameObject itemShipLandingNode = GameObject.FindGameObjectWithTag("ItemShipLandingNode");
 
-        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
         {
             DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
             if (outsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
@@ -519,7 +519,7 @@ static class MapObjectRegistrationHandler
         if (!LethalContent.Weathers.IsFrozen || !LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
-        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
         {
             DawnInsideMapObjectInfo? insideInfo = mapObjectInfo.InsideInfo;
             if (insideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
@@ -549,7 +549,7 @@ static class MapObjectRegistrationHandler
         if (!LethalContent.Weathers.IsFrozen || !LethalContent.MapObjects.IsFrozen || StartOfRound.Instance == null || (WeatherRegistryCompat.Enabled && !WeatherRegistryCompat.IsWeatherManagerReady()))
             return;
 
-        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
         {
             DawnOutsideMapObjectInfo? outsideInfo = mapObjectInfo.OutsideInfo;
             if (outsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
@@ -568,10 +568,10 @@ static class MapObjectRegistrationHandler
 
     private static void RegisterMapObjects()
     {
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             List<IndoorMapHazard> newIndoorMapHazards = moonInfo.Level.indoorMapHazards.ToList();
-            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+            foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
             {
                 if (mapObjectInfo.InsideInfo == null || mapObjectInfo.ShouldSkipRespectOverride())
                     continue;

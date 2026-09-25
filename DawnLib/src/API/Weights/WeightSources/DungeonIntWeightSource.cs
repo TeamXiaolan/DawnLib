@@ -15,7 +15,7 @@ public sealed class DungeonIntWeightSource : WeightModifierSource<int>
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        using NamespacedKeyResolver<DawnDungeonInfo> resolver = new(context.Dungeons.Values);
+        using NamespacedKeyResolver<DawnDungeonInfo> resolver = new(context.Dungeons);
         foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
             Debuggers.Weights?.Log($"Building DungeonIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");

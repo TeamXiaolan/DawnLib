@@ -24,7 +24,7 @@ static class StoryLogRegistrationHandler
         _ = TerminalRefs.Instance;
         List<CompatibleNoun> viewCompatibleNouns = TerminalRefs.ViewKeyword.compatibleNouns.ToList();
         List<TerminalKeyword> newTerminalKeywords = TerminalRefs.Instance.terminalNodes.allKeywords.ToList();
-        foreach (DawnStoryLogInfo storyLogInfo in LethalContent.StoryLogs.Values)
+        foreach (DawnStoryLogInfo storyLogInfo in LethalContent.StoryLogs)
         {
             if (storyLogInfo.ShouldSkipIgnoreOverride())
                 continue;

@@ -322,7 +322,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
             return null;
 
         DungeonFlow? matchingFlow = null;
-        foreach (DawnDungeonInfo potentialMatchingFlow in LethalContent.Dungeons.Values)
+        foreach (DawnDungeonInfo potentialMatchingFlow in LethalContent.Dungeons)
         {
             if (potentialMatchingFlow.DungeonFlow.name == loadedDungeonFlow.name)
             {
@@ -376,7 +376,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             Debuggers.Dungeons?.Log($"tileSetName: {tileSet.name}");
 
-            foreach (DawnTileSetInfo tileSetInfo in LethalContent.TileSets.Values)
+            foreach (DawnTileSetInfo tileSetInfo in LethalContent.TileSets)
             {
                 Debuggers.Dungeons?.Log($"tileSetInfo.Key.Key: {tileSetInfo.Key.Key}");
 
@@ -404,7 +404,7 @@ public class DawnDungeonNetworker : NetworkSingleton<DawnDungeonNetworker>
 
             Debuggers.Dungeons?.Log($"archetypeName: {archetypeName}");
 
-            foreach (DawnArchetypeInfo archetypeInfo in LethalContent.Archetypes.Values)
+            foreach (DawnArchetypeInfo archetypeInfo in LethalContent.Archetypes)
             {
                 if (archetypeInfo.ShouldSkipIgnoreOverride())
                     continue;

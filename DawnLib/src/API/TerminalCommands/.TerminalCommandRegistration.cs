@@ -297,7 +297,7 @@ static class TerminalCommandRegistration
 
     private static void RegisterDawnTerminalCommands(On.Terminal.orig_Awake orig, Terminal self)
     {
-        foreach (DawnTerminalCommandInfo terminalCommandInfo in LethalContent.TerminalCommands.Values)
+        foreach (DawnTerminalCommandInfo terminalCommandInfo in LethalContent.TerminalCommands)
         {
             if (terminalCommandInfo.ShouldSkipIgnoreOverride())
                 continue;

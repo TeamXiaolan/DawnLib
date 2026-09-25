@@ -26,7 +26,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
 
     private void ResetDawnEnemies()
     {
-        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
         {
             if (enemyInfo.ShouldSkipRespectOverride())
             {
@@ -70,7 +70,7 @@ public class DawnNetworker : NetworkSingleton<DawnNetworker>
     internal void RequestWeatherSyncRpc(LevelWeatherType[] levelWeatherTypes, ulong clientId)
     {
         BaseRpcTarget target = RpcTarget.Single(clientId, RpcTargetUse.Persistent);
-        foreach ((int i, DawnMoonInfo moonInfo) in LethalContent.Moons.Values.WithIndex())
+        foreach ((int i, DawnMoonInfo moonInfo) in LethalContent.Moons.WithIndex())
         {
             SelectableLevel level = moonInfo.Level;
             LevelWeatherType levelWeatherType = levelWeatherTypes[i];

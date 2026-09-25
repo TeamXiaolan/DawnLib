@@ -39,7 +39,7 @@ public static class LevelWeatherTypeExtensions
                 return null;
             }
 
-            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers.Values)
+            foreach (DawnWeatherEffectInfo weatherEffectInfo in LethalContent.Weathers)
             {
                 if (weatherEffectInfo.GetLevelWeatherEffect() == levelWeatherType)
                 {

@@ -15,7 +15,7 @@ public sealed class ItemListBaseRaritySource : WeightModifierSource<int>
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        foreach (DawnMoonInfo moon in context.Moons.Values)
+        foreach (DawnMoonInfo moon in context.Moons)
         {
             SpawnableItemWithRarity? entry = moon.Level.spawnableScrap.FirstOrDefault(x => x.spawnableItem == _item);
             if (entry == null)

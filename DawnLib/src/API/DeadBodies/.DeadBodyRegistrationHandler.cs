@@ -43,7 +43,7 @@ static class DeadBodyRegistrationHandler
             LethalContent.DeadBodies.Register(dawnBodyInfo);
         }
 
-        foreach (DawnDeadBodyInfo dawnBodyInfo in LethalContent.DeadBodies.Values)
+        foreach (DawnDeadBodyInfo dawnBodyInfo in LethalContent.DeadBodies)
         {
             if (dawnBodyInfo.ShouldSkipIgnoreOverride())
             {

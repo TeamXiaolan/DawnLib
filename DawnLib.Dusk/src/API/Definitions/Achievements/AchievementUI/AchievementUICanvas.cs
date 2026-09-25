@@ -41,7 +41,7 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
         foreach (DuskMod duskMod in DuskMod.AllMods)
         {
             // instantiate a mod element if it has ANY achievements
-            if (DuskModContent.Achievements.Values.Count(a => a.registrationContext.Mod == duskMod) > 0)
+            if (DuskModContent.Achievements.Count(a => a.registrationContext.Mod == duskMod) > 0)
             {
                 GameObject uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
                 AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();

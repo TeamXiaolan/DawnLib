@@ -16,7 +16,7 @@ public sealed class DungeonListBaseRaritySource : WeightModifierSource<int>
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        foreach (DawnMoonInfo moonInfo in context.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in context.Moons)
         {
             SelectableLevel level = moonInfo.Level;
 

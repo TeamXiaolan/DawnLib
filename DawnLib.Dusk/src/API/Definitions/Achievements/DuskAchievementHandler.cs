@@ -14,7 +14,7 @@ static class DuskAchievementHandler
     {
         using (DuskPlugin.PersistentData.CreateEditContext())
         {
-            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
+            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements)
             {
                 achievementDefinition.LoadAchievementState(DuskPlugin.PersistentData);
             }
@@ -25,7 +25,7 @@ static class DuskAchievementHandler
     {
         using (DuskPlugin.PersistentData.CreateEditContext())
         {
-            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements.Values)
+            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements)
             {
                 achievementDefinition.SaveAchievementState(DuskPlugin.PersistentData);
             }

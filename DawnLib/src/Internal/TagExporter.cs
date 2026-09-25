@@ -47,9 +47,9 @@ static class TagExporter
         registry.AfterTaggingWithContext += _ =>
         {
             _outputFile.WriteLine($"## {name}");
-            foreach ((NamespacedKey<T> key, T value) in registry)
+            foreach (T value in registry)
             {
-                _outputFile.WriteLine($"{key}:");
+                _outputFile.WriteLine($"{value.Key}:");
                 WriteList(_outputFile, value.AllTags().Select(it => it.ToString()));
                 _outputFile.WriteLine("");
                 _outputFile.WriteLine("");

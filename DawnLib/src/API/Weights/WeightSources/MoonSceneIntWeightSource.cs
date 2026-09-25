@@ -16,7 +16,7 @@ public sealed class MoonSceneIntWeightSource : WeightModifierSource<int>
 
     public override void Build(WeightBuildContext context, List<IWeightModifier<int>> modifiers)
     {
-        using NamespacedKeyResolver<IMoonSceneInfo> resolver = new(context.Moons.Values.SelectMany(x => x.Scenes));
+        using NamespacedKeyResolver<IMoonSceneInfo> resolver = new(context.Moons.SelectMany(x => x.Scenes));
         foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
             Debuggers.Weights?.Log($"Building MoonSceneIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");

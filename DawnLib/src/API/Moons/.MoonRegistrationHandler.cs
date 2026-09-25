@@ -527,7 +527,7 @@ static class MoonRegistrationHandler
     private static void FixAmbienceLibraries()
     {
         List<LevelAmbienceLibrary> vanillaLevelAmbienceLibraries = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (!moonInfo.TypedKey.IsVanilla())
                 continue;
@@ -541,7 +541,7 @@ static class MoonRegistrationHandler
         vanillaLevelAmbienceLibraries = vanillaLevelAmbienceLibraries.Distinct().ToList();
 
         List<LevelAmbienceLibrary> ambiencesToDestroy = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -579,7 +579,7 @@ static class MoonRegistrationHandler
     private static void RegisterDawnLevels(On.Terminal.orig_Awake orig, Terminal self)
     {
         List<SelectableLevel> levels = StartOfRoundRefs.Instance.levels.ToList();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -600,7 +600,7 @@ static class MoonRegistrationHandler
         List<CompatibleNoun> routeNouns = TerminalRefs.RouteKeyword.compatibleNouns.ToList();
         List<CompatibleNoun> infoNouns = TerminalRefs.InfoKeyword.compatibleNouns.ToList();
         List<SelectableLevel> viewableLevels = TerminalRefs.Instance.moonsCatalogueList.ToList();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -640,7 +640,7 @@ static class MoonRegistrationHandler
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyPriority(-999)]
     private static void FreezeMoonRegistry()
     {
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.Level.indoorMapHazards == null)
             {
@@ -660,7 +660,7 @@ static class MoonRegistrationHandler
     {
         List<Item> itemsToDestroy = new();
 
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
@@ -674,7 +674,7 @@ static class MoonRegistrationHandler
                 }
 
                 bool itemIsValid = spawnableItemWithRarity.spawnableItem.DawnInfo != null;
-                foreach (DawnItemInfo itemInfo in LethalContent.Items.Values)
+                foreach (DawnItemInfo itemInfo in LethalContent.Items)
                 {
                     if (!itemIsValid && itemInfo.Item.name == spawnableItemWithRarity.spawnableItem.name)
                     {
@@ -696,13 +696,13 @@ static class MoonRegistrationHandler
     {
         List<EnemyType> enemiesToDestroy = new();
 
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipIgnoreOverride())
                 continue;
 
             EnemyType? specialEnemy = moonInfo.Level.specialEnemyRarity?.overrideEnemy;
-            foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+            foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
             {
                 EnemyType potentialReplacement = enemyInfo.EnemyType;
                 ReplaceAndSetToDestroy(moonInfo.Level.Enemies, potentialReplacement, enemiesToDestroy);
@@ -776,7 +776,7 @@ static class MoonRegistrationHandler
         }
 
         StringBuilder builder = new StringBuilder("\n\nWelcome to the exomoons catalogue.\nTo route the autopilot to a moon, use the word ROUTE.\nTo learn about any moon, use INFO.\n____________________________\n");
-        IEnumerable<DawnMoonInfo> validMoons = LethalContent.Moons.Values
+        IEnumerable<DawnMoonInfo> validMoons = LethalContent.Moons
             .Where(it => !it.HasTag(Tags.Unimplemented))
             .OrderByDescending(it => it.HasTag(Tags.Vanilla));
 
@@ -1022,7 +1022,7 @@ static class MoonRegistrationHandler
 
     internal static void UpdateAllPrices()
     {
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
         {
             if (moonInfo.ShouldSkipRespectOverride())
                 continue;
