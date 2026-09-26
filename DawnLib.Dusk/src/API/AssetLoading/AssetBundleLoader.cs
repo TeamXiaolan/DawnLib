@@ -6,7 +6,6 @@ using System.Reflection;
 using BepInEx.Configuration;
 using Dawn;
 using Dawn.Internal;
-using Dawn.Utils;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Video;
@@ -23,18 +22,9 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
 
     private AssetBundle? _bundle;
 
-    protected AssetBundleLoader(DuskMod mod, string filePath) : this(mod.Assembly!, filePath)
-    {
-    }
-
-    internal AssetBundleLoader(Assembly assembly, string filePath) : this(AssetBundleUtils.LoadBundle(assembly, filePath))
-    {
-    }
-
     protected AssetBundleLoader(AssetBundle bundle)
     {
         _bundle = bundle;
-
         Debuggers.AssetLoading?.Log($"{bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
 
         Type type = typeof(TLoader);
@@ -53,7 +43,6 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
                 case GameObject gameObject:
                     DawnLib.FixMixerGroups(gameObject);
                     Debuggers.AssetLoading?.Log($"Fixed Mixer Groups: {gameObject.name}");
-
                     if (gameObject.GetComponent<NetworkObject>() == null)
                         continue;
 
@@ -66,7 +55,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
                     break;
                 case AudioClip audioClip:
                     if (audioClip.preloadAudioData)
-                        break;
+                        continue;
 
                     _audioClipNames.Add(audioClip.name);
                     _hasNonPreloadAudioClips = true;

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -24,18 +25,6 @@ public class DuskMod
 
     private readonly string _basePath;
 
-    internal DuskMod(Assembly assembly, BaseUnityPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager) : this(MetadataHelper.GetMetadata(plugin.GetType()), mainBundle, basePath, configManager)
-    {
-        Assembly = assembly;
-        ResolveCodeModInformation(assembly);
-    }
-
-    public static DuskMod RegisterMod(BaseUnityPlugin plugin, AssetBundle mainBundle)
-    {
-        ConfigManager configManager = new(plugin.Config);
-        return new DuskMod(plugin.GetType().Assembly, plugin, mainBundle, Path.GetDirectoryName(plugin.GetType().Assembly.Location)!, configManager);
-    }
-
     internal static DuskMod RegisterNoCodeMod(DuskModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
         BepInPlugin plugin = modInfo.CreatePluginMetadata();
@@ -55,7 +44,9 @@ public class DuskMod
             ModInformation = modInfo,
             Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID)
         };
-        _ = new DefaultContentHandler(noCodeMod);
+
+        TryRegisterContent(noCodeMod);
+
         if (DuskLethalConfigCompat.Enabled)
         {
             DuskLethalConfigCompat.CreateLethalConfigMod(noCodeMod);
@@ -63,65 +54,68 @@ public class DuskMod
         return noCodeMod;
     }
 
-    private void ResolveCodeModInformation(Assembly assembly)
+    private static void TryRegisterContent(DuskMod duskMod)
     {
-        ModInformation = ScriptableObject.CreateInstance<DuskModInformation>();
-        string searchDir = Path.GetFullPath(assembly.Location);
-        DirectoryInfo parent = Directory.GetParent(searchDir);
-
-        while (parent != null && !string.Equals(parent.Name, "plugins", StringComparison.OrdinalIgnoreCase))
+        duskMod.Logger.LogDebug($"Trying to register bundle: {duskMod.Content.name} with {duskMod.Content.assetBundles.Count} assets.");
+        foreach (AssetBundleData bundleData in duskMod.Content.assetBundles)
         {
-            searchDir = parent.FullName;
-            parent = Directory.GetParent(searchDir);
+            if (!IsContentEnabled(duskMod, bundleData))
+                continue;
+
+            if (!duskMod.TryGetRelativeFile(out string path, "Assets", bundleData.assetBundleName))
+            {
+                duskMod.Logger.LogError($"The bundle: {bundleData.configName} is not defined at plugins/{Path.GetRelativePath(Paths.PluginPath, path)}.");
+
+                if (duskMod.TryGetRelativeFile(out string incorrectPath, bundleData.assetBundleName)) // check if it is instead next to the .duskmod file
+                {
+                    duskMod.Logger.LogError($"The bundle is instead defined at plugins/{Path.GetRelativePath(Paths.PluginPath, incorrectPath)}. It should be in an Assets/ subfolder.");
+                }
+
+                duskMod.Logger.LogError("Please make sure that you uploaded your mod zip correctly.");
+                duskMod.Logger.LogError("Local mods do not have their folder structure edited, but uploaded mods CAN if you don't follow a specific naming scheme");
+                duskMod.Logger.LogError(
+                    "Here is a working example:\n" +
+                    "Folder Structure:\n" +
+                    "YOURzip\n" +
+                    "└─ plugins\n" +
+                    "    └─ Assets\n" +
+                    "        └─ NormalAssetBundlesGoHere\n" +
+                    "    └─ DuskModAssetBundleGoesHere\n" +
+                    "└─ CHANGELOG.md\n" +
+                    "└─ icon.md\n" +
+                    "└─ LICENSE.md\n" +
+                    "└─ manifest.json\n" +
+                    "└─ README.md\n"
+                    );
+                continue;
+            }
+
+            DefaultBundleLoader bundleLoader = new(AssetBundle.LoadFromFile(path))
+            {
+                AssetBundleData = bundleData
+            };
+            LoadAllContent(duskMod, bundleLoader);
         }
-
-        if (searchDir.EndsWith(".dll"))
-            return;
-
-        try
-        {
-            string iconPath = Directory.EnumerateFiles(searchDir, "icon.png", SearchOption.AllDirectories).FirstOrDefault();
-            string manifestPath = Directory.EnumerateFiles(searchDir, "manifest.json", SearchOption.AllDirectories).FirstOrDefault();
-            string readmePath = Directory.EnumerateFiles(searchDir, "README.md", SearchOption.AllDirectories).FirstOrDefault();
-            string changelogPath = Directory.EnumerateFiles(searchDir, "CHANGELOG.md", SearchOption.AllDirectories).FirstOrDefault();
-
-            string manifestContents = File.ReadAllText(manifestPath);
-            string readmeContents = File.ReadAllText(readmePath);
-            string changelogContents = File.ReadAllText(changelogPath);
-
-            ThunderstoreManifest manifest = JsonConvert.DeserializeObject<ThunderstoreManifest>(manifestContents)!;
-
-            ModInformation.SetInfoDetails(
-                manifest.author_name,
-                manifest.name,
-                manifest.version_number,
-                manifest.description,
-                manifest.website_url,
-                manifest.dependencies,
-                LoadIcon(iconPath),
-                new TextAsset(readmeContents),
-                new TextAsset(changelogContents)
-            );
-            Debuggers.Dusk?.Log($"Mod information found: {ModInformation.ModName}, {ModInformation.ModDescription}, {ModInformation.ModIcon != null}, {ModInformation.AuthorName}, {ModInformation.Version}, {ModInformation.ExtraDependencies}, {ModInformation.WebsiteUrl}");
-        }
-        catch (Exception ex)
-        {
-            DuskPlugin.Logger.LogWarning($"Failed to load mod information, likely from locally imported mod: {ex.Message}");
-        }
-
     }
 
-    private Sprite? LoadIcon(string iconPath)
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
+    private static bool IsContentEnabled(DuskMod duskMod, AssetBundleData assetBundleData)
     {
-        if (iconPath == default)
-            return null;
+        using ConfigContext section = duskMod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData);
+        string configName = assetBundleData.configName;
+        ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", assetBundleData.enabledByDefault);
+        duskMod._configEntries.Add(isEnabled);
+        return isEnabled.Value;
+    }
 
-        Texture2D iconTex = new(256, 256);
-        if (!iconTex.LoadImage(File.ReadAllBytes(iconPath), true))
-            return null;
-
-        Sprite ModIcon = Sprite.Create(iconTex, new Rect(0, 0, iconTex.width, iconTex.height), new Vector2(0.5f, 0.5f), 100);
-        return ModIcon;
+    private static void LoadAllContent(DuskMod duskMod, IAssetBundleLoader bundle)
+    {
+        DuskRegistrationContext registrationContext = new(duskMod, bundle);
+        foreach (DuskContentDefinition definition in bundle.Content)
+        {
+            definition.Register(registrationContext);
+            definition.RegisterPost(registrationContext);
+        }
     }
 
     internal DuskMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager)
@@ -150,9 +144,8 @@ public class DuskMod
     public ConfigManager ConfigManager { get; }
     public ContentContainer Content { get; }
 
-    public Assembly? Assembly { get; }
     public DuskModInformation ModInformation { get; set; }
-    public ManualLogSource? Logger { get; set; }
+    public ManualLogSource Logger { get; set; }
 
     public BepInPlugin Plugin { get; }
 
@@ -171,32 +164,5 @@ public class DuskMod
     {
         data = Content.assetBundles.FirstOrDefault(it => it.assetBundleName == bundleName);
         return data != null;
-    }
-
-    public void RegisterContentHandlers()
-    {
-        if (Assembly == null)
-        {
-            DawnPlugin.Logger.LogWarning($"Tried to Register Content Handlers for {Plugin.Name} but it is a no-code DuskMod!");
-            return;
-        }
-
-        IEnumerable<Type> contentHandlers = Assembly.GetLoadableTypes().Where(x =>
-            !x.IsNested && x.BaseType != null
-            && x.BaseType.IsGenericType
-            && x.BaseType.GetGenericTypeDefinition() == typeof(ContentHandler<>))
-            .Select(t => new
-            {
-                Type = t,
-                Order = t.GetCustomAttribute<ContentOrderAttribute>(inherit: false)?.Order ?? 0
-            })
-            .OrderByDescending(x => x.Order)
-            .ThenBy(x => x.Type.FullName, StringComparer.Ordinal)
-            .Select(x => x.Type);
-
-        foreach (Type type in contentHandlers)
-        {
-            type.GetConstructor([typeof(DuskMod)]).Invoke([this]);
-        }
     }
 }

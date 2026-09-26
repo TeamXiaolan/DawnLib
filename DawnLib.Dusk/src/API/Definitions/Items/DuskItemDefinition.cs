@@ -64,26 +64,11 @@ public class DuskItemDefinition : DuskContentDefinition<DawnItemInfo>
     public override void Register(DuskRegistrationContext registrationContext)
     {
         base.Register(registrationContext);
-        BoundedRange itemWorth = new(Item.minValue * 0.4f, Item.maxValue * 0.4f);
         using ConfigContext section = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
         Config = CreateItemConfig(section);
         BaseConfig = Config;
 
-        if (Config.Worth != null)
-        {
-            BoundedRange configValue = Config.Worth.Value;
-
-            if (configValue.Min == -1 || configValue.Max == -1)
-            {
-                registrationContext.Mod.Logger?.LogInfo($"Migrating scrap value of {Item.itemName} from -1,-1.");
-                Config.Worth.Value = itemWorth;
-            }
-            else
-            {
-                itemWorth = configValue;
-            }
-        }
-
+        BoundedRange itemWorth = Config.Worth?.Value ?? new BoundedRange(Item.minValue * 0.4f, Item.maxValue * 0.4f);
         Item.minValue = (int)(itemWorth.Min / 0.4f);
         Item.maxValue = (int)(itemWorth.Max / 0.4f);
 
