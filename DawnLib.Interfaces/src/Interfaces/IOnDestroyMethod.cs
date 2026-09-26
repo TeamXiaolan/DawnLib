@@ -1,13 +1,12 @@
 using InjectionLibrary.Attributes;
 
 [assembly: RequiresInjections]
+[assembly: HandleErrors(InjectionLibrary.ErrorHandlingStrategy.LogError)]
 
 namespace Dawn.Interfaces;
 
-[HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
 [InjectInterface(typeof(PlaceableShipObject))]
 interface IOnDestroyMethod
 {
-    [HandleErrors(InjectionLibrary.ErrorHandlingStrategy.Ignore)]
     void OnDestroy();
 }
