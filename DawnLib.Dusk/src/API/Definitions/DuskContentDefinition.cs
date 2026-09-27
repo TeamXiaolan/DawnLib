@@ -34,7 +34,7 @@ public abstract class DuskContentDefinition : ScriptableObject
         foreach (DuskDynamicConfig configDefinition in _configEntries)
         {
             ConfigEntryBase entry = registrationContext.Mod.ConfigManager.CreateDynamicConfig(BaseConfig?.UserAllowedToEdit() ?? true, configDefinition, context);
-            registrationContext.RegisterConfig(configDefinition.settingName.CleanStringForConfig(), entry);
+            registrationContext.RegisterConfig(entry);
         }
 
         if (BaseConfig != null)

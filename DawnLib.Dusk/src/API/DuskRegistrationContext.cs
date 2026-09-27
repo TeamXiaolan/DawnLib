@@ -4,23 +4,14 @@ namespace Dusk;
 
 public class DuskRegistrationContext
 {
-    internal DuskRegistrationContext(DuskMod mod, IAssetBundleLoader bundle)
+    internal DuskRegistrationContext(DuskMod mod, AssetBundleData assetBundleData)
     {
         Mod = mod;
-        Bundle = bundle;
+        AssetBundleData = assetBundleData;
     }
 
     public DuskMod Mod { get; }
-
-    public IAssetBundleLoader Bundle { get; }
-
-    public AssetBundleData AssetBundleData => Bundle.AssetBundleData;
-
-    internal void RegisterConfig(string name, ConfigEntryBase entry)
-    {
-        Bundle.Configs.Register(name, entry);
-        Mod._configEntries.Add(entry);
-    }
+    public AssetBundleData AssetBundleData { get; }
 
     internal void RegisterConfig(ConfigEntryBase entry)
     {

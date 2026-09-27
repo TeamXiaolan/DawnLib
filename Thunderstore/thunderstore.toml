@@ -24,7 +24,7 @@ source = "../DawnLib/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.d
 target = "BepInEx/plugins/DawnLib/"
 
 [[build.copy]]
-source = "../DawnLib.Core/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.core.dll"
+source = "../DawnLib.SunSet/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.sunset.dll"
 target = "BepInEx/plugins/DawnLib/"
 
 [[build.copy]]

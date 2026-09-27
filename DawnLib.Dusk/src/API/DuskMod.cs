@@ -1,17 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using Dawn;
 using Dawn.Internal;
-using Dawn.Utils;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Dusk;
@@ -90,11 +85,8 @@ public class DuskMod
                 continue;
             }
 
-            DefaultBundleLoader bundleLoader = new(AssetBundle.LoadFromFile(path))
-            {
-                AssetBundleData = bundleData
-            };
-            LoadAllContent(duskMod, bundleLoader);
+            DuskRegistrationContext registrationContext = new(duskMod, bundleData);
+            new DuskModBundleLoader(registrationContext, AssetBundle.LoadFromFile(path));
         }
     }
 
@@ -106,16 +98,6 @@ public class DuskMod
         ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", assetBundleData.enabledByDefault);
         duskMod._configEntries.Add(isEnabled);
         return isEnabled.Value;
-    }
-
-    private static void LoadAllContent(DuskMod duskMod, IAssetBundleLoader bundle)
-    {
-        DuskRegistrationContext registrationContext = new(duskMod, bundle);
-        foreach (DuskContentDefinition definition in bundle.Content)
-        {
-            definition.Register(registrationContext);
-            definition.RegisterPost(registrationContext);
-        }
     }
 
     internal DuskMod(BepInPlugin plugin, AssetBundle mainBundle, string basePath, ConfigManager configManager)

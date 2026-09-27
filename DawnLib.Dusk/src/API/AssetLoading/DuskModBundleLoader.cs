@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
-using BepInEx.Configuration;
 using Dawn;
 using Dawn.Internal;
 using Unity.Netcode;
@@ -13,29 +10,16 @@ using Object = UnityEngine.Object;
 
 namespace Dusk;
 
-public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoader : AssetBundleLoader<TLoader>
+internal class DuskModBundleLoader
 {
     private readonly bool _hasNonPreloadAudioClips;
     private List<string> _audioClipNames = new();
     private readonly bool _hasVideoClips;
     private List<string> _videoClipNames = new();
 
-    private AssetBundle? _bundle;
-
-    protected AssetBundleLoader(AssetBundle bundle)
+    internal DuskModBundleLoader(DuskRegistrationContext registrationContext, AssetBundle bundle)
     {
-        _bundle = bundle;
         Debuggers.AssetLoading?.Log($"{bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
-
-        Type type = typeof(TLoader);
-        foreach (PropertyInfo property in type.GetProperties())
-        {
-            LoadFromBundleAttribute loadInstruction = (LoadFromBundleAttribute)property.GetCustomAttribute(typeof(LoadFromBundleAttribute));
-            if (loadInstruction == null) continue;
-
-            property.SetValue(this, LoadAsset(bundle, loadInstruction.BundleFile));
-        }
-
         foreach (Object asset in bundle.LoadAllAssets())
         {
             switch (asset)
@@ -63,7 +47,7 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             }
         }
 
-        Content = bundle.LoadAllAssets<DuskContentDefinition>();
+        DuskContentDefinition[] Content = bundle.LoadAllAssets<DuskContentDefinition>();
 
         // Sort content
         List<Type> definitionOrder = [
@@ -89,29 +73,16 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             int index = definitionOrder.IndexOf(definitionType);
             return index >= 0 ? index : int.MaxValue;
         }).ToArray();
-    }
 
-    public AssetBundleData AssetBundleData { get; set; }
-    public DuskContentDefinition[] Content { get; }
-    public DuskConfigRegistry Configs { get; } = new();
-
-    [Obsolete("Use Configs.Get<T>() instead.")]
-    public ConfigEntry<T> GetConfig<T>(string configName) => Configs.Get<T>(configName);
-
-    [Obsolete("Use Configs.TryGet<T>() instead.")]
-    public bool TryGetConfig<T>(string configName, [NotNullWhen(true)] out ConfigEntry<T>? entry) => Configs.TryGet(configName, out entry);
-
-    internal void TryUnload()
-    {
-        if (_bundle == null)
+        foreach (DuskContentDefinition definition in Content)
         {
-            DawnPlugin.Logger.LogError("Tried to unload bundle twice?");
-            throw new NullReferenceException();
+            definition.Register(registrationContext);
+            definition.RegisterPost(registrationContext);
         }
 
         if (_hasNonPreloadAudioClips)
         {
-            DawnPlugin.Logger.LogWarning($"Bundle: '{_bundle.name}' is being unloaded but contains atleast one AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play said AudioClips, unloading stopped.");
+            DawnPlugin.Logger.LogWarning($"Bundle: '{bundle.name}' is being unloaded but contains atleast one AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play said AudioClips, unloading stopped.");
             foreach (string audioClipName in _audioClipNames)
             {
                 Debuggers.AssetLoading?.Log($"AudioClip Name: {audioClipName}");
@@ -127,16 +98,6 @@ public abstract class AssetBundleLoader<TLoader> : IAssetBundleLoader where TLoa
             return;
         }
 
-        _bundle.Unload(false);
-        _bundle = null;
-    }
-
-    private Object LoadAsset(AssetBundle bundle, string path)
-    {
-        Object result = bundle.LoadAsset<Object>(path);
-        if (result == null)
-            throw new ArgumentException(path + " is not valid in the assetbundle!");
-
-        return result;
+        bundle.Unload(false);
     }
 }

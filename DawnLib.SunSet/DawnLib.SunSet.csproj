@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <AssemblyName>com.github.teamxiaolan.dawnlib.sunset</AssemblyName>
+        <Product>DawnLib.SunSet</Product>
+    </PropertyGroup>
+
+    <!-- Project Properties -->
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <RootNamespace>SunSet</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <!-- NuGet Packaging -->
+    <PropertyGroup>
+        <PackageId>TeamXiaolan.DawnLib.SunSet</PackageId>
+        <Description>Core of DawnLib.</Description>
+
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    
+    <!-- Enable Nullable for better IDE null-checking -->
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <!-- Embed Debug Symbols for Easier Debugging -->
+    <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <!--
+        Trim the project path to prevent players from potentially
+        viewing Private Information in stack traces.
+        -->
+        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+    </PropertyGroup>
+	
+    <!-- Defining the reference files that have to be publicized. -->
+    <ItemGroup>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.25.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Nullable" Version="1.3.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" IncludeAssets="compile" PrivateAssets="all" />
+    </ItemGroup>
+
+    <Target Name="PublishThunderstore">
+    </Target>
+</Project>
