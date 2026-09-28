@@ -8,7 +8,6 @@ using Dusk.Internal;
 using Dusk.Utils;
 using Dusk.Weights;
 using UnityEngine;
-using SunSet;
 
 namespace Dusk;
 
