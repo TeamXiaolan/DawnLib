@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn;
+using Dawn.Interfaces;
 using Dawn.Internal;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;

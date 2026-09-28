@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Dawn.Interfaces;
 using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;

@@ -2,7 +2,7 @@
 
 [assembly: RequiresInjections]
 
-namespace Dawn;
+namespace Dawn.Interfaces;
 
 [InjectInterface(typeof(TerminalKeyword))]
 public interface ITerminalKeyword

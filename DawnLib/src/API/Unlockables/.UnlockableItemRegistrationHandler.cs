@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Dawn.Interfaces;
 using Dawn.Internal;
 using HarmonyLib;
 using MonoMod.RuntimeDetour;

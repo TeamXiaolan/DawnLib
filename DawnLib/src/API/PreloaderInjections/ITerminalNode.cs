@@ -3,7 +3,7 @@ using InjectionLibrary.Attributes;
 
 [assembly: RequiresInjections]
 
-namespace Dawn;
+namespace Dawn.Interfaces;
 
 [InjectInterface(typeof(TerminalNode))]
 public interface ITerminalNode

@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace SunSet;
+namespace Dusk;
 
 public class AssetBundleLoader<TLoader> where TLoader : AssetBundleLoader<TLoader>
 {

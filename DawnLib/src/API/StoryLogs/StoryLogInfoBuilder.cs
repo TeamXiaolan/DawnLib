@@ -1,3 +1,4 @@
+using Dawn.Interfaces;
 using UnityEngine;
 
 namespace Dawn;
