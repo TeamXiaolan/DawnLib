@@ -12,6 +12,7 @@ public static partial class DuskKeys
     // Modifiers
     public static readonly NamespacedKey MapObjectSpawnMechanics = NamespacedKey.From(Namespace, "map_object_spawn_mechanics");
     public static readonly NamespacedKey RoutePriceIntWeight = NamespacedKey.From(Namespace, "route_price_int_weight");
+    public static readonly NamespacedKey DynamicItemSkin = NamespacedKey.From(Namespace, "dynamic_item_skin");
     public static readonly NamespacedKey RoutePriceCurveWeight = NamespacedKey.From(Namespace, "route_price_curve_weight");
 
     // Weight Channels
@@ -19,4 +20,5 @@ public static partial class DuskKeys
 
     // Context
     public static readonly NamespacedKey RoutePriceContext = NamespacedKey.From(Namespace, "route_price_context");
+    public static readonly NamespacedKey ItemInfoContext = NamespacedKey.From(Namespace, "item_info_context");
 }
