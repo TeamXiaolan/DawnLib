@@ -5,6 +5,7 @@
 - Made `Registry`'s implement `IEnumerable<T>` instead of `IReadOnlyDictonary<NamespacedKey<T>, T>`.
 - Removed `IgnoreIconReplacementWithRuntimeIconsInstalled` and replaced it with `ItemIconReplacementOptions`.
 - Improved terminal resolution with two-word queries.
+- Fixed an issue with items that destroy other items in the inventory making you lose incorrect amount of weight (i.e. shotgun).
 
 ## v1.0.0-pre10
 
