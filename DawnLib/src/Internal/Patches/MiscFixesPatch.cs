@@ -196,6 +196,23 @@ static class MiscFixesPatch
                 hudManager.itemSlotIcons[itemSlot].enabled = false;
             }
         });
+
+        cursor.Index = insertIndex;
+        if (!cursor.TryGotoNext(MoveType.Before,
+            il => il.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.carryWeight)),
+            il => il.MatchLdarg(0),
+            il => il.MatchLdfld<PlayerControllerB>(nameof(PlayerControllerB.currentlyHeldObjectServer)),
+            il => il.MatchLdfld<GrabbableObject>(nameof(GrabbableObject.itemProperties))
+        ))
+        {
+            DawnPlugin.Logger.LogError($"Couldn't match GameNetcodeStuff.PlayerControllerB.DestroyItemInSlot (5) IL.");
+            return;
+        }
+
+        cursor.Index++;
+        cursor.RemoveRange(2);
+
+        cursor.Emit(OpCodes.Ldloc_0);
     }
 
     private static void FixLungPropBlankReferences(On.LungProp.orig_Start orig, LungProp self)
