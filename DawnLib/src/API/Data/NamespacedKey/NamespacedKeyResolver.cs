@@ -369,13 +369,13 @@ public class NamespacedKeyResolver<T> : IDisposable where T : INamespaced
         }
     }
 
-    public List<NamespacedKey<T>> Resolve(IEnumerable<string> inputs)
+    public List<NamespacedKey> Resolve(IEnumerable<string> inputs)
     {
-        List<NamespacedKey<T>> resolved = new();
+        List<NamespacedKey> resolved = new();
 
         foreach (string input in inputs)
         {
-            if (TryResolve(input, out NamespacedKey<T>? key))
+            if (TryResolve(input, out NamespacedKey? key))
             {
                 resolved.Add(key);
             }
@@ -384,7 +384,7 @@ public class NamespacedKeyResolver<T> : IDisposable where T : INamespaced
         return resolved;
     }
 
-    public bool TryResolve(string input, [NotNullWhen(true)] out NamespacedKey<T>? key)
+    public bool TryResolve(string input, [NotNullWhen(true)] out NamespacedKey? key)
     {
         key = null;
 
@@ -393,7 +393,13 @@ public class NamespacedKeyResolver<T> : IDisposable where T : INamespaced
             return false;
         }
 
-        key = resolved.AsTyped<T>();
+        if (resolved is NamespacedKey<T> typedResolved)
+        {
+            key = typedResolved;
+            return true;
+        }
+
+        key = resolved;
         return true;
     }
 

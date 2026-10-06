@@ -1,14 +1,14 @@
 namespace Dawn;
 
-public readonly struct ResolvedNamespacedWeight<T> : IOperationWithValue where T : INamespaced
+public readonly struct ResolvedNamespacedWeight : IOperationWithValue
 {
-    public NamespacedKey<T> Key { get; }
+    public NamespacedKey Key { get; }
 
     public MathOperation Operation { get; }
 
     public float Value { get; }
 
-    public ResolvedNamespacedWeight(NamespacedKey<T> key, MathOperation operation, float value)
+    public ResolvedNamespacedWeight(NamespacedKey key, MathOperation operation, float value)
     {
         Key = key;
         Operation = operation;

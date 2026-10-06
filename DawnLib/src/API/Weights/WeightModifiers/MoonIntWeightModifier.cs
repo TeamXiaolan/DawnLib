@@ -2,9 +2,9 @@ namespace Dawn;
 
 public sealed class MoonIntWeightModifier : IWeightModifier<int>
 {
-    private readonly ResolvedNamespacedWeight<DawnMoonInfo> _weight;
+    private readonly ResolvedNamespacedWeight _weight;
 
-    public MoonIntWeightModifier(ResolvedNamespacedWeight<DawnMoonInfo> weight)
+    public MoonIntWeightModifier(ResolvedNamespacedWeight weight)
     {
         _weight = weight;
     }
@@ -20,8 +20,10 @@ public sealed class MoonIntWeightModifier : IWeightModifier<int>
         if (context.Moon == null)
             return false;
 
-        if (context.Moon.TypedKey == _weight.Key)
-            return true;
+        if (_weight.Key is NamespacedKey<DawnMoonInfo> typedKey)
+        {
+            return typedKey == context.Moon.TypedKey;
+        }
 
         foreach (NamespacedKey tag in context.Moon.AllTags())
         {

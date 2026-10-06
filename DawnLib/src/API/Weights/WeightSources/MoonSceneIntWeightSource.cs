@@ -20,7 +20,7 @@ public sealed class MoonSceneIntWeightSource : WeightModifierSource<int>
         foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
             Debuggers.Weights?.Log($"Building MoonSceneIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");
-            ResolvedNamespacedWeight<IMoonSceneInfo>? resolved = resolver.ResolveWeight(unresolved);
+            ResolvedNamespacedWeight? resolved = resolver.ResolveWeight(unresolved);
 
             if (resolved == null)
                 continue;

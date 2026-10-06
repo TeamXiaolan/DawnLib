@@ -19,7 +19,7 @@ public sealed class WeatherIntWeightSource : WeightModifierSource<int>
         foreach (UnresolvedNamespacedWeight unresolved in _getWeights())
         {
             Debuggers.Weights?.Log($"Building WeatherIntWeightSource with input {unresolved.KeyInput} and value {unresolved.Value}");
-            ResolvedNamespacedWeight<DawnWeatherEffectInfo>? resolved = resolver.ResolveWeight(unresolved);
+            ResolvedNamespacedWeight? resolved = resolver.ResolveWeight(unresolved);
 
             if (resolved == null)
                 continue;

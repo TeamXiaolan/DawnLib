@@ -2,9 +2,9 @@ namespace Dawn;
 
 public sealed class DungeonIntWeightModifier : IWeightModifier<int>
 {
-    private readonly ResolvedNamespacedWeight<DawnDungeonInfo> _weight;
+    private readonly ResolvedNamespacedWeight _weight;
 
-    public DungeonIntWeightModifier(ResolvedNamespacedWeight<DawnDungeonInfo> weight)
+    public DungeonIntWeightModifier(ResolvedNamespacedWeight weight)
     {
         _weight = weight;
     }
@@ -20,8 +20,10 @@ public sealed class DungeonIntWeightModifier : IWeightModifier<int>
         if (context.Dungeon == null)
             return false;
 
-        if (context.Dungeon.TypedKey == _weight.Key)
-            return true;
+        if (_weight.Key is NamespacedKey<DawnDungeonInfo> typedKey)
+        {
+            return typedKey == context.Dungeon.TypedKey;
+        }
 
         foreach (NamespacedKey tag in context.Dungeon.AllTags())
         {

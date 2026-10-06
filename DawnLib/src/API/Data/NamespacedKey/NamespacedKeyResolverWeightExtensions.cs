@@ -5,12 +5,12 @@ namespace Dawn;
 
 public static class NamespacedKeyResolverWeightExtensions
 {
-    public static List<ResolvedNamespacedWeight<T>> ResolveWeights<T>(this NamespacedKeyResolver<T> resolver, IEnumerable<UnresolvedNamespacedWeight> weights) where T : INamespaced
+    public static List<ResolvedNamespacedWeight> ResolveWeights<T>(this NamespacedKeyResolver<T> resolver, IEnumerable<UnresolvedNamespacedWeight> weights) where T : INamespaced
     {
-        List<ResolvedNamespacedWeight<T>> result = new();
+        List<ResolvedNamespacedWeight> result = new();
         foreach (UnresolvedNamespacedWeight weight in weights)
         {
-            ResolvedNamespacedWeight<T>? resolved = resolver.ResolveWeight(weight);
+            ResolvedNamespacedWeight? resolved = resolver.ResolveWeight(weight);
             if (resolved == null)
             {
                 Debuggers.Weights?.Log($"Could not resolve weight key input '{weight.KeyInput}'.");
@@ -23,13 +23,13 @@ public static class NamespacedKeyResolverWeightExtensions
         return result;
     }
 
-    public static ResolvedNamespacedWeight<T>? ResolveWeight<T>(this NamespacedKeyResolver<T> resolver, UnresolvedNamespacedWeight weight) where T : INamespaced
+    public static ResolvedNamespacedWeight? ResolveWeight<T>(this NamespacedKeyResolver<T> resolver, UnresolvedNamespacedWeight weight) where T : INamespaced
     {
-        if (!resolver.TryResolve(weight.KeyInput, out NamespacedKey<T>? key))
+        if (!resolver.TryResolve(weight.KeyInput, out NamespacedKey? key))
         {
             return null;
         }
 
-        return new ResolvedNamespacedWeight<T>(key, weight.Operation, weight.Value);
+        return new ResolvedNamespacedWeight(key, weight.Operation, weight.Value);
     }
 }

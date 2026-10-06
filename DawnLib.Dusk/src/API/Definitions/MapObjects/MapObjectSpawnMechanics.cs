@@ -41,7 +41,7 @@ public sealed class MapObjectSpawnMechanics : WeightModifierSource<AnimationCurv
             if (string.IsNullOrWhiteSpace(keyInput))
                 continue;
 
-            if (!resolver.TryResolve(keyInput.Trim(), out NamespacedKey<T>? resolvedKey) || resolvedKey == null)
+            if (!resolver.TryResolve(keyInput.Trim(), out NamespacedKey? resolvedKey) || resolvedKey == null)
             {
                 continue;
             }

@@ -2,9 +2,9 @@ namespace Dawn;
 
 public sealed class WeatherIntWeightModifier : IWeightModifier<int>
 {
-    private readonly ResolvedNamespacedWeight<DawnWeatherEffectInfo> _weight;
+    private readonly ResolvedNamespacedWeight _weight;
 
-    public WeatherIntWeightModifier(ResolvedNamespacedWeight<DawnWeatherEffectInfo> weight)
+    public WeatherIntWeightModifier(ResolvedNamespacedWeight weight)
     {
         _weight = weight;
     }
@@ -20,10 +20,20 @@ public sealed class WeatherIntWeightModifier : IWeightModifier<int>
         if (context.Weather == null)
             return false;
 
-        if (context.Weather.TypedKey == _weight.Key)
-            return true;
+        if (_weight.Key is NamespacedKey<DawnWeatherEffectInfo> typedKey)
+        {
+            return typedKey == context.Weather.TypedKey;
+        }
 
-        return context.Weather.HasTag(_weight.Key, true);
+        foreach (NamespacedKey tag in context.Weather.AllTags())
+        {
+            if (tag.Key == _weight.Key.Key)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void Apply(ref int value, WeightContext context)

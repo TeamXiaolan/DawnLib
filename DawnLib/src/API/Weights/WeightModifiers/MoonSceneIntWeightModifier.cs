@@ -2,9 +2,9 @@ namespace Dawn;
 
 public sealed class MoonSceneIntWeightModifier : IWeightModifier<int>
 {
-    private readonly ResolvedNamespacedWeight<IMoonSceneInfo> _weight;
+    private readonly ResolvedNamespacedWeight _weight;
 
-    public MoonSceneIntWeightModifier(ResolvedNamespacedWeight<IMoonSceneInfo> weight)
+    public MoonSceneIntWeightModifier(ResolvedNamespacedWeight weight)
     {
         _weight = weight;
     }
@@ -23,7 +23,7 @@ public sealed class MoonSceneIntWeightModifier : IWeightModifier<int>
         if (!context.TryGet(DawnWeightContextKeys.MoonScene, out IMoonSceneInfo? moonSceneInfo))
             return false;
 
-        if (moonSceneInfo.SceneName != context.Moon.Level.sceneName)
+        if (moonSceneInfo.Key != _weight.Key)
             return false;
 
         return true;
