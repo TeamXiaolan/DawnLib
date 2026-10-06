@@ -373,11 +373,11 @@ static class RoundLoadingStepRegistrationHandler
         orderedRoundLoadingSteps.Clear();
         orderedRoundLoadingSteps.AddRange(SortSteps(eligibleByKey.Values.ToArray()));
 
-        DawnPlugin.Logger.LogInfo($"Finished sorting {orderedRoundLoadingSteps.Count} round loading steps.");
+        Debuggers.RoundLoadingSteps?.Log($"Finished sorting {orderedRoundLoadingSteps.Count} round loading steps.");
 
         foreach (DawnRoundLoadingStepInfo entry in orderedRoundLoadingSteps)
         {
-            DawnPlugin.Logger.LogInfo($"Round loading step registered: {entry.Key}");
+            Debuggers.RoundLoadingSteps?.Log($"Round loading step registered: {entry.Key}");
         }
 
         LethalContent.RoundLoadingSteps.Freeze();

@@ -1,4 +1,5 @@
 ﻿using System;
+using Dawn;
 using Dawn.Utils;
 using UnityEngine;
 
@@ -20,4 +21,14 @@ public class DuskDynamicConfig
     public Color defaultColor;
 
     public string Description;
+
+    internal static DuskConfigDefinition CreateConfigDefinitionFromDynamicConfig(DuskContentDefinition contentReference, DuskDynamicConfig dynamicConfig)
+    {
+        DuskConfigDefinition configDefinition = ScriptableObject.CreateInstance<DuskConfigDefinition>();
+        configDefinition.name = dynamicConfig.settingName.Replace(" ", "") + "ConfigDefinition";
+        configDefinition.DynamicConfig = dynamicConfig;
+        configDefinition.ContentReference = contentReference;
+        configDefinition._typedKey = NamespacedKey.From(contentReference.Key.Namespace, dynamicConfig.settingName).AsTyped<DuskConfigDefinition>();
+        return configDefinition;
+    }
 }

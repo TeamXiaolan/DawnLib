@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using Dawn;
-using Dawn.Utils;
 using Dusk.Weights;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -15,7 +14,7 @@ public abstract class DuskContentDefinition : ScriptableObject
 
     [FormerlySerializedAs("ConfigEntries")]
     [SerializeField]
-    private List<DuskDynamicConfig> _configEntries = new();
+    internal List<DuskDynamicConfig> _configEntries = new();
 
     [SerializeField, UnlockedNamespacedKey]
     internal List<NamespacedKey> _tags = new();
@@ -29,19 +28,12 @@ public abstract class DuskContentDefinition : ScriptableObject
 
     public virtual void RegisterPost(DuskRegistrationContext registrationContext)
     {
-        DuskBaseConfig? BaseConfig = this.BaseConfig as DuskBaseConfig;
-        using ConfigContext context = registrationContext.Mod.ConfigManager.CreateConfigSectionForBundleData(registrationContext.AssetBundleData);
-        foreach (DuskDynamicConfig configDefinition in _configEntries)
-        {
-            ConfigEntryBase entry = registrationContext.Mod.ConfigManager.CreateDynamicConfig(BaseConfig?.UserAllowedToEdit() ?? true, configDefinition, context);
-            registrationContext.RegisterConfig(entry);
-        }
-
+        DuskBaseConfig? BaseConfig = (DuskBaseConfig?)this.BaseConfig;
         if (BaseConfig != null)
         {
             foreach (ConfigEntryBase entry in BaseConfig.ConfigEntries())
             {
-                registrationContext.RegisterConfig(entry);
+                registrationContext.Mod.configEntries.Add(entry);
             }
         }
     }
@@ -71,21 +63,21 @@ public abstract class DuskContentDefinition : ScriptableObject
             .Add(new GlobalBaseIntSource(getDefaultWeight));
     }
 
-    public static IEnumerable<UnresolvedNamespacedWeight> GetConfigWeights(ConfigEntry<string>? spawnWeightsConfig, List<NamespacedConfigWeight> spawnWeightDefaults)
+    public static IEnumerable<UnresolvedNamespacedWeight> GetConfigWeights(object? spawnWeightsConfig, List<NamespacedConfigWeight> spawnWeightDefaults)
     {
         if (spawnWeightsConfig != null)
         {
-            return UnresolvedNamespacedWeight.ConvertManyFromString(spawnWeightsConfig.Value);
+            return UnresolvedNamespacedWeight.ConvertManyFromString(((ConfigEntry<string>)spawnWeightsConfig).Value);
         }
 
         return spawnWeightDefaults.ToUnresolvedWeights();
     }
 
-    public static IEnumerable<IntComparisonConfigWeight> GetConfigWeights(ConfigEntry<string>? spawnWeightsConfig, List<IntComparisonConfigWeight> spawnWeightDefaults)
+    public static IEnumerable<IntComparisonConfigWeight> GetConfigWeights(object? spawnWeightsConfig, List<IntComparisonConfigWeight> spawnWeightDefaults)
     {
         if (spawnWeightsConfig != null)
         {
-            return IntComparisonConfigWeight.ConvertManyFromString(spawnWeightsConfig.Value);
+            return IntComparisonConfigWeight.ConvertManyFromString(((ConfigEntry<string>)spawnWeightsConfig).Value);
         }
 
         return spawnWeightDefaults;

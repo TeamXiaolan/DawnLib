@@ -6,6 +6,7 @@ using BepInEx;
 using BepInEx.Logging;
 using Dawn.Internal;
 using Dawn.Utils;
+using Daybreak;
 using HarmonyLib;
 using MonoMod.RuntimeDetour;
 using PathfindingLib;

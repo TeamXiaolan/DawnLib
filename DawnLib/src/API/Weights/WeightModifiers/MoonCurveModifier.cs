@@ -27,7 +27,15 @@ public sealed class MoonCurveModifier : IWeightModifier<AnimationCurve?>
         if (context.Moon.TypedKey == _moonOrTagKey)
             return true;
 
-        return context.Moon.HasTag(_moonOrTagKey, true);
+        foreach (NamespacedKey tag in context.Moon.AllTags())
+        {
+            if (tag.Key == _moonOrTagKey.Key)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void Apply(ref AnimationCurve? value, WeightContext context)

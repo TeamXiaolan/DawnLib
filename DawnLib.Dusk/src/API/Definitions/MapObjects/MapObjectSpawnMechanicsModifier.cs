@@ -77,23 +77,33 @@ public class MapObjectSpawnMechanicsModifier : IWeightModifier<AnimationCurve?>
         List<AnimationCurve> candidates = new();
         if (_prioritiseMoons)
         {
-            foreach ((NamespacedKey tagName, AnimationCurve tagCurve) in _curvesByMoonOrTagName)
+            foreach ((NamespacedKey tagKey, AnimationCurve tagCurve) in _curvesByMoonOrTagName)
             {
-                if (!moonInfo.HasTag(tagName))
-                    continue;
+                foreach (NamespacedKey tag in moonInfo.AllTags())
+                {
+                    if (tag.Key != tagKey.Key)
+                    {
+                        continue;
+                    }
 
-                candidates.Add(tagCurve);
+                    candidates.Add(tagCurve);
+                }
             }
 
             return candidates;
         }
 
-        foreach ((NamespacedKey tagName, AnimationCurve tagCurve) in _curvesByInteriorOrTagName)
+        foreach ((NamespacedKey tagKey, AnimationCurve tagCurve) in _curvesByInteriorOrTagName)
         {
-            if (!dungeonInfo.HasTag(tagName))
-                continue;
+            foreach (NamespacedKey tag in dungeonInfo.AllTags())
+            {
+                if (tag.Key != tagKey.Key)
+                {
+                    continue;
+                }
 
-            candidates.Add(tagCurve);
+                candidates.Add(tagCurve);
+            }
         }
 
         return candidates;

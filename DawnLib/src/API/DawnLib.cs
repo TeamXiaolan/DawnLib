@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using BepInEx;
 using Dawn.Internal;
+using Daybreak;
 using DunGen;
 using DunGen.Graph;
 using Newtonsoft.Json;
@@ -88,6 +89,11 @@ public static class DawnLib
             throw new ArgumentNullException(nameof(tilePrefab));
 
         MiscFixesPatch.tilesToFixSockets.Add(tilePrefab);
+    }
+
+    public static void SubscribeOnAllModsLoaded(Action action)
+    {
+        DaybreakPlugin.OnModsLoaded += action;
     }
 
     public static DawnTerminalCommandInfo DefineTerminalCommand(NamespacedKey<DawnTerminalCommandInfo> key, TerminalCommandBasicInformation commandBasicInformation, Action<TerminalCommandInfoBuilder> callback)

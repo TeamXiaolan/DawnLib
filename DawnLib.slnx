@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="DawnLib.Compatibility/DawnLib.Compatibility.csproj" />
-  <Project Path="DawnLib.SunSet/DawnLib.SunSet.csproj" />
+  <Project Path="DawnLib.Sunset/DawnLib.Sunset.csproj" />
+  <Project Path="DawnLib.Daybreak/DawnLib.Daybreak.csproj" />
   <Project Path="DawnLib.Dusk/DawnLib.Dusk.csproj" />
   <Project Path="DawnLib.SourceGen/DawnLib.SourceGen.csproj" />
   <Project Path="DawnLib/DawnLib.csproj" />

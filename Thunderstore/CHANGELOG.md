@@ -6,6 +6,9 @@
 - Removed `IgnoreIconReplacementWithRuntimeIconsInstalled` and replaced it with `ItemIconReplacementOptions`.
 - Improved terminal resolution with two-word queries.
 - Fixed an issue with items that destroy other items in the inventory making you lose incorrect amount of weight (i.e. shotgun).
+- Re-fixed the issue with tags needing the correct namespace?? how did it come back??
+- Moved Registration of DuskMods into after the chainloader.
+- Added BeforeRegisterDuskMod and OnRegisterDuskMod as subscribeable events.
 
 ## v1.0.0-pre10
 

@@ -7,6 +7,7 @@ namespace Dusk;
 public abstract class Hierarchy : ScriptableObject
 {
     [field: SerializeField]
+    [field: Tooltip("Ignore if using a WaitAction. If this is empty, the root transform will be used.")]
     public List<string> HierarchyPaths { get; private set; }
 
     [field: SerializeField]

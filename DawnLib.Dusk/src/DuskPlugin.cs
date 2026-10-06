@@ -1,5 +1,6 @@
 using System.Reflection;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using Dawn;
 using Dawn.Internal;
@@ -60,8 +61,7 @@ public class DuskPlugin : BaseUnityPlugin
          */
         MoonRegistrationHandler.RouteProgressUIPrefab = DawnLibMainVanilla.RouteProgressUIPrefab;
 
-        Logger.LogInfo("Registering auto DuskMods!");
-        AutoDuskModHandler.AutoRegisterMods();
+        DawnLib.SubscribeOnAllModsLoaded(AutoDuskModHandler.AutoRegisterMods);
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
 

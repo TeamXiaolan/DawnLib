@@ -1,5 +1,3 @@
-using BepInEx.Configuration;
-
 namespace Dusk;
 
 public class DuskRegistrationContext
@@ -12,9 +10,4 @@ public class DuskRegistrationContext
 
     public DuskMod Mod { get; }
     public AssetBundleData AssetBundleData { get; }
-
-    internal void RegisterConfig(ConfigEntryBase entry)
-    {
-        Mod._configEntries.Add(entry);
-    }
 }

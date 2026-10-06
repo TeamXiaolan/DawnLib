@@ -91,7 +91,7 @@
           <HintPath>$(SolutionDir)\DawnLib\deps\MMHOOK_Assembly-CSharp.dll</HintPath>
       </Reference>
       <ProjectReference Include="..\DawnLib\DawnLib.csproj" />
-      <ProjectReference Include="..\DawnLib.SunSet\DawnLib.SunSet.csproj" />
+      <ProjectReference Include="..\DawnLib.Sunset\DawnLib.Sunset.csproj" />
     </ItemGroup>
 
     <!-- Netcode Patcher Post-Build Event -->

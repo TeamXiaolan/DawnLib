@@ -9,9 +9,6 @@ public class WaitAction : Hierarchy
     [field: SerializeField]
     public float WaitTime { get; private set; }
 
-    [field: HideInInspector]
-    public new string HierarchyPath { get; private set; }
-
     public override IEnumerator Apply(Transform rootTransform, bool immediate = false)
     {
         if (!immediate)

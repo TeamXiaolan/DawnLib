@@ -85,10 +85,10 @@ public class ConfigReader : MonoBehaviour
     [SerializeField] private ColorEvent onColor;
     [SerializeField] private AnimationCurveEvent onAnimationCurve;
 
-    private ConfigEntryBase? _matchedEntry;
+    private object? _matchedEntry;
 
     public DuskDynamicConfigType ExpectedType => expectedType;
-    public ConfigEntryBase? MatchedEntry => _matchedEntry;
+    public object? MatchedEntry => _matchedEntry;
 
     private void Start()
     {
@@ -103,14 +103,15 @@ public class ConfigReader : MonoBehaviour
     public void ResolveEntry()
     {
         _matchedEntry = TryFindConfigEntry(pluginGuid, section, key);
-
         if (_matchedEntry == null)
         {
             DuskPlugin.Logger.LogWarning($"ConfigReader could not find config entry: plugin='{pluginGuid}', section='{section}', key='{key}'");
             return;
         }
 
-        Debuggers.Configs?.Log($"Matched config entry: plugin='{pluginGuid}', section='{_matchedEntry.Definition.Section}', key='{_matchedEntry.Definition.Key}', type='{_matchedEntry.SettingType}', value='{_matchedEntry.BoxedValue}'");
+        ConfigEntryBase configEntry = (ConfigEntryBase)_matchedEntry;
+
+        Debuggers.Configs?.Log($"Matched config entry: plugin='{pluginGuid}', section='{configEntry.Definition.Section}', key='{configEntry.Definition.Key}', type='{configEntry.SettingType}', value='{configEntry.BoxedValue}'");
     }
 
     public void InvokeMatchedEvent()
@@ -126,10 +127,11 @@ public class ConfigReader : MonoBehaviour
             return;
         }
 
-        DuskDynamicConfigType? actualType = ConfigReaderTypeUtility.ConvertSettingTypeToDynamicType(_matchedEntry.SettingType);
+        ConfigEntryBase configEntry = (ConfigEntryBase)_matchedEntry;
+        DuskDynamicConfigType? actualType = ConfigReaderTypeUtility.ConvertSettingTypeToDynamicType(configEntry.SettingType);
         if (actualType == null)
         {
-            DuskPlugin.Logger.LogWarning($"Unsupported config type on ConfigReader: {_matchedEntry.SettingType.FullName}");
+            DuskPlugin.Logger.LogWarning($"Unsupported config type on ConfigReader: {configEntry.SettingType.FullName}");
             onUnsupportedType?.Invoke();
             return;
         }
@@ -141,7 +143,7 @@ public class ConfigReader : MonoBehaviour
             return;
         }
 
-        InvokeExpectedTypeEvent(_matchedEntry.BoxedValue);
+        InvokeExpectedTypeEvent(configEntry.BoxedValue);
     }
 
     private void InvokeExpectedTypeEvent(object value)
@@ -187,7 +189,7 @@ public class ConfigReader : MonoBehaviour
         }
     }
 
-    private static ConfigEntryBase? TryFindConfigEntry(string pluginGuid, string section, string key)
+    private static object? TryFindConfigEntry(string pluginGuid, string section, string key)
     {
         if (string.IsNullOrWhiteSpace(pluginGuid) || string.IsNullOrWhiteSpace(section) || string.IsNullOrWhiteSpace(key))
         {

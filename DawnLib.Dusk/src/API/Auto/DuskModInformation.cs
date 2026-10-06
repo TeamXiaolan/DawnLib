@@ -51,7 +51,7 @@ public class DuskModInformation : ScriptableObject
         ChangelogFile = changelogFile;
     }
 
-    public BepInPlugin CreatePluginMetadata()
+    public object CreatePluginMetadata()
     {
         return new BepInPlugin(AuthorName + "." + ModName, ModName, Version);
     }

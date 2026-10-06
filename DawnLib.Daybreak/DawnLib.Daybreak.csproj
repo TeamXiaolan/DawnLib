@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <AssemblyName>com.github.teamxiaolan.dawnlib.Sunset</AssemblyName>
-        <Product>DawnLib.Sunset</Product>
+        <AssemblyName>com.github.teamxiaolan.dawnlib.daybreak</AssemblyName>
+        <Product>DawnLib.Daybreak</Product>
     </PropertyGroup>
 
     <!-- Project Properties -->
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <RootNamespace>Sunset</RootNamespace>
+        <RootNamespace>Daybreak</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
-    </PropertyGroup>
-
-    <!-- NuGet Packaging -->
-    <PropertyGroup>
-        <PackageId>TeamXiaolan.DawnLib.Sunset</PackageId>
-        <Description>Core of DawnLib.</Description>
-
-        <IsPackable>true</IsPackable>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
     
     <!-- Enable Nullable for better IDE null-checking -->
@@ -38,16 +29,16 @@
         <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
     </PropertyGroup>
 	
-    <!-- Defining the reference files that have to be publicized. -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.25.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Nullable" Version="1.3.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="BepInEx.Core" Version="5.4.21"/>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="MMHOOK_BepInEx" Publicize="true">
+        <PrivateAssets>all</PrivateAssets>
+          <HintPath>deps\MMHOOK_BepInEx.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
     <Target Name="PublishThunderstore">

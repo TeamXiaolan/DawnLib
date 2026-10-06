@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -16,13 +17,52 @@ public class DuskMod
     public const string PLUGIN_GUID = MyPluginInfo.PLUGIN_GUID;
 
     private static readonly List<DuskMod> _allMods = new();
-    internal List<ConfigEntryBase> _configEntries = new();
+    internal List<ConfigEntryBase> configEntries = new();
+
+    public static event Action<DuskMod> BeforeRegisterDuskMod
+    {
+        add
+        {
+            _beforeRegisterDuskMod += duskMod =>
+            {
+                try
+                {
+                    value(duskMod);
+                }
+                catch (Exception exception)
+                {
+                    DuskPlugin.Logger.LogError($"(BeforeRegisterDuskMod) An exception occured in firing an event for a duskMod:\n{exception}");
+                }
+            };
+        }
+        remove => DuskPlugin.Logger.LogError("DuskMod.BeforeRegisterDuskMod -= is not supported.");
+    }
+
+    public static event Action<DuskMod> OnRegisterDuskMod
+    {
+        add
+        {
+            _onRegisterDuskMod += duskMod =>
+            {
+                try
+                {
+                    value(duskMod);
+                }
+                catch (Exception exception)
+                {
+                    DuskPlugin.Logger.LogError($"(OnRegisterDuskMod) An exception occured in firing an event for a duskMod:\n{exception}");
+                }
+            };
+        }
+        remove => DuskPlugin.Logger.LogError("DuskMod.OnRegisterDuskMod -= is not supported.");
+    }
+    private static event Action<DuskMod> _onRegisterDuskMod = delegate { }, _beforeRegisterDuskMod = delegate { };
 
     private readonly string _basePath;
 
     internal static DuskMod RegisterNoCodeMod(DuskModInformation modInfo, AssetBundle mainBundle, string basePath)
     {
-        BepInPlugin plugin = modInfo.CreatePluginMetadata();
+        BepInPlugin plugin = (BepInPlugin)modInfo.CreatePluginMetadata();
         Debuggers.Dusk?.Log("Registering no-code mod!");
         ConfigManager configManager;
         if (string.IsNullOrEmpty(modInfo.ConfigFileName))
@@ -40,7 +80,9 @@ public class DuskMod
             Logger = BepInEx.Logging.Logger.CreateLogSource(plugin.GUID)
         };
 
+        _beforeRegisterDuskMod(noCodeMod);
         TryRegisterContent(noCodeMod);
+        _onRegisterDuskMod(noCodeMod);
 
         if (DuskLethalConfigCompat.Enabled)
         {
@@ -96,7 +138,7 @@ public class DuskMod
         using ConfigContext section = duskMod.ConfigManager.CreateConfigSectionForBundleData(assetBundleData);
         string configName = assetBundleData.configName;
         ConfigEntry<bool> isEnabled = section.Bind("Enabled", $"Whether {configName} is enabled.", assetBundleData.enabledByDefault);
-        duskMod._configEntries.Add(isEnabled);
+        duskMod.configEntries.Add(isEnabled);
         return isEnabled.Value;
     }
 
@@ -122,7 +164,7 @@ public class DuskMod
 
     public static IReadOnlyList<DuskMod> AllMods => _allMods.AsReadOnly();
 
-    public IReadOnlyList<ConfigEntryBase> ConfigEntries => _configEntries.AsReadOnly();
+    public IReadOnlyList<ConfigEntryBase> ConfigEntries => configEntries.AsReadOnly();
     public ConfigManager ConfigManager { get; }
     public ContentContainer Content { get; }
 

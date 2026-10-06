@@ -10,6 +10,7 @@ public class AutoDuskModHandler
 {
     public static void AutoRegisterMods()
     {
+        DuskPlugin.Logger.LogInfo("Registering auto DuskMods!");
         foreach (string path in Directory.GetFiles(Paths.PluginPath, "*.duskmod", SearchOption.AllDirectories))
         {
             AssetBundle mainBundle = AssetBundle.LoadFromFile(path);

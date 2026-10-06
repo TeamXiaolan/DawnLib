@@ -47,7 +47,7 @@ internal class DuskModBundleLoader
             }
         }
 
-        DuskContentDefinition[] Content = bundle.LoadAllAssets<DuskContentDefinition>();
+        List<DuskContentDefinition> Content = bundle.LoadAllAssets<DuskContentDefinition>().ToList();
 
         // Sort content
         List<Type> definitionOrder = [
@@ -72,17 +72,63 @@ internal class DuskModBundleLoader
             Type definitionType = it.GetType();
             int index = definitionOrder.IndexOf(definitionType);
             return index >= 0 ? index : int.MaxValue;
-        }).ToArray();
+        }).ToList();
+
+        Dictionary<DuskContentDefinition, List<DuskConfigDefinition>> configDefinitions = new();
+        foreach (DuskContentDefinition definition in Content)
+        {
+            if (definition is not DuskConfigDefinition configDefinition)
+            {
+                if (definition._configEntries == null || definition._configEntries.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (DuskDynamicConfig dynamicConfig in definition._configEntries)
+                {
+                    DuskConfigDefinition newConfigDefinition = DuskDynamicConfig.CreateConfigDefinitionFromDynamicConfig(definition, dynamicConfig);
+                    if (!configDefinitions.ContainsKey(definition))
+                    {
+                        configDefinitions[definition] = new List<DuskConfigDefinition>();
+                    }
+                    configDefinitions[definition].Add(newConfigDefinition);
+                }
+                continue;
+            }
+
+            if (configDefinition.ContentReference == null)
+            {
+                continue;
+            }
+
+            if (!configDefinitions.ContainsKey(configDefinition.ContentReference))
+            {
+                configDefinitions[configDefinition.ContentReference] = new List<DuskConfigDefinition>();
+            }
+            configDefinitions[configDefinition.ContentReference].Add(configDefinition);
+        }
 
         foreach (DuskContentDefinition definition in Content)
         {
+            if (definition is DuskConfigDefinition configDefinition)
+            {
+                continue;
+            }
+
             definition.Register(registrationContext);
+            if (configDefinitions.TryGetValue(definition, out List<DuskConfigDefinition>? configs))
+            {
+                foreach (DuskConfigDefinition config in configs)
+                {
+                    config.Register(registrationContext);
+                }
+            }
             definition.RegisterPost(registrationContext);
         }
 
         if (_hasNonPreloadAudioClips)
         {
-            DawnPlugin.Logger.LogWarning($"Bundle: '{bundle.name}' is being unloaded but contains atleast one AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play said AudioClips, unloading stopped.");
+            DuskPlugin.Logger.LogWarning($"Bundle: '{bundle.name}' is being unloaded but contains atleast one AudioClip that has 'preloadAudioData' to false! This will cause errors when trying to play said AudioClips, unloading stopped.");
             foreach (string audioClipName in _audioClipNames)
             {
                 Debuggers.AssetLoading?.Log($"AudioClip Name: {audioClipName}");
@@ -95,6 +141,8 @@ internal class DuskModBundleLoader
             {
                 Debuggers.AssetLoading?.Log($"VideoClip Name: {videoClipName}");
             }
+            DuskPlugin.Logger.LogInfo($"Bundle: '{bundle.name}' is no longer being unloaded due to containing atleast one VideoClip.");
+            DuskPlugin.Logger.LogInfo($"I recommend, if possible, placing the VideoClip into an entirely separate AssetBundle and loading it manually onto where you need it to be.");
             return;
         }
 
