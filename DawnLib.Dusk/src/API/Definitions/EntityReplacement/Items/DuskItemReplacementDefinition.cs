@@ -51,6 +51,11 @@ public class DuskItemReplacementDefinition : DuskEntityReplacementDefinition<Gra
 
     internal override void RegisterAsDefault(GrabbableObject grabbableObject, string baseKey, string @namespace, string variantKey)
     {
+        IsConductiveMetal = grabbableObject.itemProperties.isConductiveMetal;
+        GrabSFX = grabbableObject.itemProperties.grabSFX;
+        DropSFX = grabbableObject.itemProperties.dropSFX;
+        PocketSFX = grabbableObject.itemProperties.pocketSFX;
+        ThrowSFX = grabbableObject.itemProperties.throwSFX;
         VerticalOffset = grabbableObject.itemProperties.verticalOffset;
         FloorYOffset = grabbableObject.itemProperties.floorYOffset;
         RestingRotation = grabbableObject.itemProperties.restingRotation;
