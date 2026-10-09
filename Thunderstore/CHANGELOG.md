@@ -12,6 +12,8 @@
 - Fixed issue with conductive items no longer being picked up by stormy on some conditions.
 - Fixed issue with hazard replacement on some DawnLib moons.
 - Added DuskConfigDefinitions as a replacement for where configs used to be registered.
+- Fixed issue with story logs double registering.
+- Fixed issue with DeadBody registry accidently adding the wrong NamespacedKeyContainer to itself.
 
 ## v1.0.0-pre10
 

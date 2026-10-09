@@ -110,7 +110,7 @@ public static class DawnLib
         DeadBodyInfoBuilder builder = new(key, deadBodyPrefab);
         callback(builder);
         DawnDeadBodyInfo dawnBodyInfo = builder.Build();
-        DawnStoryLogNamespacedKeyContainer container = deadBodyPrefab.AddComponent<DawnStoryLogNamespacedKeyContainer>();
+        DawnDeadBodyNamespacedKeyContainer container = deadBodyPrefab.AddComponent<DawnDeadBodyNamespacedKeyContainer>();
         container.Value = dawnBodyInfo.Key;
 
         if (dawnBodyInfo.DeadBodyPrefab.TryGetComponent(out DeadBodyInfo deadBodyInfo))
