@@ -26,7 +26,6 @@ static class MapObjectRegistrationHandler
         On.RoundManager.SpawnMapObjects += UpdateMapObjectSpawnWeights;
 
         LethalContent.Moons.OnFreezeWithContext += _ => RegisterMapObjects();
-        LethalContent.MapObjects.OnFreezeWithContext += _ => FixMapObjectBlanksOnDawnMoons();
     }
 
     private static void AddPrefabsToRandomMapObjects(RuntimeILReferenceBag.FastDelegateInvokers.Action<RandomMapObject> orig, RandomMapObject self)
@@ -44,59 +43,6 @@ static class MapObjectRegistrationHandler
             self.spawnablePrefabs.Add(mapObjectInfo.InsideInfo.IndoorMapHazardType.prefabToSpawn);
         }
         orig(self);
-    }
-
-    private static void FixMapObjectBlanksOnDawnMoons()
-    {
-        List<ScriptableObject> SOsToDelete = new();
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons)
-        {
-            if (moonInfo.ShouldSkipIgnoreOverride())
-                continue;
-
-            foreach (IndoorMapHazard indoorMapHazard in moonInfo.Level.indoorMapHazards)
-            {
-                if (indoorMapHazard.hazardType == null)
-                    continue;
-
-                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
-                {
-                    if (mapObjectInfo.InsideInfo == null)
-                        continue;
-
-                    if (mapObjectInfo.InsideInfo.IndoorMapHazardType.name == indoorMapHazard.hazardType.name)
-                    {
-                        SOsToDelete.Add(indoorMapHazard.hazardType);
-                        indoorMapHazard.hazardType = mapObjectInfo.InsideInfo.IndoorMapHazardType;
-                        break;
-                    }
-                }
-            }
-
-            foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObjectWithRarity in moonInfo.Level.spawnableOutsideObjects)
-            {
-                if (spawnableOutsideObjectWithRarity.spawnableObject == null)
-                    continue;
-
-                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
-                {
-                    if (mapObjectInfo.OutsideInfo == null)
-                        continue;
-
-                    if (mapObjectInfo.OutsideInfo.SpawnableOutsideObject.name == spawnableOutsideObjectWithRarity.spawnableObject.name)
-                    {
-                        SOsToDelete.Add(spawnableOutsideObjectWithRarity.spawnableObject);
-                        spawnableOutsideObjectWithRarity.spawnableObject = mapObjectInfo.OutsideInfo.SpawnableOutsideObject;
-                        break;
-                    }
-                }
-            }
-        }
-
-        for (int i = SOsToDelete.Count - 1; i >= 0; i--)
-        {
-            ScriptableObject.Destroy(SOsToDelete[i]);
-        }
     }
 
     private static void RegenerateNavMeshTranspiler(ILContext il)

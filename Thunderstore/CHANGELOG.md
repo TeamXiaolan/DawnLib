@@ -9,6 +9,8 @@
 - Re-fixed the issue with tags needing the correct namespace?? how did it come back??
 - Moved Registration of DuskMods into after the chainloader.
 - Added BeforeRegisterDuskMod and OnRegisterDuskMod as subscribeable events.
+- Fixed issue with conductive items no longer being picked up by stormy on some conditions.
+- Fixed issue with hazard replacement on some DawnLib moons.
 
 ## v1.0.0-pre10
 
