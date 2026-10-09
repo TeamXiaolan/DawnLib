@@ -273,20 +273,27 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
 
     private void LockLever()
     {
+        allPlayersDone = false;
+
         if (_previousDisabledTooltip == null)
         {
             _previousDisabledTooltip = StartMatchLeverRefs.Instance.triggerScript.disabledHoverTip;
         }
 
+        StartMatchLeverRefs.Instance.triggerScript.interactable = false;
+
+        if (DawnConfig.DisableHotloadingUI.Value)
+        {
+            return;
+        }
+
+        Debuggers.Moons?.Log($"Enabling RouteProgressUI.");
         StartOfRound.Instance.screenLevelVideoReel.enabled = false;
         StartOfRound.Instance.screenLevelVideoReel.gameObject.SetActive(false);
         StartOfRound.Instance.screenLevelVideoReel.Stop();
         StartOfRound.Instance.screenLevelDescription.enabled = false;
 
         RouteProgressUI.Instance!.gameObject.SetActive(true);
-        Debuggers.Moons?.Log($"Enabling RouteProgressUI.");
-        StartMatchLeverRefs.Instance.triggerScript.interactable = false;
-        allPlayersDone = false;
     }
 
     private IEnumerator UnlockLever()
@@ -306,6 +313,12 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
             StartMatchLeverRefs.Instance.triggerScript.interactable = false;
         }
 
+        if (DawnConfig.DisableHotloadingUI.Value)
+        {
+            yield break;
+        }
+
+        Debuggers.Moons?.Log($"Disabling RouteProgressUI.");
         if (StartOfRound.Instance.currentLevel.videoReel != null)
         {
             StartOfRound.Instance.screenLevelVideoReel.clip = LethalContent.Moons[_currentMoonKey.AsTyped<DawnMoonInfo>()].Level.videoReel;
@@ -314,7 +327,6 @@ public class DawnMoonNetworker : NetworkSingleton<DawnMoonNetworker>
             StartOfRound.Instance.screenLevelVideoReel.Play();
         }
         StartOfRound.Instance.screenLevelDescription.enabled = true;
-        Debuggers.Moons?.Log($"Disabling RouteProgressUI.");
         RouteProgressUI.Instance!.gameObject.SetActive(false);
     }
 }

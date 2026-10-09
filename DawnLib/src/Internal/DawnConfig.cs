@@ -21,6 +21,8 @@ static class DawnConfig
     public static ConfigEntry<bool> TerminalKeywordResolution;
     public static ConfigEntry<int> TerminalKeywordSpecificity;
 
+    public static ConfigEntry<bool> DisableHotloadingUI;
+
     internal static void Bind(ConfigFile file)
     {
         VanillaCompatibility = file.CleanedBind(
@@ -72,18 +74,28 @@ static class DawnConfig
             "Allow LLL to override the vanilla status of unlockables"
         );
 
+        DisableHotloadingUI = file.CleanedBind(
+            "Miscellaneous",
+            "Disable RouteProgressUI",
+            false,
+            "Disable the Routing UI that appears when routing from one moon to another (Recommended to be kept on)"
+        );
+
         //example of CreateConfigItem usage that uses generics and accepts min/max values automatically
         TerminalKeywordResolution = file.CleanedBind(
             "Terminal",
             "Keyword Resolution",
             true,
-            "Dawnlib's terminal keyword resolution sytem to better handle conflicting keywords.");
+            "Dawnlib's terminal keyword resolution sytem to better handle conflicting keywords."
+        );
+
         TerminalKeywordSpecificity = file.CleanedBind(
             "Terminal",
             "Keyword Specificity",
             3,
             "When Keyword Resolution is enabled, how many characters must match for a keyword to be considered a result for a given input in the terminal.",
-            0, //min value
-            5); //max value
+            0, // min value
+            5  // max value
+            );
     }
 }

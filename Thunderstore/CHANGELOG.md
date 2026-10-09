@@ -14,6 +14,7 @@
 - Added DuskConfigDefinitions as a replacement for where configs used to be registered.
 - Fixed issue with story logs double registering.
 - Fixed issue with DeadBody registry accidently adding the wrong NamespacedKeyContainer to itself.
+- Added Config to disable RouteProgressUI (False by default).
 
 ## v1.0.0-pre10
 
