@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Unlockable Definition", menuName = $"{DuskModConstants.Definitions}/Unlockable Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4104-c6-ship-upgradesdecors/")]
 public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItemInfo>
 {
     [field: SerializeField]

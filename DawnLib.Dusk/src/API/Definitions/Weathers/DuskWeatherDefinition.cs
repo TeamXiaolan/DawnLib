@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Weather Definition", menuName = $"{DuskModConstants.Definitions}/Weather Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4106-c3-weathers/")]
 public class DuskWeatherDefinition : DuskContentDefinition<DawnWeatherEffectInfo>
 {
     [field: SerializeField]

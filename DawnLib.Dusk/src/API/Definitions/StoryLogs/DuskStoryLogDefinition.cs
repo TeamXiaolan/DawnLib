@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New StoryLog Definition", menuName = $"{DuskModConstants.Definitions}/StoryLog Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/")]
 public class DuskStoryLogDefinition : DuskContentDefinition<DawnStoryLogInfo>
 {
     [field: SerializeField]

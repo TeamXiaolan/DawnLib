@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Parent Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4107-d1-achievements/")]
 public class DuskParentAchievement : DuskAchievementDefinition, IProgress
 {
     [field: SerializeReference]

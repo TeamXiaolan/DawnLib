@@ -9,6 +9,7 @@ using UnityEngine.Serialization;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Map Definition", menuName = $"{DuskModConstants.Definitions}/Map Object Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4103-c5-insideoutside-hazards/")]
 public class DuskMapObjectDefinition : DuskContentDefinition<DawnMapObjectInfo>
 {
     [field: FormerlySerializedAs("gameObject")]
