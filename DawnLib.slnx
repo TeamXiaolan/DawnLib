@@ -4,5 +4,9 @@
   <Project Path="DawnLib.Daybreak/DawnLib.Daybreak.csproj" />
   <Project Path="DawnLib.Dusk/DawnLib.Dusk.csproj" />
   <Project Path="DawnLib.SourceGen/DawnLib.SourceGen.csproj" />
+  <Project Path="DawnLib.Twilight/DawnLib.Twilight.csproj" />
+  <Project Path="DawnLib.Nightfall/DawnLib.Nightfall.csproj" />
+  <Project Path="DawnLib.Eventide/DawnLib.Eventide.csproj" />
+  <Project Path="DawnLib.Sundown/DawnLib.Sundown.csproj" />
   <Project Path="DawnLib/DawnLib.csproj" />
 </Solution>

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <AssemblyName>com.github.teamxiaolan.dawnlib.sunset</AssemblyName>
-        <Product>DawnLib.Sunset</Product>
+        <AssemblyName>com.github.teamxiaolan.dawnlib.twilight</AssemblyName>
+        <Product>DawnLib.Twilight</Product>
     </PropertyGroup>
 
     <!-- Project Properties -->
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <RootNamespace>Sunset</RootNamespace>
+        <RootNamespace>Twilight</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <!-- NuGet Packaging -->
     <PropertyGroup>
-        <PackageId>TeamXiaolan.DawnLib.Sunset</PackageId>
-        <Description>Core of DawnLib.</Description>
+        <PackageId>TeamXiaolan.DawnLib.Twilight</PackageId>
+        <Description>Placeholder.</Description>
 
         <IsPackable>true</IsPackable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

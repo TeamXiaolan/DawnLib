@@ -1,6 +1,6 @@
 # v1.0.0-pre11
 
-- Likely one of the last experimental versions, contains some of the more important breaking changes.
+- One of the last experimental versions, contains some of the more important breaking changes.
 - Removed `ContentHandler`'s, this is to get rid of the hybrid code+editor registration, now, you should either use code only or editor only to register your assets.
 - Made `Registry`'s implement `IEnumerable<T>` instead of `IReadOnlyDictonary<NamespacedKey<T>, T>`.
 - Removed `IgnoreIconReplacementWithRuntimeIconsInstalled` and replaced it with `ItemIconReplacementOptions`.
@@ -11,6 +11,7 @@
 - Added BeforeRegisterDuskMod and OnRegisterDuskMod as subscribeable events.
 - Fixed issue with conductive items no longer being picked up by stormy on some conditions.
 - Fixed issue with hazard replacement on some DawnLib moons.
+- Added DuskConfigDefinitions as a replacement for where configs used to be registered.
 
 ## v1.0.0-pre10
 

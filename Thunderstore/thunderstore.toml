@@ -28,7 +28,23 @@ source = "../DawnLib.Daybreak/bin/Release/netstandard2.1/com.github.teamxiaolan.
 target = "BepInEx/patchers/"
 
 [[build.copy]]
-source = "../DawnLib.Sunset/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.Sunset.dll"
+source = "../DawnLib.Sunset/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.sunset.dll"
+target = "BepInEx/plugins/DawnLib/"
+
+[[build.copy]]
+source = "../DawnLib.Twilight/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.twilight.dll"
+target = "BepInEx/plugins/DawnLib/"
+
+[[build.copy]]
+source = "../DawnLib.Sundown/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.sundown.dll"
+target = "BepInEx/plugins/DawnLib/"
+
+[[build.copy]]
+source = "../DawnLib.Nightfall/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.nightfall.dll"
+target = "BepInEx/plugins/DawnLib/"
+
+[[build.copy]]
+source = "../DawnLib.Eventide/bin/Release/netstandard2.1/com.github.teamxiaolan.dawnlib.eventide.dll"
 target = "BepInEx/plugins/DawnLib/"
 
 [[build.copy]]
