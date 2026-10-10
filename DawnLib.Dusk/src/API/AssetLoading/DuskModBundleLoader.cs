@@ -62,7 +62,6 @@ internal class DuskModBundleLoader
             typeof(DuskTerminalCommandDefinition),
             typeof(DuskEntityReplacementDefinition),
             typeof(DuskStoryLogDefinition),
-            typeof(DuskAchievementDefinition),
             typeof(DuskSurfaceDefinition),
             typeof(DuskAdditionalTilesDefinition),
         ];

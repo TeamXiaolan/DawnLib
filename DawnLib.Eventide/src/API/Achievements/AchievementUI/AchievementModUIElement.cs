@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using Dawn.Internal;
+using Dusk;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Dawn.Internal;
 
-namespace Dusk;
+namespace Eventide;
 
 public class AchievementModUIElement : MonoBehaviour
 {
@@ -45,13 +46,13 @@ public class AchievementModUIElement : MonoBehaviour
             _modIcon.color = Color.white;
         }
 
-        List<DuskAchievementDefinition> sortedAchievements = DuskModContent.Achievements
+        List<EventideAchievementDefinition> sortedAchievements = EventideModContent.Achievements
             .Where(a => a.registrationContext.Mod == mod)
             .ToList()
             .OrderByDescending(a => a.AchievementName)
             .ToList();
 
-        foreach (DuskAchievementDefinition achievement in sortedAchievements)
+        foreach (EventideAchievementDefinition achievement in sortedAchievements)
         {
             Debuggers.Achievements?.Log($"Adding achievement: {achievement.AchievementName}");
 

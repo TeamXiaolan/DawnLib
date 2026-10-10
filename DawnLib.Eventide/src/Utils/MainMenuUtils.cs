@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Dusk.Utils;
+namespace Eventide.Utils;
 
 static class MenuUtils
 {

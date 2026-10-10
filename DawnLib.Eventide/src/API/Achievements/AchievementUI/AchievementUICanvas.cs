@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dawn.Utils;
+using Dusk;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Dusk;
+namespace Eventide;
 
 public class AchievementUICanvas : Singleton<AchievementUICanvas>
 {
@@ -41,7 +42,7 @@ public class AchievementUICanvas : Singleton<AchievementUICanvas>
         foreach (DuskMod duskMod in DuskMod.AllMods)
         {
             // instantiate a mod element if it has ANY achievements
-            if (DuskModContent.Achievements.Count(a => a.registrationContext.Mod == duskMod) > 0)
+            if (EventideModContent.Achievements.Count(a => a.registrationContext.Mod == duskMod) > 0)
             {
                 GameObject uiElement = GameObject.Instantiate(_achievementModUIElementPrefab, _modContents.transform);
                 AchievementModUIElement modUIElement = uiElement.GetComponent<AchievementModUIElement>();

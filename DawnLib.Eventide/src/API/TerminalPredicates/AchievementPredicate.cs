@@ -1,9 +1,10 @@
 ﻿using Dawn;
+using Dusk;
 using UnityEngine;
 
-namespace Dusk;
+namespace Eventide;
 
-[CreateAssetMenu(menuName = $"{DuskModConstants.TerminalPredicates}/Achievement Unlock Requirement", fileName = "New Achievement Predicate", order = DuskModConstants.PredicateOrder)]
+[CreateAssetMenu(menuName = $"{EventideModConstants.TerminalPredicates}/Achievement Unlock Requirement", fileName = "New Achievement Predicate", order = EventideModConstants.PredicateOrder)]
 public class AchievementPredicate : DuskTerminalPredicate
 {
     [SerializeField]
@@ -13,7 +14,7 @@ public class AchievementPredicate : DuskTerminalPredicate
     private TerminalNode _failNode;
 
     [SerializeReference]
-    private DuskAchievementReference _achievement;
+    private EventideAchievementReference _achievement;
 
     private NamespacedKey _namespacedKey;
 
@@ -26,7 +27,7 @@ public class AchievementPredicate : DuskTerminalPredicate
 
     public override TerminalPurchaseResult CanPurchase()
     {
-        if (!_achievement.TryResolve(out DuskAchievementDefinition definition))
+        if (!_achievement.TryResolve(out EventideAchievementDefinition definition))
         {
             DawnPlugin.Logger.LogError($"Failed to resolve the achievement definition for '{_achievement.Key}'. Unlock Requirement NamespacedKey = {_namespacedKey}.");
             return TerminalPurchaseResult.Fail(new TerminalNodeBuilder("AchievementPredicateInternalFail")

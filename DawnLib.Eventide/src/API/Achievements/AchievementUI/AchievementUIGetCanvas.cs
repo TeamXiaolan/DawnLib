@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Dawn.Utils;
 using UnityEngine;
 
-namespace Dusk;
+namespace Eventide;
 
 public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
 {
@@ -15,20 +15,20 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
     [SerializeField]
     private GameObject achievementContent = null!;
 
-    private Queue<DuskAchievementDefinition> achievementQueue = new();
+    private Queue<EventideAchievementDefinition> achievementQueue = new();
 
     private void Start()
     {
-        DuskAchievementHandler.OnAchievementUnlocked += QueuePopup;
+        EventideAchievementHandler.OnAchievementUnlocked += QueuePopup;
     }
 
     protected override void OnDestroy()
     {
-        DuskAchievementHandler.OnAchievementUnlocked -= QueuePopup;
+        EventideAchievementHandler.OnAchievementUnlocked -= QueuePopup;
         base.OnDestroy();
     }
 
-    internal void QueuePopup(DuskAchievementDefinition achievement)
+    internal void QueuePopup(EventideAchievementDefinition achievement)
     {
         achievementQueue.Enqueue(achievement);
         if (achievementContent.transform.childCount == 0)
@@ -41,7 +41,7 @@ public class AchievementUIGetCanvas : Singleton<AchievementUIGetCanvas>
     {
         while (achievementQueue.Count > 0)
         {
-            DuskAchievementDefinition achievementDefinition = achievementQueue.Dequeue();
+            EventideAchievementDefinition achievementDefinition = achievementQueue.Dequeue();
             GameObject achievementElement = Instantiate(_achievementGetUIElementPrefab, achievementContent.transform);
             AchievementUIElement uiElement = achievementElement.GetComponent<AchievementUIElement>();
             uiElement.SetupAchievementUI(achievementDefinition);

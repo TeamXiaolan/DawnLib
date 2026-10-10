@@ -81,18 +81,6 @@ public class DuskNetworker : NetworkSingleton<DuskNetworker>
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    internal void TriggerAchievementServerRpc(NamespacedKey namespacedKey)
-    {
-        TriggerAchievementClientRpc(namespacedKey);
-    }
-
-    [ClientRpc]
-    private void TriggerAchievementClientRpc(NamespacedKey namespacedKey)
-    {
-        DuskModContent.Achievements[namespacedKey.AsTyped<DuskAchievementDefinition>()].TryCompleteFromServer();
-    }
-
     [ServerRpc]
     internal void SyncVehicleDeliveredServerRpc(int lastVehicleDelivered)
     {

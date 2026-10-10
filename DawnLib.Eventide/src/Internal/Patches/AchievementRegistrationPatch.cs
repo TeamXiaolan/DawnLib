@@ -1,9 +1,8 @@
-using Dawn.Internal;
-using Dusk.Utils;
+using Eventide.Utils;
 using MonoMod.RuntimeDetour;
 using UnityEngine;
 
-namespace Dusk.Internal;
+namespace Eventide.Internal;
 
 static class AchievementRegistrationPatch
 {
@@ -23,7 +22,7 @@ static class AchievementRegistrationPatch
     {
         if (AchievementUIGetCanvas.Instance == null)
         {
-            Object.Instantiate(DuskPlugin.DuskMain.AchievementGetUICanvasPrefab);
+            Object.Instantiate(EventidePlugin.EventideMain.AchievementGetUICanvasPrefab);
         }
 
         orig(self);
@@ -32,27 +31,27 @@ static class AchievementRegistrationPatch
     private static void SaveAchievementData(On.StartOfRound.orig_AutoSaveShipData orig, StartOfRound self)
     {
         orig(self);
-        DuskAchievementHandler.SaveAll();
+        EventideAchievementHandler.SaveAll();
     }
 
     private static void LoadAchievementDataWithUI(On.MenuManager.orig_Start orig, MenuManager self)
     {
         orig(self);
-        if (DuskModContent.Achievements.Count == 0 || DawnConfig.DisableAchievementsButton.Value)
+        if (EventideModContent.Achievements.Count == 0 || EventideConfig.DisableAchievementsButton.Value)
             return;
 
-        DuskAchievementHandler.LoadAll();
+        EventideAchievementHandler.LoadAll();
         DoAchievementUI(self);
     }
 
     private static void DoAchievementUI(MenuManager menuManager)
     {
-        var canvas = GameObject.Instantiate(DuskPlugin.DuskMain.AchievementUICanvasPrefab, menuManager.transform.parent.Find("MenuContainer"));
+        var canvas = GameObject.Instantiate(EventidePlugin.EventideMain.AchievementUICanvasPrefab, menuManager.transform.parent.Find("MenuContainer"));
         canvas.GetComponent<AchievementUICanvas>()._menuManager = menuManager;
 
         if (AchievementUIGetCanvas.Instance == null)
         {
-            Object.Instantiate(DuskPlugin.DuskMain.AchievementGetUICanvasPrefab);
+            Object.Instantiate(EventidePlugin.EventideMain.AchievementGetUICanvasPrefab);
         }
 
         var menuContainer = GameObject.Find("MenuContainer");
@@ -73,6 +72,6 @@ static class AchievementRegistrationPatch
     private static void SaveAchievementData(On.GameNetworkManager.orig_SaveLocalPlayerValues orig, GameNetworkManager self)
     {
         orig(self);
-        DuskAchievementHandler.SaveAll();
+        EventideAchievementHandler.SaveAll();
     }
 }

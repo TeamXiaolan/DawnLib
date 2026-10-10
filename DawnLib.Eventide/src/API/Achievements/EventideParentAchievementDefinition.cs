@@ -1,21 +1,22 @@
 using System.Collections.Generic;
 using Dawn.Utils;
+using Dusk;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Dusk;
+namespace Eventide;
 
-[CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Parent Definition")]
-public class DuskParentAchievement : DuskAchievementDefinition, IProgress
+[CreateAssetMenu(fileName = "New Parent Achievement Definition", menuName = $"{EventideModConstants.Achievements}/Parent Definition")]
+public class EventideParentAchievement : EventideAchievementDefinition, IProgress
 {
     [field: SerializeReference]
     [field: FormerlySerializedAs("ChildrenAchievementNames")]
-    public List<DuskAchievementReference> ChildrenAchievementReferences { get; private set; } = new();
+    public List<EventideAchievementReference> ChildrenAchievementReferences { get; private set; } = new();
 
     public override void Register(DuskRegistrationContext registrationContext)
     {
         base.Register(registrationContext);
-        DuskAchievementHandler.OnAchievementUnlocked += definition =>
+        EventideAchievementHandler.OnAchievementUnlocked += definition =>
         {
             if (definition.registrationContext != registrationContext)
                 return;
@@ -30,14 +31,14 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
     int CountCompleted()
     {
         int counter = 0;
-        foreach (DuskAchievementDefinition achievement in DuskModContent.Achievements)
+        foreach (EventideAchievementDefinition achievement in EventideModContent.Achievements)
         {
             if (!achievement.Completed)
                 continue;
 
-            foreach (DuskAchievementReference achievementReference in ChildrenAchievementReferences)
+            foreach (EventideAchievementReference achievementReference in ChildrenAchievementReferences)
             {
-                if (achievementReference.TryResolve(out DuskAchievementDefinition achievementDefinition) && achievementDefinition.AchievementName == achievement.AchievementName)
+                if (achievementReference.TryResolve(out EventideAchievementDefinition achievementDefinition) && achievementDefinition.AchievementName == achievement.AchievementName)
                 {
                     counter += 1;
                     break;
@@ -50,9 +51,9 @@ public class DuskParentAchievement : DuskAchievementDefinition, IProgress
     public override bool IsActive()
     {
         int counter = 0;
-        foreach (DuskAchievementReference achievementReference in ChildrenAchievementReferences)
+        foreach (EventideAchievementReference achievementReference in ChildrenAchievementReferences)
         {
-            if (achievementReference.TryResolve(out DuskAchievementDefinition achievementDefinition) && achievementDefinition.IsActive())
+            if (achievementReference.TryResolve(out EventideAchievementDefinition achievementDefinition) && achievementDefinition.IsActive())
             {
                 counter += 1;
             }

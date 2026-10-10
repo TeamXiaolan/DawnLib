@@ -1,10 +1,10 @@
 using Dawn.Utils;
 using UnityEngine;
 
-namespace Dusk;
+namespace Eventide;
 
-[CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Stat Definition")]
-public class DuskStatAchievement : DuskAchievementDefinition, IProgress
+[CreateAssetMenu(fileName = "New Stat Achievement Definition", menuName = $"{EventideModConstants.Achievements}/Stat Definition")]
+public class EventideStatAchievement : EventideAchievementDefinition, IProgress
 {
     public class StatSaveData(bool completed, float currentProgress) : AchievementSaveData(completed)
     {

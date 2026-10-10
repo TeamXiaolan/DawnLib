@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using Dawn.Utils;
 using UnityEngine;
 
-namespace Dusk;
+namespace Eventide;
 
-[CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = $"{DuskModConstants.Achievements}/Discovery Definition")]
-public class DuskDiscoveryAchievement : DuskAchievementDefinition, IProgress
+[CreateAssetMenu(fileName = "New Discovery Achievement Definition", menuName = $"{EventideModConstants.Achievements}/Discovery Definition")]
+public class EventideDiscoveryAchievement : EventideAchievementDefinition, IProgress
 {
     [Tooltip("Unique string ID for each discovery to account for progress.")]
     [field: SerializeField]

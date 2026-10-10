@@ -1,4 +1,4 @@
-namespace Dusk;
+namespace Eventide;
 
 public class AchievementSaveData(bool completed)
 {

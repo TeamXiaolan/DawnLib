@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace Dusk;
+namespace Eventide;
 
 public class AchievementUIElement : MonoBehaviour
 {
@@ -48,12 +48,12 @@ public class AchievementUIElement : MonoBehaviour
     internal EventTrigger? eventTrigger = null;
 
 
-    internal DuskAchievementDefinition achievementDefinition = null!;
+    internal EventideAchievementDefinition achievementDefinition = null!;
 
-    public void SetupAchievementUI(DuskAchievementDefinition definition)
+    public void SetupAchievementUI(EventideAchievementDefinition definition)
     {
         achievementDefinition = definition;
-        DuskAchievementHandler.UpdateUIElement(this, definition);
+        EventideAchievementHandler.UpdateUIElement(this, definition);
     }
 
     public void ResetAchievementProgress()

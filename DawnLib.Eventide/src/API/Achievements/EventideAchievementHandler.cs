@@ -1,38 +1,38 @@
 using System;
-using Dawn.Internal;
 using Dawn.Utils;
 using TMPro;
 using UnityEngine;
+using Dawn.Internal;
 
-namespace Dusk;
+namespace Eventide;
 
-static class DuskAchievementHandler
+static class EventideAchievementHandler
 {
-    public static Action<DuskAchievementDefinition>? OnAchievementUnlocked;
+    public static Action<EventideAchievementDefinition>? OnAchievementUnlocked;
 
     internal static void LoadAll()
     {
-        using (DuskPlugin.PersistentData.CreateEditContext())
+        using (EventidePlugin.PersistentData.CreateEditContext())
         {
-            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements)
+            foreach (EventideAchievementDefinition achievementDefinition in EventideModContent.Achievements)
             {
-                achievementDefinition.LoadAchievementState(DuskPlugin.PersistentData);
+                achievementDefinition.LoadAchievementState(EventidePlugin.PersistentData);
             }
         }
     }
 
     internal static void SaveAll()
     {
-        using (DuskPlugin.PersistentData.CreateEditContext())
+        using (EventidePlugin.PersistentData.CreateEditContext())
         {
-            foreach (DuskAchievementDefinition achievementDefinition in DuskModContent.Achievements)
+            foreach (EventideAchievementDefinition achievementDefinition in EventideModContent.Achievements)
             {
-                achievementDefinition.SaveAchievementState(DuskPlugin.PersistentData);
+                achievementDefinition.SaveAchievementState(EventidePlugin.PersistentData);
             }
         }
     }
 
-    internal static void UpdateUIElement(AchievementUIElement achievementUIElement, DuskAchievementDefinition achievementDefinition)
+    internal static void UpdateUIElement(AchievementUIElement achievementUIElement, EventideAchievementDefinition achievementDefinition)
     {
         achievementUIElement.achievementNameTMP.text = achievementDefinition.AchievementName;
         achievementUIElement.achievementDescriptionTMP.text = achievementDefinition.AchievementDescription;

@@ -1,14 +1,15 @@
 using Dawn;
 using Dawn.Internal;
+using Dusk;
 using TMPro;
 using UnityEngine;
 
-namespace Dusk;
+namespace Eventide;
 
-public abstract class DuskAchievementDefinition : DuskContentDefinition, INamespaced<DuskAchievementDefinition>
+public abstract class EventideAchievementDefinition : DuskContentDefinition, INamespaced<EventideAchievementDefinition>
 {
     [field: SerializeField]
-    private NamespacedKey<DuskAchievementDefinition> _typedKey;
+    private NamespacedKey<EventideAchievementDefinition> _typedKey;
 
     [field: SerializeField]
     public Sprite? AchievementIcon { get; private set; }
@@ -42,8 +43,8 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
 
     public bool Completed { get; protected set; } = false;
 
-    public NamespacedKey<DuskAchievementDefinition> TypedKey => _typedKey;
-    public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<DuskAchievementDefinition>(); }
+    public NamespacedKey<EventideAchievementDefinition> TypedKey => _typedKey;
+    public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<EventideAchievementDefinition>(); }
 
     internal DuskRegistrationContext registrationContext;
 
@@ -77,7 +78,7 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
         }
 
         Completed = true;
-        DuskAchievementHandler.OnAchievementUnlocked?.Invoke(this);
+        EventideAchievementHandler.OnAchievementUnlocked?.Invoke(this);
         return Completed;
     }
 
@@ -89,13 +90,13 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     public virtual void ResetProgress()
     {
         Completed = false;
-        DuskAchievementHandler.SaveAll();
-        DuskAchievementHandler.LoadAll();
+        EventideAchievementHandler.SaveAll();
+        EventideAchievementHandler.LoadAll();
         foreach (AchievementModUIElement modUIElement in AchievementModUIElement.achievementModUIElements)
         {
             foreach (AchievementUIElement achievementUIElement in modUIElement.achievementsContainerList)
             {
-                DuskAchievementHandler.UpdateUIElement(achievementUIElement, achievementUIElement.achievementDefinition);
+                EventideAchievementHandler.UpdateUIElement(achievementUIElement, achievementUIElement.achievementDefinition);
             }
         }
     }
@@ -112,7 +113,7 @@ public abstract class DuskAchievementDefinition : DuskContentDefinition, INamesp
     {
         base.Register(registrationContext);
         this.registrationContext = registrationContext;
-        DuskModContent.Achievements.Register(this);
+        EventideModContent.Achievements.Register(this);
     }
 
     public virtual bool IsActive() { return true; }
