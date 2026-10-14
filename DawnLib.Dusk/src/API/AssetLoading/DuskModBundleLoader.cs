@@ -60,7 +60,6 @@ internal class DuskModBundleLoader
             typeof(DuskUnlockableDefinition),
             typeof(DuskItemDefinition),
             typeof(DuskTerminalCommandDefinition),
-            typeof(DuskEntityReplacementDefinition),
             typeof(DuskStoryLogDefinition),
             typeof(DuskSurfaceDefinition),
             typeof(DuskAdditionalTilesDefinition),

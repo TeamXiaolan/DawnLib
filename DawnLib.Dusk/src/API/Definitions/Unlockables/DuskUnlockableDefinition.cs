@@ -12,6 +12,7 @@ public class DuskUnlockableDefinition : DuskContentDefinition<DawnUnlockableItem
     public UnlockableItem UnlockableItem { get; private set; } = new();
 
     [field: SerializeField]
+    [field: TextArea(2, 10)]
     public string InfoNodeText { get; private set; } = string.Empty;
 
     [field: SerializeField]

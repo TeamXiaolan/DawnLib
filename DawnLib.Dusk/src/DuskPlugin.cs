@@ -33,8 +33,6 @@ public class DuskPlugin : BaseUnityPlugin
         DawnLib.Weights.AddContextContributor(new ItemInfoWeightContextContributor());
         Logger.LogInfo("Doing patches");
 
-        EntityReplacementRegistrationPatch.Init();
-        DuskSaveIntegration.Init();
         CommitKeyToSave.Init();
         if (!DawnConfig.VanillaCompatibility.Value)
         {
