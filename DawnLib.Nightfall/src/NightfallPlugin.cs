@@ -6,6 +6,7 @@ using Dawn.Internal;
 using Dawn.Utils;
 using Dusk;
 using Nightfall.Internal;
+using Nightfall.Weights;
 using UnityEngine;
 
 namespace Nightfall;
@@ -26,6 +27,8 @@ public class NightfallPlugin : BaseUnityPlugin
         Instance = this;
         Logger = base.Logger;
         PersistentData = this.GetPersistentDataContainer();
+
+        DawnLib.Weights.AddContextContributor(new ItemInfoWeightContextContributor());
         Logger.LogInfo("Doing patches");
 
         EntityReplacementRegistrationPatch.Init();

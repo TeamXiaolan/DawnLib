@@ -30,7 +30,6 @@ public class DuskPlugin : BaseUnityPlugin
         Logger = base.Logger;
         PersistentData = this.GetPersistentDataContainer();
         DawnLib.Weights.AddContextContributor(new RoutePriceWeightContextContributor());
-        DawnLib.Weights.AddContextContributor(new ItemInfoWeightContextContributor());
         Logger.LogInfo("Doing patches");
 
         CommitKeyToSave.Init();

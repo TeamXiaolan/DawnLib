@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Dawn;
 
-namespace Dusk.Weights;
+namespace Nightfall.Weights;
 
 public sealed class DynamicItemSkinModifier : IWeightModifier<int>
 {
@@ -12,7 +12,7 @@ public sealed class DynamicItemSkinModifier : IWeightModifier<int>
         _keyOfRelevantSkin = keyOfRelevantSkin;
     }
 
-    public NamespacedKey Key => DuskKeys.DynamicItemSkin;
+    public NamespacedKey Key => NightfallKeys.DynamicItemSkin;
 
     public WeightModifierPhase Phase => WeightModifierPhase.Base;
 
@@ -20,7 +20,7 @@ public sealed class DynamicItemSkinModifier : IWeightModifier<int>
 
     public bool CanApply(WeightContext context)
     {
-        if (!context.TryGet(DuskWeightContextKeys.ItemInfo, out DawnItemInfo? itemInfo))
+        if (!context.TryGet(NightfallWeightContextKeys.ItemInfo, out DawnItemInfo? itemInfo))
             return false;
 
         if (itemInfo != context.Owner)
@@ -31,20 +31,20 @@ public sealed class DynamicItemSkinModifier : IWeightModifier<int>
 
     public void Apply(ref int value, WeightContext context)
     {
-        if (!context.TryGet(DuskWeightContextKeys.ItemInfo, out DawnItemInfo? itemInfo))
+        if (!context.TryGet(NightfallWeightContextKeys.ItemInfo, out DawnItemInfo? itemInfo))
         {
             // ItemInfo not found, shouldn't happen though.
             return;
         }
 
-        if (!itemInfo.CustomData.TryGet(DuskKeys.EntityReplacements, out List<DuskEntityReplacementDefinition>? replacements))
+        if (!itemInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallEntityReplacementDefinition>? replacements))
         {
             // No skins found, shouldn't happen though.
             return;
         }
 
         int totalWeightOfAllReplacementsExceptRelevant = 0;
-        foreach (DuskEntityReplacementDefinition replacementDefinition in replacements)
+        foreach (NightfallEntityReplacementDefinition replacementDefinition in replacements)
         {
             if (replacementDefinition.Key == _keyOfRelevantSkin)
             {

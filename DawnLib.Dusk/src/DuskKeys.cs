@@ -20,5 +20,4 @@ public static partial class DuskKeys
 
     // Context
     public static readonly NamespacedKey RoutePriceContext = NamespacedKey.From(Namespace, "route_price_context");
-    public static readonly NamespacedKey ItemInfoContext = NamespacedKey.From(Namespace, "item_info_context");
 }

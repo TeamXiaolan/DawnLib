@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Dawn;
 
-namespace Dusk.Weights;
+namespace Nightfall.Weights;
 
 public sealed class DynamicItemSkinSource : WeightModifierSource<int>
 {

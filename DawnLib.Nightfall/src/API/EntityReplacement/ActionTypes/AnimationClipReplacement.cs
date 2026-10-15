@@ -25,7 +25,6 @@ public class AnimationClipReplacement : Hierarchy
         List<Animator> animators = GetComponentsWithHierarchyPaths<Animator>(rootTransform);
         foreach (Animator animator in animators)
         {
-            AnimatorOverrideController animatorOverrideController = new(animator.runtimeAnimatorController);
             foreach (AnimationEventData animationEventAddition in PotentialAnimationEvents)
             {
                 AnimationEvent animationEvent = new()
@@ -40,6 +39,10 @@ public class AnimationClipReplacement : Hierarchy
                 };
 
                 NewAnimationClip.AddEvent(animationEvent);
+            }
+            if (animator.runtimeAnimatorController is not AnimatorOverrideController animatorOverrideController)
+            {
+                animatorOverrideController = new(animator.runtimeAnimatorController);
             }
             animatorOverrideController[OriginalClipName] = NewAnimationClip;
             animator.runtimeAnimatorController = animatorOverrideController;

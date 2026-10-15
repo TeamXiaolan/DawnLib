@@ -1,6 +1,6 @@
 using Dawn;
 
-namespace Dusk.Weights;
+namespace Nightfall.Weights;
 
 public sealed class ItemInfoWeightContextContributor : IWeightContextContributor
 {
@@ -10,6 +10,6 @@ public sealed class ItemInfoWeightContextContributor : IWeightContextContributor
         if (owner == null || owner is not DawnItemInfo itemInfo)
             return;
 
-        builder.Set(DuskWeightContextKeys.ItemInfo, itemInfo);
+        builder.Set(NightfallWeightContextKeys.ItemInfo, itemInfo);
     }
 }

@@ -14,4 +14,7 @@ public static partial class NightfallKeys
 
     // Weight Channels
     public static readonly NamespacedKey EntityReplacementRarity = NamespacedKey.From(Namespace, "entity_replacement_rarity");
+
+    // Weight Contexts
+    public static readonly NamespacedKey ItemInfoContext = NamespacedKey.From(Namespace, "item_info_context");
 }
