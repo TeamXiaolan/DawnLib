@@ -68,7 +68,15 @@ source = "../DawnLib/res/dawnlibmainvanilla"
 target = "BepInEx/plugins/DawnLib/Assets/"
 
 [[build.copy]]
-source = "../DawnLib/res/dusklibmain"
+source = "../DawnLib/res/eventidemainnetwork"
+target = "BepInEx/plugins/DawnLib/Assets/"
+
+[[build.copy]]
+source = "../DawnLib/res/eventidemodmain"
+target = "BepInEx/plugins/DawnLib/Assets/"
+
+[[build.copy]]
+source = "../DawnLib/res/nightfallmainnetwork"
 target = "BepInEx/plugins/DawnLib/Assets/"
 
 [[build.copy]]
