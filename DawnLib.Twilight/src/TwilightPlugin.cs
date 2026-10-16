@@ -3,12 +3,14 @@ using BepInEx.Logging;
 using Dawn;
 using Dawn.Internal;
 using Dawn.Utils;
+using Dusk;
 using Twilight.Utils;
 
 namespace Twilight;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(DawnLib.PLUGIN_GUID)]
+[BepInDependency(DuskMod.PLUGIN_GUID)]
 public class TwilightPlugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger { get; private set; } = null!;

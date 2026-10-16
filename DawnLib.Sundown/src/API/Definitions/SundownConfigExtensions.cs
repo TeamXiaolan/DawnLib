@@ -3,14 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 using BepInEx.Configuration;
 using Dawn;
 
-namespace Dusk;
+namespace Sundown;
 
-public static class DuskConfigExtensions
+public static class SundownConfigExtensions
 {
-    public static bool TryGetConfig<T>(this Registry<DuskConfigDefinition> registry, NamespacedKey<DuskConfigDefinition> configKey, [NotNullWhen(true)] out ConfigEntry<T>? configEntry)
+    public static bool TryGetConfig<T>(this Registry<SundownConfigDefinition> registry, NamespacedKey<SundownConfigDefinition> configKey, [NotNullWhen(true)] out ConfigEntry<T>? configEntry)
     {
         configEntry = null;
-        if (!registry.TryGetValue(configKey, out DuskConfigDefinition? value))
+        if (!registry.TryGetValue(configKey, out SundownConfigDefinition? value))
         {
             configEntry = null;
             return false;
@@ -26,7 +26,7 @@ public static class DuskConfigExtensions
         return true;
     }
 
-    public static ConfigEntry<T> GetConfig<T>(this Registry<DuskConfigDefinition> registry, NamespacedKey<DuskConfigDefinition> configKey)
+    public static ConfigEntry<T> GetConfig<T>(this Registry<SundownConfigDefinition> registry, NamespacedKey<SundownConfigDefinition> configKey)
     {
         if (!registry.TryGetConfig(configKey, out ConfigEntry<T>? configEntry))
         {

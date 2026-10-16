@@ -17,6 +17,10 @@ internal class DuskModBundleLoader
     private readonly bool _hasVideoClips;
     private List<string> _videoClipNames = new();
 
+    public static event Action<DuskRegistrationContext, IReadOnlyList<DuskContentDefinition>> PreContentRegistration;
+    public static event Action<DuskRegistrationContext, DuskContentDefinition> OnContentRegistered;
+    public static event Action<DuskRegistrationContext, IReadOnlyList<DuskContentDefinition>> PostContentRegistration;
+
     internal DuskModBundleLoader(DuskRegistrationContext registrationContext, AssetBundle bundle)
     {
         Debuggers.AssetLoading?.Log($"{bundle.name} contains these objects: {string.Join(",", bundle.GetAllAssetNames())}");
@@ -72,57 +76,13 @@ internal class DuskModBundleLoader
             return index >= 0 ? index : int.MaxValue;
         }).ToList();
 
-        Dictionary<DuskContentDefinition, List<DuskConfigDefinition>> configDefinitions = new();
+        PreContentRegistration.Invoke(registrationContext, Content);
         foreach (DuskContentDefinition definition in Content)
         {
-            if (definition is not DuskConfigDefinition configDefinition)
-            {
-                if (definition._configEntries == null || definition._configEntries.Count == 0)
-                {
-                    continue;
-                }
-
-                foreach (DuskDynamicConfig dynamicConfig in definition._configEntries)
-                {
-                    DuskConfigDefinition newConfigDefinition = DuskDynamicConfig.CreateConfigDefinitionFromDynamicConfig(definition, dynamicConfig);
-                    if (!configDefinitions.ContainsKey(definition))
-                    {
-                        configDefinitions[definition] = new List<DuskConfigDefinition>();
-                    }
-                    configDefinitions[definition].Add(newConfigDefinition);
-                }
-                continue;
-            }
-
-            if (configDefinition.ContentReference == null)
-            {
-                continue;
-            }
-
-            if (!configDefinitions.ContainsKey(configDefinition.ContentReference))
-            {
-                configDefinitions[configDefinition.ContentReference] = new List<DuskConfigDefinition>();
-            }
-            configDefinitions[configDefinition.ContentReference].Add(configDefinition);
-        }
-
-        foreach (DuskContentDefinition definition in Content)
-        {
-            if (definition is DuskConfigDefinition configDefinition)
-            {
-                continue;
-            }
-
             definition.Register(registrationContext);
-            if (configDefinitions.TryGetValue(definition, out List<DuskConfigDefinition>? configs))
-            {
-                foreach (DuskConfigDefinition config in configs)
-                {
-                    config.Register(registrationContext);
-                }
-            }
-            definition.RegisterPost(registrationContext);
+            OnContentRegistered.Invoke(registrationContext, definition);
         }
+        PostContentRegistration.Invoke(registrationContext, Content);
 
         if (_hasNonPreloadAudioClips)
         {

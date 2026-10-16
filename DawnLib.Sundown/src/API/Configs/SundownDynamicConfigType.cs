@@ -1,6 +1,6 @@
-﻿namespace Dusk;
+﻿namespace Sundown;
 
-public enum DuskDynamicConfigType
+public enum SundownDynamicConfigType
 {
     String,
     Int,

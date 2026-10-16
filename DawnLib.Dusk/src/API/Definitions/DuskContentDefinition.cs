@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using Dawn;
 using Dusk.Weights;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Dusk;
 
@@ -12,31 +11,14 @@ public abstract class DuskContentDefinition : ScriptableObject
 {
     public abstract NamespacedKey Key { get; protected set; }
 
-    [FormerlySerializedAs("ConfigEntries")]
-    [SerializeField]
-    [HideInInspector]
-    internal List<DuskDynamicConfig> _configEntries = new();
-
     [SerializeField, UnlockedNamespacedKey]
     internal List<NamespacedKey> _tags = new();
 
-    public object? BaseConfig { get; set; }
+    public DuskBaseConfig? BaseConfig { get; set; }
 
     public virtual void Register(DuskRegistrationContext registrationContext)
     {
         TryNetworkRegisterAssets();
-    }
-
-    public virtual void RegisterPost(DuskRegistrationContext registrationContext)
-    {
-        DuskBaseConfig? BaseConfig = (DuskBaseConfig?)this.BaseConfig;
-        if (BaseConfig != null)
-        {
-            foreach (ConfigEntryBase entry in BaseConfig.ConfigEntries())
-            {
-                registrationContext.Mod.configEntries.Add(entry);
-            }
-        }
     }
 
     public abstract void TryNetworkRegisterAssets();

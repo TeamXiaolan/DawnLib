@@ -1,15 +1,16 @@
 ﻿using System;
 using Dawn;
 using Dawn.Utils;
+using Dusk;
 using UnityEngine;
 
-namespace Dusk;
+namespace Sundown;
 
 [Serializable]
-public class DuskDynamicConfig
+public class SundownDynamicConfig
 {
     public string settingName;
-    public DuskDynamicConfigType DynamicConfigType;
+    public SundownDynamicConfigType DynamicConfigType;
 
     public string defaultString;
     public int defaultInt;
@@ -22,13 +23,13 @@ public class DuskDynamicConfig
 
     public string Description;
 
-    internal static DuskConfigDefinition CreateConfigDefinitionFromDynamicConfig(DuskContentDefinition contentReference, DuskDynamicConfig dynamicConfig)
+    internal static SundownConfigDefinition CreateConfigDefinitionFromDynamicConfig(DuskContentDefinition contentReference, SundownDynamicConfig dynamicConfig)
     {
-        DuskConfigDefinition configDefinition = ScriptableObject.CreateInstance<DuskConfigDefinition>();
+        SundownConfigDefinition configDefinition = ScriptableObject.CreateInstance<SundownConfigDefinition>();
         configDefinition.name = dynamicConfig.settingName.Replace(" ", "") + "ConfigDefinition";
         configDefinition.DynamicConfig = dynamicConfig;
         configDefinition.ContentReference = contentReference;
-        configDefinition._typedKey = NamespacedKey.From(contentReference.Key.Namespace, dynamicConfig.settingName).AsTyped<DuskConfigDefinition>();
+        configDefinition._typedKey = NamespacedKey.From(contentReference.Key.Namespace, dynamicConfig.settingName).AsTyped<SundownConfigDefinition>();
         return configDefinition;
     }
 }

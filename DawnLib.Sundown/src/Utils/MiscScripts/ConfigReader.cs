@@ -10,37 +10,37 @@ using Dawn.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Dusk;
+namespace Sundown.Utils;
 
 public static class ConfigReaderTypeUtility
 {
-    private static readonly Dictionary<Type, DuskDynamicConfigType> SettingTypeToDynamicType = new()
+    private static readonly Dictionary<Type, SundownDynamicConfigType> SettingTypeToDynamicType = new()
     {
-        { typeof(string), DuskDynamicConfigType.String },
-        { typeof(int), DuskDynamicConfigType.Int },
-        { typeof(float), DuskDynamicConfigType.Float },
-        { typeof(bool), DuskDynamicConfigType.Bool },
-        { typeof(BoundedRange), DuskDynamicConfigType.BoundedRange },
-        { typeof(Vector3), DuskDynamicConfigType.Vector3 },
-        { typeof(Color), DuskDynamicConfigType.Color },
-        { typeof(AnimationCurve), DuskDynamicConfigType.AnimationCurve },
+        { typeof(string), SundownDynamicConfigType.String },
+        { typeof(int), SundownDynamicConfigType.Int },
+        { typeof(float), SundownDynamicConfigType.Float },
+        { typeof(bool), SundownDynamicConfigType.Bool },
+        { typeof(BoundedRange), SundownDynamicConfigType.BoundedRange },
+        { typeof(Vector3), SundownDynamicConfigType.Vector3 },
+        { typeof(Color), SundownDynamicConfigType.Color },
+        { typeof(AnimationCurve), SundownDynamicConfigType.AnimationCurve },
     };
 
-    private static readonly Dictionary<DuskDynamicConfigType, string> DynamicTypeToEventFieldName = new()
+    private static readonly Dictionary<SundownDynamicConfigType, string> DynamicTypeToEventFieldName = new()
     {
-        { DuskDynamicConfigType.String, "onString" },
-        { DuskDynamicConfigType.Int, "onInt" },
-        { DuskDynamicConfigType.Float, "onFloat" },
-        { DuskDynamicConfigType.Bool, "onBool" },
-        { DuskDynamicConfigType.BoundedRange, "onBoundedRange" },
-        { DuskDynamicConfigType.Vector3, "onVector3" },
-        { DuskDynamicConfigType.Color, "onColor" },
-        { DuskDynamicConfigType.AnimationCurve, "onAnimationCurve" },
+        { SundownDynamicConfigType.String, "onString" },
+        { SundownDynamicConfigType.Int, "onInt" },
+        { SundownDynamicConfigType.Float, "onFloat" },
+        { SundownDynamicConfigType.Bool, "onBool" },
+        { SundownDynamicConfigType.BoundedRange, "onBoundedRange" },
+        { SundownDynamicConfigType.Vector3, "onVector3" },
+        { SundownDynamicConfigType.Color, "onColor" },
+        { SundownDynamicConfigType.AnimationCurve, "onAnimationCurve" },
     };
 
-    public static DuskDynamicConfigType? ConvertSettingTypeToDynamicType(Type settingType)
+    public static SundownDynamicConfigType? ConvertSettingTypeToDynamicType(Type settingType)
     {
-        if (SettingTypeToDynamicType.TryGetValue(settingType, out DuskDynamicConfigType dynamicType))
+        if (SettingTypeToDynamicType.TryGetValue(settingType, out SundownDynamicConfigType dynamicType))
         {
             return dynamicType;
         }
@@ -48,7 +48,7 @@ public static class ConfigReaderTypeUtility
         return null;
     }
 
-    public static string GetEventFieldName(DuskDynamicConfigType configType)
+    public static string GetEventFieldName(SundownDynamicConfigType configType)
     {
         if (DynamicTypeToEventFieldName.TryGetValue(configType, out string fieldName))
         {
@@ -66,7 +66,7 @@ public class ConfigReader : MonoBehaviour
     [SerializeField] private string pluginGuid = "";
     [SerializeField] private string section = "";
     [SerializeField] private string key = "";
-    [SerializeField] private DuskDynamicConfigType expectedType;
+    [SerializeField] private SundownDynamicConfigType expectedType;
 
     [Header("Invoke")]
     [SerializeField] private bool invokeOnStart = true;
@@ -87,7 +87,7 @@ public class ConfigReader : MonoBehaviour
 
     private object? _matchedEntry;
 
-    public DuskDynamicConfigType ExpectedType => expectedType;
+    public SundownDynamicConfigType ExpectedType => expectedType;
     public object? MatchedEntry => _matchedEntry;
 
     private void Start()
@@ -105,7 +105,7 @@ public class ConfigReader : MonoBehaviour
         _matchedEntry = TryFindConfigEntry(pluginGuid, section, key);
         if (_matchedEntry == null)
         {
-            DuskPlugin.Logger.LogWarning($"ConfigReader could not find config entry: plugin='{pluginGuid}', section='{section}', key='{key}'");
+            SundownPlugin.Logger.LogWarning($"ConfigReader could not find config entry: plugin='{pluginGuid}', section='{section}', key='{key}'");
             return;
         }
 
@@ -128,17 +128,17 @@ public class ConfigReader : MonoBehaviour
         }
 
         ConfigEntryBase configEntry = (ConfigEntryBase)_matchedEntry;
-        DuskDynamicConfigType? actualType = ConfigReaderTypeUtility.ConvertSettingTypeToDynamicType(configEntry.SettingType);
+        SundownDynamicConfigType? actualType = ConfigReaderTypeUtility.ConvertSettingTypeToDynamicType(configEntry.SettingType);
         if (actualType == null)
         {
-            DuskPlugin.Logger.LogWarning($"Unsupported config type on ConfigReader: {configEntry.SettingType.FullName}");
+            SundownPlugin.Logger.LogWarning($"Unsupported config type on ConfigReader: {configEntry.SettingType.FullName}");
             onUnsupportedType?.Invoke();
             return;
         }
 
         if (actualType.Value != expectedType)
         {
-            DuskPlugin.Logger.LogWarning($"ConfigReader type mismatch for '{pluginGuid}:{section}:{key}'. Expected '{expectedType}', but config entry was '{actualType.Value}'.");
+            SundownPlugin.Logger.LogWarning($"ConfigReader type mismatch for '{pluginGuid}:{section}:{key}'. Expected '{expectedType}', but config entry was '{actualType.Value}'.");
             onTypeMismatch?.Invoke();
             return;
         }
@@ -150,40 +150,40 @@ public class ConfigReader : MonoBehaviour
     {
         switch (expectedType)
         {
-            case DuskDynamicConfigType.String:
+            case SundownDynamicConfigType.String:
                 onString?.Invoke((string)value);
                 return;
 
-            case DuskDynamicConfigType.Int:
+            case SundownDynamicConfigType.Int:
                 onInt?.Invoke((int)value);
                 return;
 
-            case DuskDynamicConfigType.Float:
+            case SundownDynamicConfigType.Float:
                 onFloat?.Invoke(Convert.ToSingle(value, CultureInfo.InvariantCulture));
                 return;
 
-            case DuskDynamicConfigType.Bool:
+            case SundownDynamicConfigType.Bool:
                 onBool?.Invoke((bool)value);
                 return;
 
-            case DuskDynamicConfigType.BoundedRange:
+            case SundownDynamicConfigType.BoundedRange:
                 onBoundedRange?.Invoke((BoundedRange)value);
                 return;
 
-            case DuskDynamicConfigType.Vector3:
+            case SundownDynamicConfigType.Vector3:
                 onVector3?.Invoke((Vector3)value);
                 return;
 
-            case DuskDynamicConfigType.Color:
+            case SundownDynamicConfigType.Color:
                 onColor?.Invoke((Color)value);
                 return;
 
-            case DuskDynamicConfigType.AnimationCurve:
+            case SundownDynamicConfigType.AnimationCurve:
                 onAnimationCurve?.Invoke((AnimationCurve)value);
                 return;
 
             default:
-                DuskPlugin.Logger.LogWarning($"Unhandled expected config type: {expectedType}");
+                SundownPlugin.Logger.LogWarning($"Unhandled expected config type: {expectedType}");
                 onUnsupportedType?.Invoke();
                 return;
         }
