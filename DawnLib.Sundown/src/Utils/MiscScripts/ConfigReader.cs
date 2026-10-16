@@ -85,10 +85,11 @@ public class ConfigReader : MonoBehaviour
     [SerializeField] private ColorEvent onColor;
     [SerializeField] private AnimationCurveEvent onAnimationCurve;
 
-    private object? _matchedEntry;
+    private ConfigEntryBase? _matchedEntry;
 
     public SundownDynamicConfigType ExpectedType => expectedType;
-    public object? MatchedEntry => _matchedEntry;
+
+    public ConfigEntryBase? MatchedEntry => _matchedEntry;
 
     private void Start()
     {
@@ -109,9 +110,7 @@ public class ConfigReader : MonoBehaviour
             return;
         }
 
-        ConfigEntryBase configEntry = (ConfigEntryBase)_matchedEntry;
-
-        Debuggers.Configs?.Log($"Matched config entry: plugin='{pluginGuid}', section='{configEntry.Definition.Section}', key='{configEntry.Definition.Key}', type='{configEntry.SettingType}', value='{configEntry.BoxedValue}'");
+        Debuggers.Configs?.Log($"Matched config entry: plugin='{pluginGuid}', section='{_matchedEntry.Definition.Section}', key='{_matchedEntry.Definition.Key}', type='{_matchedEntry.SettingType}', value='{_matchedEntry.BoxedValue}'");
     }
 
     public void InvokeMatchedEvent()
@@ -127,11 +126,10 @@ public class ConfigReader : MonoBehaviour
             return;
         }
 
-        ConfigEntryBase configEntry = (ConfigEntryBase)_matchedEntry;
-        SundownDynamicConfigType? actualType = ConfigReaderTypeUtility.ConvertSettingTypeToDynamicType(configEntry.SettingType);
+        SundownDynamicConfigType? actualType = ConfigReaderTypeUtility.ConvertSettingTypeToDynamicType(_matchedEntry.SettingType);
         if (actualType == null)
         {
-            SundownPlugin.Logger.LogWarning($"Unsupported config type on ConfigReader: {configEntry.SettingType.FullName}");
+            SundownPlugin.Logger.LogWarning($"Unsupported config type on ConfigReader: {_matchedEntry.SettingType.FullName}");
             onUnsupportedType?.Invoke();
             return;
         }
@@ -143,7 +141,7 @@ public class ConfigReader : MonoBehaviour
             return;
         }
 
-        InvokeExpectedTypeEvent(configEntry.BoxedValue);
+        InvokeExpectedTypeEvent(_matchedEntry.BoxedValue);
     }
 
     private void InvokeExpectedTypeEvent(object value)
@@ -189,7 +187,7 @@ public class ConfigReader : MonoBehaviour
         }
     }
 
-    private static object? TryFindConfigEntry(string pluginGuid, string section, string key)
+    private static ConfigEntryBase? TryFindConfigEntry(string pluginGuid, string section, string key)
     {
         if (string.IsNullOrWhiteSpace(pluginGuid) || string.IsNullOrWhiteSpace(section) || string.IsNullOrWhiteSpace(key))
         {

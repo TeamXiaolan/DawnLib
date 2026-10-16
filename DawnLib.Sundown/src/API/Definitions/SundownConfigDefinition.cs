@@ -19,7 +19,7 @@ public class SundownConfigDefinition : DuskContentDefinition, INamespaced<Sundow
 
     public NamespacedKey<SundownConfigDefinition> TypedKey => _typedKey;
     public override NamespacedKey Key { get => TypedKey; protected set => _typedKey = value.AsTyped<SundownConfigDefinition>(); }
-    public object ConfigEntry { get; private set; }
+    public ConfigEntryBase ConfigEntry { get; private set; }
 
     public void ManuallyRegister(DuskRegistrationContext registrationContext)
     {
