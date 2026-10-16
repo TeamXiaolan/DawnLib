@@ -1,2 +1,2 @@
-## EventideMod
-bwaaa
+## Twilight
+Contains the NamespacedObjects registry

@@ -1,2 +1,2 @@
-## EventideMod
-bwaaa
+## Nightfall
+Contains the skin registry

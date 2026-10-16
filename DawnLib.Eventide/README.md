@@ -1,2 +1,2 @@
-## EventideMod
-bwaaa
+## Eventide
+Contains the achievements registry

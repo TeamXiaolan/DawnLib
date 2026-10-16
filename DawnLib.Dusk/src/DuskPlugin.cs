@@ -35,7 +35,6 @@ public class DuskPlugin : BaseUnityPlugin
         CommitKeyToSave.Init();
         if (!DawnConfig.VanillaCompatibility.Value)
         {
-            NamespacedSpawnSyncedObject.Init();
             NetworkerPatch.Init();
             VehicleRegistrationPatch.Init();
         }

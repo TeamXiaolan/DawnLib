@@ -1,13 +1,12 @@
-using System;
 using Dawn;
 using Dawn.Internal;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using UnityEngine;
 
-namespace Dusk.Utils;
+namespace Twilight.Utils;
 
-[AddComponentMenu($"{DuskModConstants.NetworkingComponents}/Namespaced SpawnSyncedObject")]
+[AddComponentMenu($"{TwilightModConstants.NetworkingComponents}/Namespaced SpawnSyncedObject")]
 public class NamespacedSpawnSyncedObject : MonoBehaviour
 {
     [field: SerializeField]
@@ -17,7 +16,7 @@ public class NamespacedSpawnSyncedObject : MonoBehaviour
 
     internal GameObject? ResolvePrefab()
     {
-        foreach (DuskNamespacedObjectDefinition namespacedObjectDefinition in DuskModContent.NamespacedObjects)
+        foreach (TwilightNamespacedObjectDefinition namespacedObjectDefinition in TwilightModContent.NamespacedObjects)
         {
             if (namespacedObjectDefinition.TypedKey != SyncedObjectKey)
                 continue;
@@ -47,7 +46,7 @@ public class NamespacedSpawnSyncedObject : MonoBehaviour
             il => il.MatchLdloc(3)
         ))
         {
-            DuskPlugin.Logger.LogError($"Couldn't match RoundManager.SpawnSyncedProps IL (1).");
+            TwilightPlugin.Logger.LogError($"Couldn't match RoundManager.SpawnSyncedProps IL (1).");
             return;
         }
 
