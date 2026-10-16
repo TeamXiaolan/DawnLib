@@ -182,6 +182,7 @@ public abstract class NightfallEntityReplacementDefinition<TAI> : NightfallEntit
 
             GameObject addOn = GameObject.Instantiate(gameObjectAddon.GameObjectToCreate, gameObject.transform);
             addOn.transform.SetLocalPositionAndRotation(gameObjectAddon.PositionOffset, Quaternion.Euler(gameObjectAddon.RotationOffset));
+            addOn.transform.localScale *= gameObjectAddon.ScaleMultiplier;
             if (networkObject == null)
                 continue;
 

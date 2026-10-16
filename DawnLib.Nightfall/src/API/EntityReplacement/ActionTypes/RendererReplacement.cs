@@ -32,7 +32,7 @@ public class SkinnedMeshReplacement : Hierarchy
         Material[] originalMaterials = targetSkinned.sharedMaterials;
 
         Transform targetRoot = targetSkinned.rootBone;
-        Dictionary<string, Transform> targetLookup = BuildBoneLookup(targetRoot);
+        Dictionary<string, Transform> targetLookup = BuildBoneLookup(targetSkinned);
 
         Transform[] srcBones = ReplacementRenderer.bones;
         Transform[] mappedBones = new Transform[srcBones.Length];
@@ -61,15 +61,10 @@ public class SkinnedMeshReplacement : Hierarchy
         MaterialsReplacement.CopyOrResizeMaterials(targetSkinned, originalMaterials, newMesh ? newMesh.subMeshCount : 1);
     }
 
-    private static Dictionary<string, Transform> BuildBoneLookup(Transform root)
+    private static Dictionary<string, Transform> BuildBoneLookup(SkinnedMeshRenderer targetSkinned)
     {
         Dictionary<string, Transform> dict = new();
-        if (!root)
-        {
-            return dict;
-        }
-
-        foreach (Transform transform in root.GetComponentsInChildren<Transform>(true))
+        foreach (Transform transform in targetSkinned.bones)
         {
             if (!dict.ContainsKey(transform.name))
             {

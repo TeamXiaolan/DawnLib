@@ -17,4 +17,7 @@ public class GameObjectWithPath
 
     [field: SerializeField]
     public Vector3 RotationOffset { get; private set; } = Vector3.zero;
+
+    [field: SerializeField]
+    public float ScaleMultiplier { get; private set; } = 1f;
 }
