@@ -286,7 +286,7 @@ static class EntityReplacementRegistrationPatch
         // evil for loop.
         for (; c.Index < c.Instrs.Count; c.Index++)
         {
-            if (c.Next.OpCode != OpCodes.Ldfld)
+            if (c.Next.OpCode != OpCodes.Ldfld && c.Next.OpCode != OpCodes.Ldflda)
                 continue;
 
             if (c.Next.MatchLdfld<Item>(nameof(Item.verticalOffset)))
@@ -325,7 +325,7 @@ static class EntityReplacementRegistrationPatch
 
             foreach ((string name, var replacer) in offsetReplacerFunctions)
             {
-                if (!c.Next.MatchLdfld<Item>(name))
+                if (!c.Next.MatchLdfld<Item>(name) || !c.Next.MatchLdflda<Item>(name))
                     continue;
 
                 c.Index--;
@@ -467,7 +467,7 @@ static class EntityReplacementRegistrationPatch
             return;
         }
 
-        if (StartOfRound.Instance.inShipPhase)
+        if (StartOfRound.Instance.inShipPhase && !StartOfRound.Instance.beganLoadingNewLevel)
         {
             orig(self);
             return;
@@ -483,10 +483,7 @@ static class EntityReplacementRegistrationPatch
         for (int i = newReplacements.Count - 1; i >= 0; i--)
         {
             DuskItemReplacementDefinition replacement = newReplacements[i];
-            if (replacement.DatePredicate == null)
-                continue;
-
-            if (!replacement.DatePredicate.Evaluate())
+            if (replacement.DatePredicate != null && !replacement.DatePredicate.Evaluate())
             {
                 newReplacements.RemoveAt(i);
                 continue;
@@ -496,7 +493,6 @@ static class EntityReplacementRegistrationPatch
             if (weight == null || weight <= 0)
             {
                 newReplacements.RemoveAt(i);
-                continue;
             }
         }
 
@@ -583,7 +579,7 @@ static class EntityReplacementRegistrationPatch
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<AudioClip[], EnemyAI, AudioClip[]>>((existingAudioClips, self) =>
                 {
-                    if (!self.TryGetEnemyReplacement(out var replacement))
+                    if (!self.TryGetEnemyReplacement(out var replacement) || replacement.AudioClips.Length <= 0)
                     {
                         return existingAudioClips;
                     }

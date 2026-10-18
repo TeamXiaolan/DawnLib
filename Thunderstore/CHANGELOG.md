@@ -1,4 +1,21 @@
-# v0.9.25
+# v0.9.26
+
+- Imported a bunch of fixes from experimental as experimental is going through the biggest changes right now.
+- Fixed DawnLib Stingers not playing + playing when entering and exiting the interior.
+- Simplified EntranceTeleport grabbing stuff.
+- Grabbed modded enesemy bestiaries more reliably.
+- Fixed an issue with Entity Replacement Registration forcing the need to replace the EnemyType's audioclips which caused some enemies like nutcrackers to break when replacing them.
+- Fixed an early return in restoring audiosources.
+- Fixed not replacing `RandomScrapSpawn` `ItemGroup`'s with vanilla ones.
+- Fixed earth leviathan not being able to come out with DawnSurface stuff.
+- Fixed issue with story logs double registering.
+- Fixed issue with hazard replacement on some DawnLib moons.
+- Improved terminal resolution with two-word queries.
+- Fixed an issue with items that destroy other items in the inventory making you lose incorrect amount of weight (i.e. shotgun).
+- Fixed an issue with having multiple animationreplacements for entity replacements.
+- Fixed Renderer replacements with rigs that have an not-root root bone.
+
+## v0.9.25
 
 - Fixed incompat with Lategame Upgrades.
 

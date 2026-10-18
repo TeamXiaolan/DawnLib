@@ -49,9 +49,6 @@ static class StoryLogRegistrationHandler
         if (LethalContent.StoryLogs.IsFrozen)
             return;
 
-        TerminalRefs.Instance.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
-        TerminalRefs.ViewKeyword.compatibleNouns = viewCompatibleNouns.ToArray();
-
         foreach (CompatibleNoun compatibleNoun in TerminalRefs.ViewKeyword.compatibleNouns.Where(x => x.result != null && x.result.storyLogFileID > -1))
         {
             string name = NamespacedKey.NormalizeStringForNamespacedKey(compatibleNoun.result.creatureName, true);
@@ -79,6 +76,10 @@ static class StoryLogRegistrationHandler
             DawnStoryLogInfo storyLogInfo = new(key, [DawnLibTags.IsExternal], storyLogGameObject, compatibleNoun.result, compatibleNoun.noun, null);
             LethalContent.StoryLogs.Register(storyLogInfo);
         }
+
+        TerminalRefs.Instance.terminalNodes.allKeywords = newTerminalKeywords.ToArray();
+        TerminalRefs.ViewKeyword.compatibleNouns = viewCompatibleNouns.ToArray();
+
         LethalContent.StoryLogs.Freeze();
     }
 

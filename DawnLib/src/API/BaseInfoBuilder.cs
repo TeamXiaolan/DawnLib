@@ -43,9 +43,15 @@ public abstract class BaseInfoBuilder<TInfo, T, TBuilder> : BaseInfoBuilder wher
         AddTags(newTags);
     }
 
+    public TBuilder SetCustomData(IDataContainer container)
+    {
+        customData = container ?? throw new ArgumentNullException(nameof(container));
+        return (TBuilder)this;
+    }
+
     public TBuilder EditCustomData(Action<IDataContainer> callback)
     {
-        if (customData == null) customData = new DataContainer();
+        customData ??= new DataContainer();
         callback(customData);
         return (TBuilder)this;
     }

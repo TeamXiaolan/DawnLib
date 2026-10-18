@@ -133,6 +133,12 @@ static class DungeonRegistrationHandler
     {
         if (!self.checkedForFirstTime)
         {
+            if (!self.isEntranceToBuilding)
+            {
+                orig(self);
+                return;
+            }
+
             self.checkedForFirstTime = true;
             DawnDungeonInfo? dungeonInfo = RoundManager.Instance.dungeonGenerator?.Generator?.DungeonFlow.GetDawnInfo();
             if (dungeonInfo == null || dungeonInfo.StingerDetail.FirstTimeAudio == null)
@@ -329,9 +335,7 @@ static class DungeonRegistrationHandler
 
     private static void AdjustFireExits(DungeonFlow dungeonFlow)
     {
-        GameObject environmentRoot = GameObject.FindGameObjectWithTag("OutsideLevelNavMesh");
-        EntranceTeleport[] moonEntranceTeleports = environmentRoot.GetComponentsInChildren<EntranceTeleport>().Where(e => e.entranceId != 0).ToArray();
-
+        EntranceTeleport[] moonEntranceTeleports = GameObject.FindObjectsByType<EntranceTeleport>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID).Where(e => e.entranceId != 0).ToArray();
         for (int i = 0; i < moonEntranceTeleports.Length; i++)
         {
             EntranceTeleport entranceTeleport = moonEntranceTeleports[i];

@@ -36,8 +36,8 @@ public sealed class DawnEnemyInfo : DawnBaseInfo<DawnEnemyInfo>
     public DawnEnemyLocationInfo? Inside { get; private set; }
     public DawnEnemyLocationInfo? Daytime { get; private set; }
 
-    public TerminalNode? BestiaryNode { get; }
-    public TerminalKeyword? NameKeyword { get; }
+    public TerminalNode? BestiaryNode { get; internal set; }
+    public TerminalKeyword? NameKeyword { get; internal set; }
 
     public IEnumerable<T> GetAllSpawned<T>() where T : EnemyAI
     {

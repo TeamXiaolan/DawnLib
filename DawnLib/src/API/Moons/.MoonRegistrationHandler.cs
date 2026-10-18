@@ -43,6 +43,7 @@ static class MoonRegistrationHandler
         LethalContent.Moons.OnFreeze += FixAmbienceLibraries;
         LethalContent.Enemies.OnFreeze += FixDawnMoonEnemies;
         LethalContent.Items.OnFreeze += FixDawnMoonItems;
+        LethalContent.MapObjects.OnFreeze += FixDawnHazards;
 
         if (!DawnConfig.VanillaCompatibility.Value)
         {
@@ -250,20 +251,74 @@ static class MoonRegistrationHandler
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Start)), HarmonyPrefix, HarmonyPriority(-999)]
     private static void FreezeMoonRegistry()
     {
-        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
-        {
-            if (moonInfo.Level.indoorMapHazards == null)
-            {
-                moonInfo.Level.indoorMapHazards = [];
-            }
-        }
-
         if (LethalContent.Moons.IsFrozen)
         {
             return;
         }
 
         LethalContent.Moons.Freeze();
+    }
+
+    private static void FixDawnHazards()
+    {
+        List<ScriptableObject> SOsToDestroy = new();
+
+        foreach (DawnMoonInfo moonInfo in LethalContent.Moons.Values)
+        {
+            if (moonInfo.ShouldSkipIgnoreOverride())
+                continue;
+
+            if (moonInfo.Level.indoorMapHazards == null || moonInfo.Level.indoorMapHazards.Length == 0)
+            {
+                moonInfo.Level.indoorMapHazards = [];
+            }
+
+            if (moonInfo.Level.spawnableOutsideObjects == null || moonInfo.Level.spawnableOutsideObjects.Length == 0)
+            {
+                moonInfo.Level.spawnableOutsideObjects = [];
+            }
+
+            foreach (IndoorMapHazard indoorMapHazard in moonInfo.Level.indoorMapHazards)
+            {
+                if (indoorMapHazard.hazardType == null)
+                    continue;
+
+                SOsToDestroy.Add(indoorMapHazard.hazardType);
+                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+                {
+                    if (mapObjectInfo.InsideInfo == null)
+                        continue;
+
+                    if (indoorMapHazard.hazardType.name != mapObjectInfo.InsideInfo.IndoorMapHazardType.name)
+                        continue;
+
+                    indoorMapHazard.hazardType = mapObjectInfo.InsideInfo.IndoorMapHazardType;
+                }
+            }
+
+            foreach (SpawnableOutsideObjectWithRarity spawnableOutsideObjectWithRarity in moonInfo.Level.spawnableOutsideObjects)
+            {
+                if (spawnableOutsideObjectWithRarity.spawnableObject == null)
+                    continue;
+
+                SOsToDestroy.Add(spawnableOutsideObjectWithRarity.spawnableObject);
+                foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects.Values)
+                {
+                    if (mapObjectInfo.OutsideInfo == null)
+                        continue;
+
+                    if (spawnableOutsideObjectWithRarity.spawnableObject.name != mapObjectInfo.OutsideInfo.SpawnableOutsideObject.name)
+                        continue;
+
+                    spawnableOutsideObjectWithRarity.spawnableObject = mapObjectInfo.OutsideInfo.SpawnableOutsideObject;
+                }
+            }
+        }
+
+        for (int i = SOsToDestroy.Count - 1; i >= 0; i--)
+        {
+            ScriptableObject.Destroy(SOsToDestroy[i]);
+        }
     }
 
     private static void FixDawnMoonItems()
@@ -380,7 +435,7 @@ static class MoonRegistrationHandler
     // I think I wrote this nicely, I hope you're proud of me Bongo
     private static string DynamicMoonCatalogue(On.Terminal.orig_TextPostProcess orig, Terminal self, string modifieddisplaytext, TerminalNode node)
     {
-        if (node != TerminalRefs.MoonCatalogueNode)
+        if (node != TerminalRefs.MoonCatalogueNode || LethalConstellationsCompat.Enabled)
         {
             return orig(self, modifieddisplaytext, node);
         }

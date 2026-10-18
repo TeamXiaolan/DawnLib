@@ -40,11 +40,34 @@ static class EnemyRegistrationHandler
         {
             On.Terminal.Awake += AddBestiaryNodes;
             On.GameNetworkManager.Start += CollectAllEnemyTypes;
+            On.Terminal.Start += GrabModdedBestiaryNodes;
         }
 
         LethalContent.Moons.OnFreeze += RegisterEnemies;
         LethalContent.Enemies.OnFreeze += RedoEnemiesDebugMenu;
         LethalContent.Enemies.OnFreeze += FixDawnEnemyReferences;
+    }
+
+    private static void GrabModdedBestiaryNodes(On.Terminal.orig_Start orig, Terminal self)
+    {
+        orig(self);
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies.Values)
+        {
+            ScanNodeProperties scanNodeProperties = enemyInfo.EnemyType.enemyPrefab.GetComponentInChildren<ScanNodeProperties>();
+            if (scanNodeProperties != null)
+            {
+                int creatureScanID = scanNodeProperties.creatureScanID;
+                foreach (CompatibleNoun compatibleNoun in TerminalRefs.InfoKeyword.compatibleNouns)
+                {
+                    if (compatibleNoun.result.creatureFileID != creatureScanID)
+                        continue;
+
+                    enemyInfo.BestiaryNode = compatibleNoun.result;
+                    enemyInfo.NameKeyword = compatibleNoun.noun;
+                    break;
+                }
+            }
+        }
     }
 
     private static void StopDawnEnemyResetting(ILContext il)

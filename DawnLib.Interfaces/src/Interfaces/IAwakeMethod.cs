@@ -8,6 +8,7 @@ namespace Dawn.Interfaces;
 [InjectInterface(typeof(RandomMapObject))]
 [InjectInterface(typeof(PlaceableShipObject))]
 [InjectInterface(typeof(HauntedMaskItem))]
+[InjectInterface(typeof(RandomScrapSpawn))]
 interface IAwakeMethod
 {
     void Awake();
