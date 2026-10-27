@@ -37,6 +37,12 @@
 
         <ProjectReference Include="..\DawnLib\DawnLib.csproj" PrivateAssets="all" />
         <ProjectReference Include="..\DawnLib.Dusk\DawnLib.Dusk.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Eventide\DawnLib.Eventide.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Nightfall\DawnLib.Nightfall.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Sundown\DawnLib.Sundown.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Twilight\DawnLib.Twilight.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.Sunset\DawnLib.Sunset.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\DawnLib.SourceGen\DawnLib.SourceGen.csproj" PrivateAssets="all" />
 
         <Reference Include="loaforcsSoundAPI">
             <HintPath>deps\me.loaforc.soundapi.dll</HintPath>

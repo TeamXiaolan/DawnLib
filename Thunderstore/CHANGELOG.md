@@ -15,6 +15,7 @@
 - Fixed issue with story logs double registering.
 - Fixed issue with DeadBody registry accidently adding the wrong NamespacedKeyContainer to itself.
 - Added Config to disable RouteProgressUI (False by default).
+- Fixed AnimationReplacements in skins overriding eachother.
 
 ## v1.0.0-pre10
 

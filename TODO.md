@@ -4,12 +4,10 @@
 
 - Autoscroll feature.
 - DawnLib editor dll that's exclusively for stuff like LLL to DawnLib converter tool.
-- Dead body additions.
 - Handling vehicle no station equaling magnet station.
 - Move vehicle registration to Dawn from dusk.
 - Add a vehicle thing for despawning by hooking onto DespawnPropsAtEndOfRound and collecting items maybe?
 - LL rewritten to use DawnLib in its backend.
-- Rewrite the spawn weight stuff to be more expandable for future use.
 
 less important:
 
@@ -21,7 +19,6 @@ less important:
 
 less important:
 
-- Config grabbing in AssetBundleLoader should be more optimised.
 - Suits UI stuff for fitting em in.
 - check over all visibility (public, internal, private)
 - config stuff (NamespacedKey TOMLConverter, pretty print generics, look at patching to allow lists?)

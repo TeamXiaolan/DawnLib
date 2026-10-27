@@ -1,0 +1,980 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Dawn;
+using Dawn.Internal;
+using HarmonyLib;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
+using UnityEngine;
+using OpCodes = Mono.Cecil.Cil.OpCodes;
+using GameNetcodeStuff;
+using Dawn.Utils;
+
+namespace Nightfall.Internal;
+
+static class EntityReplacementRegistrationPatch
+{
+    internal static System.Random? itemReplacementRandom = null;
+    internal static System.Random? nestReplacementRandom = null;
+    internal static System.Random? enemyReplacementRandom = null;
+    internal static System.Random? unlockableReplacementRandom = null;
+    internal static System.Random? mapObjectReplacementRandom = null;
+
+    internal static void Init()
+    {
+        LethalContent.Enemies.BeforeFreezeWithContext += _ => RegisterEnemyReplacements();
+        LethalContent.Items.BeforeFreezeWithContext += _ => RegisterItemReplacements();
+        LethalContent.Unlockables.BeforeFreezeWithContext += _ => RegisterUnlockableReplacements();
+        LethalContent.MapObjects.BeforeFreezeWithContext += _ => RegisterMapObjectReplacements();
+
+        using (new DetourContext(priority: int.MaxValue))
+        {
+            On.StartOfRound.Awake += RegisterScenePlacedUnlockableReplacements;
+            On.EnemyAI.Start += ReplaceEnemyEntity;
+            On.GrabbableObject.Start += ReplaceGrabbableObject;
+            On.EnemyAI.UseNestSpawnObject += ReplaceEnemyEntityUsingNest;
+        }
+
+        IL.RoundManager.SyncScrapValuesClientRpc += CannabalizeVanillaVariantCode;
+
+        On.StartOfRound.OnClientConnect += SyncSkinsWithNewClient;
+
+        using (new DetourContext(priority: -200))
+        {
+            On.Terminal.Awake += RegisterNightfallUnlockables;
+        }
+
+        On.StartOfRound.SetShipReadyToLand += (orig, self) =>
+        {
+            itemReplacementRandom = null;
+            nestReplacementRandom = null;
+            enemyReplacementRandom = null;
+            unlockableReplacementRandom = null;
+            mapObjectReplacementRandom = null;
+            orig(self);
+        };
+
+        DawnPlugin.Hooks.Add(new Hook(AccessTools.DeclaredMethod(typeof(EnemyAINestSpawnObject), "Awake"), OnNestSpawnAwake));
+
+        // this isn't great, but i don't know a better way to do it?
+        // could maybe do some analysis on the game and then source generate this?
+        NightfallPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceAudioClips', this transpiler runs on a lot of functions, so this may take a second!");
+        IL.EnemyAI.HitEnemy += DynamicallyReplaceAudioClips;
+        IL.EnemyAI.SetEnemyStunned += DynamicallyReplaceAudioClips;
+
+        IL.BaboonBirdAI.killPlayerAnimation += DynamicallyReplaceAudioClips;
+        IL.BaboonBirdAI.OnCollideWithEnemy += DynamicallyReplaceAudioClips;
+        IL.BaboonBirdAI.OnCollideWithPlayer += DynamicallyReplaceAudioClips;
+        IL.BaboonBirdAI.Update += DynamicallyReplaceAudioClips;
+
+        IL.BushWolfEnemy.OnCollideWithEnemy += DynamicallyReplaceAudioClips;
+
+        IL.ButlerEnemyAI.ButlerBlowUpAndPop += DynamicallyReplaceAudioClips;
+        IL.ButlerEnemyAI.StabPlayerClientRpc += DynamicallyReplaceAudioClips;
+        IL.ButlerEnemyAI.Update += DynamicallyReplaceAudioClips;
+
+        IL.DocileLocustBeesAI.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
+        IL.DocileLocustBeesAI.Update += DynamicallyReplaceAudioClips;
+
+        IL.DoublewingAI.Update += DynamicallyReplaceAudioClips;
+
+        IL.FlowerSnakeEnemy.MakeChuckleClientRpc += DynamicallyReplaceAudioClips;
+        IL.FlowerSnakeEnemy.SetClingToPlayer += DynamicallyReplaceAudioClips;
+        IL.FlowerSnakeEnemy.SetFlappingLocalClient += DynamicallyReplaceAudioClips;
+        IL.FlowerSnakeEnemy.Start += DynamicallyReplaceAudioClips;
+        IL.FlowerSnakeEnemy.StartLeapOnLocalClient += DynamicallyReplaceAudioClips;
+        IL.FlowerSnakeEnemy.StopClingingOnLocalClient += DynamicallyReplaceAudioClips;
+        IL.FlowerSnakeEnemy.StopLeapOnLocalClient += DynamicallyReplaceAudioClips;
+
+        IL.MaskedPlayerEnemy.killAnimation += DynamicallyReplaceAudioClips;
+        IL.MaskedPlayerEnemy.SetMaskGlow += DynamicallyReplaceAudioClips;
+
+        IL.NutcrackerEnemyAI.HitEnemy += DynamicallyReplaceAudioClips;
+        IL.NutcrackerEnemyAI.ReloadGun += DynamicallyReplaceAudioClips;
+        IL.NutcrackerEnemyAI.Update += DynamicallyReplaceAudioClips;
+
+        IL.RadMechAI.ChangeBroadcastClipClientRpc += DynamicallyReplaceAudioClips;
+        IL.RadMechAI.LateUpdate += DynamicallyReplaceAudioClips;
+        IL.RadMechAI.Stomp += DynamicallyReplaceAudioClips;
+
+        IL.RedLocustBees.BeesZap += DynamicallyReplaceAudioClips;
+        IL.RedLocustBees.DaytimeEnemyLeave += DynamicallyReplaceAudioClips;
+
+        IL.HUDManager.DisplayNewScrapFound += ReplaceModelShown;
+
+        NightfallPlugin.Logger.LogInfo("Running transpiler 'DynamicallyReplaceItemProperties', this transpiler runs on a lot of functions, so this may take a second!");
+
+        IL.DepositItemsDesk.PlaceItemOnCounter += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.LateUpdate += DynamicallyReplaceItemProperties;
+        IL.PlaceableObjectsSurface.itemPlacementPosition += DynamicallyReplaceItemProperties;
+        IL.HUDManager.DisplayNewScrapFound += DynamicallyReplaceItemProperties;
+
+        // IL.RoundManager.SpawnScrapInLevel += DynamicallyReplaceItemProperties; - this does a lot of work on the raw item scriptable object, so it will need special attention
+        // IL.HUDManager.CreateToolAdModel += DynamicallyReplaceAudioClips; - works on raw scriptable object
+
+        IL.GrabbableObject.FallToGround += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.GetItemFloorPosition += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.GetPhysicsRegionOfDroppedObject += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.FallWithCurve += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.Update += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.LateUpdate += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.PlayDropSFX += DynamicallyReplaceItemProperties;
+        IL.GrabbableObject.PocketItem += DynamicallyReplaceItemProperties;
+
+        DawnPlugin.ILHooks.Add(new ILHook(
+            AccessTools.EnumeratorMoveNext(
+                AccessTools.Method(typeof(GameNetcodeStuff.PlayerControllerB), nameof(GameNetcodeStuff.PlayerControllerB.GrabObject))
+            ),
+            DynamicallyReplaceItemProperties
+        ));
+
+        DawnPlugin.ILHooks.Add(new ILHook(
+            AccessTools.EnumeratorMoveNext(
+                AccessTools.Method(typeof(StormyWeather), nameof(StormyWeather.GetMetalObjectsAfterDelay))
+            ),
+            DynamicallyReplaceItemProperties
+        ));
+
+        IL.HUDManager.ChangeControlTipMultiple += ReplaceItemNameWithDisplayName;
+        IL.GrabbableObject.SetControlTipsForItem += DynamicallyReplaceItemProperties;
+        IL.ShotgunItem.SetControlTipsForItem += DynamicallyReplaceItemProperties;
+
+        IL.GameNetcodeStuff.PlayerControllerB.GrabObjectClientRpc += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.ScrollMouse_performed += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.SwitchItemSlotsClientRpc += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.SwitchToSlotClientRpc += DynamicallyReplaceItemProperties;
+        IL.GameNetcodeStuff.PlayerControllerB.UseUtilitySlot_performed += DynamicallyReplaceItemProperties;
+
+        IL.BeltBagItem.PocketItem += DynamicallyReplaceItemProperties;
+
+        IL.CaveDwellerPhysicsProp.Update += DynamicallyReplaceItemProperties;
+        IL.CaveDwellerPhysicsProp.LateUpdate += DynamicallyReplaceItemProperties;
+
+        IL.EventWhenDroppedItem.PlayDropSFX += DynamicallyReplaceItemProperties;
+        IL.SoccerBallProp.PlayDropSFX += DynamicallyReplaceItemProperties;
+
+        IL.SoccerBallProp.FallWithCurve += DynamicallyReplaceItemProperties;
+        IL.StunGrenadeItem.FallWithCurve += DynamicallyReplaceItemProperties;
+
+        NightfallPlugin.Logger.LogInfo("Done 'DynamicallyReplaceAudioClips' patching!");
+    }
+
+    private static void CannabalizeVanillaVariantCode(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdloc(2),
+            il => il.MatchLdfld<GrabbableObject>(nameof(GrabbableObject.itemProperties)),
+            il => il.MatchLdfld<Item>(nameof(Item.meshVariants)),
+            il => il.MatchLdlen(),
+            il => il.MatchBrfalse(out _)
+        ))
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name} (1)");
+            return;
+        }
+
+        ILLabel skipLabel = cursor.DefineLabel();
+        cursor.Emit(OpCodes.Br, skipLabel);
+
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLeaveS(out _),
+            il => il.MatchStloc(4),
+            il => il.MatchLdstr("Item name: {0}; {1}"),
+            il => il.MatchLdloc(2)
+        ))
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name} (2)");
+            return;
+        }
+
+        cursor.MarkLabel(skipLabel);
+    }
+
+    private static void ReplaceItemNameWithDisplayName(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        if (!cursor.TryGotoNext(
+            MoveType.Before,
+            il => il.MatchLdarg(3),
+            il => il.MatchLdfld<Item>(nameof(Item.itemName)),
+            il => il.MatchLdstr(out _),
+            il => il.MatchCall(out _),
+            il => il.MatchCallvirt(out _)
+        ))
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name}");
+            return;
+        }
+
+        cursor.Index += 2;
+        cursor.EmitDelegate((string oldName) =>
+        {
+            PlayerControllerB localPlayer = GameNetworkManager.Instance.localPlayerController;
+            GrabbableObject? heldItem = null;
+            if (localPlayer.currentItemSlot == 50)
+            {
+                heldItem = localPlayer.ItemOnlySlot;
+            }
+            else if (localPlayer.currentItemSlot < localPlayer.ItemSlots.Length && localPlayer.currentItemSlot >= 0)
+            {
+                heldItem = localPlayer.ItemSlots[localPlayer.currentItemSlot];
+            }
+
+            if (heldItem == null)
+            {
+                return oldName;
+            }
+
+            if (heldItem.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? itemReplacementDefinition) && !string.IsNullOrEmpty(itemReplacementDefinition.DisplayName))
+            {
+                return itemReplacementDefinition.DisplayName;
+            }
+
+            return oldName;
+        });
+    }
+
+    private static void SyncSkinsWithNewClient(On.StartOfRound.orig_OnClientConnect orig, StartOfRound self, ulong clientId)
+    {
+        orig(self, clientId);
+        if (self.IsServer)
+        {
+            NightfallNetworker.Instance?.SyncSkinDataRpc(clientId);
+        }
+    }
+
+    private static void ReplaceModelShown(ILContext il)
+    {
+        ILCursor c = new ILCursor(il);
+
+        if (!c.TryGotoNext(MoveType.Before,
+            c => c.MatchLdloc(0),
+            c => c.MatchCallvirt<GameObject>(nameof(GameObject.GetComponent)),
+            c => c.MatchCall(typeof(UnityEngine.Object), nameof(UnityEngine.Object.Destroy)),
+            c => c.MatchLdloc(0)))
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name}");
+            return;
+        }
+
+        c.Emit(OpCodes.Ldarg_0);
+        c.Emit(OpCodes.Ldfld, typeof(HUDManager).GetField(nameof(HUDManager.itemsToBeDisplayed)));
+        c.Emit(OpCodes.Ldc_I4_0);
+        c.Emit(OpCodes.Ldloc_0);
+        c.Emit(OpCodes.Call, AccessTools.Method(typeof(EntityReplacementRegistrationPatch), nameof(ReplaceNewlySpawnedItemWithSkin)));
+
+        if (!c.TryGotoNext(MoveType.Before,
+            c => c.MatchLdfld<GrabbableObject>(nameof(GrabbableObject.itemProperties)),
+            c => c.MatchLdfld<Item>(nameof(Item.itemName)),
+            c => c.MatchLdstr(" collected!"),
+            c => c.MatchCall(typeof(String), nameof(String.Concat))))
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to hook method {il.Method.Name} 2");
+            return;
+        }
+        c.Index -= 4;
+        c.RemoveRange(8);
+
+        c.Emit(OpCodes.Ldarg_0);
+        c.Emit(OpCodes.Ldfld, typeof(HUDManager).GetField(nameof(HUDManager.itemsToBeDisplayed)));
+        c.Emit(OpCodes.Ldc_I4_0);
+        c.Emit(OpCodes.Call, AccessTools.Method(typeof(EntityReplacementRegistrationPatch), nameof(ReplaceShipCollectText)));
+    }
+
+    private static string ReplaceShipCollectText(List<GrabbableObject> grabbableObjects, int index)
+    {
+        GrabbableObject grabbableObject = grabbableObjects[index];
+        if (!grabbableObject.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? itemReplacementDefinition) || string.IsNullOrEmpty(itemReplacementDefinition.DisplayName))
+        {
+            return grabbableObject.itemProperties.itemName + " collected!";
+        }
+
+        return itemReplacementDefinition.DisplayName + " collected!";
+    }
+
+    private static void ReplaceNewlySpawnedItemWithSkin(List<GrabbableObject> grabbableObjects, int index, GameObject newlyCreatedGameObject)
+    {
+        GrabbableObject grabbableObject = grabbableObjects[index];
+        if (!grabbableObject.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? itemReplacementDefinition))
+        {
+            return;
+        }
+
+        StartOfRoundRefs.Instance.StartCoroutine(itemReplacementDefinition.Apply(newlyCreatedGameObject.GetComponent<GrabbableObject>(), true));
+    }
+
+    private static void RegisterNightfallUnlockables(On.Terminal.orig_Awake orig, Terminal self)
+    {
+        if (LethalContent.Unlockables.IsFrozen)
+        {
+            orig(self);
+            return;
+        }
+
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables)
+        {
+            if (unlockableItemInfo.UnlockableItem.prefabObject == null)
+                continue;
+
+            if (unlockableItemInfo.UnlockableItem.prefabObject.GetComponent<NightfallUnlockable>())
+                continue;
+
+            unlockableItemInfo.UnlockableItem.prefabObject.AddComponent<NightfallUnlockable>();
+        }
+
+        foreach (UnlockableItem unlockableItem in StartOfRoundRefs.Instance.unlockablesList.unlockables)
+        {
+            if (unlockableItem.prefabObject == null)
+                continue;
+
+            if (unlockableItem.prefabObject.GetComponent<NightfallUnlockable>())
+                continue;
+
+            unlockableItem.prefabObject.AddComponent<NightfallUnlockable>();
+        }
+        orig(self);
+    }
+
+    // note!!! this transpiler should only be used on GrabbableObjects!
+    private static readonly Dictionary<string, Func<GrabbableObject, AudioClip, AudioClip>> itemSfxReplacerFunctions = new()
+    {
+        { nameof(Item.grabSFX), GenerateItemSfxReplacer(it => it.GrabSFX) },
+        { nameof(Item.dropSFX), GenerateItemSfxReplacer(it => it.DropSFX) },
+        { nameof(Item.pocketSFX), GenerateItemSfxReplacer(it => it.PocketSFX) },
+        { nameof(Item.throwSFX), GenerateItemSfxReplacer(it => it.ThrowSFX) },
+    };
+
+    // note!!! this transpiler should only be used on GrabbableObjects!
+    private static readonly Dictionary<string, Func<GrabbableObject, bool, bool>> itemConductiveReplacerFunctions = new()
+    {
+        { nameof(Item.isConductiveMetal), GenerateItemConductiveReplacer(it => it.IsConductiveMetal) },
+    };
+
+    // note!!! this transpiler should only be used on GrabbableObjects!
+    private static readonly Dictionary<string, Func<GrabbableObject, Vector3, Vector3>> offsetReplacerFunctions = new()
+    {
+        { nameof(Item.restingRotation), GenerateOffsetReplacer(it => it.RestingRotation) },
+        { nameof(Item.rotationOffset), GenerateOffsetReplacer(it => it.RotationOffset) },
+        { nameof(Item.positionOffset), GenerateOffsetReplacer(it => it.PositionOffset) }
+    };
+
+    private static void DynamicallyReplaceItemProperties(ILContext il)
+    {
+        Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceItemProperties)}. il count {il.Body.Instructions.Count}");
+        ILCursor c = new ILCursor(il);
+
+        // evil for loop.
+        for (; c.Index < c.Instrs.Count; c.Index++)
+        {
+            if (c.Next.OpCode != OpCodes.Ldfld && c.Next.OpCode != OpCodes.Ldflda)
+                continue;
+
+            if (c.Next.MatchLdfld<Item>(nameof(Item.verticalOffset)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, float, float>>((self, existing) =>
+                {
+                    if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement))
+                    {
+                        return existing;
+                    }
+                    return replacement.VerticalOffset;
+                });
+                continue;
+            }
+
+            if (c.Next.MatchLdfld<Item>(nameof(Item.floorYOffset)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, int, int>>((self, existing) =>
+                {
+                    if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement))
+                    {
+                        return existing;
+                    }
+                    return replacement.FloorYOffset;
+                });
+                continue;
+            }
+
+            if (c.Next.MatchLdfld<Item>(nameof(Item.toolTips)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, string[], string[]>>((self, existing) =>
+                {
+                    if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement))
+                    {
+                        return existing;
+                    }
+                    return replacement.ToolTips ?? existing;
+                });
+                continue;
+            }
+
+            if (c.Next.MatchLdfld<Item>(nameof(Item.itemIcon)))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate<Func<GrabbableObject, Sprite, Sprite>>((self, existing) =>
+                {
+                    if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement) || replacement.ItemIcon == null)
+                    {
+                        return existing;
+                    }
+
+                    if (replacement.ItemIconReplacementOptions == ItemIconReplacementOptions.Default)
+                    {
+                        return replacement.ItemIcon;
+                    }
+                    else if (!RuntimeIconsCompat.Enabled && replacement.ItemIconReplacementOptions == ItemIconReplacementOptions.ReplaceWithRuntimeIconsInstalled)
+                    {
+                        return existing;
+                    }
+                    else if (RuntimeIconsCompat.Enabled && replacement.ItemIconReplacementOptions == ItemIconReplacementOptions.IgnoreWithRuntimeIconsInstalled)
+                    {
+                        return existing;
+                    }
+
+                    return replacement.ItemIcon;
+                });
+                continue;
+            }
+
+            foreach ((string name, var replacer) in offsetReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<Item>(name) || !c.Next.MatchLdflda<Item>(name))
+                    continue;
+
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate(replacer);
+                goto ContinueOuter;
+            }
+
+            foreach ((string name, var replacer) in itemSfxReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<Item>(name))
+                    continue;
+
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate(replacer);
+                goto ContinueOuter;
+            }
+
+            foreach ((string name, var replacer) in itemConductiveReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<Item>(name))
+                    continue;
+
+                c.Index--;
+                c.Emit(OpCodes.Dup);
+
+                c.Index += 2;
+                c.EmitDelegate(replacer);
+                goto ContinueOuter;
+            }
+
+        ContinueOuter:;
+        }
+    }
+
+    private static void RegisterMapObjectReplacements()
+    {
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
+        {
+            GameObject? prefab = mapObjectInfo.GetMapObjectPrefab();
+            if (prefab == null || prefab.GetComponent<NightfallMapObject>())
+                continue;
+
+            prefab.AddComponent<NightfallMapObject>();
+        }
+
+
+        foreach (DawnMapObjectInfo mapObjectInfo in LethalContent.MapObjects)
+        {
+            if (mapObjectInfo.HasTag(Tags.Unimplemented))
+                continue;
+
+            GameObject? mapObjectPrefab = mapObjectInfo.GetMapObjectPrefab();
+            if (mapObjectPrefab == null)
+                continue;
+
+            if (!mapObjectPrefab.TryGetComponent(out NightfallMapObject nightfallMapObject))
+                continue;
+
+            if (!mapObjectInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallMapObjectReplacementDefinition>? list))
+            {
+                DefaultMapObjectReplacementDefinition defaultMapObjectReplacementDefinition = ScriptableObject.CreateInstance<DefaultMapObjectReplacementDefinition>();
+                defaultMapObjectReplacementDefinition.RegisterAsDefault(nightfallMapObject, mapObjectInfo.Key.Key, mapObjectInfo.Key.Namespace, mapObjectInfo.Key.Key);
+                list = [defaultMapObjectReplacementDefinition];
+                mapObjectInfo.CustomData.Set(NightfallKeys.EntityReplacements, list);
+            }
+
+            foreach (NightfallEntityReplacementDefinition entityReplacementDefinition in NightfallModContent.EntityReplacements)
+            {
+                if (entityReplacementDefinition is not NightfallMapObjectReplacementDefinition mapObjectReplacementDefinition)
+                    continue;
+
+                if (mapObjectReplacementDefinition.EntityToReplaceKey != mapObjectInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering map object replacement {mapObjectReplacementDefinition.SkinName} for '{mapObjectInfo.Key}'");
+                list.Add(mapObjectReplacementDefinition);
+            }
+        }
+    }
+
+    private static void RegisterScenePlacedUnlockableReplacements(On.StartOfRound.orig_Awake orig, StartOfRound self)
+    {
+        AutoParentToShip[] autoParentToShips = GameObject.FindObjectsOfType<AutoParentToShip>(true);
+        foreach (AutoParentToShip autoParentToShip in autoParentToShips)
+        {
+            if (autoParentToShip.gameObject.GetComponent<NightfallUnlockable>())
+            {
+                NightfallPlugin.Logger.LogWarning($"{autoParentToShip.gameObject.name} already has a NightfallUnlockable component somehow.");
+                continue;
+            }
+            autoParentToShip.gameObject.AddComponent<NightfallUnlockable>();
+        }
+        orig(self);
+    }
+
+    private static void RegisterUnlockableReplacements()
+    {
+        foreach (DawnUnlockableItemInfo unlockableItemInfo in LethalContent.Unlockables)
+        {
+            if (unlockableItemInfo.HasTag(Tags.Unimplemented))
+                continue;
+
+            UnlockableItem unlockableItem = unlockableItemInfo.UnlockableItem;
+            if (unlockableItem.prefabObject == null)
+                continue;
+
+            if (!unlockableItem.prefabObject.TryGetComponent(out NightfallUnlockable nightfallUnlockable))
+                continue;
+
+            if (!unlockableItemInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallUnlockableReplacementDefinition>? list))
+            {
+                DefaultUnlockableReplacementDefinition defaultUnlockableReplacementDefinition = ScriptableObject.CreateInstance<DefaultUnlockableReplacementDefinition>();
+                defaultUnlockableReplacementDefinition.RegisterAsDefault(nightfallUnlockable, unlockableItemInfo.Key.Key, unlockableItemInfo.Key.Namespace, unlockableItemInfo.Key.Key);
+                list = [defaultUnlockableReplacementDefinition];
+                unlockableItemInfo.CustomData.Set(NightfallKeys.EntityReplacements, list);
+            }
+
+            foreach (NightfallEntityReplacementDefinition entityReplacementDefinition in NightfallModContent.EntityReplacements)
+            {
+                if (entityReplacementDefinition is not NightfallUnlockableReplacementDefinition unlockableReplacementDefinition)
+                    continue;
+
+                if (unlockableReplacementDefinition.EntityToReplaceKey != unlockableItemInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering unlockable replacement {unlockableReplacementDefinition.SkinName} for '{unlockableItemInfo.Key}'");
+                list.Add(unlockableReplacementDefinition);
+            }
+        }
+    }
+
+    private static void RegisterItemReplacements()
+    {
+        foreach (DawnItemInfo itemInfo in LethalContent.Items)
+        {
+            if (itemInfo.HasTag(Tags.Unimplemented))
+                continue;
+
+            Item item = itemInfo.Item;
+            GrabbableObject grabbableObject = item.spawnPrefab.GetComponent<GrabbableObject>();
+            if (!itemInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallItemReplacementDefinition>? list))
+            {
+                list = new();
+                if (item.meshVariants.Length == 0 && item.materialVariants.Length == 0)
+                {
+                    DefaultItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DefaultItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(grabbableObject, itemInfo.Key.Key, itemInfo.Key.Namespace, itemInfo.Key.Key);
+                    list.Add(itemReplacementDefinition);
+                }
+                itemInfo.CustomData.Set(NightfallKeys.EntityReplacements, list);
+            }
+
+            if (item.meshVariants.Length > 0)
+            {
+                foreach ((int index, Mesh mesh) in item.meshVariants.WithIndex())
+                {
+                    DefaultItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DefaultItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(grabbableObject, itemInfo.Key.Key, itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
+                    MeshReplacement meshReplacement = ScriptableObject.CreateInstance<MeshReplacement>();
+                    meshReplacement.name = $"{mesh.name}_MeshReplacement";
+                    meshReplacement.ReplacementMesh = mesh;
+                    itemReplacementDefinition.Replacements.Add(meshReplacement);
+                    Debuggers.EntityReplacements?.Log($"Registering item replacement {itemReplacementDefinition.SkinName} for '{itemInfo.Key}'");
+                    list.Add(itemReplacementDefinition);
+                }
+            }
+
+            if (item.materialVariants.Length > 0)
+            {
+                foreach ((int index, Material material) in item.materialVariants.WithIndex())
+                {
+                    DefaultItemReplacementDefinition itemReplacementDefinition = ScriptableObject.CreateInstance<DefaultItemReplacementDefinition>();
+                    itemReplacementDefinition.RegisterAsDefault(grabbableObject, itemInfo.Key.Key, itemInfo.Key.Namespace, $"{itemInfo.Item.itemName}_mesh_variant_{index}");
+                    MaterialsReplacement materialsReplacement = ScriptableObject.CreateInstance<MaterialsReplacement>();
+                    materialsReplacement.name = $"{material.name}_MaterialsReplacement";
+                    materialsReplacement.ReplacementMaterials.Add(new MaterialWithIndex()
+                    {
+                        Index = 0,
+                        Material = material
+                    });
+                    itemReplacementDefinition.Replacements.Add(materialsReplacement);
+                    Debuggers.EntityReplacements?.Log($"Registering item replacement {itemReplacementDefinition.SkinName} for '{itemInfo.Key}'");
+                    list.Add(itemReplacementDefinition);
+                }
+            }
+
+            foreach (NightfallEntityReplacementDefinition entityReplacementDefinition in NightfallModContent.EntityReplacements)
+            {
+                if (entityReplacementDefinition is not NightfallItemReplacementDefinition itemReplacementDefinition)
+                    continue;
+
+                if (itemReplacementDefinition.EntityToReplaceKey != itemInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering item replacement {itemReplacementDefinition.SkinName} for '{itemInfo.Key}'");
+                list.Add(itemReplacementDefinition);
+            }
+        }
+    }
+
+    private static void ReplaceGrabbableObject(On.GrabbableObject.orig_Start orig, GrabbableObject self)
+    {
+        if (self.itemProperties.DawnInfo == null)
+        {
+            orig(self);
+            return;
+        }
+
+        if (self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? _))
+        {
+            orig(self);
+            return;
+        }
+
+        if (StartOfRound.Instance.inShipPhase && !StartOfRound.Instance.beganLoadingNewLevel)
+        {
+            orig(self);
+            return;
+        }
+
+        SetReplacement(self);
+        orig(self);
+    }
+
+    private static List<NightfallItemReplacementDefinition> GetValidReplacements(List<NightfallItemReplacementDefinition> replacements)
+    {
+        List<NightfallItemReplacementDefinition> newReplacements = new(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
+        {
+            NightfallItemReplacementDefinition replacement = newReplacements[i];
+            Debuggers.EntityReplacements?.Log($"Taking into account replacement for '{replacement.EntityToReplaceKey}' with '{replacement.SkinName}'");
+            if (replacement.DatePredicate != null && !replacement.DatePredicate.Evaluate())
+            {
+                newReplacements.RemoveAt(i);
+                continue;
+            }
+
+            int weight = replacement.GetRarity();
+            if (weight <= 0)
+            {
+                Debuggers.EntityReplacements?.Log($"Removing invalid replacement {replacement.SkinName} for '{replacement.EntityToReplaceKey}' due to low weight");
+                newReplacements.RemoveAt(i);
+            }
+        }
+
+        return newReplacements;
+    }
+
+    private static void SetReplacement(GrabbableObject grabbableObject)
+    {
+        if (!grabbableObject.itemProperties.DawnInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallItemReplacementDefinition>? replacements))
+        {
+            return;
+        }
+
+        List<NightfallItemReplacementDefinition> newReplacements = GetValidReplacements(replacements);
+
+        int totalWeight = newReplacements.Sum(it => it.GetRarity());
+
+        if (itemReplacementRandom == null)
+        {
+            itemReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
+
+        int chosenWeight = itemReplacementRandom.Next(0, totalWeight);
+        foreach (NightfallItemReplacementDefinition replacement in newReplacements)
+        {
+            chosenWeight -= replacement.GetRarity();
+            if (chosenWeight > 0)
+                continue;
+
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(grabbableObject));
+            break;
+        }
+    }
+
+    private static void ReplaceEnemyEntityUsingNest(On.EnemyAI.orig_UseNestSpawnObject orig, EnemyAI self, EnemyAINestSpawnObject nestSpawnObject)
+    {
+        if (nestSpawnObject.HasNestReplacement())
+        {
+            NightfallEnemyReplacementDefinition enemyReplacementDefinition = nestSpawnObject.GetNestReplacement()!;
+            StartOfRoundRefs.Instance.StartCoroutine(enemyReplacementDefinition.Apply(self));
+        }
+        orig(self, nestSpawnObject);
+    }
+
+    // note!!! this transpiler should only be used on enemy AIs!
+    private static readonly Dictionary<string, Func<AudioClip, EnemyAI, AudioClip?>> clipReplacerFunctions = new()
+    {
+        { nameof(EnemyType.hitBodySFX), GenerateAudioClipReplacer(it => it.HitBodySFX) },
+        { nameof(EnemyType.hitEnemyVoiceSFX), GenerateAudioClipReplacer(it => it.HitEnemyVoiceSFX) },
+        { nameof(EnemyType.stunSFX), GenerateAudioClipReplacer(it => it.StunSFX) }
+    };
+
+    private static void DynamicallyReplaceAudioClips(ILContext il)
+    {
+        Debuggers.Patching?.Log($"patching: {il.Method.Name} with {nameof(DynamicallyReplaceAudioClips)}. il count {il.Body.Instructions.Count}");
+        ILCursor c = new ILCursor(il);
+
+        // you probably need to do null/empty array checks as well
+        // this could also probably be cleaned up significantly.
+
+        // evil for loop.
+        for (; c.Index < c.Instrs.Count; c.Index++)
+        {
+            if (c.Next.OpCode != OpCodes.Ldfld)
+                continue;
+
+            if (c.Next.MatchLdfld<EnemyType>(nameof(EnemyType.audioClips)))
+            {
+                c.Index++;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<AudioClip[], EnemyAI, AudioClip[]>>((existingAudioClips, self) =>
+                {
+                    if (!self.TryGetEnemyReplacement(out var replacement) || replacement.AudioClips.Length <= 0)
+                    {
+                        return existingAudioClips;
+                    }
+                    return replacement.AudioClips;
+                });
+                continue;
+            }
+
+            foreach ((string name, var replacer) in clipReplacerFunctions)
+            {
+                if (!c.Next.MatchLdfld<EnemyType>(name))
+                    continue;
+
+                c.Index++;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate(replacer);
+                break;
+            }
+        }
+    }
+
+    static Func<AudioClip?, EnemyAI, AudioClip?> GenerateAudioClipReplacer(Func<NightfallEnemyReplacementDefinition, AudioClip?> generator)
+    {
+        return (existing, self) =>
+        {
+            if (!self.TryGetEnemyReplacement(out NightfallEnemyReplacementDefinition? replacement))
+                return existing;
+
+            AudioClip? replacedClip = generator(replacement);
+            return replacedClip != null ? replacedClip : existing;
+        };
+    }
+
+    static Func<GrabbableObject, Vector3, Vector3> GenerateOffsetReplacer(Func<NightfallItemReplacementDefinition, Vector3> generator)
+    {
+        return (self, existing) =>
+        {
+            if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement))
+                return existing;
+
+            return generator(replacement);
+        };
+    }
+
+    private static Func<GrabbableObject, AudioClip, AudioClip> GenerateItemSfxReplacer(Func<NightfallItemReplacementDefinition, AudioClip?> generator)
+    {
+        return (self, existing) =>
+        {
+            if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement))
+                return existing;
+
+            AudioClip? replacedClip = generator(replacement);
+            return replacedClip != null ? replacedClip : existing;
+        };
+    }
+
+    private static Func<GrabbableObject, bool, bool> GenerateItemConductiveReplacer(Func<NightfallItemReplacementDefinition, bool> generator)
+    {
+        return (self, existing) =>
+        {
+            if (!self.TryGetGrabbableObjectReplacement(out NightfallItemReplacementDefinition? replacement))
+                return existing;
+
+            return generator(replacement);
+        };
+    }
+
+    private static void OnNestSpawnAwake(RuntimeILReferenceBag.FastDelegateInvokers.Action<EnemyAINestSpawnObject> orig, EnemyAINestSpawnObject self)
+    {
+        if (self.enemyType.DawnInfo == null)
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to replace enemy nest for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
+            orig(self);
+            return;
+        }
+
+        if (!self.enemyType.DawnInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallEnemyReplacementDefinition>? replacements))
+        {
+            orig(self);
+            return;
+        }
+
+        foreach (NightfallEnemyReplacementDefinition replacement in replacements.ToArray())
+        {
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                replacements.Remove(replacement);
+            }
+        }
+
+        int totalWeight = replacements.Sum(it => it.GetRarity());
+        if (nestReplacementRandom == null)
+        {
+            nestReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
+
+        int chosenWeight = nestReplacementRandom.Next(0, totalWeight);
+        foreach (NightfallEnemyReplacementDefinition replacement in replacements)
+        {
+            chosenWeight -= replacement.GetRarity();
+            if (chosenWeight > 0)
+                continue;
+
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.ApplyNest(self));
+        }
+        orig(self);
+    }
+
+    private static void RegisterEnemyReplacements()
+    {
+        foreach (DawnEnemyInfo enemyInfo in LethalContent.Enemies)
+        {
+            if (enemyInfo.HasTag(Tags.Unimplemented))
+                continue;
+
+            EnemyAI enemyAI = enemyInfo.EnemyType.enemyPrefab.GetComponent<EnemyAI>();
+            if (!enemyInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallEnemyReplacementDefinition>? list))
+            {
+                DefaultEnemyReplacementDefinition defaultEnemyReplacementDefinition = ScriptableObject.CreateInstance<DefaultEnemyReplacementDefinition>();
+                defaultEnemyReplacementDefinition.RegisterAsDefault(enemyAI, enemyInfo.Key.Key, enemyInfo.Key.Namespace, enemyInfo.Key.Key);
+                list = [defaultEnemyReplacementDefinition];
+                enemyInfo.CustomData.Set(NightfallKeys.EntityReplacements, list);
+            }
+
+            foreach (NightfallEntityReplacementDefinition entityReplacementDefinition in NightfallModContent.EntityReplacements)
+            {
+                if (entityReplacementDefinition is not NightfallEnemyReplacementDefinition enemyReplacementDefinition)
+                    continue;
+
+                if (enemyReplacementDefinition.EntityToReplaceKey != enemyInfo.Key)
+                    continue;
+
+                Debuggers.EntityReplacements?.Log($"Registering enemy replacement {enemyReplacementDefinition.SkinName} for '{enemyInfo.Key}'");
+                list.Add(enemyReplacementDefinition);
+            }
+        }
+    }
+
+    private static void ReplaceEnemyEntity(On.EnemyAI.orig_Start orig, EnemyAI self)
+    {
+        orig(self);
+        if (self.enemyType.DawnInfo == null)
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it doesn't have a dawn info! (there may be other problems)");
+            return;
+        }
+
+        if (!self.enemyType.DawnInfo.CustomData.TryGet(NightfallKeys.EntityReplacements, out List<NightfallEnemyReplacementDefinition>? replacements))
+        {
+            NightfallPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it doesn't have any replacements! (there may be other problems)");
+            return;
+        }
+
+        if (self.TryGetEnemyReplacement(out _))
+        {
+            DawnPlugin.Logger.LogWarning($"Failed to replace enemy entity for '{self.enemyType.enemyName}', it already has a replacement! (there may be other problems)");
+            return;
+        }
+
+        List<NightfallEnemyReplacementDefinition> newReplacements = new(replacements);
+        for (int i = newReplacements.Count - 1; i >= 0; i--)
+        {
+            NightfallEnemyReplacementDefinition replacement = newReplacements[i];
+            Debuggers.EntityReplacements?.Log($"Taking into account replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}'");
+            if (replacement.DatePredicate == null)
+                continue;
+
+            if (!replacement.DatePredicate.Evaluate())
+            {
+                Debuggers.EntityReplacements?.Log($"Removing replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}'");
+                newReplacements.RemoveAt(i);
+            }
+        }
+
+        int totalWeight = newReplacements.Sum(it => it.GetRarity());
+        if (enemyReplacementRandom == null)
+        {
+            enemyReplacementRandom = new System.Random(StartOfRound.Instance.randomMapSeed + 234780);
+        }
+
+        Debuggers.EntityReplacements?.Log($"Total weight for '{self.enemyType.enemyName}' is {totalWeight}");
+
+        int chosenWeight = enemyReplacementRandom.Next(0, totalWeight);
+        foreach (NightfallEnemyReplacementDefinition replacement in newReplacements)
+        {
+            int weight = replacement.GetRarity();
+            Debuggers.EntityReplacements?.Log($"Trying replacement for '{replacement.EntityToReplaceKey}' with '{replacement.TypedKey}' with weight {weight}");
+            chosenWeight -= weight;
+            if (chosenWeight > 0)
+                continue;
+
+            StartOfRoundRefs.Instance.StartCoroutine(replacement.Apply(self));
+            break;
+        }
+    }
+}

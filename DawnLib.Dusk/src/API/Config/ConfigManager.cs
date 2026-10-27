@@ -21,32 +21,6 @@ public class ConfigManager(ConfigFile file)
         return CreateConfigSection(data.configName + " Options");
     }
 
-    public ConfigEntryBase CreateDynamicConfig(bool userAllowedToEdit, DuskDynamicConfig configDefinition, ConfigContext context)
-    {
-        ConfigEntryBase Bind<T>(T defaultValue)
-        {
-            ConfigEntry<T> configEntry = context.Bind(configDefinition.settingName, configDefinition.Description, defaultValue);
-            if (!userAllowedToEdit)
-            {
-                DuskBaseConfig.AssignValueIfNotNull(configEntry, defaultValue);
-            }
-            return configEntry;
-        }
-
-        return configDefinition.DynamicConfigType switch
-        {
-            DuskDynamicConfigType.String => Bind(configDefinition.defaultString),
-            DuskDynamicConfigType.Int => Bind(configDefinition.defaultInt),
-            DuskDynamicConfigType.Bool => Bind(configDefinition.defaultBool),
-            DuskDynamicConfigType.Float => Bind(configDefinition.defaultFloat),
-            DuskDynamicConfigType.BoundedRange => Bind(configDefinition.defaultBoundedRange),
-            DuskDynamicConfigType.AnimationCurve => Bind(configDefinition.defaultAnimationCurve),
-            DuskDynamicConfigType.Vector3 => Bind(configDefinition.defaultVector3),
-            DuskDynamicConfigType.Color => Bind(configDefinition.defaultColor),
-            _ => throw new ArgumentOutOfRangeException($"DynamicConfigType of '{configDefinition.DynamicConfigType}' is not yet internally implemented!!"),
-        };
-    }
-
     public static Dictionary<string, string> ParseNamespacedKeyWithCurves(string configString)
     {
         Dictionary<string, string> spawnRateByMoonName = new();
@@ -82,13 +56,5 @@ public class ConfigManager(ConfigFile file)
     internal static ConfigFile GenerateConfigFile(string configFileName)
     {
         return new ConfigFile(Utility.CombinePaths(Paths.ConfigPath, configFileName), false);
-    }
-
-    public static ConfigEntryBase? FindEntry(ConfigFile file, string section, string key)
-    {
-        ConfigDefinition definition = new(section, key);
-        // Note: explicit cast needed due to https://github.com/BepInEx/BepInEx/issues/1305
-        var entries = ((IDictionary<ConfigDefinition, ConfigEntryBase>)file).Values;
-        return entries.FirstOrDefault(x => x.Definition == definition);
     }
 }

@@ -705,7 +705,7 @@ static class MoonRegistrationHandler
             }
         }
 
-        for (int i = SOsToDestroy.Count; i >= 0; i--)
+        for (int i = SOsToDestroy.Count - 1; i >= 0; i--)
         {
             ScriptableObject.Destroy(SOsToDestroy[i]);
         }
