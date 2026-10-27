@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Dawn.Utils;
-using Nightfall.Internal;
 using UnityEngine;
 
 namespace Nightfall;
@@ -38,19 +36,32 @@ public class SkinnedMeshReplacement : Hierarchy
         Transform[] mappedBones = new Transform[srcBones.Length];
         for (int i = 0; i < srcBones.Length; i++)
         {
-            string? name = srcBones[i] ? srcBones[i].name : null;
-            if (string.IsNullOrWhiteSpace(name) || !targetLookup.TryGetValue(name, out Transform transform))
+            Transform srcBone = srcBones[i];
+            string? name = srcBone ? srcBone.name : null;
+
+            if (string.IsNullOrWhiteSpace(name))
             {
-                NightfallPlugin.Logger.LogWarning($"TransferSMR: Could not map bone '{name}' with replacement: {ReplacementRenderer.name}. Using root fallback.");
-                transform = targetRoot;
+                NightfallPlugin.Logger.LogWarning($"TransferSMR: Replacement has a bone with no name: {ReplacementRenderer.name}. Using root fallback.");
+                mappedBones[i] = targetRoot;
+                continue;
             }
+
+            if (!targetLookup.TryGetValue(name, out Transform transform))
+            {
+                transform = CreateMissingBone(srcBone, targetRoot, targetLookup);
+                NightfallPlugin.Logger.LogWarning($"TransferSMR: Created missing bone '{name}' for replacement: {ReplacementRenderer.name}.");
+            }
+
             mappedBones[i] = transform;
         }
 
-        Transform mappedRoot = targetSkinned.rootBone ? targetSkinned.rootBone : targetRoot;
+        Transform mappedRoot = targetRoot;
         if (ReplacementRenderer.rootBone)
         {
-            targetLookup.TryGetValue(ReplacementRenderer.rootBone.name, out mappedRoot);
+            if (!targetLookup.TryGetValue(ReplacementRenderer.rootBone.name, out mappedRoot))
+            {
+                mappedRoot = CreateMissingBone(ReplacementRenderer.rootBone, targetRoot, targetLookup);
+            }
         }
 
         Mesh newMesh = ReplacementRenderer.sharedMesh;
@@ -61,10 +72,49 @@ public class SkinnedMeshReplacement : Hierarchy
         MaterialsReplacement.CopyOrResizeMaterials(targetSkinned, originalMaterials, newMesh ? newMesh.subMeshCount : 1);
     }
 
+    private Transform CreateMissingBone(Transform sourceBone, Transform targetRoot, Dictionary<string, Transform> targetLookup)
+    {
+        if (targetLookup.TryGetValue(sourceBone.name, out Transform existing))
+        {
+            return existing;
+        }
+
+        Transform parent;
+        if (sourceBone.parent != null && sourceBone.parent != ReplacementRenderer.transform && sourceBone.parent != sourceBone)
+        {
+            if (!targetLookup.TryGetValue(sourceBone.parent.name, out parent))
+            {
+                parent = CreateMissingBone(sourceBone.parent, targetRoot, targetLookup);
+            }
+        }
+        else
+        {
+            parent = targetRoot;
+        }
+
+        GameObject boneObject = new(sourceBone.name);
+        Transform newBone = boneObject.transform;
+
+        newBone.SetParent(parent, false);
+        newBone.SetLocalPositionAndRotation(sourceBone.localPosition, sourceBone.localRotation);
+        newBone.localScale = sourceBone.localScale;
+
+        targetLookup[sourceBone.name] = newBone;
+        return newBone;
+    }
+
     private static Dictionary<string, Transform> BuildBoneLookup(SkinnedMeshRenderer targetSkinned)
     {
         Dictionary<string, Transform> dict = new();
         foreach (Transform transform in targetSkinned.bones)
+        {
+            if (!dict.ContainsKey(transform.name))
+            {
+                dict.Add(transform.name, transform);
+            }
+        }
+
+        foreach (Transform transform in targetSkinned.rootBone.GetComponentsInChildren<Transform>())
         {
             if (!dict.ContainsKey(transform.name))
             {

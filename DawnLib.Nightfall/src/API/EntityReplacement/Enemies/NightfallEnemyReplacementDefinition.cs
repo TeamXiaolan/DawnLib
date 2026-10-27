@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Dawn.Internal;
 using UnityEngine;
 
@@ -23,6 +25,10 @@ public class NightfallEnemyReplacementDefinition : NightfallEntityReplacementDef
 
     [field: SerializeField]
     public AudioClip[] AudioClips { get; private set; } = [];
+
+    [field: Header("State Behaviour Replacements")]
+    [field: SerializeField]
+    public StateBehaviourAudios[] StateBehaviourAudios { get; private set; } = [];
 
     public override IEnumerator Apply(EnemyAI ai, bool immediate = false)
     {
@@ -83,6 +89,26 @@ public abstract class NightfallEnemyReplacementDefinition<T> : NightfallEnemyRep
             yield break;
         }
 
+        foreach (StateBehaviourAudios stateBehaviourAudios in StateBehaviourAudios)
+        {
+            EnemyBehaviourState? behaviourState = enemyAI.enemyBehaviourStates.FirstOrDefault(x => x.name == stateBehaviourAudios.Name);
+            if (behaviourState == null)
+            {
+                NightfallPlugin.Logger.LogWarning($"Could not replace EnemyBehaviourState: {stateBehaviourAudios.Name} due to not finding matching state in the Enemy: {enemyAI.gameObject.name}");
+                continue;
+            }
+
+            if (stateBehaviourAudios.Voicelip != null)
+            {
+                behaviourState.VoiceClip = stateBehaviourAudios.Voicelip;
+            }
+
+            if (stateBehaviourAudios.SFXClip != null)
+            {
+                behaviourState.SFXClip = stateBehaviourAudios.SFXClip;
+            }
+        }
+
         ApplyTyped((T)enemyAI);
     }
 }
@@ -90,4 +116,17 @@ public abstract class NightfallEnemyReplacementDefinition<T> : NightfallEnemyRep
 public class DefaultEnemyReplacementDefinition : NightfallEnemyReplacementDefinition<EnemyAI>
 {
     protected override void ApplyTyped(EnemyAI enemyAI) { }
+}
+
+[Serializable]
+public class StateBehaviourAudios
+{
+    [field: SerializeField]
+    public string Name { get; private set; }
+
+    [field: SerializeField]
+    public AudioClip Voicelip { get; private set; }
+
+    [field: SerializeField]
+    public AudioClip SFXClip { get; private set; }
 }
