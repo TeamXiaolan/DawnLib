@@ -1,4 +1,9 @@
-# v0.9.26
+# v0.9.27
+
+- Added the ability to replace state behaviour sounds for enemy replacements.
+- Skinned Renderer replacements also replace adding bones to an armature.
+
+## v0.9.26
 
 - Imported a bunch of fixes from experimental as experimental is going through the biggest changes right now.
 - Fixed DawnLib Stingers not playing + playing when entering and exiting the interior.

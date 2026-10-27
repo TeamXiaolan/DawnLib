@@ -204,6 +204,12 @@ public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplaceme
 
     public IEnumerator ApplyReplacementAndAddons(Transform transform, bool immediate = false)
     {
+        yield return ApplyReplacements(transform, immediate);
+        ApplyGameobjectAddons(transform);
+    }
+
+    public IEnumerator ApplyReplacements(Transform transform, bool immediate)
+    {
         foreach (Hierarchy hierarchyReplacement in Replacements)
         {
             if (immediate)
@@ -215,7 +221,10 @@ public abstract class DuskEntityReplacementDefinition<TAI> : DuskEntityReplaceme
                 yield return StartOfRoundRefs.Instance.StartCoroutine(hierarchyReplacement.Apply(transform, immediate));
             }
         }
+    }
 
+    public void ApplyGameobjectAddons(Transform transform)
+    {
         foreach (GameObjectWithPath gameObjectAddon in GameObjectAddons)
         {
             GameObject gameObject = !string.IsNullOrWhiteSpace(gameObjectAddon.PathToGameObject) ? transform.Find(gameObjectAddon.PathToGameObject).gameObject : transform.gameObject;
