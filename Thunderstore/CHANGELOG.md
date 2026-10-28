@@ -2,6 +2,7 @@
 
 - Added the ability to replace state behaviour sounds for enemy replacements.
 - Skinned Renderer replacements also replace adding bones to an armature.
+- Added fixes for editor only configs related to `Config Reader` component.
 
 ## v0.9.26
 

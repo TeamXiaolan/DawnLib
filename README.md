@@ -139,6 +139,8 @@ And finally, for any troubles in setting anything up, contact `@xuxiaolan` on di
 
 ### Credits - Misc
 
+- JacuJ (help all over with fixing niche features and issues relating to skins, interiors and configs.)
+- Buttery (Suggesting things for skins etc)
 - Crafty (Making LunarConfig exposed a few places that needed improvement in implementation).
 - [Slayer](https://github.com/slayer6409) (Achievement UI)
 - Monty (Hotloading UI Feedback)
