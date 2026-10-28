@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Dawn.Utils;
+using Nightfall.Internal;
 using UnityEngine;
 
 namespace Nightfall;
