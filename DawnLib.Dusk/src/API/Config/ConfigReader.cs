@@ -7,6 +7,7 @@ using BepInEx.Configuration;
 using Dawn.Internal;
 using Dawn.Utils;
 using UnityEngine;
+using Dusk.Utils;
 using UnityEngine.Events;
 
 namespace Dusk;
@@ -192,16 +193,27 @@ public class ConfigReader : MonoBehaviour
             return null;
         }
 
-        if (!Chainloader.PluginInfos.TryGetValue(pluginGuid, out PluginInfo pluginInfo))
+        Debuggers.Configs?.Log($"ConfigReader: pluginGuid={pluginGuid}, section={section}, key={key}");
+        if (DuskMod.AllMods.TryGetDuskMod(pluginGuid, out DuskMod? duskMod))
         {
-            return null;
+            Debuggers.Configs?.Log($"ConfigReader: Getting config via DuskMod");
+            return GetConfig(duskMod.ConfigManager.File, section, key);
         }
 
-        Debuggers.Configs?.Log($"ConfigReader: pluginGuid={pluginGuid}, section={section}, key={key}");
-        ConfigFile config = pluginInfo.Instance.Config;
+        if (Chainloader.PluginInfos.TryGetValue(pluginGuid, out PluginInfo pluginInfo))
+        {
+            Debuggers.Configs?.Log($"ConfigReader: Getting config via Chainloader");
+            return GetConfig(pluginInfo.Instance.Config, section, key);
+        }
+
+        return null;
+    }
+
+    private static ConfigEntryBase? GetConfig(ConfigFile configFile, string section, string key)
+    {
         ConfigDefinition definition = new(section, key);
         // Note: explicit cast needed due to https://github.com/BepInEx/BepInEx/issues/1305
-        var entries = ((IDictionary<ConfigDefinition, ConfigEntryBase>)config).Values;
+        var entries = ((IDictionary<ConfigDefinition, ConfigEntryBase>)configFile).Values;
         foreach (ConfigEntryBase configEntryBase in entries)
         {
             ConfigDefinition existingDefinition = configEntryBase.Definition;
