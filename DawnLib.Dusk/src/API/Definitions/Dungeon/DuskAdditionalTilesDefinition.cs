@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Dusk;
 
 [CreateAssetMenu(fileName = "New Additional Tiles Definition", menuName = $"{DuskModConstants.Definitions}/Additional Tiles Definition")]
+[HelpURL("https://thunderstore.io/c/lethal-company/p/TeamXiaolan/DawnLib/wiki/4110-c8-additional-tilesets/")]
 public class DuskAdditionalTilesDefinition : DuskContentDefinition<DawnTileSetInfo>
 {
     [Flags]
